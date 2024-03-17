@@ -16,8 +16,10 @@ extension String {
 
 struct BarButton: View {
     var icon: String
+    var title: String
     var clicked: (() -> Void) /// use closure for callback
-    
+    @State var shouldPopover: Bool = false
+    @State var hoverWorkItem: DispatchWorkItem?
     
     var body: some View {
         Button {
@@ -33,20 +35,36 @@ struct BarButton: View {
             } else {
                 HStack{
                     Image(systemName: icon)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 20).frame(height: 20)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 20).frame(height: 20)
                 }.frame(width: 40).frame(height: 30)
             }
         }.frame(width: 40).frame(height: 30)
-        .buttonStyle(BarButtonStyle())
+            .buttonStyle(BarButtonStyle()).onHover(perform: { hovering in
+                hoverWorkItem?.cancel()
+                
+                if !hovering{
+                    shouldPopover = false
+                    return
+                }
+                
+                let workItem = DispatchWorkItem {
+                    shouldPopover = hovering
+                }
+                hoverWorkItem = workItem
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: workItem)
+            })
+            .popover(isPresented: $shouldPopover, content: {
+                Text(title).font(.headline).padding(5)
+            })
     }
 }
 
 // BarButtonStyle: click、onHover 显示不同的颜色
 struct BarButtonStyle: ButtonStyle {
     @State var isHover = false
-
+    
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .background(getColor(isPressed: configuration.isPressed))

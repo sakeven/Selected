@@ -59,7 +59,7 @@ info:
   enabled: true
 actions:
 - meta:
-    title: WebSearch
+    title: GoSearch
     icon: file://./go-logo-white.svg
     identifier: selected.gosearch
     after: ""
@@ -75,7 +75,7 @@ actions:
 | enabled                    | 布尔   | 是否激活该插件                                               |
 | actions                    | 列表   | 操作（action）列表                                           |
 | action.meta                | object | 操作的元信息                                                 |
-| action.meta.title          | 字符串 | 操作的标题。用于在鼠标悬浮在工具栏上显示操作的名称（还没实现）。  |
+| action.meta.title          | 字符串 | 操作的标题。用于在鼠标悬浮在工具栏上显示操作的名称。  |
 | action.meta.icon           | 字符串 | 配置与 `info.icon` 相同。用于显示在工具栏上。                |
 | action.meta.identifier     | 字符串 | action 的 id，唯一标识符                                     |
 | action.meta.after     | 字符串 | action 执行完成之后的处理。当前为空`""` ，必填。 |

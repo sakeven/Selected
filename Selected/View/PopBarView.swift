@@ -16,9 +16,9 @@ struct PopBarView: View {
     var body: some View {
         // spacing: 0， 让 button 紧邻，不要空隙
         HStack(spacing: 0){
-            ForEach(actions) { pluginInfo in
-                BarButton(icon: pluginInfo.actionMeta.icon, clicked: {
-                    pluginInfo.complete(ctx)
+            ForEach(actions) { action in
+                BarButton(icon: action.actionMeta.icon, title: action.actionMeta.title, clicked: {
+                    action.complete(ctx)
                     })
             }
         }.frame(height: 30)
