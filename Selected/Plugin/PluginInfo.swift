@@ -32,7 +32,7 @@ var PluginList: [Plugin] = [
                 enabled: true),
            actions: [
             Action(
-                meta: GenericAction(title: "Search", icon: "magnifyingglass",
+                meta: GenericAction(title: "Search", icon: "symbol:magnifyingglass",
                                     after: "", identifier: "selected.websearch"),
                 url:
                     URLAction(
@@ -46,7 +46,7 @@ var PluginList: [Plugin] = [
                 enabled: false),
            actions: [
             Action(
-                meta: GenericAction(title: "Maps", icon: "mappin.and.ellipse",
+                meta: GenericAction(title: "Maps", icon: "symbol:mappin.and.ellipse",
                                     after: "", identifier: "selected.map"),
                 url:
                     URLAction(

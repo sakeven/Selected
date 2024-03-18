@@ -27,6 +27,9 @@
 		386AD7512B8F7AA5008C346D /* SettingsAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 386AD7502B8F7AA5008C346D /* SettingsAccess */; };
 		386AD7552B90CF97008C346D /* CommandView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386AD7542B90CF97008C346D /* CommandView.swift */; };
 		386AD7572B90D867008C346D /* GetText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386AD7562B90D867008C346D /* GetText.swift */; };
+		3888D8032BA8615900A7B75D /* IconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3888D8022BA8615900A7B75D /* IconImage.swift */; };
+		3888D8052BA86A0F00A7B75D /* PluginListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3888D8042BA86A0F00A7B75D /* PluginListView.swift */; };
+		3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3888D8062BA86AF600A7B75D /* WindowManager.swift */; };
 		38CC18B42B9C46CA0023DF18 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B32B9C46CA0023DF18 /* SettingsView.swift */; };
 		38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */; };
 		38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DEBE312B9D67F800CD2A35 /* OpenAI.swift */; };
@@ -81,6 +84,9 @@
 		386AD74D2B8F7A16008C346D /* MenuItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemView.swift; sourceTree = "<group>"; };
 		386AD7542B90CF97008C346D /* CommandView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandView.swift; sourceTree = "<group>"; };
 		386AD7562B90D867008C346D /* GetText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetText.swift; sourceTree = "<group>"; };
+		3888D8022BA8615900A7B75D /* IconImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconImage.swift; sourceTree = "<group>"; };
+		3888D8042BA86A0F00A7B75D /* PluginListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginListView.swift; sourceTree = "<group>"; };
+		3888D8062BA86AF600A7B75D /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		38CC18B32B9C46CA0023DF18 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopBarView.swift; sourceTree = "<group>"; };
 		38DEBE312B9D67F800CD2A35 /* OpenAI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAI.swift; sourceTree = "<group>"; };
@@ -127,6 +133,7 @@
 			children = (
 				38049D622B9DF8EA00E02ECA /* FloatingPanel.swift */,
 				38230CA02B9F44FC002A52E9 /* BarButton.swift */,
+				3888D8022BA8615900A7B75D /* IconImage.swift */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -175,6 +182,7 @@
 				386AD7202B8F6BFB008C346D /* Selected.entitlements */,
 				386AD71D2B8F6BFB008C346D /* Preview Content */,
 				386AD7562B90D867008C346D /* GetText.swift */,
+				3888D8062BA86AF600A7B75D /* WindowManager.swift */,
 			);
 			path = Selected;
 			sourceTree = "<group>";
@@ -222,6 +230,7 @@
 				38CC18B32B9C46CA0023DF18 /* SettingsView.swift */,
 				38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */,
 				386AD7192B8F6BFA008C346D /* ContentView.swift */,
+				3888D8042BA86A0F00A7B75D /* PluginListView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -396,10 +405,12 @@
 			files = (
 				38DEBE342B9DD7CA00CD2A35 /* Gemini.swift in Sources */,
 				38F5E2A42B9AB380002FEEFE /* TextOutputFormat.swift in Sources */,
+				3888D8032BA8615900A7B75D /* IconImage.swift in Sources */,
 				38049D632B9DF8EA00E02ECA /* FloatingPanel.swift in Sources */,
 				386AD74E2B8F7A16008C346D /* MenuItemView.swift in Sources */,
 				38230C9F2B9F332D002A52E9 /* PluginInfo.swift in Sources */,
 				386AD71A2B8F6BFA008C346D /* ContentView.swift in Sources */,
+				3888D8052BA86A0F00A7B75D /* PluginListView.swift in Sources */,
 				386AD7472B8F6FCE008C346D /* Defaults.swift in Sources */,
 				38DEBE392B9DDD0500CD2A35 /* AI.swift in Sources */,
 				386AD7552B90CF97008C346D /* CommandView.swift in Sources */,
@@ -409,6 +420,7 @@
 				38230CA12B9F44FC002A52E9 /* BarButton.swift in Sources */,
 				386AD7572B90D867008C346D /* GetText.swift in Sources */,
 				38F5E2A22B9AB361002FEEFE /* SplashCodeSyntaxHighlighter.swift in Sources */,
+				3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */,
 				3801CA4E2BA522B6007D7868 /* Actions.swift in Sources */,
 				38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */,
 				38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */,

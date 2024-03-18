@@ -33,7 +33,6 @@ struct MenuItemView: View {
         } postAction: {
             // nothing to do
         }
-        
     }
     
     @ViewBuilder

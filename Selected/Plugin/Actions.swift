@@ -204,7 +204,7 @@ class PerformAction: Identifiable,Hashable {
     }
 }
 
-func GetAllActionsMap(ctx: SelectedTextContext) -> [PerformAction] {
+func GetAllActions() -> [PerformAction] {
     var list = [PerformAction]()
     var pluginList = PluginManager.shared.getPlugins()
     pluginList.append(contentsOf: PluginList)
@@ -236,19 +236,19 @@ func GetAllActionsMap(ctx: SelectedTextContext) -> [PerformAction] {
     //    generic: GenericAction(title: "chat", icon: "character.bubble", after: "", identifier: "selected.chat")
     //    ))
     list.append(TranslationAction(target: "cn").generate(
-        generic: GenericAction(title: "2Chinese", icon: "character.book.closed", after: "", identifier: "selected.translation.cn")
+        generic: GenericAction(title: "2Chinese", icon: "square 译中", after: "", identifier: "selected.translation.cn")
     ))
     list.append(TranslationAction(target: "en").generate(
-        generic: GenericAction(title: "2English", icon: "globe", after: "", identifier: "selected.translation.en")
+        generic: GenericAction(title: "2English", icon: "circle 译英", after: "", identifier: "selected.translation.en")
     ))
     list.append(URLAction(url: "{text}" ).generate(
-        generic: GenericAction(title: "OpenLinks", icon: "link", after: "", identifier: "selected.openlinks")
+        generic: GenericAction(title: "OpenLinks", icon: "symbol:link", after: "", identifier: "selected.openlinks")
     ))
     list.append(CopyAction().generate(
-        generic: GenericAction(title: "Copy", icon: "doc.on.clipboard", after: "", identifier: "selected.copy")
+        generic: GenericAction(title: "Copy", icon: "symbol:doc.on.clipboard", after: "", identifier: "selected.copy")
     ))
     list.append(SpeackAction().generate(
-        generic: GenericAction(title: "Speak", icon: "play.circle", after: "", identifier: "selected.speak")
+        generic: GenericAction(title: "Speak", icon: "symbol:play.circle", after: "", identifier: "selected.speak")
     ))
     return list
 }
@@ -256,7 +256,7 @@ func GetAllActionsMap(ctx: SelectedTextContext) -> [PerformAction] {
 // GetActions 根据上下文获得当前支持的 action 列表。比如根据当前窗口的应用选择 action 列表。
 func GetActions(ctx: SelectedTextContext) -> [PerformAction] {
     let condition = ConfigurationManager.shared.getAppCondition(bundleID: ctx.BundleID)
-    let actionList = GetAllActionsMap(ctx: ctx)
+    let actionList = GetAllActions()
     
     guard let condition = condition else {
         return actionList

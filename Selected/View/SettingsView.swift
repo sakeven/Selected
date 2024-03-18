@@ -21,25 +21,46 @@ struct SettingsView: View {
     let pickerValues = ["OpenAI", "Gemini"]
 
     var body: some View {
-        Spacer()
-        HStack {
-            Form{
-                Picker("AIService", selection: $aiService, content: {
-                    ForEach(pickerValues, id: \.self) {
-                        Text($0)
+        TabView{
+            HStack {
+                Form{
+                    Picker("AIService", selection: $aiService, content: {
+                        ForEach(pickerValues, id: \.self) {
+                            Text($0)
+                        }
+                    }).pickerStyle(DefaultPickerStyle())
+                    Section(header: Text("OpenAI")) {
+                        SecureField("APIKey", text: $openAIAPIKey)
+                        TextField("APIHost", text: $openAIAPIHost)
                     }
-                }).pickerStyle(DefaultPickerStyle())
-                Section(header: Text("OpenAI")) {
-                    SecureField("APIKey", text: $openAIAPIKey)
-                    TextField("APIHost", text: $openAIAPIHost)
+                    
+                    Section(header: Text("Gemini")) {
+                        SecureField("APIKey", text: $geminiAPIKey)
+                        TextField("APIHost", text: $geminiAPIHost)
+                    }
+                }.formStyle(.grouped) // 成组
+                    .frame(width: 400).padding()
+            }.tabItem {
+                Label {
+                    Text("General")
+                } icon: {
+                    Image(systemName: "gear")
                 }
-                
-                Section(header: Text("Gemini")) {
-                    SecureField("APIKey", text: $geminiAPIKey)
-                    TextField("APIHost", text: $geminiAPIHost)
+            }
+            PluginListView().tabItem {
+                Label {
+                    Text("Extensions")
+                } icon: {
+                    Image(systemName: "puzzlepiece")
                 }
-            }.formStyle(.grouped) // 成组
-                .frame(width: 400).padding()
+            }
+            ActionListView().tabItem {
+                Label {
+                    Text("Actions")
+                } icon: {
+                    Image(systemName: "a.square.fill")
+                }
+            }
         }
     }
 }

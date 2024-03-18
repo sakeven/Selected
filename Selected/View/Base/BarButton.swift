@@ -25,22 +25,10 @@ struct BarButton: View {
         Button {
             clicked()
         } label: {
-            if icon.starts(with: "file://") {
-                // load from a file
                 HStack{
-                    Image(nsImage: NSImage(contentsOfFile: icon.trimPrefix("file://"))!).resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 30).frame(height: 30)
-                }  .frame(width: 40).frame(height: 30)
-            } else {
-                HStack{
-                    Image(systemName: icon)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 20).frame(height: 20)
-                }.frame(width: 40).frame(height: 30)
-            }
-        }.frame(width: 40).frame(height: 30)
+                    Icon(icon)
+                }.frame(width: 40, height: 30)
+        }.frame(width: 40, height: 30)
             .buttonStyle(BarButtonStyle()).onHover(perform: { hovering in
                 hoverWorkItem?.cancel()
                 
@@ -56,7 +44,9 @@ struct BarButton: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: workItem)
             })
             .popover(isPresented: $shouldPopover, content: {
-                Text(title).font(.headline).padding(5)
+                // 增加 interactiveDismissDisabled。
+                // 否则有 popover 时，需要点击 action 使得 popover 消失然后再次点击才能产生 onclick 事件。
+                Text(title).font(.headline).padding(5).interactiveDismissDisabled()
             })
     }
 }
