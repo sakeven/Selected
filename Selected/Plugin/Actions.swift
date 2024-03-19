@@ -250,62 +250,7 @@ class PerformAction: Identifiable,Hashable {
 }
 
 func GetAllActions() -> [PerformAction] {
-    var list = [PerformAction]()
-    list.append(WebSearchAction().generate(
-        generic: GenericAction(title: "Search", icon: "symbol:magnifyingglass", after: "", identifier: "selected.websearch")
-    ))
-    
-    var pluginList = PluginManager.shared.getPlugins()
-    pluginList.append(contentsOf: PluginList)
-    pluginList.forEach { Plugin in
-        if !Plugin.info.enabled {
-            return
-        }
-        Plugin.actions.forEach { Action in
-            if let url = Action.url {
-                list.append(url.generate(generic: Action.meta))
-                return
-            }
-            if let service =  Action.service {
-                list.append(service.generate(generic: Action.meta))
-                return
-            }
-            if let keycombo = Action.keycombo {
-                list.append(keycombo.generate(generic: Action.meta))
-                return
-            }
-            if let gpt =  Action.gpt {
-                list.append(gpt.generate(generic: Action.meta))
-                return
-            }
-            if let script = Action.runCommand {
-                list.append(script.generate(generic: Action.meta))
-                return
-            }
-        }
-    }
-    
-    //    list.append(GptAction(prompt: "{text}").generate(
-    //    generic: GenericAction(title: "chat", icon: "character.bubble", after: "", identifier: "selected.chat")
-    //    ))
-    list.append(TranslationAction(target: "cn").generate(
-        generic: GenericAction(title: "2Chinese", icon: "square 译中", after: "", identifier: "selected.translation.cn")
-    ))
-    list.append(TranslationAction(target: "en").generate(
-        generic: GenericAction(title: "2English", icon: "circle 译英", after: "", identifier: "selected.translation.en")
-    ))
-    list.append(URLAction(url: "{text}" ).generate(
-        generic: GenericAction(title: "OpenLinks", icon: "symbol:link", after: "", identifier: "selected.openlinks")
-    ))
-    list.append(CopyAction().generate(
-        generic: GenericAction(title: "Copy", icon: "symbol:doc.on.clipboard", after: "", identifier: "selected.copy")
-    ))
-    list.append(SpeackAction().generate(
-        generic: GenericAction(title: "Speak", icon: "symbol:play.circle", after: "", identifier: "selected.speak")
-    ))
-    
-    
-    return list
+    return PluginManager.shared.allActions
 }
 
 // GetActions 根据上下文获得当前支持的 action 列表。比如根据当前窗口的应用选择 action 列表。
