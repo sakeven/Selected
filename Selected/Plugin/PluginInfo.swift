@@ -96,7 +96,12 @@ class PluginManager {
                     if action.meta.icon.hasPrefix("file://./"){
                         action.meta.icon =  "file://"+extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).appendingPathComponent(action.meta.icon.trimPrefix("file://./"), isDirectory: false).path
                     }
+                    
+                    if let runCommand = action.runCommand {
+                        runCommand.pluginPath = extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).path
+                    }
                 }
+                
                 list.append(plugin)
             }
         }

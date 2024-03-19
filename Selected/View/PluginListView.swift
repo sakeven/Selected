@@ -19,7 +19,14 @@ struct PluginListView: View {
                 Label(
                     title: { Text(plugin.info.name).padding(.leading, 10) },
                     icon: { Icon(plugin.info.icon)}
-                ).padding(10)
+                ).padding(10).contextMenu {
+                    Button(action: {
+                        // TODO
+                        NSLog("delete \(plugin.info.name)")
+                    }){
+                        Text("Delete")
+                    }
+                 }
             }
         }
     }

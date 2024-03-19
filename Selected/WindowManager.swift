@@ -11,5 +11,3 @@ import SwiftUI
 class WindowManager {
     static let shared =  WindowManager()
 }
-
-

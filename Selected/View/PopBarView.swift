@@ -10,16 +10,17 @@ import SwiftUI
 struct PopBarView: View {
     var actions:  [PerformAction]
     let ctx: SelectedTextContext
-
+    
     @Environment(\.openURL) var openURL
-
+    
     var body: some View {
         // spacing: 0， 让 button 紧邻，不要空隙
         HStack(spacing: 0){
             ForEach(actions) { action in
                 BarButton(icon: action.actionMeta.icon, title: action.actionMeta.title, clicked: {
+                    NSLog("ctx: \(ctx)")
                     action.complete(ctx)
-                    })
+                })
             }
         }.frame(height: 30)
             .padding(.leading, 10).padding(.trailing, 10)

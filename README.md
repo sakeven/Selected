@@ -2,7 +2,7 @@
 
 一个选择文本后可以进行各种操作的 mac 工具。
 
-当你鼠标选择文本、或者通过键盘选择文本（cmd+A, cmd+shift+方向键）后，会自动弹出 Selected 工具栏，进行快捷的文本操作，比如复制、翻译、搜索、询问 GPT、朗读文本、打开链接、键盘操作等等，并且支持自定义插件。
+当你鼠标选择文本、或者通过键盘选择文本（cmd+A, cmd+shift+方向键）后，会自动弹出 Selected 工具栏，进行快捷的文本操作，比如复制、翻译、搜索、询问 GPT、朗读文本、打开链接、键盘操作、执行命令等等，并且支持自定义插件。
 
 ![Screenshot](DocImages/Screenshot.png)
 
@@ -87,8 +87,10 @@ actions:
 | action.keycombo.keycombo   | 字符串 | 快捷键，比如 "cmd i" 等。支持 "cmd" "shift" "ctr" "option" "fn" "caps" 功能键，以及小写字母、数字、符号等键位。键位支持暂不完整，待测试完善。 |
 | action.gpt                 | object | 与 GPT 交互，比如 OpenAI（3.5 turbo 模型）、Gemini。需要在设置里配置相关的 api key。 |
 | action.gpt.prompt          | 字符串 | GPT 提示词，比如`丰富细化以下内容。内容为：{text}`。使用 `{text}` 替换选中的文本。 |
+| action.runCommand | object | 执行一个命令 |
+| action.runCommand.command | 字符串 | 命令与参数列表。命令执行时的工作目录为插件目录。目前提供的环境变量包括：`SELECTED_TEXT`、`SELECTED_BUNDLEID` 分别为当前选中的文本，以及当前所在的应用。 |
 
-每个 action 只能且必须配置 action.url、action.service、action.keycombo、action.gpt 中的一个。
+每个 action 只能且必须配置 action.url、action.service、action.keycombo、action.gpt、action.runCommand 中的一个。
 
 # 说明
 

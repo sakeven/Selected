@@ -11,6 +11,10 @@ import AVFoundation
 import Yams
 import AppKit
 
+let kAfterPaste = "paste"
+let kAfterCopy = "copy"
+
+
 class GenericAction: Decodable {
     var title: String
     var icon: String
@@ -182,6 +186,7 @@ struct Action: Decodable{
     var service: ServiceAction?
     var keycombo: KeycomboAction?
     var gpt: GptAction?
+    var runCommand: RunCommandAction?
 }
 
 
@@ -227,6 +232,10 @@ func GetAllActions() -> [PerformAction] {
             }
             if let gpt =  Action.gpt {
                 list.append(gpt.generate(generic: Action.meta))
+                return
+            }
+            if let script = Action.runCommand {
+                list.append(script.generate(generic: Action.meta))
                 return
             }
         }
