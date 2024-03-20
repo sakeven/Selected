@@ -76,22 +76,18 @@ func monitorMouseMove() {
     var lastSelectedText = ""
     
     NSEvent.addGlobalMonitorForEvents(matching:
-                                        [.mouseMoved, .leftMouseUp, .leftMouseDragged, .keyDown]
+                                        [.mouseMoved, .leftMouseUp, .leftMouseDragged, .keyDown, .scrollWheel]
     ) { (event) in
         if event.type == .mouseMoved {
             windowControllers.forEach { WindowController in
-                let frame =  WindowController.window!.frame
-                let expandedFrame = NSRect(x: frame.origin.x - kExpandedLength,
-                                           y: frame.origin.y - kExpandedLength,
-                                           width: frame.size.width + kExpandedLength * 2,
-                                           height: frame.size.height + kExpandedLength * 2)
-                
-                if !expandedFrame.contains(NSEvent.mouseLocation){
-                    WindowController.close()
+                if closeAllWindow(.expanded){
                     lastSelectedText = ""
                 }
             }
             eventState.lastMouseEventType = .mouseMoved
+        } else if event.type == .scrollWheel {
+            lastSelectedText = ""
+            _ = closeAllWindow(.original)
         } else {
             NSLog("event \(eventTypeMap[event.type]!)  \(eventTypeMap[eventState.lastMouseEventType]!)")
             var updatedSelectedText = false
@@ -108,19 +104,21 @@ func monitorMouseMove() {
                                 createSwiftUIWindow(ctx: ctx)
                             }
                             hoverWorkItem = workItem
+                            let delay = 0.2
                             // 在 0.2 秒后执行
                             // 解决，3 连击选定整行是从 2 连击加一次连击产生的。所以会在短时间内出现2个2次连续鼠标左键释放。
                             // 导致获取选定文本两次，绘制、关闭、再绘制窗口，造成窗口闪烁。
                             // 如果 0.2 秒内再次有点击的话，就取消之前的绘制窗口，这样能避免窗口闪烁。
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: workItem)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
                         }
                     }
                 }
             }
+            
             if !updatedSelectedText &&
                 getBundleID() !=  SelfBundleID {
                 lastSelectedText = ""
-                closeAllWindow()
+                _ = closeAllWindow(.original)
             }
         }
     }
@@ -169,6 +167,40 @@ let eventTypeMap: [ NSEvent.EventType: String] = [
     .mouseMoved: "mouseMoved",
     .keyDown: "keydonw",
     .leftMouseUp: "leftMouseUp",
-    .leftMouseDragged: "leftMouseDragged"
+    .leftMouseDragged: "leftMouseDragged",
+    .scrollWheel: "scrollWheel"
 ]
 
+enum CloseWindowMode {
+    case expanded, original, force
+}
+
+func closeAllWindow(_ mode: CloseWindowMode) -> Bool {
+    var closed = false
+    windowControllers.forEach { WindowController in
+        switch mode {
+            case .expanded:
+                let frame =  WindowController.window!.frame
+                let expandedFrame = NSRect(x: frame.origin.x - kExpandedLength,
+                                           y: frame.origin.y - kExpandedLength,
+                                           width: frame.size.width + kExpandedLength * 2,
+                                           height: frame.size.height + kExpandedLength * 2)
+                if !expandedFrame.contains(NSEvent.mouseLocation){
+                    WindowController.close()
+                    closed = true
+                }
+
+            case .original:
+                let frame =  WindowController.window!.frame
+                if !frame.contains(NSEvent.mouseLocation){
+                    WindowController.close()
+                    closed = true
+                }
+
+            case .force:
+                WindowController.close()
+                closed = true
+        }
+    }
+    return closed
+}

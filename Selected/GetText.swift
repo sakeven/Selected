@@ -32,15 +32,15 @@ func getSelectedTextByAX(bundleID: String) -> String {
         NSLog("Unable to get focused window: \(error)")
         return ""
     }
-
+    
     if let focusedApp = focusedWindow as! AXUIElement? {
         var focusedElement: AnyObject?
         error = AXUIElementCopyAttributeValue(focusedApp,
                                               kAXFocusedUIElementAttribute as CFString,
                                               &focusedElement)
-
+        
         if error == .success, let focusedElement = focusedElement as! AXUIElement? {
-            
+                        
             var selectedTextValue: AnyObject?
             error = AXUIElementCopyAttributeValue(focusedElement,
                                                   kAXSelectedTextAttribute as CFString,
@@ -55,6 +55,21 @@ func getSelectedTextByAX(bundleID: String) -> String {
     return ""
 }
 
+func getUIElementProperties(_ element: AXUIElement) {
+    var titleValue: CFTypeRef?
+    AXUIElementCopyAttributeValue(element, kAXTitleAttribute as CFString, &titleValue)
+    
+    var roleValue: CFTypeRef?
+    AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &roleValue)
+    
+    if let title = titleValue as? String {
+        print("UI element title: \(title)")
+    }
+    if let role = roleValue as? String {
+        print("UI element role: \(role)")
+    }
+}
+
 func getSelectedText() -> SelectedTextContext? {
     var ctx = SelectedTextContext()
     let bundleID = getBundleID()
@@ -63,47 +78,49 @@ func getSelectedText() -> SelectedTextContext? {
     if bundleID == SelfBundleID {
         return nil
     }
-
+    
     ctx.Editable = isCurrentFocusedElementEditable() ?? false
-
+    
     var selectedText = ""
-    if isChrome(id: bundleID) || isSafari(id: bundleID) {
+    if isBrowser(id: bundleID) {
+        // 辅助功能也会拿到网页内容，但是可能不够完整。暂时放弃获取地址栏内容
         // 地址栏的内容，无法通过脚本获取，但是可以通过辅助功能获取。
-        // 先尝试通过辅助功能获取，然后脚本。
-        // 对于 Chrome：因为如果先网页内容，在选择地址栏，通过脚本就会取到网页内容，而不是当前鼠标选择的地址栏。
-        // 如果激活网页内容选择，则地址栏的选择会消失。
         selectedText = getSelectedTextByAX(bundleID: bundleID)
+        NSLog("browser \(selectedText)")
         if selectedText.isEmpty {
             selectedText = getSelectedTextByAppleScript(bundleID: bundleID)
         }
     } else {
         selectedText = getSelectedTextByAX(bundleID: bundleID)
     }
-
+    
     if selectedText.isEmpty && SupportedCmdCAppList.contains(bundleID) {
         NSLog("getSelectedTextBySimulateCommandC")
         selectedText = getSelectedTextBySimulateCommandC()
     }
-
+    
     ctx.Text = selectedText
     return ctx
 }
 
-let SupportedCmdCAppList: [String] = ["com.microsoft.VSCode", "dev.zed.Zed", "dev.warp.Warp-Stable"]
+let SupportedCmdCAppList: [String] = ["com.microsoft.VSCode",
+                                      "dev.zed.Zed",
+                                      "dev.warp.Warp-Stable",
+                                      "com.tencent.xinWeChat"]
 
 func getSelectedTextBySimulateCommandC() -> String {
     let pboard =  NSPasteboard.general
     let lastCopyText = pboard.string(forType: .string)
     let lastChangeCount = pboard.changeCount
-
+    
     PressCopyKey()
-
+    
     usleep(100000) // sleep 0.1s to wait NSPasteboard get copy string.
     if pboard.changeCount == lastChangeCount {
         // not copied
         return ""
     }
-
+    
     let selectText = pboard.string(forType: .string)
     pboard.clearContents()
     pboard.setString(lastCopyText ?? "", forType: .string)
@@ -145,7 +162,7 @@ func isCurrentFocusedElementEditable() -> Bool? {
 // getBundleID, a frontmost window from other apps may not a fronmost app.
 func getBundleID() -> String {
     let systemWideElement = AXUIElementCreateSystemWide()
-
+    
     var focusedApp: AnyObject?
     let result = AXUIElementCopyAttributeValue(systemWideElement,
                                                kAXFocusedApplicationAttribute as CFString,
@@ -375,7 +392,7 @@ func getSelectedTextByAppleScriptFromChrome(bundleID: String) -> String{
             NSLog("error: \(String(describing: error))")
             return ""
         } else {
-            return output.stringValue!
+            return output.stringValue ?? ""
         }
     }
     return ""
