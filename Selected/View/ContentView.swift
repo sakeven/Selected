@@ -15,30 +15,48 @@ struct SelectedTextView: View {
     @State private var hasRep = false
     var to: String = "cn"
     
+    @State private var width = 100
+    
+    private func updateWidth() {
+        let sp = transText.split(separator: "\n")
+        var max = 0
+        for s in sp {
+            let c = String(s).count
+            if c > max {
+                max = c*7+20
+            }
+        }
+        
+        if max < 400 && max > 0{
+            width = max
+        } else if max >= 400 {
+            width = 400
+        }
+        NSLog("max \(max) width \(width)")
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
-            ScrollView{
-                VStack(alignment: .leading) {
-                    Markdown(self.transText).markdownMargin(bottom: 10)
-                        .frame(minHeight: 100)
-                        .markdownCodeSyntaxHighlighter(.splash(theme: .sunset(withFont: .init(size: 16))))
-                        .padding(.leading, 10.0)
-                        .padding(.trailing, 10.0)
-                        .frame(minHeight: 0, maxHeight: .infinity)
-                }.task {
+            Markdown(self.transText).markdownMargin(bottom: 10)
+                .markdownCodeSyntaxHighlighter(.splash(theme: .sunset(withFont: .init(size: 16))))
+                .padding(.leading, 10.0)
+                .padding(.trailing, 10.0)
+                .frame(minHeight: 0, maxHeight: .infinity)
+                .task {
                     if isPreview {
                         return
                     }
                     await Translation(toLanguage: to).translate(content: text) { content in
                         if !hasRep {
-                            transText = ""
+                            transText = content
                             hasRep = true
+                        } else {
+                            transText = transText + content
                         }
-                        transText = transText + content
+                        updateWidth()
                     }
                 }
-            }.padding(.top, 10)
-            
+            Spacer()
             HStack{
                 Button(action: {
                     let pasteboard = NSPasteboard.general
@@ -56,10 +74,11 @@ struct SelectedTextView: View {
                     Image(systemName: "play.circle")
                 }.foregroundColor(Color.white)
                     .cornerRadius(5)
-            }.padding(.leading, 10)
-        }.frame(width: 400)
-            .frame(minHeight: 400) // TODO: minHeight 可以通过翻译后的行数估计，与 400 取一个最小值。
-            .frame(maxHeight: 500)
+            }.frame(width: CGFloat(width)-20)
+                .padding(.leading, 10).padding(.trailing, 10)
+        }
+        .frame(width: CGFloat(width))
+        .fixedSize().frame(maxHeight: .infinity)
     }
 }
 
@@ -70,30 +89,48 @@ struct ChatTextView: View {
     @State var respText: String = "请求中..."
     @State private var hasRep = false
     
+    @State private var width = 100
+    
+    private func updateWidth() {
+        let sp = respText.split(separator: "\n")
+        var max = 0
+        for s in sp {
+            let c = String(s).count
+            if c > max {
+                max = c
+            }
+        }
+        
+        if max*10 < 400 && max > 0{
+            width = max*10
+        } else if max*10 >= 400 {
+            width = 400
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
-            ScrollView{
-                VStack(alignment: .leading) {
-                    Markdown(self.respText).markdownMargin(bottom: 10)
-                        .frame(minHeight: 100)
-                        .markdownCodeSyntaxHighlighter(.splash(theme: .sunset(withFont: .init(size: 16))))
-                        .padding(.leading, 10.0)
-                        .padding(.trailing, 10.0)
-                        .frame(minHeight: 0, maxHeight: .infinity)
-                }.task {
+            
+            Markdown(self.respText).markdownMargin(bottom: 10)
+                .markdownCodeSyntaxHighlighter(.splash(theme: .sunset(withFont: .init(size: 16))))
+                .padding(.leading, 10.0)
+                .padding(.trailing, 10.0)
+                .frame(minHeight: 0, maxHeight: .infinity)
+                .task {
                     if isPreview {
                         return
                     }
                     await ChatService(prompt: prompt).chat(content: text) { content in
                         if !hasRep {
-                            respText = ""
+                            respText = content
                             hasRep = true
+                        } else {
+                            respText = respText + content
                         }
-                        respText = respText + content
+                        updateWidth()
                     }
                 }
-            }.padding(.top, 10)
-            
+            Spacer()
             HStack{
                 Button(action: {
                     let pasteboard = NSPasteboard.general
@@ -111,12 +148,14 @@ struct ChatTextView: View {
                     Image(systemName: "play.circle")
                 }.foregroundColor(Color.white)
                     .cornerRadius(5)
-            }.padding(.leading, 10)
-        } .frame(width: 400)
-            .frame(minHeight: 400) // TODO: minHeight 可以通过翻译后的行数估计，与 400 取一个最小值。
-            .frame(maxHeight: 500)
+            }.frame(width: CGFloat(width)-20)
+                .padding(.leading, 10).padding(.trailing, 10)
+        }.frame(width: CGFloat(width))
+        // 使用 fixedSize 和 infinity maxHeight 让窗口跟随文本增大
+            .fixedSize().frame(maxHeight: .infinity)
     }
 }
+
 
 
 var isPreview: Bool {

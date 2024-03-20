@@ -159,7 +159,7 @@ class GptAction: Decodable{
     func generate(generic: GenericAction) -> PerformAction {
         return PerformAction(actionMeta:
                                 generic, complete: { ctx in
-            createSwiftUIWindow3(withText: ctx.Text, prompt: self.prompt)
+            WindowManager.shared.createChatWindow(withText: ctx.Text, prompt: self.prompt)
         })
     }
 }
@@ -174,7 +174,7 @@ class TranslationAction: Decodable {
     func generate(generic: GenericAction) -> PerformAction {
         return PerformAction(actionMeta:
                                 generic, complete: { ctx in
-            createSwiftUIWindow2(withText: ctx.Text, to: self.target)
+            WindowManager.shared.createTranslationWindow(withText: ctx.Text, to: self.target)
         })
     }
 }

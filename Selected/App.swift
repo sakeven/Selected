@@ -79,15 +79,13 @@ func monitorMouseMove() {
                                         [.mouseMoved, .leftMouseUp, .leftMouseDragged, .keyDown, .scrollWheel]
     ) { (event) in
         if event.type == .mouseMoved {
-            windowControllers.forEach { WindowController in
-                if closeAllWindow(.expanded){
-                    lastSelectedText = ""
-                }
+            if WindowManager.shared.closeAllWindows(.expanded) {
+                lastSelectedText = ""
             }
             eventState.lastMouseEventType = .mouseMoved
         } else if event.type == .scrollWheel {
             lastSelectedText = ""
-            _ = closeAllWindow(.original)
+            _ = WindowManager.shared.closeAllWindows(.original)
         } else {
             NSLog("event \(eventTypeMap[event.type]!)  \(eventTypeMap[eventState.lastMouseEventType]!)")
             var updatedSelectedText = false
@@ -101,7 +99,7 @@ func monitorMouseMove() {
                             hoverWorkItem?.cancel()
                             
                             let workItem = DispatchWorkItem {
-                                createSwiftUIWindow(ctx: ctx)
+                                WindowManager.shared.createPopBarWindow(ctx)
                             }
                             hoverWorkItem = workItem
                             let delay = 0.2
@@ -118,7 +116,7 @@ func monitorMouseMove() {
             if !updatedSelectedText &&
                 getBundleID() !=  SelfBundleID {
                 lastSelectedText = ""
-                _ = closeAllWindow(.original)
+                _ = WindowManager.shared.closeAllWindows(.original)
             }
         }
     }
@@ -171,36 +169,3 @@ let eventTypeMap: [ NSEvent.EventType: String] = [
     .scrollWheel: "scrollWheel"
 ]
 
-enum CloseWindowMode {
-    case expanded, original, force
-}
-
-func closeAllWindow(_ mode: CloseWindowMode) -> Bool {
-    var closed = false
-    windowControllers.forEach { WindowController in
-        switch mode {
-            case .expanded:
-                let frame =  WindowController.window!.frame
-                let expandedFrame = NSRect(x: frame.origin.x - kExpandedLength,
-                                           y: frame.origin.y - kExpandedLength,
-                                           width: frame.size.width + kExpandedLength * 2,
-                                           height: frame.size.height + kExpandedLength * 2)
-                if !expandedFrame.contains(NSEvent.mouseLocation){
-                    WindowController.close()
-                    closed = true
-                }
-
-            case .original:
-                let frame =  WindowController.window!.frame
-                if !frame.contains(NSEvent.mouseLocation){
-                    WindowController.close()
-                    closed = true
-                }
-
-            case .force:
-                WindowController.close()
-                closed = true
-        }
-    }
-    return closed
-}

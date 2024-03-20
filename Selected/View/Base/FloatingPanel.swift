@@ -9,13 +9,7 @@
 import SwiftUI
 
 class FloatingPanel: NSPanel {
-    var key = false
-    var main = false
-    
-    init(contentRect: NSRect, backing: NSWindow.BackingStoreType, defer flag: Bool,
-         key: Bool, main: Bool) {
-        self.key = key
-        self.main = main
+    init(contentRect: NSRect, backing: NSWindow.BackingStoreType, defer flag: Bool) {
         // Not sure if .titled does affect anything here. Kept it because I think it might help with accessibility but I did not test that.
         super.init(contentRect: contentRect, styleMask: [.nonactivatingPanel, .resizable, .closable, .fullSizeContentView], backing: backing, defer: flag)
         
@@ -50,10 +44,10 @@ class FloatingPanel: NSPanel {
     
     // `canBecomeKey` and `canBecomeMain` are required so that text inputs inside the panel can receive focus
     override var canBecomeKey: Bool {
-        return key
+        return false
     }
     
     override var canBecomeMain: Bool {
-        return main
+        return false
     }
 }
