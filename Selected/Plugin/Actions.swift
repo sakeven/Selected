@@ -10,6 +10,7 @@ import SwiftUI
 import AVFoundation
 import Yams
 import AppKit
+import Defaults
 
 let kAfterPaste = "paste"
 let kAfterCopy = "copy"
@@ -46,6 +47,45 @@ class URLAction: Decodable {
                                 generic, complete: { ctx in
             
             let url = URL(string: self.url
+                .replacing("{text}", with: ctx.Text))!
+            
+            NSLog(url.scheme ?? "")
+            if url.scheme != "http" && url.scheme != "https" {
+                // not a web link
+                NSWorkspace.shared.open(url)
+                return
+            }
+            
+            if !isBrowser(id: ctx.BundleID){
+                NSWorkspace.shared.open(url)
+                return
+            }
+        
+            guard let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: ctx.BundleID) else {
+                NSWorkspace.shared.open(url)
+                return
+            }
+            
+            let cfg =  NSWorkspace.OpenConfiguration()
+            cfg.activates = true
+            NSWorkspace.shared.open([url], withApplicationAt: appURL, configuration: cfg)
+        })
+    }
+}
+
+
+class WebSearchAction {
+    @Default(.search) var searchURL
+    
+    init() {
+    }
+    
+    func generate(generic: GenericAction) -> PerformAction {
+        
+        return PerformAction(actionMeta:
+                                generic, complete: { ctx in
+            
+            let url = URL(string: self.searchURL
                 .replacing("{text}", with: ctx.Text))!
             
             NSLog(url.scheme ?? "")
@@ -211,6 +251,10 @@ class PerformAction: Identifiable,Hashable {
 
 func GetAllActions() -> [PerformAction] {
     var list = [PerformAction]()
+    list.append(WebSearchAction().generate(
+        generic: GenericAction(title: "Search", icon: "symbol:magnifyingglass", after: "", identifier: "selected.websearch")
+    ))
+    
     var pluginList = PluginManager.shared.getPlugins()
     pluginList.append(contentsOf: PluginList)
     pluginList.forEach { Plugin in
@@ -259,6 +303,8 @@ func GetAllActions() -> [PerformAction] {
     list.append(SpeackAction().generate(
         generic: GenericAction(title: "Speak", icon: "symbol:play.circle", after: "", identifier: "selected.speak")
     ))
+    
+    
     return list
 }
 

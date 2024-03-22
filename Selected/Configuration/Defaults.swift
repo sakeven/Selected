@@ -10,6 +10,10 @@ import Foundation
 
 // Service Configuration
 extension Defaults.Keys {
+    
+    static let search = Key<String>("SearchURL", default: "https://www.google.com/search?q={text}")
+
+    
     static let aiService = Key<String>("AIService", default: "OpenAI")
     
     // OpenAI

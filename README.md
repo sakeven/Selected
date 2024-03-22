@@ -37,7 +37,7 @@
 
 | 操作名     | 操作标识action.identifie | 功能                                                         | 图标 |
 | ---------- | ------------------------ | ------------------------------------------------------------ | ---- |
-| Web Search | selected.websearch       | 通过 https://www.google.com.hk/search 进行搜索               | 🔍    |
+| Web Search | selected.websearch       | 通过 https://www.google.com/search 进行搜索。可以在设置页面自定义。 | 🔍    |
 | OpenLinks  | selected.openlinks       | 打开一个 URL 链接                                            | 🔗    |
 | Copy       | selected.copy            | 复制当前选中文本                                             | 📃    |
 | Speak      | selected.speak           | 朗读文本                                                     | ▶️    |

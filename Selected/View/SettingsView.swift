@@ -19,16 +19,25 @@ struct SettingsView: View {
     
     @Default(.aiService) var aiService
     let pickerValues = ["OpenAI", "Gemini"]
+    
+    @Default(.search) var searchURL
+
 
     var body: some View {
         TabView{
             HStack {
                 Form{
-                    Picker("AIService", selection: $aiService, content: {
-                        ForEach(pickerValues, id: \.self) {
-                            Text($0)
-                        }
-                    }).pickerStyle(DefaultPickerStyle())
+                    Section(header: Text("WebSearch")) {
+                        TextField("SearchURL", text: $searchURL)
+                    }
+                    
+                    Section(header: Text("AIService")) {
+                        Picker("AIService", selection: $aiService, content: {
+                            ForEach(pickerValues, id: \.self) {
+                                Text($0)
+                            }
+                        }).pickerStyle(DefaultPickerStyle())
+                    }
                     Section(header: Text("OpenAI")) {
                         SecureField("APIKey", text: $openAIAPIKey)
                         TextField("APIHost", text: $openAIAPIHost)

@@ -24,35 +24,7 @@ struct Plugin: Decodable {
     var actions: [Action]
 }
 
-var PluginList: [Plugin] = [
-    Plugin(info:
-            PluginInfo(
-                icon: "magnifyingglass",
-                name: "Web Search",
-                enabled: true),
-           actions: [
-            Action(
-                meta: GenericAction(title: "Search", icon: "symbol:magnifyingglass",
-                                    after: "", identifier: "selected.websearch"),
-                url:
-                    URLAction(
-                        url: "https://www.google.com.hk/search?q={text}")
-            )]),
-    
-    Plugin(info:
-            PluginInfo(
-                icon: "mappin.and.ellipse",
-                name: "Maps",
-                enabled: false),
-           actions: [
-            Action(
-                meta: GenericAction(title: "Maps", icon: "symbol:mappin.and.ellipse",
-                                    after: "", identifier: "selected.map"),
-                url:
-                    URLAction(
-                        url:  "maps://?q={text}")
-            )])
-]
+var PluginList: [Plugin] = []
 
 // PluginManager 管理各种插件。插件保存在 ”Library/Application Support/Selected/Extensions“。
 class PluginManager {
