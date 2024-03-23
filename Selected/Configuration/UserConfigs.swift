@@ -16,6 +16,7 @@ struct AppCondition: Codable {
 }
 
 struct UserConfiguration: Codable {
+    var defaultActions: [ActionID]
     var appConditions: [AppCondition] // 用户设置的条件列表
 }
 
@@ -28,7 +29,7 @@ class ConfigurationManager {
     var userConfiguration: UserConfiguration
     
     init() {
-        userConfiguration = UserConfiguration(appConditions: [])
+        userConfiguration = UserConfiguration(defaultActions: [], appConditions: [])
         loadConfiguration()
     }
     
@@ -37,6 +38,9 @@ class ConfigurationManager {
             if condition.bundleID == bundleID {
                 return condition
             }
+        }
+        if userConfiguration.defaultActions.count > 0 {
+            return AppCondition(bundleID: bundleID, actions: userConfiguration.defaultActions)
         }
         return nil
     }
