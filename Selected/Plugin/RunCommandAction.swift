@@ -75,6 +75,10 @@ private func executeCommand(
         process.currentDirectoryURL =  URL(fileURLWithPath: workdir)
         process.environment = ["SELECTED_TEXT": ctx.Text, "SELECTED_BUNDLEID": ctx.BundleID]
         
+        if let path = ProcessInfo.processInfo.environment["PATH"] {
+            process.environment?["PATH"] = "/opt/homebrew/bin:/opt/homebrew/sbin:" + path
+        }
+        
         do {
             try process.run()
             process.waitUntilExit()
