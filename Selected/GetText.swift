@@ -97,15 +97,35 @@ func getSelectedText() -> SelectedTextContext? {
     if selectedText.isEmpty && SupportedCmdCAppList.contains(bundleID) {
         NSLog("getSelectedTextBySimulateCommandC")
         selectedText = getSelectedTextBySimulateCommandC()
+        if bundleID == "com.apple.iBooksX" {
+            // hack for iBooks
+            if let index = selectedText.endIndex(of: "\n\n摘录来自\n") {
+                selectedText = String(selectedText[..<index])
+            }
+        }
     }
     
     ctx.Text = selectedText
     return ctx
 }
 
+extension StringProtocol {
+    func index<S: StringProtocol>(of string: S, options: String.CompareOptions = []) -> Index? {
+        range(of: string, options: options)?.lowerBound
+    }
+    func endIndex<S: StringProtocol>(of string: S) -> Index? {
+        let indeics = ranges(of: string).map(\.lowerBound)
+        if indeics.count > 0 {
+            return indeics[indeics.count-1]
+        }
+        return nil
+    }
+}
+
 let SupportedCmdCAppList: [String] = ["com.microsoft.VSCode",
                                       "dev.zed.Zed",
                                       "dev.warp.Warp-Stable",
+                                      "com.apple.iBooksX",
                                       "com.tencent.xinWeChat"]
 
 func getSelectedTextBySimulateCommandC() -> String {
@@ -144,6 +164,8 @@ func isCurrentFocusedElementEditable() -> Bool? {
     guard result == .success, let axFocusedElement = focusedElement as! AXUIElement? else {
         return nil
     }
+    
+    getUIElementProperties(axFocusedElement)
     
     // Attempt to determine if the element is a text field by checking for a value attribute
     var value: AnyObject?
