@@ -314,11 +314,11 @@ func GetActions(ctx: SelectedTextContext) -> [PerformAction] {
     let actionList = GetAllActions()
     
     guard let condition = condition else {
-        return actionList
+        return FilterActions(ctx, list: actionList)
     }
     
     if condition.actions.isEmpty {
-        return actionList
+        return FilterActions(ctx, list: actionList)
     }
     
     var list = [PerformAction]()
@@ -331,5 +331,20 @@ func GetActions(ctx: SelectedTextContext) -> [PerformAction] {
         }
         list.append(allowed)
     }
-    return list
+    return FilterActions(ctx, list: list)
+}
+
+// If ctx isn't editable, not return editable actions.
+func FilterActions(_ ctx: SelectedTextContext, list: [PerformAction] ) -> [PerformAction] {
+    if ctx.Editable {
+        return list
+    }
+    
+    var filtered = [PerformAction]()
+    for action in  list {
+        if action.actionMeta.after != "paste" {
+            filtered.append(action)
+        }
+    }
+    return filtered
 }
