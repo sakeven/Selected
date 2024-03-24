@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3801CA4E2BA522B6007D7868 /* Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3801CA4D2BA522B6007D7868 /* Actions.swift */; };
 		38049D632B9DF8EA00E02ECA /* FloatingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38049D622B9DF8EA00E02ECA /* FloatingPanel.swift */; };
+		381843F12BB01A9B0061BB27 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 381843F02BB01A9B0061BB27 /* Localizable.xcstrings */; };
 		38230C9F2B9F332D002A52E9 /* PluginInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38230C9E2B9F332D002A52E9 /* PluginInfo.swift */; };
 		38230CA12B9F44FC002A52E9 /* BarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38230CA02B9F44FC002A52E9 /* BarButton.swift */; };
 		38230CA32BA1DBA8002A52E9 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38230CA22BA1DBA8002A52E9 /* Utils.swift */; };
@@ -65,6 +66,7 @@
 		3801CA4C2BA47A09007D7868 /* icon.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = icon.md; sourceTree = "<group>"; };
 		3801CA4D2BA522B6007D7868 /* Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Actions.swift; sourceTree = "<group>"; };
 		38049D622B9DF8EA00E02ECA /* FloatingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanel.swift; sourceTree = "<group>"; };
+		381843F02BB01A9B0061BB27 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		38230C9E2B9F332D002A52E9 /* PluginInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginInfo.swift; sourceTree = "<group>"; };
 		38230CA02B9F44FC002A52E9 /* BarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarButton.swift; sourceTree = "<group>"; };
 		38230CA22BA1DBA8002A52E9 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -186,6 +188,7 @@
 				386AD71D2B8F6BFB008C346D /* Preview Content */,
 				386AD7562B90D867008C346D /* GetText.swift */,
 				3888D8062BA86AF600A7B75D /* WindowManager.swift */,
+				381843F02BB01A9B0061BB27 /* Localizable.xcstrings */,
 			);
 			path = Selected;
 			sourceTree = "<group>";
@@ -353,6 +356,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 386AD70B2B8F6BFA008C346D;
 			packageReferences = (
@@ -382,6 +386,7 @@
 			files = (
 				386AD71F2B8F6BFB008C346D /* Preview Assets.xcassets in Resources */,
 				386AD71C2B8F6BFB008C346D /* Assets.xcassets in Resources */,
+				381843F12BB01A9B0061BB27 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

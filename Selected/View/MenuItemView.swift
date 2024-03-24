@@ -26,7 +26,7 @@ struct MenuItemView: View {
     @ViewBuilder
     private var settingItem: some View {
         SettingsLink {
-            Text("Settings...")
+            Text("Settings")
         } preAction: {
             NSLog("打开设置")
             NSApp.activate(ignoringOtherApps: true)

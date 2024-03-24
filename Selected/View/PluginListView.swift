@@ -110,6 +110,10 @@ struct ApplicationActionListView: View {
                     }
                     
                     Picker("Add", selection: $toAddApp, content: {
+                        HStack{
+                            Text("select one app")
+                        }.tag("")
+                        
                         ForEach(getAllApplications(), id: \.self.id) { app in
                             HStack{
                                 app.iconImage()
