@@ -91,6 +91,8 @@ struct ApplicationActionListView: View {
                             }.onMove(perform: { indices, newOffset in
                                 withAnimation {
                                     app.actions.move(fromOffsets: indices, toOffset: newOffset)
+                                    ConfigurationManager.shared.userConfiguration = cfg
+                                    ConfigurationManager.shared.saveConfiguration()
                                 }
                             })
                 } label: {

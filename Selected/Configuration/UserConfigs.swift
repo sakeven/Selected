@@ -57,13 +57,11 @@ class ConfigurationManager {
     }
     
     func saveConfiguration() {
-        let fileManager = FileManager.default
-        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-        let documentDirectory = urls[0]
-        let fileURL = documentDirectory.appendingPathComponent(configurationFileName)
-        
+        let fileURL = appSupportURL.appendingPathComponent(configurationFileName)
         do {
-            let data = try JSONEncoder().encode(userConfiguration)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+            let data = try encoder.encode(userConfiguration)
             try data.write(to: fileURL, options: .atomic)
         } catch {
             print("Error saving configuration: \(error)")
