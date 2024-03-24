@@ -92,6 +92,13 @@ struct SettingsView: View {
                     Image(systemName: "a.square.fill")
                 }
             }
+            ApplicationActionListView().tabItem {
+                Label {
+                    Text("Applications")
+                } icon: {
+                    Image(systemName: "apple.terminal")
+                }
+            }
         }
     }
 }

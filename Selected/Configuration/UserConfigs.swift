@@ -12,7 +12,7 @@ typealias ActionID = String
 // AppCondition 指定某个 app 下的 action 列表。
 struct AppCondition: Codable {
     let bundleID: String    // bundleID of app
-    let actions: [ActionID] // 在这个 app 下启用的插件列表，以及显示顺序
+    var actions: [ActionID] // 在这个 app 下启用的插件列表，以及显示顺序
 }
 
 struct UserConfiguration: Codable {
