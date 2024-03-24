@@ -59,6 +59,8 @@ struct ActionListView: View {
 
 struct ApplicationActionListView: View {
     @State var cfg = ConfigurationManager.shared.userConfiguration
+   
+    @State var toAddApp = ""
     
     func getAction(_ id: String) -> PerformAction? {
         let actionList = GetAllActions()
@@ -71,9 +73,11 @@ struct ApplicationActionListView: View {
     }
     
     var body: some View {
-        List{
-            ForEach($cfg.appConditions, id: \.self.bundleID) { $app in
-                DisclosureGroup {
+        VStack{
+        
+                List{
+                    ForEach($cfg.appConditions, id: \.self.bundleID) { $app in
+                        DisclosureGroup {
                             ForEach($app.actions, id: \.self) { $id in
                                 if let action = getAction(id) {
                                     Label(
@@ -95,15 +99,64 @@ struct ApplicationActionListView: View {
                                     ConfigurationManager.shared.saveConfiguration()
                                 }
                             })
-                } label: {
-                    Label(
-                        title: { 
-                            Text(getAppName(app.bundleID)).padding(.leading, 10)
-                        },
-                        icon: { getIcon(app.bundleID)}
-                    ).padding(10)
+                        } label: {
+                            Label(
+                                title: {
+                                    Text(getAppName(app.bundleID)).padding(.leading, 10)
+                                },
+                                icon: { getIcon(app.bundleID)}
+                            ).padding(10)
+                        }
+                    }
+                    
+                    Picker("Add", selection: $toAddApp, content: {
+                        ForEach(getAllApplications(), id: \.self.id) { app in
+                            HStack{
+                                app.iconImage()
+                                Text(app.localizedName)
+                            }
+                        }
+                    }).onChange(of: toAddApp, { old, new in
+                        if new == "" {
+                            return
+                        }
+                        cfg.appConditions.append(AppCondition(bundleID: new, actions: []))
+                        ConfigurationManager.shared.userConfiguration = cfg
+                        ConfigurationManager.shared.saveConfiguration()
+                        toAddApp = ""
+                    })
+                    .padding(.top, 10)
                 }
+        }
+    }
+    
+    
+    func getAllApplications() -> [Application] {
+        var apps: [String: Application] = [:]
+        for app in  NSWorkspace.shared.runningApplications {
+            guard let id = app.bundleIdentifier else {
+                continue
             }
+            
+            guard let icon = app.icon else {
+                continue
+            }
+            
+            guard let localizedName = app.localizedName else {
+                continue
+            }
+            
+            
+            if app.isHidden {
+                continue
+            }
+            apps[id] = Application(id: id, icon: Image(nsImage: icon), localizedName: localizedName)
+        }
+        for app in cfg.appConditions {
+            apps.removeValue(forKey: app.bundleID)
+        }
+        return apps.map { $1 }.sorted { app1, app2 in
+            app1.id > app2.id
         }
     }
     
@@ -117,6 +170,19 @@ struct ApplicationActionListView: View {
         return Image(nsImage: NSWorkspace.shared.icon(forFile: bundleURL.path))
     }
 }
+
+struct Application: Identifiable {
+    let id: String
+    var icon: Image
+    let localizedName: String
+    
+    func iconImage() -> Image {
+        return self.icon
+    }
+}
+
+
+
 
 #Preview {
     ApplicationActionListView()
