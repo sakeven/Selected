@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct Icon: View{
+struct Icon: View {
     let text: String
     
     init(_ text: String) {
@@ -19,9 +19,20 @@ struct Icon: View{
         
         if text.starts(with: "file://") {
             // load from a file
+            
+            let im: NSImage =
+            {
+                
+                        $0.size.height = 10
+                        $0.size.width = 10
+                
+                return $0
+            }(
+                NSImage(contentsOfFile: text.trimPrefix("file://"))!
+            )
            return
-                AnyView(Image(nsImage: NSImage(contentsOfFile: text.trimPrefix("file://"))!).resizable().aspectRatio(contentMode: .fit)
-                    .frame(width: 30, height: 30))
+                AnyView(Image(nsImage: im).resizable().aspectRatio(contentMode: .fit)
+                    .frame(width: 20, height: 20).frame(width: 30, height: 30))
         } else if text.starts(with: "symbol:") {
             return
                 AnyView(Image(systemName: text.trimPrefix("symbol:")).resizable().aspectRatio(contentMode: .fit)
@@ -47,9 +58,9 @@ struct Icon: View{
             size = 5
         }
         
-        return AnyView(Image(systemName: shape).resizable()
+        return AnyView(Image(systemName: shape).resizable().frame(width: 20, height: 20)
             .overlay {
                 Text(characters).font(.system(size: CGFloat(size)))
-            }.frame(width: 20, height: 20).frame(width: 30, height: 30))
+            }.frame(width: 30, height: 30))
     }
 }

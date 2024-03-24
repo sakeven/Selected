@@ -155,6 +155,16 @@
         }
       }
     },
+    "select an action" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择一个操作"
+          }
+        }
+      }
+    },
     "select one app" : {
       "localizations" : {
         "zh-Hans" : {

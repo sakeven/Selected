@@ -60,6 +60,7 @@ struct ActionListView: View {
 struct ApplicationActionListView: View {
     @State var cfg = ConfigurationManager.shared.userConfiguration
     @State var toAddApp = ""
+    @State var toAddAction = ""
     
     func getAction(_ id: String) -> PerformAction? {
         let actionList = GetAllActions()
@@ -85,7 +86,9 @@ struct ApplicationActionListView: View {
                                         Image(systemName: "trash")
                                             .foregroundColor(.red)
                                             .onTapGesture {
-                                                    app.actions.remove(at: app.actions.firstIndex(of: id)!)
+                                                app.actions.remove(at: app.actions.firstIndex(of: id)!)
+                                                ConfigurationManager.shared.userConfiguration = cfg
+                                                ConfigurationManager.shared.saveConfiguration()
                                             }
                                     },
                                     icon: { Icon(action.actionMeta.icon) }
@@ -98,6 +101,18 @@ struct ApplicationActionListView: View {
                                 ConfigurationManager.shared.userConfiguration = cfg
                                 ConfigurationManager.shared.saveConfiguration()
                             }
+                        })
+                        
+                        OnePicker(exceptActions: $app.actions, onChange: { new in
+                            if app.actions.contains(where: {
+                                item in
+                                return item == new
+                            }) {
+                                return
+                            }
+                            app.actions.append(new)
+                            ConfigurationManager.shared.userConfiguration = cfg
+                            ConfigurationManager.shared.saveConfiguration()
                         })
                     } label: {
                         Label(
@@ -186,8 +201,44 @@ struct Application: Identifiable {
     }
 }
 
+struct OnePicker: View {
+    @Binding var exceptActions: [ActionID]
+    var onChange: (_: String) -> Void
+    
+    @State private var toAddAction = ""
 
+    var body: some View {
+        Picker("Add", selection: $toAddAction, content: {
+            HStack{
+                Text("select an action")
+            }.tag("")
+            ForEach(getAllActionsExcept(exceptActions), id: \.self.actionMeta.identifier) { action in
+                Text(action.actionMeta.title)
+            }
+        }).onChange(of: toAddAction, { old, new in
+            if new == "" {
+                return
+            }
+            onChange(new)
+            toAddAction = ""
+        })
+    }
+}
 
+private func getAllActionsExcept(_ actions: [ActionID]) -> [PerformAction] {
+    let allActions = GetAllActions()
+    var ret = [PerformAction]()
+    for action in allActions {
+        if actions.contains(where: {
+            item in
+            return item == action.actionMeta.identifier
+        }){
+            continue
+        }
+        ret.append(action)
+    }
+    return ret
+}
 
 #Preview {
     ApplicationActionListView()
