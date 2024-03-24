@@ -59,7 +59,6 @@ struct ActionListView: View {
 
 struct ApplicationActionListView: View {
     @State var cfg = ConfigurationManager.shared.userConfiguration
-   
     @State var toAddApp = ""
     
     func getAction(_ id: String) -> PerformAction? {
@@ -74,63 +73,65 @@ struct ApplicationActionListView: View {
     
     var body: some View {
         VStack{
-        
-                List{
-                    ForEach($cfg.appConditions, id: \.self.bundleID) { $app in
-                        DisclosureGroup {
-                            ForEach($app.actions, id: \.self) { $id in
-                                if let action = getAction(id) {
-                                    Label(
-                                        title: { Text(action.actionMeta.title).padding(.leading, 10)
-                                            Spacer()
-                                            Image(systemName: "trash")
-                                                .foregroundColor(.red)
-                                                .onTapGesture {
-                                                    NSLog("clicked")
-                                                }
-                                        },
-                                        icon: { Icon(action.actionMeta.icon) }
-                                    ).padding(10)
-                                }
-                            }.onMove(perform: { indices, newOffset in
-                                withAnimation {
-                                    app.actions.move(fromOffsets: indices, toOffset: newOffset)
-                                    ConfigurationManager.shared.userConfiguration = cfg
-                                    ConfigurationManager.shared.saveConfiguration()
-                                }
-                            })
-                        } label: {
-                            Label(
-                                title: {
-                                    Text(getAppName(app.bundleID)).padding(.leading, 10)
-                                },
-                                icon: { getIcon(app.bundleID)}
-                            ).padding(10)
-                        }
-                    }
-                    
-                    Picker("Add", selection: $toAddApp, content: {
-                        HStack{
-                            Text("select one app")
-                        }.tag("")
-                        
-                        ForEach(getAllApplications(), id: \.self.id) { app in
-                            HStack{
-                                app.iconImage()
-                                Text(app.localizedName)
+            
+            List{
+                ForEach($cfg.appConditions, id: \.self.bundleID) { $app in
+                    DisclosureGroup{
+                        ForEach($app.actions, id: \.self) { $id in
+                            if let action = getAction(id) {
+                                Label(
+                                    title: { Text(action.actionMeta.title).padding(.leading, 10)
+                                        Spacer()
+                                        Image(systemName: "trash")
+                                            .foregroundColor(.red)
+                                            .onTapGesture {
+                                                    app.actions.remove(at: app.actions.firstIndex(of: id)!)
+                                            }
+                                    },
+                                    icon: { Icon(action.actionMeta.icon) }
+                                ).padding(10)
                             }
                         }
-                    }).onChange(of: toAddApp, { old, new in
-                        if new == "" {
-                            return
-                        }
-                        cfg.appConditions.append(AppCondition(bundleID: new, actions: []))
-                        ConfigurationManager.shared.userConfiguration = cfg
-                        ConfigurationManager.shared.saveConfiguration()
-                        toAddApp = ""
-                    })
-                    .padding(.top, 10)
+                        .onMove(perform: { indices, newOffset in
+                            withAnimation {
+                                app.actions.move(fromOffsets: indices, toOffset: newOffset)
+                                ConfigurationManager.shared.userConfiguration = cfg
+                                ConfigurationManager.shared.saveConfiguration()
+                            }
+                        })
+                    } label: {
+                        Label(
+                            title: {
+                                Text(getAppName(app.bundleID)).padding(.leading, 10)
+                            },
+                            icon: { getIcon(app.bundleID)}
+                        ).padding(10)
+                    }
                 }
+                
+                
+                Picker("Add", selection: $toAddApp, content: {
+                    HStack{
+                        Text("select one app")
+                    }.tag("")
+                    
+                    ForEach(getAllApplications(), id: \.self.id) { app in
+                        HStack{
+                            app.iconImage()
+                            Text(app.localizedName)
+                        }
+                    }
+                }).onChange(of: toAddApp, { old, new in
+                    if new == "" {
+                        return
+                    }
+                    cfg.appConditions.append(AppCondition(bundleID: new, actions: []))
+                    ConfigurationManager.shared.userConfiguration = cfg
+                    ConfigurationManager.shared.saveConfiguration()
+                    toAddApp = ""
+                })
+                .padding(.top, 10)
+            }
         }
     }
     
