@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import Defaults
+import ServiceManagement
 
 
 struct SettingsView: View {
@@ -21,13 +22,34 @@ struct SettingsView: View {
     let pickerValues = ["OpenAI", "Gemini"]
     
     @Default(.search) var searchURL
-
-
+    
+    @State var launchAtLogin: Bool
+    
+    init() {
+        self.launchAtLogin = SMAppService.mainApp.status == .enabled
+    }
+    
     var body: some View {
         TabView{
             HStack {
                 Form{
-                    Section(header: Text("WebSearch")) {
+                    Section(header: Text("General")) {
+                        Toggle(isOn: $launchAtLogin, label: {
+                            Text("LaunchAtLogin")
+                        }).onChange(of: launchAtLogin) { oldValue, newValue in
+                            do {
+                                if newValue {
+                                    try SMAppService.mainApp.register()
+                                } else {
+                                    try SMAppService.mainApp.unregister()
+                                }
+                            } catch {
+                                Swift.print(error.localizedDescription)
+                            }
+                            if newValue != (SMAppService.mainApp.status == .enabled) {
+                                launchAtLogin = oldValue
+                            }
+                        }
                         TextField("SearchURL", text: $searchURL)
                     }
                     
