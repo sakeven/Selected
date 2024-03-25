@@ -14,7 +14,7 @@
 
 在“设置-应用”中可以配置。
 
-<img src="/Users/sake/workdir/Selected/DocImages/Application-Settings.png" alt="image-20240325203050807" style="zoom:50%;" />
+<img src="DocImages/Application-Settings.png" alt="image-20240325203050807" style="zoom:50%;" />
 
 1. 支持增加当前正在运行中的应用（暂不支持删除一个应用）
    * 通过“增加-选择一个应用”增加
