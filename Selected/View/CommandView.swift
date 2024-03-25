@@ -14,8 +14,8 @@ struct SelectedMainMenu: Commands {
     var body: some Commands {
         // Help
         CommandGroup(replacing: CommandGroupPlacement.help, addition: {
-            Button("menu_feedback") {
-                openURL(URL(string: "https://github.com/sakeven/mika/issues")!)
+            Button("Feedback") {
+                openURL(URL(string: "https://github.com/sakeven/Selected/issues")!)
             }
         })
     }

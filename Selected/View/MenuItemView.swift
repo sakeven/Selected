@@ -11,10 +11,16 @@ import SwiftUI
 
 
 struct MenuItemView: View {
+    @Environment(\.openURL)
+    private var openURL
+    
     var body: some View {
         Group {
             settingItem
                 .keyboardShortcut(.init(","))
+            Divider()
+            feedbackItem
+            docItem
             Divider()
             quitItem
                 .keyboardShortcut(.init("q"))
@@ -22,6 +28,19 @@ struct MenuItemView: View {
     }
     
     
+    @ViewBuilder
+    private var feedbackItem: some View {
+        Button("Feedback") {
+            openURL(URL(string: "https://github.com/sakeven/Selected/issues")!)
+        }
+    }
+    
+    @ViewBuilder
+    private var docItem: some View {
+        Button("Document") {
+            openURL(URL(string: "https://github.com/sakeven/Selected?tab=readme-ov-file#%E5%8A%9F%E8%83%BD")!)
+        }
+    }
     
     @ViewBuilder
     private var settingItem: some View {
@@ -37,7 +56,7 @@ struct MenuItemView: View {
     
     @ViewBuilder
     private var quitItem: some View {
-        Button("quit") {
+        Button("Quit") {
             NSLog("退出应用")
             NSApplication.shared.terminate(nil)
         }

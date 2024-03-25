@@ -35,7 +35,7 @@ struct SettingsView: View {
                 Form{
                     Section(header: Text("General")) {
                         Toggle(isOn: $launchAtLogin, label: {
-                            Text("LaunchAtLogin")
+                            Text("Launch at login")
                         }).onChange(of: launchAtLogin) { oldValue, newValue in
                             do {
                                 if newValue {
@@ -50,7 +50,7 @@ struct SettingsView: View {
                                 launchAtLogin = oldValue
                             }
                         }
-                        TextField("SearchURL", text: $searchURL)
+                        TextField("Search URL", text: $searchURL)
                     }
                     
                     Section(header: Text("AIService")) {

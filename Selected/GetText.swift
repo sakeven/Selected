@@ -101,6 +101,8 @@ func getSelectedText() -> SelectedTextContext? {
             // hack for iBooks
             if let index = selectedText.endIndex(of: "\n\n摘录来自\n") {
                 selectedText = String(selectedText[..<index])
+            } else if let index = selectedText.endIndex(of: "\n\nExcerpt From\n") {
+                selectedText = String(selectedText[..<index])
             }
         }
     }

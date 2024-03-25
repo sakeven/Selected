@@ -74,12 +74,32 @@
         }
       }
     },
+    "Document" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文档"
+          }
+        }
+      }
+    },
     "Extensions" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "扩展"
+          }
+        }
+      }
+    },
+    "Feedback" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反馈"
           }
         }
       }
@@ -105,22 +125,12 @@
         }
       }
     },
-    "LaunchAtLogin" : {
+    "Launch at login" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开机自启动"
-          }
-        }
-      }
-    },
-    "menu_feedback" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "反馈"
+            "value" : "登录时自启动"
           }
         }
       }
@@ -135,7 +145,7 @@
         }
       }
     },
-    "quit" : {
+    "Quit" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -145,7 +155,7 @@
         }
       }
     },
-    "SearchURL" : {
+    "Search URL" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
