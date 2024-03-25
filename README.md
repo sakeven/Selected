@@ -6,32 +6,22 @@
 
 ![Screenshot](DocImages/Screenshot.png)
 
-1. 本工具可以对不同应用实现自定义操作列表。(已实现，缺少 GUI 界面)
+1. 本工具可以对不同应用实现自定义操作列表。(在“设置-应用”中可以配置)
 2. 本工具支持自定义 OpenAI 与 Gemini API 的地址与 key。翻译与询问 GPT 功能依赖于此。
 3. 本工具支持自定义插件（暂时缺乏文档，还未完整实现）。
 
 ## 自定义操作列表
 
-配置文件在 `Library/Application Support/Selected/UserConfiguration.json`。
+在“设置-应用”中可以配置。
 
-内容示例：
-```json
-{
-  "appConditions": [
-    {
-      "bundleID": "com.apple.dt.Xcode",
-      "actions": ["selected.websearch", "selected.xcode.format"]
-    }
-  ]
-}
-```
+<img src="/Users/sake/workdir/Selected/DocImages/Application-Settings.png" alt="image-20240325203050807" style="zoom:50%;" />
 
-`appConditions.bundleID` 为应用的 bundleID。
-`actions` 为 `action.identifier` 列表。
-
-具体可以用哪些以及如何自定义 action，请看内置操作与自定义插件。
-
-没有为应用配置 action 列表或者为应用配置的 action 列表为空时，将会显示所有可用操作。
+1. 支持增加当前正在运行中的应用（暂不支持删除一个应用）
+   * 通过“增加-选择一个应用”增加
+2. 支持为某个应用设置一系列操作
+   - 通过“增加-选择一个操作”增加
+   - 支持删除一个操作
+   - 支持拖拽操作以调整排列顺序
 
 ## 内置操作
 
@@ -78,7 +68,7 @@ actions:
 | action.meta.title          | 字符串 | 操作的标题。用于在鼠标悬浮在工具栏上显示操作的名称。  |
 | action.meta.icon           | 字符串 | 配置与 `info.icon` 相同。用于显示在工具栏上。                |
 | action.meta.identifier     | 字符串 | action 的 id，唯一标识符                                     |
-| action.meta.after     | 字符串 | action 执行完成之后的处理。当前为空`""` ，必填。 |
+| action.meta.after     | 字符串 | action 执行完成之后的处理。必填。支持配置空（""）、paste、copy。 |
 | action.url                 | object | url 类型的操作                                               |
 | action.url.url             | 字符串 | 一个链接，点击操作（action）之后会打开这个链接。支持打开其它应用的 scheme。比如 `https://www.google.com.hk/search?q={text}` 进行谷歌搜索。或者打开 `things:///add?title={text}&show-quick-entry=true` 打开 [Things3](https://culturedcode.com/things/) 添加待办。{text} 用于替换选中的文本。 |
 | action.service             | object | service 类型的操作                                           |
