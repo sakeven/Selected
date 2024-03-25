@@ -85,11 +85,11 @@ func getSelectedText() -> SelectedTextContext? {
     if isBrowser(id: bundleID) {
         // 辅助功能也会拿到网页内容，但是可能不够完整。暂时放弃获取地址栏内容
         // 地址栏的内容，无法通过脚本获取，但是可以通过辅助功能获取。
-        selectedText = getSelectedTextByAX(bundleID: bundleID)
-        NSLog("browser \(selectedText)")
-        if selectedText.isEmpty {
+//        selectedText = getSelectedTextByAX(bundleID: bundleID)
+//        NSLog("browser \(selectedText)")
+//        if selectedText.isEmpty {
             selectedText = getSelectedTextByAppleScript(bundleID: bundleID)
-        }
+//        }
     } else {
         selectedText = getSelectedTextByAX(bundleID: bundleID)
     }
