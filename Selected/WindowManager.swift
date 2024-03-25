@@ -91,8 +91,6 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         var window: NSWindow
         // 必须用 NSPanel 并设置 .nonactivatingPanel 以及 level 为 .screenSaver
         // 保证悬浮在全屏应用之上
-        let screenFrame = NSScreen.main?.visibleFrame ?? .zero // 获取主屏幕的可见区域
-
         window = FloatingPanel(
                 contentRect: .zero,
                 backing: .buffered,
@@ -110,6 +108,11 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         window.level = .screenSaver
         window.contentView = NSHostingView(rootView: rootView)
         window.delegate = self // 设置代理为自己来监听窗口事件
+        
+        let windowFrame = window.frame
+        NSLog("windowFrame \(windowFrame.height), \(windowFrame.width)")
+        let screenFrame = NSScreen.main?.visibleFrame ?? .zero // 获取主屏幕的可见区域
+        
         let loc = NSEvent.mouseLocation
         if resultWindow {
             let windowWidth: CGFloat = 200
@@ -119,10 +122,12 @@ private class WindowController: NSWindowController, NSWindowDelegate {
             // 确保窗口不会超出屏幕右边缘或底部
             mouseLocation.x = min(abs(mouseLocation.x-20), screenFrame.maxX - windowWidth)
             mouseLocation.y = max(abs(mouseLocation.y-20), screenFrame.minY + windowHeight)
-            NSLog("screenLocation: \(mouseLocation)")
             window.setFrameOrigin(NSPoint(x: mouseLocation.x, y: mouseLocation.y))
         } else {
-            window.setFrameOrigin(NSPoint(x: loc.x - 50, y: loc.y + 15))
+            // 确保窗口不会超出屏幕边缘
+            let x = min(screenFrame.maxX - windowFrame.width,
+                        max(loc.x - windowFrame.width/2, screenFrame.minX))
+            window.setFrameOrigin(NSPoint(x: x, y: loc.y + 18))
         }
     }
     
