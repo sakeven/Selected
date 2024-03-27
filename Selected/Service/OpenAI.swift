@@ -45,7 +45,7 @@ func transByOpenAI(word: String, completion: @escaping (_: String) -> Void) asyn
     let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
     let openAI = OpenAI(configuration: configuration)
     
-    var prompt = "翻译以下单词到中文，详细说明单词的不同意思，并且给出例句。使用 markdown 的格式回复。单词为：\(word)"
+    var prompt = "翻译以下单词到中文，使用中文详细说明单词的不同意思，并且给出例句。使用 markdown 的格式回复。单词为：\(word)"
     if !isWord(str: word) {
         prompt = "翻译以下内容到中文，使用 markdown 的格式回复。内容为：\(word)"
     }

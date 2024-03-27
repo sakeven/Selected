@@ -25,7 +25,6 @@ class WindowManager {
     
     func createTranslationWindow(withText text: String, to: String) {
         let contentView = SelectedTextView(text: text, to: to)
-//        let contentView = FakeView()
         createWindow(rootView: AnyView(contentView), resultWindow: true)
     }
     
@@ -37,6 +36,9 @@ class WindowManager {
     
     func closeAllWindows(_ mode: CloseWindowMode) -> Bool {
         guard let windowCtr = windowCtr else {
+            return false
+        }
+        if showingSharingPicker {
             return false
         }
         return closeWindow(mode, windowCtr: windowCtr)

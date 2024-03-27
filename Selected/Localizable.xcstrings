@@ -210,6 +210,17 @@
           }
         }
       }
+    },
+    "share" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

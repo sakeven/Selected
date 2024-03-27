@@ -156,10 +156,10 @@ class PluginManager: ObservableObject {
         //    generic: GenericAction(title: "chat", icon: "character.bubble", after: "", identifier: "selected.chat")
         //    ))
         list.append(TranslationAction(target: "cn").generate(
-            generic: GenericAction(title: "2Chinese", icon: "square 译中", after: "", identifier: "selected.translation.cn")
+            generic: GenericAction(title: "翻译到中文", icon: "square 译中", after: "", identifier: "selected.translation.cn")
         ))
         list.append(TranslationAction(target: "en").generate(
-            generic: GenericAction(title: "2English", icon: "circle 译英", after: "", identifier: "selected.translation.en")
+            generic: GenericAction(title: "Translate to English", icon: "circle 译英", after: "", identifier: "selected.translation.en")
         ))
         list.append(URLAction(url: "{text}" ).generate(
             generic: GenericAction(title: "OpenLinks", icon: "symbol:link", after: "", identifier: "selected.openlinks")
