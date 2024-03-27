@@ -90,6 +90,7 @@
 		3888D8022BA8615900A7B75D /* IconImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconImage.swift; sourceTree = "<group>"; };
 		3888D8042BA86A0F00A7B75D /* PluginListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginListView.swift; sourceTree = "<group>"; };
 		3888D8062BA86AF600A7B75D /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
+		3888D8082BA884DB00A7B75D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		38CC18B32B9C46CA0023DF18 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopBarView.swift; sourceTree = "<group>"; };
 		38CC554B2BA9B6E900069553 /* RunCommandAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunCommandAction.swift; sourceTree = "<group>"; };
@@ -177,6 +178,7 @@
 		386AD7162B8F6BFA008C346D /* Selected */ = {
 			isa = PBXGroup;
 			children = (
+				3888D8082BA884DB00A7B75D /* Info.plist */,
 				38230C9D2B9F3307002A52E9 /* Plugin */,
 				38DEBE302B9D67E800CD2A35 /* Service */,
 				38F5E2A02B9AB345002FEEFE /* SyntaxHighlighter */,
@@ -606,6 +608,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Selected/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSAppleEventsUsageDescription = "Get selected text from app";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -615,7 +618,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = io.kitool.Selected;
+				PRODUCT_BUNDLE_IDENTIFIER = io.kitool.Selected.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -638,6 +641,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Selected/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSAppleEventsUsageDescription = "Get selected text from app";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";

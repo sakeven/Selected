@@ -8,10 +8,12 @@
 import SwiftUI
 import Accessibility
 import AppKit
+import Foundation
 
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
+        setDefaultAppForCustomFileType()
         // 不需要主窗口，不需要显示在 dock 上
         NSApp.setActivationPolicy(NSApplication.ActivationPolicy.accessory)
         requestAccessibilityPermissions()
@@ -21,6 +23,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             monitorMouseMove()
         }
     }
+    
+    func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls {
+            // 处理打开的文件
+            NSLog("\(url.path)")
+            PluginManager.shared.install(url: url)
+        }
+    }
+}
+
+
+func setDefaultAppForCustomFileType() {
+    let customUTI = "io.kitool.selected.ext"
+    let bundleIdentifier = Bundle.main.bundleIdentifier ?? "io.kitool.Selected.dev"
+    NSLog("bundleIdentifier \(bundleIdentifier)")
+
+    LSSetDefaultRoleHandlerForContentType(customUTI as CFString, .editor, bundleIdentifier as CFString)
+    
+//    
+//     let bundleUrl = Bundle.main.bundleURL
+//
+//     NSLog("\(bundleUrl.path)")
+//     NSWorkspace.shared.setDefaultApplication(at: bundleUrl, toOpen: .init(customUTI)!)
 }
 
 
@@ -45,7 +70,7 @@ struct SelectedApp: App {
         .menuBarExtraStyle(.menu)
         .commands {
             SelectedMainMenu()
-        }
+        }.handlesExternalEvents(matching: []) 
         Settings {
             SettingsView()
         }

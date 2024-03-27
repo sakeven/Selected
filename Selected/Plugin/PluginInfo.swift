@@ -24,14 +24,14 @@ struct Plugin: Decodable {
     var actions: [Action]
 }
 
-var PluginList: [Plugin] = []
 
 // PluginManager 管理各种插件。插件保存在 ”Library/Application Support/Selected/Extensions“。
-class PluginManager {
+class PluginManager: ObservableObject {
     private var extensionsDir: URL
     private let filemgr = FileManager.default
-    var plugins = [Plugin]()
-
+    
+    @Published var plugins = [Plugin]()
+    
     static let shared = PluginManager()
 
     init(){
@@ -44,6 +44,35 @@ class PluginManager {
             try! fileManager.createDirectory(at: extensionsDir, withIntermediateDirectories: true, attributes: nil)
         }
         NSLog("Application Extensions Directory: \(extensionsDir.path)")
+    }
+    
+    private func copyFile(fpath: String, tpath: String) -> Bool{
+        NSLog("install from \(fpath) to \(tpath)")
+        if filemgr.contentsEqual(atPath: fpath, andPath: tpath) {
+            return false
+        }
+        do{
+            NSLog("install to \(tpath)")
+            let fileManager = FileManager.default
+            if fileManager.fileExists(atPath: tpath){
+                try fileManager.removeItem(atPath: tpath)
+            }
+            
+            try fileManager.copyItem(atPath: fpath, toPath: tpath)
+            return true
+        } catch {
+            print("Caught an unexpected error: \(error)")
+        }
+        return false
+    }
+    
+    func install(url: URL) {
+        if url.hasDirectoryPath {
+            NSLog("install \(url.lastPathComponent)")
+            if copyFile(fpath: url.path(percentEncoded: false), tpath: extensionsDir.appending(component: url.lastPathComponent).path(percentEncoded: false)) {
+                loadPlugins()
+            }
+        }
     }
     
     func getPlugins() -> [Plugin] {
@@ -78,5 +107,61 @@ class PluginManager {
             }
         }
         self.plugins = list
+    }
+    
+    var allActions: [PerformAction] {
+        var list = [PerformAction]()
+        list.append(WebSearchAction().generate(
+            generic: GenericAction(title: "Search", icon: "symbol:magnifyingglass", after: "", identifier: "selected.websearch")
+        ))
+        
+        let pluginList = plugins
+        pluginList.forEach { Plugin in
+            if !Plugin.info.enabled {
+                return
+            }
+            Plugin.actions.forEach { Action in
+                if let url = Action.url {
+                    list.append(url.generate(generic: Action.meta))
+                    return
+                }
+                if let service =  Action.service {
+                    list.append(service.generate(generic: Action.meta))
+                    return
+                }
+                if let keycombo = Action.keycombo {
+                    list.append(keycombo.generate(generic: Action.meta))
+                    return
+                }
+                if let gpt =  Action.gpt {
+                    list.append(gpt.generate(generic: Action.meta))
+                    return
+                }
+                if let script = Action.runCommand {
+                    list.append(script.generate(generic: Action.meta))
+                    return
+                }
+            }
+        }
+        
+        //    list.append(GptAction(prompt: "{text}").generate(
+        //    generic: GenericAction(title: "chat", icon: "character.bubble", after: "", identifier: "selected.chat")
+        //    ))
+        list.append(TranslationAction(target: "cn").generate(
+            generic: GenericAction(title: "2Chinese", icon: "square 译中", after: "", identifier: "selected.translation.cn")
+        ))
+        list.append(TranslationAction(target: "en").generate(
+            generic: GenericAction(title: "2English", icon: "circle 译英", after: "", identifier: "selected.translation.en")
+        ))
+        list.append(URLAction(url: "{text}" ).generate(
+            generic: GenericAction(title: "OpenLinks", icon: "symbol:link", after: "", identifier: "selected.openlinks")
+        ))
+        list.append(CopyAction().generate(
+            generic: GenericAction(title: "Copy", icon: "symbol:doc.on.clipboard", after: "", identifier: "selected.copy")
+        ))
+        list.append(SpeackAction().generate(
+            generic: GenericAction(title: "Speak", icon: "symbol:play.circle", after: "", identifier: "selected.speak")
+        ))
+        return list
     }
 }
