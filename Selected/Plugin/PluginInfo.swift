@@ -94,12 +94,20 @@ class PluginManager: ObservableObject {
                     plugin.info.icon = "file://"+extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).appendingPathComponent(plugin.info.icon.trimPrefix("file://./"), isDirectory: false).path
                 }
                 for action in plugin.actions {
-                    if action.meta.icon.hasPrefix("file://./"){
-                        action.meta.icon =  "file://"+extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).appendingPathComponent(action.meta.icon.trimPrefix("file://./"), isDirectory: false).path
-                    }
-                    
-                    if let runCommand = action.runCommand {
-                        runCommand.pluginPath = extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).path
+                    do {
+                        if action.meta.icon.hasPrefix("file://./"){
+                            action.meta.icon =  "file://"+extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).appendingPathComponent(action.meta.icon.trimPrefix("file://./"), isDirectory: false).path
+                        }
+                        
+                        if let runCommand = action.runCommand {
+                            runCommand.pluginPath = extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).path
+                        }
+                        
+                        if let regex = action.meta.regex {
+                            _ = try Regex(regex)
+                        }
+                    } catch {
+                        NSLog("validate action error \(error)")
                     }
                 }
                 

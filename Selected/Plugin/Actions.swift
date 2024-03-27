@@ -21,12 +21,21 @@ class GenericAction: Decodable {
     var icon: String
     var after: String
     var identifier: String
+    var regex: String?
     
     init(title: String, icon: String, after: String, identifier: String) {
         self.title = title
         self.icon = icon
         self.after = after
         self.identifier = identifier
+    }
+    
+    init(title: String, icon: String, after: String, identifier: String, regex: String) {
+        self.title = title
+        self.icon = icon
+        self.after = after
+        self.identifier = identifier
+        self.regex = regex
     }
     
     static func == (lhs: GenericAction, rhs: GenericAction) -> Bool {
@@ -281,15 +290,18 @@ func GetActions(ctx: SelectedTextContext) -> [PerformAction] {
 
 // If ctx isn't editable, not return editable actions.
 func FilterActions(_ ctx: SelectedTextContext, list: [PerformAction] ) -> [PerformAction] {
-    if ctx.Editable {
-        return list
-    }
-    
     var filtered = [PerformAction]()
-    for action in  list {
-        if action.actionMeta.after != "paste" {
-            filtered.append(action)
+    for action in list {
+        if !ctx.Editable && action.actionMeta.after == "paste" {
+            continue
         }
+        if let regexStr = action.actionMeta.regex {
+           let reg = try! Regex(regexStr)
+            if !ctx.Text.contains(reg) {
+                continue
+            }
+        }
+        filtered.append(action)
     }
     return filtered
 }

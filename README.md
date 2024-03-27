@@ -69,6 +69,7 @@ actions:
 | action.meta.icon           | 字符串 | 配置与 `info.icon` 相同。用于显示在工具栏上。                |
 | action.meta.identifier     | 字符串 | action 的 id，唯一标识符                                     |
 | action.meta.after     | 字符串 | action 执行完成之后的处理。必填。支持配置空（""）、paste、copy。 |
+| action.meta.regex | 字符串 | 正则表达式，用于匹配选择的文本，只有匹配时才显示 action。可选值。 |
 | action.url                 | object | url 类型的操作                                               |
 | action.url.url             | 字符串 | 一个链接，点击操作（action）之后会打开这个链接。支持打开其它应用的 scheme。比如 `https://www.google.com.hk/search?q={text}` 进行谷歌搜索。或者打开 `things:///add?title={text}&show-quick-entry=true` 打开 [Things3](https://culturedcode.com/things/) 添加待办。{text} 用于替换选中的文本。 |
 | action.service             | object | service 类型的操作                                           |
