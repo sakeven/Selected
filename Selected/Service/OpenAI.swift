@@ -9,6 +9,8 @@ import OpenAI
 import Defaults
 import SwiftUI
 
+let OpenAIModels: [Model] = [.gpt4_turbo_preview, .gpt4, .gpt4_32k, .gpt3_5Turbo, .gpt3_5Turbo_16k]
+
 struct OpenAIPrompt {
     let prompt: String
     
@@ -18,7 +20,7 @@ struct OpenAIPrompt {
         
         var message = prompt
         message.replace("{text}", with: content)
-        let query = ChatQuery(model: .gpt3_5Turbo, messages: [.init(role: .user, content: message)])
+        let query = ChatQuery(model: Defaults[.openAIModel], messages: [.init(role: .user, content: message)])
         
         openAI.chatsStream(query: query) { partialResult in
             switch partialResult {
@@ -50,7 +52,7 @@ func transByOpenAI(word: String, completion: @escaping (_: String) -> Void) asyn
         prompt = "翻译以下内容到中文，使用 markdown 的格式回复。内容为：\(word)"
     }
     
-    let query = ChatQuery(model: .gpt3_5Turbo, messages: [.init(role: .user, content: prompt)])
+    let query = ChatQuery(model: Defaults[.openAIModel], messages: [.init(role: .user, content: prompt)])
     
     openAI.chatsStream(query: query) { partialResult in
         switch partialResult {
@@ -75,7 +77,7 @@ func trans2ENByOpenAI(content: String, completion: @escaping (_: String) -> Void
     let prompt = "翻译以下内容到英文。内容为：\(content)"
     
     
-    let query = ChatQuery(model: .gpt3_5Turbo, messages: [.init(role: .user, content: prompt)])
+    let query = ChatQuery(model: Defaults[.openAIModel], messages: [.init(role: .user, content: prompt)])
     
     openAI.chatsStream(query: query) { partialResult in
         switch partialResult {

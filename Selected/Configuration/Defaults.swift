@@ -7,6 +7,7 @@
 
 import Defaults
 import Foundation
+import OpenAI
 
 // Service Configuration
 extension Defaults.Keys {
@@ -19,6 +20,7 @@ extension Defaults.Keys {
     // OpenAI
     static let openAIAPIKey = Key<String>("OpenAIAPIKey", default: "")
     static let openAIAPIHost = Key<String>("OpenAIAPIHost",default: "api.openai.com")
+    static let openAIModel = Key<Model>("OpenAIModel", default: "gpt-3.5-turbo")
     
     // Gemini
     static let geminiAPIKey = Key<String>("GeminiAPIKey", default: "")

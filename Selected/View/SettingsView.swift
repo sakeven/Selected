@@ -21,6 +21,8 @@ struct SettingsView: View {
     @Default(.aiService) var aiService
     let pickerValues = ["OpenAI", "Gemini"]
     
+    @Default(.openAIModel) var openAIModel
+    
     @Default(.search) var searchURL
     
     @State var launchAtLogin: Bool
@@ -63,6 +65,11 @@ struct SettingsView: View {
                     Section(header: Text("OpenAI")) {
                         SecureField("APIKey", text: $openAIAPIKey)
                         TextField("APIHost", text: $openAIAPIHost)
+                        Picker("Model", selection: $openAIModel, content: {
+                            ForEach(OpenAIModels, id: \.self) {
+                                Text($0)
+                            }
+                        }).pickerStyle(DefaultPickerStyle())
                     }
                     
                     Section(header: Text("Gemini")) {

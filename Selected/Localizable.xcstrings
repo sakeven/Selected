@@ -135,6 +135,16 @@
         }
       }
     },
+    "Model" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "模型"
+          }
+        }
+      }
+    },
     "OpenAI" : {
       "localizations" : {
         "zh-Hans" : {
