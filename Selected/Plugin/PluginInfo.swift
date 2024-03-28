@@ -14,9 +14,34 @@ struct PluginInfo: Decodable {
     var icon: String
     var name: String
     var version: String?
-    var miniSelectedVersion: String?
+    var minSelectedVersion: String?
     var description: String?
+    
+    // not in config
     var enabled: Bool = true
+    var pluginDir = ""
+    
+    
+    enum CodingKeys: String, CodingKey {
+        case icon, name, version, minSelectedVersion, description
+    }
+    
+    
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        self.icon = try values.decode(String.self, forKey: .icon)
+        self.name = try values.decode(String.self, forKey: .name)
+        
+        if values.contains(.version) {
+            self.version = try values.decode(String.self, forKey: .version)
+        }
+        if values.contains(.minSelectedVersion) {
+            self.minSelectedVersion = try values.decode(String.self, forKey: .minSelectedVersion)
+        }
+        if values.contains(.description) {
+            self.description = try values.decode(String.self, forKey: .description)
+        }
+    }
 }
 
 struct Plugin: Decodable {
@@ -61,7 +86,7 @@ class PluginManager: ObservableObject {
             try fileManager.copyItem(atPath: fpath, toPath: tpath)
             return true
         } catch {
-            print("Caught an unexpected error: \(error)")
+            print("install: an unexpected error: \(error)")
         }
         return false
     }
@@ -73,6 +98,15 @@ class PluginManager: ObservableObject {
                 loadPlugins()
             }
         }
+    }
+    
+    func remove(_ pluginDir: String) {
+        do {
+           try filemgr.removeItem(at:  extensionsDir.appendingPathComponent(pluginDir, isDirectory: true))
+        } catch{
+            NSLog("remove plugin \(pluginDir): \(error)")
+        }
+        loadPlugins()
     }
     
     func getPlugins() -> [Plugin] {
@@ -90,9 +124,12 @@ class PluginManager: ObservableObject {
                 let decoder = YAMLDecoder()
                 var plugin: Plugin = try! decoder.decode(Plugin.self, from: readFile.data(using: .utf8)!)
                 NSLog("plugin \(plugin)")
+                
+                plugin.info.pluginDir = pluginDir
                 if plugin.info.icon.hasPrefix("file://./"){
                     plugin.info.icon = "file://"+extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).appendingPathComponent(plugin.info.icon.trimPrefix("file://./"), isDirectory: false).path
                 }
+                
                 for action in plugin.actions {
                     do {
                         if action.meta.icon.hasPrefix("file://./"){

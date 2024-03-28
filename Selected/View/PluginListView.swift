@@ -19,8 +19,8 @@ struct PluginListView: View {
                     icon: { Icon(plugin.info.icon)}
                 ).padding(10).contextMenu {
                     Button(action: {
-                        // TODO
                         NSLog("delete \(plugin.info.name)")
+                        plguinMgr.remove(plugin.info.pluginDir)
                     }){
                         Text("Delete")
                     }
