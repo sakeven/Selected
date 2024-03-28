@@ -9,9 +9,9 @@ import SwiftUI
 import MarkdownUI
 import Splash
 
-struct SelectedTextView: View {
+struct TranslationView: View {
     @State var text: String
-    @State var transText: String = "请求中..."
+    @State var transText: String = "..."
     @State private var hasRep = false
     var to: String = "cn"
     
@@ -63,7 +63,7 @@ struct SelectedTextView: View {
 struct ChatTextView: View {
     @State var text: String
     var prompt: String
-    @State var respText: String = "请求中..."
+    @State var respText: String = "..."
     @State private var hasRep = false
     
     @State private var width = 100
@@ -120,7 +120,7 @@ var isPreview: Bool {
 }
 
 #Preview {
-    SelectedTextView(text: "单词；语言的基本单位，用来表达概念、事物或动作。语言的基本单位，用来表达概念、事物或动作。", transText: """
+    TranslationView(text: "单词；语言的基本单位，用来表达概念、事物或动作。语言的基本单位，用来表达概念、事物或动作。", transText: """
 ### Word
 
 - **意思1：** 单词；语言的基本单位，用来表达概念、事物或动作。语言的基本单位，用来表达概念、事物或动作。语言的基本单位，用来表达概念、事物或动作。语言的基本单位，用来表达概念、事物或动作。语言的基本单位，用来表达概念、事物或动作。语言的基本单位，用来表达概念、事物或动作。

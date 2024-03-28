@@ -39,9 +39,9 @@ struct OpenAIPrompt {
 
 let OpenAIWordTrans = OpenAIPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出例句。使用 markdown 的格式回复。单词为：{text}")
 
-let OpenAITrans2CN = OpenAIPrompt(prompt:"翻译以下内容到中文。内容为：{text}")
+let OpenAITrans2Chinese = OpenAIPrompt(prompt:"翻译以下内容到中文。内容为：{text}")
 
-let OpenAITrans2EN = OpenAIPrompt(prompt:"翻译以下内容到英文。内容为：{text}")
+let OpenAITrans2English = OpenAIPrompt(prompt:"Translate the following content into English. The content is：{text}")
 
 func transByOpenAI(word: String, completion: @escaping (_: String) -> Void) async -> Void {
     let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
@@ -69,7 +69,7 @@ func transByOpenAI(word: String, completion: @escaping (_: String) -> Void) asyn
 }
 
 
-func trans2ENByOpenAI(content: String, completion: @escaping (_: String) -> Void) async -> Void {
+func trans2EnglishByOpenAI(content: String, completion: @escaping (_: String) -> Void) async -> Void {
     let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
     let openAI = OpenAI(configuration: configuration)
     

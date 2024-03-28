@@ -196,7 +196,7 @@ class PluginManager: ObservableObject {
             generic: GenericAction(title: "翻译到中文", icon: "square 译中", after: "", identifier: "selected.translation.cn")
         ))
         list.append(TranslationAction(target: "en").generate(
-            generic: GenericAction(title: "Translate to English", icon: "circle 译英", after: "", identifier: "selected.translation.en")
+            generic: GenericAction(title: "Translate to English", icon: "symbol:e.square", after: "", identifier: "selected.translation.en")
         ))
         list.append(URLAction(url: "{text}" ).generate(
             generic: GenericAction(title: "OpenLinks", icon: "symbol:link", after: "", identifier: "selected.openlinks")

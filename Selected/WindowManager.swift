@@ -24,7 +24,7 @@ class WindowManager {
     }
     
     func createTranslationWindow(withText text: String, to: String) {
-        let contentView = SelectedTextView(text: text, to: to)
+        let contentView = TranslationView(text: text, to: to)
         createWindow(rootView: AnyView(contentView), resultWindow: true)
     }
     
@@ -102,6 +102,8 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         if !resultWindow{
             window.isOpaque = true
             window.backgroundColor = .clear
+        } else {
+            window.alphaValue = 0.9
         }
         
         super.init(window: window)
@@ -115,22 +117,17 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         NSLog("windowFrame \(windowFrame.height), \(windowFrame.width)")
         let screenFrame = NSScreen.main?.visibleFrame ?? .zero // 获取主屏幕的可见区域
         
-        let loc = NSEvent.mouseLocation
-        if resultWindow {
-            let windowWidth: CGFloat = 200
-            let windowHeight: CGFloat = 200
-            var mouseLocation = loc // 获取鼠标当前位置
-
-            // 确保窗口不会超出屏幕右边缘或底部
-            mouseLocation.x = min(abs(mouseLocation.x-20), screenFrame.maxX - windowWidth)
-            mouseLocation.y = max(abs(mouseLocation.y-20), screenFrame.minY + windowHeight)
-            window.setFrameOrigin(NSPoint(x: mouseLocation.x, y: mouseLocation.y))
-        } else {
-            // 确保窗口不会超出屏幕边缘
-            let x = min(screenFrame.maxX - windowFrame.width,
-                        max(loc.x - windowFrame.width/2, screenFrame.minX))
-            window.setFrameOrigin(NSPoint(x: x, y: loc.y + 18))
+        let mouseLocation = NSEvent.mouseLocation  // 获取鼠标当前位置
+        
+        // 确保窗口不会超出屏幕边缘
+        let x = min(screenFrame.maxX - windowFrame.width,
+                    max(mouseLocation.x - windowFrame.width/2, screenFrame.minX))
+        
+        var y =  mouseLocation.y + 18
+        if y > screenFrame.maxY {
+            y =  mouseLocation.y - 30 - 18
         }
+        window.setFrameOrigin(NSPoint(x: x, y: y))
     }
     
     required init?(coder: NSCoder) {

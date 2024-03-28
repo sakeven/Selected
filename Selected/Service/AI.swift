@@ -29,7 +29,7 @@ struct Translation {
                 if isWord(str: content) {
                     await OpenAIWordTrans.chat(content: content, completion: completion)
                 } else {
-                    await OpenAITrans2CN.chat(content: content, completion: completion)
+                    await OpenAITrans2Chinese.chat(content: content, completion: completion)
                 }
             case "Gemini":
                 NSLog("Gemini")
@@ -47,7 +47,7 @@ struct Translation {
         switch Defaults[.aiService] {
             case "OpenAI":
                 NSLog("OpenAI")
-                await OpenAITrans2EN.chat(content: content, completion: completion)
+                await OpenAITrans2English.chat(content: content, completion: completion)
             case "Gemini":
                 NSLog("Gemini")
                 await GeminiTrans2EN.chat(content: content, completion: completion)
