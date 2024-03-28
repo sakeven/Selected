@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import AVFoundation
 import Yams
 import AppKit
 import Defaults
@@ -176,27 +175,6 @@ class CopyAction: Decodable{
     }
 }
 
-
-let speechSynthesizer = AVSpeechSynthesizer()
-
-func speak(text: String) {
-    speechSynthesizer.stopSpeaking(at: .word)
-    let utterance = AVSpeechUtterance(string: text)
-    utterance.pitchMultiplier = 0.8
-    utterance.postUtteranceDelay = 0.2
-    utterance.volume = 0.8
-    speechSynthesizer.speak(utterance)
-}
-
-
-class SpeackAction: Decodable {
-    func generate(generic: GenericAction) -> PerformAction {
-        return PerformAction(actionMeta:
-                                generic, complete: { ctx in
-            speak(text: ctx.Text)
-        })
-    }
-}
 
 class GptAction: Decodable{
     var prompt: String

@@ -39,6 +39,8 @@
 		38DEBE372B9DD80300CD2A35 /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = 38DEBE362B9DD80300CD2A35 /* GoogleGenerativeAI */; };
 		38DEBE392B9DDD0500CD2A35 /* AI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DEBE382B9DDD0500CD2A35 /* AI.swift */; };
 		38E20A472BB44D5A0035A3AA /* SharingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A462BB44D5A0035A3AA /* SharingButton.swift */; };
+		38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A482BB5A3D80035A3AA /* SpeakAction.swift */; };
+		38E20A4B2BB5A7E20035A3AA /* TTS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A4A2BB5A7E20035A3AA /* TTS.swift */; };
 		38F5E29C2B98ACB9002FEEFE /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E29B2B98ACB9002FEEFE /* OpenAI */; };
 		38F5E29F2B9AB332002FEEFE /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E29E2B9AB332002FEEFE /* MarkdownUI */; };
 		38F5E2A22B9AB361002FEEFE /* SplashCodeSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F5E2A12B9AB361002FEEFE /* SplashCodeSyntaxHighlighter.swift */; };
@@ -99,6 +101,8 @@
 		38DEBE332B9DD7CA00CD2A35 /* Gemini.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gemini.swift; sourceTree = "<group>"; };
 		38DEBE382B9DDD0500CD2A35 /* AI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AI.swift; sourceTree = "<group>"; };
 		38E20A462BB44D5A0035A3AA /* SharingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingButton.swift; sourceTree = "<group>"; };
+		38E20A482BB5A3D80035A3AA /* SpeakAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakAction.swift; sourceTree = "<group>"; };
+		38E20A4A2BB5A7E20035A3AA /* TTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTS.swift; sourceTree = "<group>"; };
 		38F5E2A12B9AB361002FEEFE /* SplashCodeSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashCodeSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		38F5E2A32B9AB380002FEEFE /* TextOutputFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOutputFormat.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -151,6 +155,7 @@
 				38230C9E2B9F332D002A52E9 /* PluginInfo.swift */,
 				3801CA4D2BA522B6007D7868 /* Actions.swift */,
 				38CC554B2BA9B6E900069553 /* RunCommandAction.swift */,
+				38E20A482BB5A3D80035A3AA /* SpeakAction.swift */,
 			);
 			path = Plugin;
 			sourceTree = "<group>";
@@ -253,6 +258,7 @@
 				38DEBE332B9DD7CA00CD2A35 /* Gemini.swift */,
 				38DEBE382B9DDD0500CD2A35 /* AI.swift */,
 				38230CA22BA1DBA8002A52E9 /* Utils.swift */,
+				38E20A4A2BB5A7E20035A3AA /* TTS.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -416,6 +422,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */,
 				38DEBE342B9DD7CA00CD2A35 /* Gemini.swift in Sources */,
 				38F5E2A42B9AB380002FEEFE /* TextOutputFormat.swift in Sources */,
 				3888D8032BA8615900A7B75D /* IconImage.swift in Sources */,
@@ -436,6 +443,7 @@
 				38F5E2A22B9AB361002FEEFE /* SplashCodeSyntaxHighlighter.swift in Sources */,
 				3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */,
 				3801CA4E2BA522B6007D7868 /* Actions.swift in Sources */,
+				38E20A4B2BB5A7E20035A3AA /* TTS.swift in Sources */,
 				38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */,
 				38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */,
 				3831FD362BA6DE3D00A4262B /* UserConfigs.swift in Sources */,

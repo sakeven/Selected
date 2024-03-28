@@ -49,7 +49,7 @@ struct TranslationView: View {
                     .foregroundColor(Color.white)
                     .cornerRadius(5)
                     Button {
-                        speak(text: MarkdownContent(self.transText).renderPlainText())
+                        speak(MarkdownContent(self.transText).renderPlainText())
                     } label: {
                         Image(systemName: "play.circle")
                     }.foregroundColor(Color.white)
@@ -103,7 +103,7 @@ struct ChatTextView: View {
                 .foregroundColor(Color.white)
                 .cornerRadius(5)
                 Button {
-                    speak(text: MarkdownContent(self.respText).renderPlainText())
+                    speak(MarkdownContent(self.respText).renderPlainText())
                 } label: {
                     Image(systemName: "play.circle")
                 }.foregroundColor(Color.white)

@@ -8,6 +8,7 @@
 import OpenAI
 import Defaults
 import SwiftUI
+import AVFoundation
 
 let OpenAIModels: [Model] = [.gpt4_turbo_preview, .gpt4, .gpt4_32k, .gpt3_5Turbo, .gpt3_5Turbo_16k]
 
@@ -102,4 +103,28 @@ func isWord(str: String) -> Bool {
         return false
     }
     return true
+}
+
+
+var audioPlayer: AVAudioPlayer?
+
+func openAITTS(_ text: String) {
+    let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
+    let openAI = OpenAI(configuration: configuration)
+    
+    let query = AudioSpeechQuery(model: .tts_1, input: text, voice: .shimmer, responseFormat: .mp3, speed: 1.0)
+
+    openAI.audioCreateSpeech(query: query) { result in
+        // Handle response here
+        switch result {
+            case .success(let result):
+                if let data = result.audioData {
+                    audioPlayer?.stop()
+                    audioPlayer = try! AVAudioPlayer(data: data)
+                    audioPlayer!.play()
+                }
+            case .failure(let error):
+                NSLog("tts error \(error)")
+        }
+    }
 }
