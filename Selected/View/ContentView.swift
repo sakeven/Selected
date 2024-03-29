@@ -49,7 +49,9 @@ struct TranslationView: View {
                     .foregroundColor(Color.white)
                     .cornerRadius(5)
                     Button {
-                        speak(MarkdownContent(self.transText).renderPlainText())
+                        Task{
+                           await speak(MarkdownContent(self.transText).renderPlainText())
+                        }
                     } label: {
                         Image(systemName: "play.circle")
                     }.foregroundColor(Color.white)
@@ -67,8 +69,6 @@ struct ChatTextView: View {
     @State private var hasRep = false
     
     @State private var width = 100
-    
-   
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -103,7 +103,9 @@ struct ChatTextView: View {
                 .foregroundColor(Color.white)
                 .cornerRadius(5)
                 Button {
-                    speak(MarkdownContent(self.respText).renderPlainText())
+                    Task {
+                     await   speak(MarkdownContent(self.respText).renderPlainText())
+                    }
                 } label: {
                     Image(systemName: "play.circle")
                 }.foregroundColor(Color.white)

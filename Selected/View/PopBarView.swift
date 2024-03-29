@@ -21,8 +21,21 @@ struct PopBarView: View {
         HStack(spacing: 0){
             ForEach(actions) { action in
                 BarButton(icon: action.actionMeta.icon, title: action.actionMeta.title , clicked: {
+                    $isLoading in
+                    isLoading = true
                     NSLog("ctx: \(ctx)")
-                    action.complete(ctx)
+                    if let complete =  action.complete {
+                        complete(ctx)
+                        isLoading = false
+                    }
+                    if let complete =  action.completeAsync {
+                        Task {
+                            await complete(ctx)
+                            isLoading = false
+                        }
+                    }
+                   
+                    NSLog("end")
                 })
             }
             SharingButton(message: ctx.Text)

@@ -6,16 +6,13 @@
 //
 
 import Foundation
-
-
-
-
+import SwiftUI
 
 class SpeackAction: Decodable {
     func generate(generic: GenericAction) -> PerformAction {
-        return PerformAction(actionMeta:
-                                generic, complete: { ctx in
-            speak(ctx.Text)
+        return PerformAction(
+            actionMeta: generic, complete: { ctx in
+                await speak(ctx.Text)
         })
     }
 }

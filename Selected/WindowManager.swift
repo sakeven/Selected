@@ -130,6 +130,10 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         window.setFrameOrigin(NSPoint(x: x, y: y))
     }
     
+    deinit{
+        stopSpeak()
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

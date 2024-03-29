@@ -17,17 +17,31 @@ extension String {
 struct BarButton: View {
     var icon: String
     var title: String
-    var clicked: (() -> Void) /// use closure for callback
-    @State var shouldPopover: Bool = false
-    @State var hoverWorkItem: DispatchWorkItem?
+    var clicked: ((_: Binding<Bool>) -> Void) /// use closure for callback
+    
+    @State private var shouldPopover: Bool = false
+    @State private var hoverWorkItem: DispatchWorkItem?
+    
+    @State private var isLoading = false
+    
     
     var body: some View {
         Button {
-            clicked()
+            DispatchQueue.main.async {
+                clicked($isLoading)
+                NSLog("isLoading \(isLoading)")
+            }
         } label: {
+            ZStack {
                 HStack{
                     Icon(icon)
-                }.frame(width: 40, height: 30)
+                }.frame(width: 40, height: 30).opacity(isLoading ? 0.5 : 1)
+                if isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .gray))
+                        .scaleEffect(0.5, anchor: .center) // 根据需要调整大小和位置
+                }
+            }
         }.frame(width: 40, height: 30)
             .buttonStyle(BarButtonStyle()).onHover(perform: { hovering in
                 hoverWorkItem?.cancel()

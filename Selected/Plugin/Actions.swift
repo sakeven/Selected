@@ -220,7 +220,9 @@ struct Action: Decodable{
 class PerformAction: Identifiable,Hashable {
     var id = UUID()
     var actionMeta: GenericAction
-    var complete: (_: SelectedTextContext) -> Void
+    var complete: ((_: SelectedTextContext) -> Void)?
+    var completeAsync: ((_: SelectedTextContext) async ->  Void)?
+
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(actionMeta.identifier)
@@ -233,6 +235,11 @@ class PerformAction: Identifiable,Hashable {
     init(actionMeta: GenericAction, complete: @escaping (_: SelectedTextContext) -> Void) {
         self.actionMeta = actionMeta
         self.complete = complete
+    }
+    
+    init(actionMeta: GenericAction, complete: @escaping (_: SelectedTextContext) async -> Void) {
+        self.actionMeta = actionMeta
+        self.completeAsync = complete
     }
 }
 

@@ -108,23 +108,22 @@ func isWord(str: String) -> Bool {
 
 var audioPlayer: AVAudioPlayer?
 
-func openAITTS(_ text: String) {
+func openAITTS(_ text: String) async {
     let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
     let openAI = OpenAI(configuration: configuration)
     
     let query = AudioSpeechQuery(model: .tts_1, input: text, voice: .shimmer, responseFormat: .mp3, speed: 1.0)
 
-    openAI.audioCreateSpeech(query: query) { result in
-        // Handle response here
-        switch result {
-            case .success(let result):
-                if let data = result.audioData {
-                    audioPlayer?.stop()
-                    audioPlayer = try! AVAudioPlayer(data: data)
-                    audioPlayer!.play()
-                }
-            case .failure(let error):
-                NSLog("tts error \(error)")
+    do {
+       
+        let result = try await openAI.audioCreateSpeech(query: query)
+        if let data = result.audioData {
+            audioPlayer?.stop()
+            audioPlayer = try! AVAudioPlayer(data: data)
+            audioPlayer!.play()
         }
+    } catch {
+        NSLog("audioCreateSpeech \(error)")
+        return
     }
 }

@@ -8,6 +8,7 @@
 import Foundation
 import AVFoundation
 import Defaults
+import SwiftUI
 
 let speechSynthesizer = AVSpeechSynthesizer()
 
@@ -20,10 +21,15 @@ func systemSpeak(_ text: String) {
     speechSynthesizer.speak(utterance)
 }
 
-func speak(_ text: String) {
+func speak(_ text: String) async {
     if Defaults[.openAIAPIKey].isEmpty {
         systemSpeak(text)
     } else {
-        openAITTS(text)
+        await openAITTS(text)
     }
+}
+
+func stopSpeak() {
+    speechSynthesizer.stopSpeaking(at: .word)
+    audioPlayer?.stop()
 }
