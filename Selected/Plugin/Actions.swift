@@ -139,28 +139,46 @@ class ServiceAction: Decodable {
 class KeycomboAction: Decodable {
     // TODO validate keycombo
     var keycombo: String
+    var keycombos: [String]?
     
     init(keycombo: String) {
         NSLog("set keycombo \(keycombo)")
         self.keycombo = keycombo
     }
     
+    init(keycombos: [String]) {
+        NSLog("set keycombos \(keycombos)")
+        self.keycombos = keycombos
+        self.keycombo = ""
+    }
+    
+    func pressKeycombo(keycombo: String ){
+        let list = self.keycombo.split(separator: " ")
+        var flags = CGEventFlags(rawValue: 0)
+        var keycode = UInt16(0)
+        list.forEach { sub in
+            let str = String(sub)
+            if let mask = KeyMaskMapping[str]{
+                flags.insert(mask)
+            }
+            if let key = KeycodeMapping[str] {
+                keycode = key
+            }
+        }
+        PressKey(keycode: keycode, flags:  flags)
+    }
+    
     func generate(generic: GenericAction) -> PerformAction {
         return PerformAction(actionMeta:
                                 generic, complete: { ctx in
-            let list = self.keycombo.split(separator: " ")
-            var flags = CGEventFlags(rawValue: 0)
-            var keycode = UInt16(0)
-            list.forEach { sub in
-                let str = String(sub)
-                if let mask = KeyMaskMapping[str]{
-                    flags.insert(mask)
+            if let keycombos = self.keycombos, !keycombos.isEmpty {
+                for keycombo in keycombos {
+                    self.pressKeycombo(keycombo: keycombo)
+                    usleep(100000)
                 }
-                if let key = KeycodeMapping[str] {
-                    keycode = key
-                }
+            } else {
+                self.pressKeycombo(keycombo: self.keycombo)
             }
-            PressKey(keycode: keycode, flags:  flags)
         })
     }
 }
