@@ -38,7 +38,7 @@ struct PluginListView: View {
                             ).padding(10).contextMenu {
                                 Button(action: {
                                     NSLog("delete \(plugin.info.name)")
-                                    pluginMgr.remove(plugin.info.pluginDir)
+                                    pluginMgr.remove(plugin.info.pluginDir, plugin.info.name)
                                 }){
                                     Text("Delete")
                                 }
@@ -65,23 +65,41 @@ struct OptionView: View {
     init(pluginName: String, option: Binding<Option>) {
         self._option = option
         self.pluginName = pluginName
-        self.text = option.wrappedValue.defaultVal ?? ""
+        self._text = State(initialValue: self.option.defaultVal ?? "")
+        
+        if self.option.type == .boolean {
+            self._toggle = State(initialValue: getBoolOption(pluginName: pluginName, identifier: self.option.identifier))
+            NSLog("value \(getBoolOption(pluginName: pluginName, identifier: self.option.identifier))")
+        } else {
+            if let text = getStringOption(pluginName: pluginName, identifier: self.option.identifier) {
+                self._text = State(initialValue: text)
+            }
+        }
     }
     
     var body: some View {
         switch option.type {
             case .boolean:
-                Toggle(option.identifier, isOn: $toggle)
+                Toggle(option.identifier, isOn: $toggle).onChange(of: toggle) { oldValue, newValue in
+                    NSLog("value changed \(newValue)")
+                    setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
+                }
             case .multiple:
                 Picker(option.identifier, selection: $text, content: {
                     ForEach(option.values!, id: \.self) {
                         Text($0)
                     }
-                }).pickerStyle(DefaultPickerStyle())
+                }).pickerStyle(DefaultPickerStyle()).onChange(of: text) { oldValue, newValue in
+                    setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
+                }
             case .string:
-                TextField(option.identifier, text: $text)
+                TextField(option.identifier, text: $text).onChange(of: text) { oldValue, newValue in
+                    setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
+                }
             case .secret:
-                SecureField(option.identifier, text: $text)
+                SecureField(option.identifier, text: $text).onChange(of: text) { oldValue, newValue in
+                    setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
+                }
         }
     }
 }

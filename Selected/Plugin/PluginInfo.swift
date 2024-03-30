@@ -105,9 +105,10 @@ class PluginManager: ObservableObject {
         }
     }
     
-    func remove(_ pluginDir: String) {
+    func remove(_ pluginDir: String, _ pluginName: String) {
         do {
-           try filemgr.removeItem(at:  extensionsDir.appendingPathComponent(pluginDir, isDirectory: true))
+           try filemgr.removeItem(at: extensionsDir.appendingPathComponent(pluginDir, isDirectory: true))
+            removeOptionsOf(pluginName: pluginName)
         } catch{
             NSLog("remove plugin \(pluginDir): \(error)")
         }

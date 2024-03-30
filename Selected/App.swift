@@ -36,7 +36,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 func setDefaultAppForCustomFileType() {
     let customUTI = "io.kitool.selected.ext"
-    let bundleIdentifier = Bundle.main.bundleIdentifier ?? "io.kitool.Selected.dev"
+    let bundleIdentifier = Bundle.main.bundleIdentifier ?? "io.kitool.Selected"
     NSLog("bundleIdentifier \(bundleIdentifier)")
 
     LSSetDefaultRoleHandlerForContentType(customUTI as CFString, .editor, bundleIdentifier as CFString)
