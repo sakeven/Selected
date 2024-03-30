@@ -9,20 +9,25 @@ import Foundation
 import SwiftUI
 
 struct PluginListView: View {
-    @ObservedObject var plguinMgr = PluginManager.shared
+    @ObservedObject var pluginMgr = PluginManager.shared
     
     var body: some View {
         List{
-            ForEach(plguinMgr.plugins, id: \.self.info.name) { plugin in
-                Label(
-                    title: { Text(plugin.info.name).padding(.leading, 10) },
-                    icon: { Icon(plugin.info.icon)}
-                ).padding(10).contextMenu {
-                    Button(action: {
-                        NSLog("delete \(plugin.info.name)")
-                        plguinMgr.remove(plugin.info.pluginDir)
-                    }){
-                        Text("Delete")
+            ForEach(pluginMgr.plugins, id: \.self.info.name) { plugin in
+                HStack{
+                    Label(
+                        title: { Text(plugin.info.name).padding(.leading, 10) },
+                        icon: { Icon(plugin.info.icon)}
+                    ).padding(10).contextMenu {
+                        Button(action: {
+                            NSLog("delete \(plugin.info.name)")
+                            pluginMgr.remove(plugin.info.pluginDir)
+                        }){
+                            Text("Delete")
+                        }
+                    }
+                    if let desc = plugin.info.description {
+                        Text(desc).font(.system(size: 10))
                     }
                 }
             }
@@ -37,16 +42,21 @@ struct PluginListView: View {
 
 
 struct ActionListView: View {
-    @ObservedObject var plguinMgr = PluginManager.shared
+    @ObservedObject var pluginMgr = PluginManager.shared
     
     
     var body: some View {
         List{
-            ForEach(plguinMgr.allActions, id: \.self.actionMeta.identifier) { action in
-                Label(
-                    title: { Text(action.actionMeta.title).padding(.leading, 10) },
-                    icon: { Icon(action.actionMeta.icon) }
-                ).padding(10)
+            ForEach(pluginMgr.allActions, id: \.self.actionMeta.identifier) { action in
+                HStack{
+                    Label(
+                        title: { Text(action.actionMeta.title).padding(.leading, 10) },
+                        icon: { Icon(action.actionMeta.icon) }
+                    ).padding(10)
+                    if let desc = action.actionMeta.description {
+                        Text(desc).font(.system(size: 10))
+                    }
+                }
             }
         }
     }

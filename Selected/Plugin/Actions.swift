@@ -21,6 +21,7 @@ class GenericAction: Decodable {
     var after: String
     var identifier: String
     var regex: String?
+    var description: String?
     
     init(title: String, icon: String, after: String, identifier: String) {
         self.title = title
