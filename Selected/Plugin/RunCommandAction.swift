@@ -23,11 +23,11 @@ class RunCommandAction: Decodable {
     }
     
     
-    init(command: [String]) {
+    init(command: [String], options: [Option]) {
         self.command = command
     }
     
-    func generate(generic: GenericAction) -> PerformAction {
+    func generate(pluginInfo: PluginInfo, generic: GenericAction) -> PerformAction {
         return PerformAction(actionMeta:
                                 generic, complete: { ctx in
             guard self.command.count > 0 else {
@@ -38,11 +38,20 @@ class RunCommandAction: Decodable {
                 return
             }
             
+            var env = ["SELECTED_TEXT": ctx.Text, "SELECTED_BUNDLEID": ctx.BundleID, "SELECTED_ACTION": generic.identifier]
+            let optionVals = pluginInfo.getOptionsValue()
+            optionVals.forEach{ (key: String, value: String) in
+                env["SELECTED_OPTIONS_"+key.uppercased()] = value
+            }
+            if let path = ProcessInfo.processInfo.environment["PATH"] {
+                env["PATH"] = "/opt/homebrew/bin:/opt/homebrew/sbin:" + path
+            }
+            
             if let output = executeCommand(
                 workdir: pluginPath,
                 command: self.command[0],
                 arguments: [String](self.command[1...]),
-                withctx: ctx) {
+                withEnv: env) {
                 if ctx.Editable && generic.after == kAfterPaste {
                     let pasteboard = NSPasteboard.general
                     let lastCopyText = pasteboard.string(forType: .string)
@@ -64,7 +73,7 @@ class RunCommandAction: Decodable {
 }
 
 private func executeCommand(
-    workdir: String, command: String, arguments: [String] = [],withctx ctx: SelectedTextContext) -> String? {
+    workdir: String, command: String, arguments: [String] = [], withEnv env: [String:String]) -> String? {
         let process = Process()
         let pipe = Pipe()
         
@@ -73,11 +82,12 @@ private func executeCommand(
         process.standardOutput = pipe
         process.standardError = pipe
         process.currentDirectoryURL =  URL(fileURLWithPath: workdir)
-        process.environment = ["SELECTED_TEXT": ctx.Text, "SELECTED_BUNDLEID": ctx.BundleID]
-        
+       
+        var copiedEnv = env
         if let path = ProcessInfo.processInfo.environment["PATH"] {
-            process.environment?["PATH"] = "/opt/homebrew/bin:/opt/homebrew/sbin:" + path
+            copiedEnv["PATH"] = "/opt/homebrew/bin:/opt/homebrew/sbin:" + path
         }
+        process.environment = copiedEnv
         
         do {
             try process.run()

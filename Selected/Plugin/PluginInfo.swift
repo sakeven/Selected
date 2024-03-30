@@ -47,6 +47,24 @@ struct PluginInfo: Decodable {
             self.options = try values.decode([Option].self, forKey: .options)
         }
     }
+    
+    func getOptionsValue() -> [String:String] {
+        var dict = [String:String]()
+        
+        for option in options {
+            if option.type == .boolean {
+                let val = getBoolOption(pluginName: name, identifier: option.identifier)
+                dict[option.identifier] = val.description
+            } else {
+                if let val = getStringOption(pluginName: name, identifier: option.identifier) {
+                    dict[option.identifier] = val
+                } else {
+                    dict[option.identifier] = option.defaultVal
+                }
+            }
+        }
+        return dict
+    }
 }
 
 struct Plugin: Decodable {
@@ -176,7 +194,7 @@ class PluginManager: ObservableObject {
                     list.append(url.generate(generic: Action.meta))
                     return
                 }
-                if let service =  Action.service {
+                if let service = Action.service {
                     list.append(service.generate(generic: Action.meta))
                     return
                 }
@@ -184,12 +202,12 @@ class PluginManager: ObservableObject {
                     list.append(keycombo.generate(generic: Action.meta))
                     return
                 }
-                if let gpt =  Action.gpt {
+                if let gpt = Action.gpt {
                     list.append(gpt.generate(generic: Action.meta))
                     return
                 }
                 if let script = Action.runCommand {
-                    list.append(script.generate(generic: Action.meta))
+                    list.append(script.generate(pluginInfo: Plugin.info, generic: Action.meta))
                     return
                 }
             }

@@ -14,7 +14,6 @@ import Defaults
 let kAfterPaste = "paste"
 let kAfterCopy = "copy"
 
-
 class GenericAction: Decodable {
     var title: String
     var icon: String
