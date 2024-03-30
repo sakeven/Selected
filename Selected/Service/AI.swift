@@ -15,14 +15,23 @@ struct Translation {
     
     func translate(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         if toLanguage == "cn" {
-            await contentTrans2Cn(content: content, completion: completion)
+            await contentTrans2Chinese(content: content, completion: completion)
         } else if toLanguage == "en" {
-            await contentTrans2En(content: content, completion: completion)
+            await contentTrans2English(content: content, completion: completion)
         }
     }
     
+   private func isWord(str: String) -> Bool {
+        for c in str {
+           if c.isLetter || c == "-" {
+                continue
+            }
+            return false
+        }
+        return true
+    }
     
-    func contentTrans2Cn(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
+    private func contentTrans2Chinese(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
                 NSLog("OpenAI")
@@ -36,21 +45,21 @@ struct Translation {
                 if isWord(str: content) {
                     await GeminiWordTrans.chat(content: content, completion: completion)
                 } else {
-                    await GeminiTrans2CN.chat(content: content, completion: completion)
+                    await GeminiTrans2Chinese.chat(content: content, completion: completion)
                 }
             default:
                 completion("no model \(Defaults[.aiService])")
         }
     }
     
-    func contentTrans2En(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
+    private func contentTrans2English(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
                 NSLog("OpenAI")
                 await OpenAITrans2English.chat(content: content, completion: completion)
             case "Gemini":
                 NSLog("Gemini")
-                await GeminiTrans2EN.chat(content: content, completion: completion)
+                await GeminiTrans2English.chat(content: content, completion: completion)
             default:
                 completion("no model \(Defaults[.aiService])")
         }
