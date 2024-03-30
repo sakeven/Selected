@@ -16,6 +16,7 @@ struct PluginInfo: Decodable {
     var version: String?
     var minSelectedVersion: String?
     var description: String?
+    var options: [Option]
     
     // not in config
     var enabled: Bool = true
@@ -23,7 +24,7 @@ struct PluginInfo: Decodable {
     
     
     enum CodingKeys: String, CodingKey {
-        case icon, name, version, minSelectedVersion, description
+        case icon, name, version, minSelectedVersion, description, options
     }
     
     
@@ -40,6 +41,10 @@ struct PluginInfo: Decodable {
         }
         if values.contains(.description) {
             self.description = try values.decode(String.self, forKey: .description)
+        }
+        self.options = [Option]()
+        if values.contains(.options) {
+            self.options = try values.decode([Option].self, forKey: .options)
         }
     }
 }

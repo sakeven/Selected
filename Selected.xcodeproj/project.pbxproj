@@ -38,6 +38,7 @@
 		38DEBE342B9DD7CA00CD2A35 /* Gemini.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DEBE332B9DD7CA00CD2A35 /* Gemini.swift */; };
 		38DEBE372B9DD80300CD2A35 /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = 38DEBE362B9DD80300CD2A35 /* GoogleGenerativeAI */; };
 		38DEBE392B9DDD0500CD2A35 /* AI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DEBE382B9DDD0500CD2A35 /* AI.swift */; };
+		38DF1D4A2BB7A3BC0063A879 /* Option.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D492BB7A3BC0063A879 /* Option.swift */; };
 		38E20A472BB44D5A0035A3AA /* SharingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A462BB44D5A0035A3AA /* SharingButton.swift */; };
 		38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A482BB5A3D80035A3AA /* SpeakAction.swift */; };
 		38E20A4B2BB5A7E20035A3AA /* TTS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A4A2BB5A7E20035A3AA /* TTS.swift */; };
@@ -100,6 +101,7 @@
 		38DEBE312B9D67F800CD2A35 /* OpenAI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAI.swift; sourceTree = "<group>"; };
 		38DEBE332B9DD7CA00CD2A35 /* Gemini.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gemini.swift; sourceTree = "<group>"; };
 		38DEBE382B9DDD0500CD2A35 /* AI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AI.swift; sourceTree = "<group>"; };
+		38DF1D492BB7A3BC0063A879 /* Option.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Option.swift; sourceTree = "<group>"; };
 		38E20A462BB44D5A0035A3AA /* SharingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingButton.swift; sourceTree = "<group>"; };
 		38E20A482BB5A3D80035A3AA /* SpeakAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakAction.swift; sourceTree = "<group>"; };
 		38E20A4A2BB5A7E20035A3AA /* TTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTS.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				3801CA4D2BA522B6007D7868 /* Actions.swift */,
 				38CC554B2BA9B6E900069553 /* RunCommandAction.swift */,
 				38E20A482BB5A3D80035A3AA /* SpeakAction.swift */,
+				38DF1D492BB7A3BC0063A879 /* Option.swift */,
 			);
 			path = Plugin;
 			sourceTree = "<group>";
@@ -447,6 +450,7 @@
 				38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */,
 				38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */,
 				3831FD362BA6DE3D00A4262B /* UserConfigs.swift in Sources */,
+				38DF1D4A2BB7A3BC0063A879 /* Option.swift in Sources */,
 				38CC554C2BA9B6E900069553 /* RunCommandAction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
