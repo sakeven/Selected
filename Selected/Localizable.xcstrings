@@ -64,6 +64,17 @@
         }
       }
     },
+    "Default Actions" : {
+      "comment" : "Default actions",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认操作列表"
+          }
+        }
+      }
+    },
     "Delete" : {
       "localizations" : {
         "zh-Hans" : {
