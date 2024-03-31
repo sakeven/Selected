@@ -29,8 +29,8 @@ class WindowManager {
     }
     
     
-    func createChatWindow(withText text: String, prompt: String) {
-        let contentView = ChatTextView(text: text, prompt: prompt)
+    func createChatWindow(withText text: String, prompt: String, options: [String:String]) {
+        let contentView = ChatTextView(text: text, prompt: prompt, options: options)
         createWindow(rootView: AnyView(contentView), resultWindow: true)
     }
     

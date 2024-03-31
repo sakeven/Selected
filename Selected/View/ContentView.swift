@@ -65,6 +65,7 @@ struct TranslationView: View {
 struct ChatTextView: View {
     @State var text: String
     var prompt: String
+    var options: [String:String]
     @State var respText: String = "..."
     @State private var hasRep = false
     
@@ -82,7 +83,7 @@ struct ChatTextView: View {
                     if isPreview {
                         return
                     }
-                    await ChatService(prompt: prompt).chat(content: text) { content in
+                    await ChatService(prompt: prompt).chat(content: text, options: options) { content in
                         if !hasRep {
                             respText = content
                             hasRep = true

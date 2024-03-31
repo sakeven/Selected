@@ -203,7 +203,7 @@ class PluginManager: ObservableObject {
                     return
                 }
                 if let gpt = Action.gpt {
-                    list.append(gpt.generate(generic: Action.meta))
+                    list.append(gpt.generate(pluginInfo: Plugin.info, generic: Action.meta))
                     return
                 }
                 if let script = Action.runCommand {
