@@ -27,6 +27,11 @@ struct PluginInfo: Decodable {
         case icon, name, version, minSelectedVersion, description, options
     }
     
+    init() {
+        self.icon = "symbol:pencil.and.scribble"
+        self.name = "system"
+        self.options = [Option]()
+    }
     
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
@@ -191,7 +196,7 @@ class PluginManager: ObservableObject {
             }
             Plugin.actions.forEach { Action in
                 if let url = Action.url {
-                    list.append(url.generate(generic: Action.meta))
+                    list.append(url.generate(pluginInfo: Plugin.info, generic: Action.meta))
                     return
                 }
                 if let service = Action.service {
@@ -223,6 +228,7 @@ class PluginManager: ObservableObject {
             generic: GenericAction(title: "Translate to English", icon: "symbol:e.square", after: "", identifier: "selected.translation.en")
         ))
         list.append(URLAction(url: "{text}" ).generate(
+            pluginInfo: PluginInfo(),
             generic: GenericAction(title: "OpenLinks", icon: "symbol:link", after: "", identifier: "selected.openlinks")
         ))
         list.append(CopyAction().generate(

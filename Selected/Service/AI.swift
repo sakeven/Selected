@@ -36,16 +36,16 @@ struct Translation {
             case "OpenAI":
                 NSLog("OpenAI")
                 if isWord(str: content) {
-                    await OpenAIWordTrans.chat(content: content, completion: completion)
+                    await OpenAIWordTrans.chat(selectedText: content, completion: completion)
                 } else {
-                    await OpenAITrans2Chinese.chat(content: content, completion: completion)
+                    await OpenAITrans2Chinese.chat(selectedText: content, completion: completion)
                 }
             case "Gemini":
                 NSLog("Gemini")
                 if isWord(str: content) {
-                    await GeminiWordTrans.chat(content: content, completion: completion)
+                    await GeminiWordTrans.chat(selectedText: content, completion: completion)
                 } else {
-                    await GeminiTrans2Chinese.chat(content: content, completion: completion)
+                    await GeminiTrans2Chinese.chat(selectedText: content, completion: completion)
                 }
             default:
                 completion("no model \(Defaults[.aiService])")
@@ -56,10 +56,10 @@ struct Translation {
         switch Defaults[.aiService] {
             case "OpenAI":
                 NSLog("OpenAI")
-                await OpenAITrans2English.chat(content: content, completion: completion)
+                await OpenAITrans2English.chat(selectedText: content, completion: completion)
             case "Gemini":
                 NSLog("Gemini")
-                await GeminiTrans2English.chat(content: content, completion: completion)
+                await GeminiTrans2English.chat(selectedText: content, completion: completion)
             default:
                 completion("no model \(Defaults[.aiService])")
         }
@@ -72,10 +72,10 @@ struct ChatService {
     func chat(content: String, options: [String:String], completion: @escaping (_: String) -> Void) async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
-                await OpenAIPrompt(prompt: prompt).chat(content: content, options: options, completion: completion)
+                await OpenAIPrompt(prompt: prompt).chat(selectedText: content, options: options, completion: completion)
             case "Gemini":
                 NSLog("Gemini")
-                await GeminiPrompt(prompt: prompt).chat(content: content, options: options, completion: completion)
+                await GeminiPrompt(prompt: prompt).chat(selectedText: content, options: options, completion: completion)
             default:
                 completion("no model \(Defaults[.aiService])")
         }

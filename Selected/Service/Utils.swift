@@ -225,3 +225,15 @@ struct Keycode {
     static let keypad8                   : UInt16 = 0x5B
     static let keypad9                   : UInt16 = 0x5C
 }
+
+
+func replaceOptions(content: String, selectedText: String, options: [String:String]? = nil) -> String {
+    var message = content
+    message.replace("{selected.text}", with: selectedText)
+    if let options = options {
+        for option in options {
+            message.replace("{selected.options."+option.key+"}", with: option.value)
+        }
+    }
+    return message
+}

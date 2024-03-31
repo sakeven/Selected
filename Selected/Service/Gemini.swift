@@ -12,13 +12,9 @@ import GoogleGenerativeAI
 struct GeminiPrompt {
     let prompt: String
     
-    func chat(content: String, options: [String:String] = [String:String](), completion: @escaping (_: String) -> Void) async -> Void {
+    func chat(selectedText: String, options: [String:String] = [String:String](), completion: @escaping (_: String) -> Void) async -> Void {
         let model = GenerativeModel(name: "gemini-pro", apiKey: Defaults[.geminiAPIKey], requestOptions: RequestOptions(apiVersion: "v1beta") )
-        var message = prompt
-        message.replace("{selected.text}", with: content)
-        for option in options {
-            message.replace("{selected.options."+option.key+"}", with: option.value)
-        }
+        var message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
         
         NSLog("prompt is \(message)")
         let contentStream = model.generateContentStream(message)

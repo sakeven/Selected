@@ -15,16 +15,11 @@ let OpenAIModels: [Model] = [.gpt4_turbo_preview, .gpt4, .gpt4_32k, .gpt3_5Turbo
 struct OpenAIPrompt {
     let prompt: String
     
-    func chat(content: String, options: [String:String] = [String:String](), completion: @escaping (_: String) -> Void) async -> Void {
+    func chat(selectedText: String, options: [String:String] = [String:String](), completion: @escaping (_: String) -> Void) async -> Void {
         let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
         let openAI = OpenAI(configuration: configuration)
         
-        var message = prompt
-        message.replace("{selected.text}", with: content)
-        for option in options {
-            message.replace("selected.options."+option.key, with: option.value)
-        }
-        
+        var message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
         let query = ChatQuery(model: Defaults[.openAIModel], messages: [.init(role: .user, content: message)])
         
         openAI.chatsStream(query: query) { partialResult in

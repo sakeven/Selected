@@ -49,13 +49,13 @@ class URLAction: Decodable {
         self.url = url
     }
     
-    func generate(generic: GenericAction) -> PerformAction {
+    func generate(pluginInfo: PluginInfo, generic: GenericAction) -> PerformAction {
         
-        return PerformAction(actionMeta:
-                                generic, complete: { ctx in
+        return PerformAction(
+             actionMeta: generic, complete: { ctx in
             
-            let url = URL(string: self.url
-                .replacing("{selected.text}", with: ctx.Text))!
+            var urlString = replaceOptions(content: self.url, selectedText: ctx.Text, options: pluginInfo.getOptionsValue())
+            let url = URL(string: urlString)!
             
             NSLog(url.scheme ?? "")
             if url.scheme != "http" && url.scheme != "https" {
@@ -90,11 +90,13 @@ class WebSearchAction {
     
     func generate(generic: GenericAction) -> PerformAction {
         
-        return PerformAction(actionMeta:
-                                generic, complete: { ctx in
+        return PerformAction(
+            actionMeta: generic, complete: { ctx in
             
-            let url = URL(string: self.searchURL
-                .replacing("{selected.text}", with: ctx.Text))!
+            
+            var urlString = replaceOptions(content: self.searchURL, selectedText: ctx.Text)
+            
+            let url = URL(string: urlString)!
             
             NSLog(url.scheme ?? "")
             if url.scheme != "http" && url.scheme != "https" {
