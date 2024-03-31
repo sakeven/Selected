@@ -159,6 +159,8 @@ func getSelectedTextBySimulateCommandC() -> String {
     let lastCopyText = pboard.string(forType: .string)
     let lastChangeCount = pboard.changeCount
     
+    ClipService.shared.pauseMonitor()
+    
     PressCopyKey()
     
     usleep(100000) // sleep 0.1s to wait NSPasteboard get copy string.
@@ -169,7 +171,10 @@ func getSelectedTextBySimulateCommandC() -> String {
     
     let selectText = pboard.string(forType: .string)
     pboard.clearContents()
+    NSLog("last content: \(String(describing: lastCopyText))")
     pboard.setString(lastCopyText ?? "", forType: .string)
+    
+    ClipService.shared.resumeMonitor()
     return selectText ?? ""
 }
 

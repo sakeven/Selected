@@ -22,6 +22,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         DispatchQueue.main.async {
             monitorMouseMove()
         }
+        DispatchQueue.main.async {
+            ClipService.shared.startMonitoring()
+        }
     }
     
     func application(_ application: NSApplication, open urls: [URL]) {
@@ -189,6 +192,7 @@ struct EventState {
 let eventTypeMap: [ NSEvent.EventType: String] = [
     .mouseMoved: "mouseMoved",
     .keyDown: "keydonw",
+    .keyUp: "keyup",
     .leftMouseUp: "leftMouseUp",
     .leftMouseDragged: "leftMouseDragged",
     .scrollWheel: "scrollWheel"
