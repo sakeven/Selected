@@ -19,7 +19,7 @@ struct OpenAIPrompt {
         let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
         let openAI = OpenAI(configuration: configuration)
         
-        var message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
+        let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
         let query = ChatQuery(model: Defaults[.openAIModel], messages: [.init(role: .user, content: message)])
         
         openAI.chatsStream(query: query) { partialResult in

@@ -14,7 +14,7 @@ struct GeminiPrompt {
     
     func chat(selectedText: String, options: [String:String] = [String:String](), completion: @escaping (_: String) -> Void) async -> Void {
         let model = GenerativeModel(name: "gemini-pro", apiKey: Defaults[.geminiAPIKey], requestOptions: RequestOptions(apiVersion: "v1beta") )
-        var message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
+        let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
         
         NSLog("prompt is \(message)")
         let contentStream = model.generateContentStream(message)

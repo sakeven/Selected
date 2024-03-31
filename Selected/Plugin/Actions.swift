@@ -54,7 +54,7 @@ class URLAction: Decodable {
         return PerformAction(
              actionMeta: generic, complete: { ctx in
             
-            var urlString = replaceOptions(content: self.url, selectedText: ctx.Text, options: pluginInfo.getOptionsValue())
+            let urlString = replaceOptions(content: self.url, selectedText: ctx.Text, options: pluginInfo.getOptionsValue())
             let url = URL(string: urlString)!
             
             NSLog(url.scheme ?? "")
@@ -93,8 +93,7 @@ class WebSearchAction {
         return PerformAction(
             actionMeta: generic, complete: { ctx in
             
-            
-            var urlString = replaceOptions(content: self.searchURL, selectedText: ctx.Text)
+            let urlString = replaceOptions(content: self.searchURL, selectedText: ctx.Text)
             
             let url = URL(string: urlString)!
             
