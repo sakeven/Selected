@@ -12,22 +12,38 @@ struct PluginListView: View {
     @ObservedObject var pluginMgr = PluginManager.shared
     
     var body: some View {
-        List{
-            ForEach(pluginMgr.plugins, id: \.self.info.name) { plugin in
-                HStack{
-                    Label(
-                        title: { Text(plugin.info.name).padding(.leading, 10) },
-                        icon: { Icon(plugin.info.icon)}
-                    ).padding(10).contextMenu {
-                        Button(action: {
-                            NSLog("delete \(plugin.info.name)")
-                            pluginMgr.remove(plugin.info.pluginDir)
-                        }){
-                            Text("Delete")
+        VStack{
+            List{
+                ForEach($pluginMgr.plugins, id: \.self.info.name) { $plugin in
+                    DisclosureGroup{
+                        if !$plugin.info.options.isEmpty {
+                            Form{
+                                Section("Options"){
+                                    ForEach($plugin.info.options, id: \.self.identifier) {
+                                        $option in
+                                        OptionView(pluginName: plugin.info.name, option: $option)
+                                    }
+                                }
+                            }.formStyle(.grouped).scrollContentBackground(.hidden)
                         }
-                    }
-                    if let desc = plugin.info.description {
-                        Text(desc).font(.system(size: 10))
+                    } label: {
+                        HStack{
+                            Label(
+                                title: { Text(plugin.info.name).padding(.leading, 10)
+                                    if let desc = plugin.info.description {
+                                        Text(desc).font(.system(size: 10))
+                                    }
+                                },
+                                icon: { Icon(plugin.info.icon)}
+                            ).padding(10).contextMenu {
+                                Button(action: {
+                                    NSLog("delete \(plugin.info.name)")
+                                    pluginMgr.remove(plugin.info.pluginDir, plugin.info.name)
+                                }){
+                                    Text("Delete")
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -39,6 +55,54 @@ struct PluginListView: View {
     PluginListView()
 }
 
+struct OptionView: View {
+    var pluginName: String
+    @Binding var option: Option
+    
+    @State private var toggle: Bool = false
+    @State private var text: String = ""
+    
+    init(pluginName: String, option: Binding<Option>) {
+        self._option = option
+        self.pluginName = pluginName
+        self._text = State(initialValue: self.option.defaultVal ?? "")
+        
+        if self.option.type == .boolean {
+            self._toggle = State(initialValue: getBoolOption(pluginName: pluginName, identifier: self.option.identifier))
+            NSLog("value \(getBoolOption(pluginName: pluginName, identifier: self.option.identifier))")
+        } else {
+            if let text = getStringOption(pluginName: pluginName, identifier: self.option.identifier) {
+                self._text = State(initialValue: text)
+            }
+        }
+    }
+    
+    var body: some View {
+        switch option.type {
+            case .boolean:
+                Toggle(option.identifier, isOn: $toggle).onChange(of: toggle) { oldValue, newValue in
+                    NSLog("value changed \(newValue)")
+                    setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
+                }
+            case .multiple:
+                Picker(option.identifier, selection: $text, content: {
+                    ForEach(option.values!, id: \.self) {
+                        Text($0)
+                    }
+                }).pickerStyle(DefaultPickerStyle()).onChange(of: text) { oldValue, newValue in
+                    setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
+                }
+            case .string:
+                TextField(option.identifier, text: $text).onChange(of: text) { oldValue, newValue in
+                    setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
+                }
+            case .secret:
+                SecureField(option.identifier, text: $text).onChange(of: text) { oldValue, newValue in
+                    setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
+                }
+        }
+    }
+}
 
 
 struct ActionListView: View {
@@ -215,7 +279,7 @@ struct OnePicker: View {
     var onChange: (_: String) -> Void
     
     @State private var toAddAction = ""
-
+    
     var body: some View {
         Picker("Add", selection: $toAddAction, content: {
             HStack{

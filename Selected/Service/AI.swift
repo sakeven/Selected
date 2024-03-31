@@ -69,13 +69,13 @@ struct Translation {
 struct ChatService {
     let prompt: String
     
-    func chat(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
+    func chat(content: String, options: [String:String], completion: @escaping (_: String) -> Void) async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
-                await OpenAIPrompt(prompt: prompt).chat(content: content, completion: completion)
+                await OpenAIPrompt(prompt: prompt).chat(content: content, options: options, completion: completion)
             case "Gemini":
                 NSLog("Gemini")
-                await GeminiPrompt(prompt: prompt).chat(content: content, completion: completion)
+                await GeminiPrompt(prompt: prompt).chat(content: content, options: options, completion: completion)
             default:
                 completion("no model \(Defaults[.aiService])")
         }

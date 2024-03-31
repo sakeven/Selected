@@ -155,6 +155,16 @@
         }
       }
     },
+    "Options" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选项"
+          }
+        }
+      }
+    },
     "Quit" : {
       "localizations" : {
         "zh-Hans" : {

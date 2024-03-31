@@ -16,6 +16,7 @@ struct PluginInfo: Decodable {
     var version: String?
     var minSelectedVersion: String?
     var description: String?
+    var options: [Option]
     
     // not in config
     var enabled: Bool = true
@@ -23,7 +24,7 @@ struct PluginInfo: Decodable {
     
     
     enum CodingKeys: String, CodingKey {
-        case icon, name, version, minSelectedVersion, description
+        case icon, name, version, minSelectedVersion, description, options
     }
     
     
@@ -41,6 +42,28 @@ struct PluginInfo: Decodable {
         if values.contains(.description) {
             self.description = try values.decode(String.self, forKey: .description)
         }
+        self.options = [Option]()
+        if values.contains(.options) {
+            self.options = try values.decode([Option].self, forKey: .options)
+        }
+    }
+    
+    func getOptionsValue() -> [String:String] {
+        var dict = [String:String]()
+        
+        for option in options {
+            if option.type == .boolean {
+                let val = getBoolOption(pluginName: name, identifier: option.identifier)
+                dict[option.identifier] = val.description
+            } else {
+                if let val = getStringOption(pluginName: name, identifier: option.identifier) {
+                    dict[option.identifier] = val
+                } else {
+                    dict[option.identifier] = option.defaultVal
+                }
+            }
+        }
+        return dict
     }
 }
 
@@ -100,9 +123,10 @@ class PluginManager: ObservableObject {
         }
     }
     
-    func remove(_ pluginDir: String) {
+    func remove(_ pluginDir: String, _ pluginName: String) {
         do {
-           try filemgr.removeItem(at:  extensionsDir.appendingPathComponent(pluginDir, isDirectory: true))
+           try filemgr.removeItem(at: extensionsDir.appendingPathComponent(pluginDir, isDirectory: true))
+            removeOptionsOf(pluginName: pluginName)
         } catch{
             NSLog("remove plugin \(pluginDir): \(error)")
         }
@@ -170,7 +194,7 @@ class PluginManager: ObservableObject {
                     list.append(url.generate(generic: Action.meta))
                     return
                 }
-                if let service =  Action.service {
+                if let service = Action.service {
                     list.append(service.generate(generic: Action.meta))
                     return
                 }
@@ -178,12 +202,12 @@ class PluginManager: ObservableObject {
                     list.append(keycombo.generate(generic: Action.meta))
                     return
                 }
-                if let gpt =  Action.gpt {
-                    list.append(gpt.generate(generic: Action.meta))
+                if let gpt = Action.gpt {
+                    list.append(gpt.generate(pluginInfo: Plugin.info, generic: Action.meta))
                     return
                 }
                 if let script = Action.runCommand {
-                    list.append(script.generate(generic: Action.meta))
+                    list.append(script.generate(pluginInfo: Plugin.info, generic: Action.meta))
                     return
                 }
             }

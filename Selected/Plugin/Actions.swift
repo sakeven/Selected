@@ -14,7 +14,6 @@ import Defaults
 let kAfterPaste = "paste"
 let kAfterCopy = "copy"
 
-
 class GenericAction: Decodable {
     var title: String
     var icon: String
@@ -56,7 +55,7 @@ class URLAction: Decodable {
                                 generic, complete: { ctx in
             
             let url = URL(string: self.url
-                .replacing("{text}", with: ctx.Text))!
+                .replacing("{selected.text}", with: ctx.Text))!
             
             NSLog(url.scheme ?? "")
             if url.scheme != "http" && url.scheme != "https" {
@@ -95,7 +94,7 @@ class WebSearchAction {
                                 generic, complete: { ctx in
             
             let url = URL(string: self.searchURL
-                .replacing("{text}", with: ctx.Text))!
+                .replacing("{selected.text}", with: ctx.Text))!
             
             NSLog(url.scheme ?? "")
             if url.scheme != "http" && url.scheme != "https" {
@@ -202,10 +201,10 @@ class GptAction: Decodable{
         self.prompt = prompt
     }
     
-    func generate(generic: GenericAction) -> PerformAction {
+    func generate(pluginInfo: PluginInfo,  generic: GenericAction) -> PerformAction {
         return PerformAction(actionMeta:
                                 generic, complete: { ctx in
-            WindowManager.shared.createChatWindow(withText: ctx.Text, prompt: self.prompt)
+            WindowManager.shared.createChatWindow(withText: ctx.Text, prompt: self.prompt, options: pluginInfo.getOptionsValue())
         })
     }
 }

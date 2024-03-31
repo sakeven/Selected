@@ -15,12 +15,16 @@ let OpenAIModels: [Model] = [.gpt4_turbo_preview, .gpt4, .gpt4_32k, .gpt3_5Turbo
 struct OpenAIPrompt {
     let prompt: String
     
-    func chat(content: String, completion: @escaping (_: String) -> Void) async -> Void {
+    func chat(content: String, options: [String:String] = [String:String](), completion: @escaping (_: String) -> Void) async -> Void {
         let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
         let openAI = OpenAI(configuration: configuration)
         
         var message = prompt
-        message.replace("{text}", with: content)
+        message.replace("{selected.text}", with: content)
+        for option in options {
+            message.replace("selected.options."+option.key, with: option.value)
+        }
+        
         let query = ChatQuery(model: Defaults[.openAIModel], messages: [.init(role: .user, content: message)])
         
         openAI.chatsStream(query: query) { partialResult in
@@ -38,11 +42,11 @@ struct OpenAIPrompt {
     }
 }
 
-let OpenAIWordTrans = OpenAIPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出例句。使用 markdown 的格式回复。单词为：{text}")
+let OpenAIWordTrans = OpenAIPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出例句。使用 markdown 的格式回复。单词为：{selected.text}")
 
-let OpenAITrans2Chinese = OpenAIPrompt(prompt:"翻译以下内容到中文。内容为：{text}")
+let OpenAITrans2Chinese = OpenAIPrompt(prompt:"翻译以下内容到中文。内容为：{selected.text}")
 
-let OpenAITrans2English = OpenAIPrompt(prompt:"Translate the following content into English. The content is：{text}")
+let OpenAITrans2English = OpenAIPrompt(prompt:"Translate the following content into English. The content is：{selected.text}")
 
 
 var audioPlayer: AVAudioPlayer?
