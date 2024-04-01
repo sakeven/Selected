@@ -43,8 +43,7 @@ let OpenAITrans2Chinese = OpenAIPrompt(prompt:"翻译以下内容到中文。内
 
 let OpenAITrans2English = OpenAIPrompt(prompt:"Translate the following content into English. The content is：{selected.text}")
 
-
-fileprivate var audioPlayer: AVAudioPlayer?
+internal var audioPlayer: AVAudioPlayer?
 
 private struct VoiceData {
     var data: Data
