@@ -13,6 +13,7 @@ import Defaults
 struct SelectedTextContext {
     var Text: String = ""
     var BundleID: String = ""
+    var URL: String = ""
     var Editable: Bool = false // 当前窗口是否可编辑。浏览器里的怎么判断？
     // TODO：
     // 1. 浏览器下，获取当前网页的 url
@@ -40,7 +41,7 @@ func getSelectedTextByAX(bundleID: String) -> String {
                                               &focusedElement)
         
         if error == .success, let focusedElement = focusedElement as! AXUIElement? {
-                        
+            
             var selectedTextValue: AnyObject?
             error = AXUIElementCopyAttributeValue(focusedElement,
                                                   kAXSelectedTextAttribute as CFString,
@@ -85,11 +86,14 @@ func getSelectedText() -> SelectedTextContext? {
     if isBrowser(id: bundleID) {
         // 辅助功能也会拿到网页内容，但是可能不够完整。暂时放弃获取地址栏内容
         // 地址栏的内容，无法通过脚本获取，但是可以通过辅助功能获取。
-//        selectedText = getSelectedTextByAX(bundleID: bundleID)
-//        NSLog("browser \(selectedText)")
-//        if selectedText.isEmpty {
-            selectedText = getSelectedTextByAppleScript(bundleID: bundleID)
-//        }
+        //        selectedText = getSelectedTextByAX(bundleID: bundleID)
+        //        NSLog("browser \(selectedText)")
+        //        if selectedText.isEmpty {
+        if let browserCtx = getSelectedTextByAppleScript(bundleID: bundleID) {
+            selectedText = browserCtx.text
+            ctx.URL = browserCtx.url
+        }
+        //        }
     } else {
         selectedText = getSelectedTextByAX(bundleID: bundleID)
     }
@@ -231,21 +235,28 @@ func isSafari(id: String)-> Bool {
     return id == "com.apple.Safari"
 }
 
-func getSelectedTextByAppleScript(bundleID: String) -> String{
+struct BroswerSelectedTextContext {
+    var url: String
+    var text: String
+}
+
+func getSelectedTextByAppleScript(bundleID: String) -> BroswerSelectedTextContext?{
     if isChrome(id: bundleID) {
         let selected = getSelectedTextByAppleScriptFromChrome(bundleID: bundleID)
+        let url = getChromeCurrentTabURL(bundleID: bundleID)
         if isArc(id: bundleID) {
             // arc 浏览器获得的文本前后会带双引号，需要去掉。
-            return String(String(selected.dropLast(1)).dropFirst(1))
-        } else {
-            return selected
+            return BroswerSelectedTextContext(url: url, text: String(String(selected.dropLast(1)).dropFirst(1)))
         }
+        return BroswerSelectedTextContext(url: url, text: selected)
     } else if isSafari(id: bundleID) {
-        return getSelectedTextByAppleScriptFromSafari(bundleID: bundleID)
+        let selected = getSelectedTextByAppleScriptFromSafari(bundleID: bundleID)
+        let url = getSafariCurrentTabURL(bundleID: bundleID)
+        return BroswerSelectedTextContext(url: url, text: selected)
     }
     
     NSLog("unknown \(bundleID)")
-    return ""
+    return nil
 }
 
 // 需要开启 Safari 开发者设置中的 “允许 Apple 事件中的 JavaScript”
@@ -288,6 +299,50 @@ func getSelectedTextByAppleScriptFromChrome(bundleID: String) -> String{
                       end tell
                   end timeout
                   """) {
+        var error: NSDictionary?
+        // TODO timeout?
+        let output = scriptObject.executeAndReturnError(&error)
+        if (error != nil) {
+            NSLog("error: \(String(describing: error))")
+            return ""
+        } else {
+            return output.stringValue ?? ""
+        }
+    }
+    return ""
+}
+
+
+func getSafariCurrentTabURL(bundleID: String) -> String {
+    let script = """
+tell application id "\(bundleID)"
+set theUrl to URL of front document
+end tell
+"""
+    
+    if let scriptObject =  NSAppleScript(source: script) {
+        var error: NSDictionary?
+        // TODO timeout?
+        let output = scriptObject.executeAndReturnError(&error)
+        if (error != nil) {
+            NSLog("error: \(String(describing: error))")
+            return ""
+        } else {
+            return output.stringValue ?? ""
+        }
+    }
+    return ""
+}
+
+
+func getChromeCurrentTabURL(bundleID: String) -> String {
+    let script = """
+tell application id "\(bundleID)"
+set theUrl to URL of active tab of front window
+end tell
+"""
+    
+    if let scriptObject =  NSAppleScript(source: script) {
         var error: NSDictionary?
         // TODO timeout?
         let output = scriptObject.executeAndReturnError(&error)
