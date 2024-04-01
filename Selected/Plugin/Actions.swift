@@ -81,6 +81,54 @@ class URLAction: Decodable {
     }
 }
 
+extension URL {
+    func setScheme(_ value: String) -> URL {
+        let components = NSURLComponents.init(url: self, resolvingAgainstBaseURL: true)
+        components?.scheme = value
+        return (components?.url!)!
+    }
+}
+    
+class OpenLinksAction: Decodable {
+    func generate(generic: GenericAction) -> PerformAction {
+        return PerformAction(
+             actionMeta: generic, complete: { ctx in
+                 NSLog("should open \(ctx.URLs)")
+
+                 for urlString in ctx.URLs {
+                     NSLog("open \(urlString)")
+                     var url = URL(string: urlString)!
+                     
+                     if url.scheme == nil || url.scheme == "" {
+                         url = url.setScheme("https")
+                     }
+                     
+                     DispatchQueue.main.async {
+                         if url.scheme != "http" && url.scheme != "https"  {
+                             // not a web link
+                             NSWorkspace.shared.open(url)
+                             return
+                         }
+                         
+                         if !isBrowser(id: ctx.BundleID){
+                             NSWorkspace.shared.open(url)
+                             return
+                         }
+                         
+                         guard let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: ctx.BundleID) else {
+                             NSWorkspace.shared.open(url)
+                             return
+                         }
+                         
+                         let cfg =  NSWorkspace.OpenConfiguration()
+                         cfg.activates = true
+                         NSWorkspace.shared.open([url], withApplicationAt: appURL, configuration: cfg)
+                     }
+                 }
+        })
+    }
+}
+
 
 class WebSearchAction {
     @Default(.search) var searchURL
@@ -297,6 +345,10 @@ func FilterActions(_ ctx: SelectedTextContext, list: [PerformAction] ) -> [Perfo
     var filtered = [PerformAction]()
     for action in list {
         if !ctx.Editable && action.actionMeta.after == "paste" {
+            continue
+        }
+        if ctx.URLs.isEmpty &&
+            action.actionMeta.identifier == "selected.openlinks" {
             continue
         }
         if let regexStr = action.actionMeta.regex {

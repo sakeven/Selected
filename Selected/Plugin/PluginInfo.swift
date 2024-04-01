@@ -227,8 +227,7 @@ class PluginManager: ObservableObject {
         list.append(TranslationAction(target: "en").generate(
             generic: GenericAction(title: "Translate to English", icon: "symbol:e.square", after: "", identifier: "selected.translation.en")
         ))
-        list.append(URLAction(url: "{text}" ).generate(
-            pluginInfo: PluginInfo(),
+        list.append(OpenLinksAction().generate(
             generic: GenericAction(title: "OpenLinks", icon: "symbol:link", after: "", identifier: "selected.openlinks")
         ))
         list.append(CopyAction().generate(

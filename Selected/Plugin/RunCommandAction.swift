@@ -38,10 +38,14 @@ class RunCommandAction: Decodable {
                 return
             }
             
+            
+            let joinedURLs = ctx.URLs.joined(separator: "\n")
+            
             var env = ["SELECTED_TEXT": ctx.Text,
                        "SELECTED_BUNDLEID": ctx.BundleID,
                        "SELECTED_ACTION": generic.identifier,
-                       "SELECTED_URL": ctx.URL]
+                       "SELECTED_WEBPAGE_URL": ctx.WebPageURL,
+                       "SELECTED_URLS": joinedURLs]
             let optionVals = pluginInfo.getOptionsValue()
             optionVals.forEach{ (key: String, value: String) in
                 env["SELECTED_OPTIONS_"+key.uppercased()] = value
