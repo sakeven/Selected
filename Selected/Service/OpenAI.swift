@@ -44,18 +44,42 @@ let OpenAITrans2Chinese = OpenAIPrompt(prompt:"翻译以下内容到中文。内
 let OpenAITrans2English = OpenAIPrompt(prompt:"Translate the following content into English. The content is：{selected.text}")
 
 
-var audioPlayer: AVAudioPlayer?
+fileprivate var audioPlayer: AVAudioPlayer?
+
+private struct VoiceData {
+    var data: Data
+    var lastAccessTime: Date
+}
+
+private var voiceDataCache = [Int: VoiceData]()
+
+// TODO: regular cleaning
+private func clearExpiredVoiceData() {
+    for (k, v) in voiceDataCache {
+        if v.lastAccessTime.addingTimeInterval(120) < Date() {
+            voiceDataCache.removeValue(forKey: k)
+        }
+    }
+}
 
 func openAITTS(_ text: String) async {
+    clearExpiredVoiceData()
+    if let data = voiceDataCache[text.hash] {
+        NSLog("cached tts")
+        audioPlayer?.stop()
+        audioPlayer = try! AVAudioPlayer(data: data.data)
+        audioPlayer!.play()
+        return
+    }
+    
     let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
     let openAI = OpenAI(configuration: configuration)
-    
     let query = AudioSpeechQuery(model: .tts_1, input: text, voice: .shimmer, responseFormat: .mp3, speed: 1.0)
 
     do {
-       
         let result = try await openAI.audioCreateSpeech(query: query)
         if let data = result.audioData {
+            voiceDataCache[text.hash] = VoiceData(data: data, lastAccessTime: Date())
             audioPlayer?.stop()
             audioPlayer = try! AVAudioPlayer(data: data)
             audioPlayer!.play()
