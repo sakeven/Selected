@@ -52,32 +52,32 @@ class URLAction: Decodable {
     func generate(pluginInfo: PluginInfo, generic: GenericAction) -> PerformAction {
         
         return PerformAction(
-             actionMeta: generic, complete: { ctx in
-            
-            let urlString = replaceOptions(content: self.url, selectedText: ctx.Text, options: pluginInfo.getOptionsValue())
-            let url = URL(string: urlString)!
-            
-            NSLog(url.scheme ?? "")
-            if url.scheme != "http" && url.scheme != "https" {
-                // not a web link
-                NSWorkspace.shared.open(url)
-                return
-            }
-            
-            if !isBrowser(id: ctx.BundleID){
-                NSWorkspace.shared.open(url)
-                return
-            }
-        
-            guard let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: ctx.BundleID) else {
-                NSWorkspace.shared.open(url)
-                return
-            }
-            
-            let cfg =  NSWorkspace.OpenConfiguration()
-            cfg.activates = true
-            NSWorkspace.shared.open([url], withApplicationAt: appURL, configuration: cfg)
-        })
+            actionMeta: generic, complete: { ctx in
+                
+                let urlString = replaceOptions(content: self.url, selectedText: ctx.Text, options: pluginInfo.getOptionsValue())
+                let url = URL(string: urlString)!
+                
+                NSLog(url.scheme ?? "")
+                if url.scheme != "http" && url.scheme != "https" {
+                    // not a web link
+                    NSWorkspace.shared.open(url)
+                    return
+                }
+                
+                if !isBrowser(id: ctx.BundleID){
+                    NSWorkspace.shared.open(url)
+                    return
+                }
+                
+                guard let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: ctx.BundleID) else {
+                    NSWorkspace.shared.open(url)
+                    return
+                }
+                
+                let cfg =  NSWorkspace.OpenConfiguration()
+                cfg.activates = true
+                NSWorkspace.shared.open([url], withApplicationAt: appURL, configuration: cfg)
+            })
     }
 }
 
@@ -88,44 +88,50 @@ extension URL {
         return (components?.url!)!
     }
 }
-    
-class OpenLinksAction: Decodable {
-    func generate(generic: GenericAction) -> PerformAction {
-        return PerformAction(
-             actionMeta: generic, complete: { ctx in
-                 NSLog("should open \(ctx.URLs)")
 
-                 for urlString in ctx.URLs {
-                     NSLog("open \(urlString)")
-                     var url = URL(string: urlString)!
-                     
-                     if url.scheme == nil || url.scheme == "" {
-                         url = url.setScheme("https")
-                     }
-                     
-                     DispatchQueue.main.async {
-                         if url.scheme != "http" && url.scheme != "https"  {
-                             // not a web link
-                             NSWorkspace.shared.open(url)
-                             return
-                         }
-                         
-                         if !isBrowser(id: ctx.BundleID){
-                             NSWorkspace.shared.open(url)
-                             return
-                         }
-                         
-                         guard let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: ctx.BundleID) else {
-                             NSWorkspace.shared.open(url)
-                             return
-                         }
-                         
-                         let cfg =  NSWorkspace.OpenConfiguration()
-                         cfg.activates = true
-                         NSWorkspace.shared.open([url], withApplicationAt: appURL, configuration: cfg)
-                     }
-                 }
-        })
+class OpenLinksAction: Decodable {
+    func supported(ctx: SelectedTextContext) -> Bool {
+        return !ctx.URLs.isEmpty
+    }
+    
+    func generate(generic: GenericAction) -> PerformAction {
+        let pa = PerformAction(
+            actionMeta: generic, complete: { ctx in
+                NSLog("should open \(ctx.URLs)")
+                
+                for urlString in ctx.URLs {
+                    NSLog("open \(urlString)")
+                    var url = URL(string: urlString)!
+                    
+                    if url.scheme == nil || url.scheme == "" {
+                        url = url.setScheme("https")
+                    }
+                    
+                    DispatchQueue.main.async {
+                        if url.scheme != "http" && url.scheme != "https"  {
+                            // not a web link
+                            NSWorkspace.shared.open(url)
+                            return
+                        }
+                        
+                        if !isBrowser(id: ctx.BundleID){
+                            NSWorkspace.shared.open(url)
+                            return
+                        }
+                        
+                        guard let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: ctx.BundleID) else {
+                            NSWorkspace.shared.open(url)
+                            return
+                        }
+                        
+                        let cfg =  NSWorkspace.OpenConfiguration()
+                        cfg.activates = true
+                        NSWorkspace.shared.open([url], withApplicationAt: appURL, configuration: cfg)
+                    }
+                }
+            })
+        pa.supported = supported
+        return pa
     }
 }
 
@@ -140,43 +146,49 @@ class WebSearchAction {
         
         return PerformAction(
             actionMeta: generic, complete: { ctx in
-            
-            let urlString = replaceOptions(content: self.searchURL, selectedText: ctx.Text)
-            
-            let url = URL(string: urlString)!
-            
-            NSLog(url.scheme ?? "")
-            if url.scheme != "http" && url.scheme != "https" {
-                // not a web link
-                NSWorkspace.shared.open(url)
-                return
-            }
-            
-            if !isBrowser(id: ctx.BundleID){
-                NSWorkspace.shared.open(url)
-                return
-            }
-        
-            guard let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: ctx.BundleID) else {
-                NSWorkspace.shared.open(url)
-                return
-            }
-            
-            let cfg =  NSWorkspace.OpenConfiguration()
-            cfg.activates = true
-            NSWorkspace.shared.open([url], withApplicationAt: appURL, configuration: cfg)
-        })
+                
+                let urlString = replaceOptions(content: self.searchURL, selectedText: ctx.Text)
+                
+                let url = URL(string: urlString)!
+                
+                NSLog(url.scheme ?? "")
+                if url.scheme != "http" && url.scheme != "https" {
+                    // not a web link
+                    NSWorkspace.shared.open(url)
+                    return
+                }
+                
+                if !isBrowser(id: ctx.BundleID){
+                    NSWorkspace.shared.open(url)
+                    return
+                }
+                
+                guard let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: ctx.BundleID) else {
+                    NSWorkspace.shared.open(url)
+                    return
+                }
+                
+                let cfg =  NSWorkspace.OpenConfiguration()
+                cfg.activates = true
+                NSWorkspace.shared.open([url], withApplicationAt: appURL, configuration: cfg)
+            })
     }
 }
 
 
 class MapAction {
+    func supported(ctx: SelectedTextContext) -> Bool {
+        return !ctx.Address.isEmpty
+    }
+    
     func generate(generic: GenericAction) -> PerformAction {
-        return PerformAction(
+        let pa = PerformAction(
             actionMeta: generic, complete: { ctx in
                 let url = URL(string: "maps://?q="+ctx.Address)!
                 NSWorkspace.shared.open(url)
-        })
+            })
+        pa.supported = supported
+        return pa
     }
 }
 
@@ -199,6 +211,8 @@ class KeycomboAction: Decodable {
     // TODO validate keycombo
     var keycombo: String
     var keycombos: [String]?
+    
+    var supported: Supported? // supported urls or apps
     
     init(keycombo: String) {
         NSLog("set keycombo \(keycombo)")
@@ -227,8 +241,24 @@ class KeycomboAction: Decodable {
         PressKey(keycode: keycode, flags:  flags)
     }
     
-    func generate(generic: GenericAction) -> PerformAction {
-        return PerformAction(actionMeta:
+    func isMatched(bundleID: String, url: String) -> Bool {
+        guard let supported = self.supported else{
+            return true
+        }
+        
+        let noURL = supported.notMatchURL(url: url)
+        let noApp = supported.notMatchApp(bundleID: bundleID)
+        // If the text context does not match both the URL and the app at the same time,
+        // then it is truly not a match; otherwise, it is considered a match.
+        return !(noURL && noApp)
+    }
+    
+    func supported(ctx: SelectedTextContext) -> Bool {
+        return isMatched(bundleID: ctx.BundleID, url: ctx.WebPageURL)
+    }
+    
+    func generate(pluginInfo: PluginInfo, generic: GenericAction) -> PerformAction {
+        let pa = PerformAction(pluginInfo: pluginInfo, actionMeta:
                                 generic, complete: { ctx in
             if let keycombos = self.keycombos, !keycombos.isEmpty {
                 for keycombo in keycombos {
@@ -239,6 +269,8 @@ class KeycomboAction: Decodable {
                 self.pressKeycombo(keycombo: self.keycombo)
             }
         })
+        pa.supported = self.supported
+        return pa
     }
 }
 
@@ -298,9 +330,11 @@ struct Action: Decodable{
 class PerformAction: Identifiable,Hashable {
     var id = UUID()
     var actionMeta: GenericAction
+    var pluginInfo: PluginInfo?
     var complete: ((_: SelectedTextContext) -> Void)?
     var completeAsync: ((_: SelectedTextContext) async ->  Void)?
-
+    var supported: ((_: SelectedTextContext) -> Bool)?
+    
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(actionMeta.identifier)
@@ -315,7 +349,18 @@ class PerformAction: Identifiable,Hashable {
         self.complete = complete
     }
     
+    init(pluginInfo: PluginInfo, actionMeta: GenericAction, complete: @escaping (_: SelectedTextContext) -> Void) {
+        self.actionMeta = actionMeta
+        self.complete = complete
+        self.pluginInfo = pluginInfo
+    }
+    
     init(actionMeta: GenericAction, complete: @escaping (_: SelectedTextContext) async -> Void) {
+        self.actionMeta = actionMeta
+        self.completeAsync = complete
+    }
+    
+    init(pluginInfo: PluginInfo, actionMeta: GenericAction, complete: @escaping (_: SelectedTextContext) async -> Void) {
         self.actionMeta = actionMeta
         self.completeAsync = complete
     }
@@ -355,21 +400,19 @@ func GetActions(ctx: SelectedTextContext) -> [PerformAction] {
 func FilterActions(_ ctx: SelectedTextContext, list: [PerformAction] ) -> [PerformAction] {
     var filtered = [PerformAction]()
     for action in list {
-        if !ctx.Editable && action.actionMeta.after == "paste" {
-            continue
-        }
-        if ctx.URLs.isEmpty &&
-            action.actionMeta.identifier == "selected.openlinks" {
-            continue
+        
+        if let supported = action.supported {
+            if !supported(ctx) {
+                continue
+            }
         }
         
-        if ctx.Address.isEmpty &&
-            action.actionMeta.identifier == "selected.map" {
+        if !ctx.Editable && action.actionMeta.after == "paste" {
             continue
         }
         
         if let regexStr = action.actionMeta.regex {
-           let reg = try! Regex(regexStr)
+            let reg = try! Regex(regexStr)
             if !ctx.Text.contains(reg) {
                 continue
             }

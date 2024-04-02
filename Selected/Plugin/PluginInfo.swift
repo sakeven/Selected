@@ -10,6 +10,42 @@ import SwiftUI
 import Yams
 
 
+struct SupportedApp: Decodable {
+    var bundleID: String
+}
+
+struct Supported: Decodable {
+    var apps: [SupportedApp]?
+    var urls: [String]?
+    
+    func notMatchURL(url: String) -> Bool {
+        guard let urls = urls else {
+            return false
+        }
+        for supportedURL in urls {
+            if url.contains(supportedURL) {
+                return false
+            }
+        }
+        return !urls.isEmpty
+    }
+    
+    func notMatchApp(bundleID: String) -> Bool {
+        if bundleID.isEmpty {
+            return false
+        }
+        guard let apps = apps else {
+            return false
+        }
+        for app in apps {
+            if app.bundleID == bundleID {
+                return false
+            }
+        }
+        return !apps.isEmpty
+    }
+}
+
 struct PluginInfo: Decodable {
     var icon: String
     var name: String
@@ -24,7 +60,9 @@ struct PluginInfo: Decodable {
     
     
     enum CodingKeys: String, CodingKey {
-        case icon, name, version, minSelectedVersion, description, options
+        case icon, name, version,
+             minSelectedVersion, description,
+             options
     }
     
     init() {
@@ -86,12 +124,12 @@ class PluginManager: ObservableObject {
     @Published var plugins = [Plugin]()
     
     static let shared = PluginManager()
-
+    
     init(){
         let fileManager = FileManager.default
         // 应用程序子目录
         extensionsDir = appSupportURL.appendingPathComponent("Extensions", isDirectory: true)
-
+        
         // 检查目录是否存在，否则尝试创建它
         if !fileManager.fileExists(atPath: extensionsDir.path) {
             try! fileManager.createDirectory(at: extensionsDir, withIntermediateDirectories: true, attributes: nil)
@@ -130,7 +168,7 @@ class PluginManager: ObservableObject {
     
     func remove(_ pluginDir: String, _ pluginName: String) {
         do {
-           try filemgr.removeItem(at: extensionsDir.appendingPathComponent(pluginDir, isDirectory: true))
+            try filemgr.removeItem(at: extensionsDir.appendingPathComponent(pluginDir, isDirectory: true))
             removeOptionsOf(pluginName: pluginName)
         } catch{
             NSLog("remove plugin \(pluginDir): \(error)")
@@ -204,7 +242,7 @@ class PluginManager: ObservableObject {
                     return
                 }
                 if let keycombo = Action.keycombo {
-                    list.append(keycombo.generate(generic: Action.meta))
+                    list.append(keycombo.generate(pluginInfo: Plugin.info, generic: Action.meta))
                     return
                 }
                 if let gpt = Action.gpt {
