@@ -15,6 +15,7 @@ struct SelectedTextContext {
     var BundleID: String = ""
     var WebPageURL: String = "" // the url of webpage which contains text.
     var URLs = [String]() // all urls in text
+    var Address: String = "" // last address in text
     var Editable: Bool = false // 当前窗口是否可编辑。浏览器里的怎么判断？
     // TODO：
     // 1. 浏览器下，获取当前网页的 url
@@ -113,15 +114,25 @@ func getSelectedText() -> SelectedTextContext? {
     }
     
     // get urls from selected text.
-    let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+    let detector = try! NSDataDetector(types: 
+                                        NSTextCheckingResult.CheckingType.link.rawValue |
+                                       NSTextCheckingResult.CheckingType.address.rawValue
+    )
     let matches = detector.matches(in: selectedText, options: [], range: NSRange(location: 0, length: selectedText.count))
     var urlSet = Set<String>()
+    var address = ""
     for match in matches {
         guard let range = Range(match.range, in: selectedText) else { continue }
-        let url = selectedText[range]
-        urlSet.insert(String(url))
+        
+        let item = String(selectedText[range])
+        if match.resultType == .link {
+            urlSet.insert(item)
+        } else if match.resultType == .address {
+            address = item
+        }
     }
     ctx.URLs = Array(urlSet)
+    ctx.Address = address
     ctx.Text = selectedText
     return ctx
 }

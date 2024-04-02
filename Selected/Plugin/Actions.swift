@@ -169,6 +169,17 @@ class WebSearchAction {
     }
 }
 
+
+class MapAction {
+    func generate(generic: GenericAction) -> PerformAction {
+        return PerformAction(
+            actionMeta: generic, complete: { ctx in
+                let url = URL(string: "maps://?q="+ctx.Address)!
+                NSWorkspace.shared.open(url)
+        })
+    }
+}
+
 class ServiceAction: Decodable {
     var name: String
     
@@ -351,6 +362,12 @@ func FilterActions(_ ctx: SelectedTextContext, list: [PerformAction] ) -> [Perfo
             action.actionMeta.identifier == "selected.openlinks" {
             continue
         }
+        
+        if ctx.Address.isEmpty &&
+            action.actionMeta.identifier == "selected.map" {
+            continue
+        }
+        
         if let regexStr = action.actionMeta.regex {
            let reg = try! Regex(regexStr)
             if !ctx.Text.contains(reg) {

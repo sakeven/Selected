@@ -236,6 +236,7 @@ class PluginManager: ObservableObject {
         list.append(SpeackAction().generate(
             generic: GenericAction(title: "Speak", icon: "symbol:play.circle", after: "", identifier: "selected.speak")
         ))
+        list.append(MapAction().generate(generic: GenericAction(title: "Map", icon: "symbol:mappin.and.ellipse", after: "", identifier: "selected.map")))
         return list
     }
 }
