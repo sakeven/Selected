@@ -372,14 +372,18 @@ func GetAllActions() -> [PerformAction] {
 
 // GetActions 根据上下文获得当前支持的 action 列表。比如根据当前窗口的应用选择 action 列表。
 func GetActions(ctx: SelectedTextContext) -> [PerformAction] {
-    let condition = ConfigurationManager.shared.getAppCondition(bundleID: ctx.BundleID)
-    let actionList = GetAllActions()
-    
-    guard let condition = condition else {
-        return FilterActions(ctx, list: actionList)
+    var actions = [ActionID]()
+    if let condition = ConfigurationManager.shared.getAppCondition(bundleID: ctx.BundleID) {
+        actions = condition.actions
+    }
+    if !ctx.WebPageURL.isEmpty {
+        if let condition = ConfigurationManager.shared.getURLCondition(url: ctx.WebPageURL) {
+            actions = condition.actions
+        }
     }
     
-    if condition.actions.isEmpty {
+    let actionList = GetAllActions()
+    if actions.isEmpty {
         return FilterActions(ctx, list: actionList)
     }
     
@@ -387,7 +391,7 @@ func GetActions(ctx: SelectedTextContext) -> [PerformAction] {
     let allActionDict = actionList.reduce(into: [String: PerformAction]()) {
         $0[$1.actionMeta.identifier] = $1
     }
-    for action in condition.actions {
+    for action in actions {
         guard let allowed = allActionDict[action] else {
             continue
         }
