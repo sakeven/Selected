@@ -123,6 +123,11 @@ class PluginManager: ObservableObject {
     
     @Published var plugins = [Plugin]()
     
+    // notify for option value changed
+    // we may use option value to construct action title.
+    // It's useful when we want to see action real title at the time we change option value.
+    @Published var optionValueChangeCnt = 0
+    
     static let shared = PluginManager()
     
     init(){
@@ -197,11 +202,14 @@ class PluginManager: ObservableObject {
                     plugin.info.icon = "file://"+extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).appendingPathComponent(plugin.info.icon.trimPrefix("file://./"), isDirectory: false).path
                 }
                 
-                for action in plugin.actions {
+                for i in plugin.actions.indices {
+                    var action = plugin.actions[i]
                     do {
-                        if action.meta.icon.hasPrefix("file://./"){
-                            action.meta.icon =  "file://"+extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).appendingPathComponent(action.meta.icon.trimPrefix("file://./"), isDirectory: false).path
+                        var meta = action.meta
+                        if meta.icon.hasPrefix("file://./"){
+                            meta.icon =  "file://"+extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).appendingPathComponent(action.meta.icon.trimPrefix("file://./"), isDirectory: false).path
                         }
+                        action.meta = meta
                         
                         if let runCommand = action.runCommand {
                             runCommand.pluginPath = extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).path
@@ -213,6 +221,7 @@ class PluginManager: ObservableObject {
                     } catch {
                         NSLog("validate action error \(error)")
                     }
+                    plugin.actions[i] = action
                 }
                 
                 list.append(plugin)
@@ -228,29 +237,33 @@ class PluginManager: ObservableObject {
         ))
         
         let pluginList = plugins
+        NSLog("get alll")
         pluginList.forEach { Plugin in
             if !Plugin.info.enabled {
                 return
             }
             Plugin.actions.forEach { Action in
+                var generic = Action.meta
+                generic.title = replaceOptions(content: generic.title, selectedText: "", options: Plugin.info.getOptionsValue())
+                
                 if let url = Action.url {
-                    list.append(url.generate(pluginInfo: Plugin.info, generic: Action.meta))
+                    list.append(url.generate(pluginInfo: Plugin.info, generic: generic))
                     return
                 }
                 if let service = Action.service {
-                    list.append(service.generate(generic: Action.meta))
+                    list.append(service.generate(generic: generic))
                     return
                 }
                 if let keycombo = Action.keycombo {
-                    list.append(keycombo.generate(pluginInfo: Plugin.info, generic: Action.meta))
+                    list.append(keycombo.generate(pluginInfo: Plugin.info, generic: generic))
                     return
                 }
                 if let gpt = Action.gpt {
-                    list.append(gpt.generate(pluginInfo: Plugin.info, generic: Action.meta))
+                    list.append(gpt.generate(pluginInfo: Plugin.info, generic: generic))
                     return
                 }
                 if let script = Action.runCommand {
-                    list.append(script.generate(pluginInfo: Plugin.info, generic: Action.meta))
+                    list.append(script.generate(pluginInfo: Plugin.info, generic: generic))
                     return
                 }
             }

@@ -108,13 +108,13 @@ struct OptionView: View {
 struct ActionListView: View {
     @ObservedObject var pluginMgr = PluginManager.shared
     
-    
     var body: some View {
         List{
             ForEach(pluginMgr.allActions, id: \.self.actionMeta.identifier) { action in
                 HStack{
                     Label(
-                        title: { Text(action.actionMeta.title).padding(.leading, 10) },
+                        title: { Text(action.actionMeta.title).padding(.leading, 10)
+                        },
                         icon: { Icon(action.actionMeta.icon) }
                     ).padding(10)
                     if let desc = action.actionMeta.description {

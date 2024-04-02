@@ -33,6 +33,7 @@ func getStringOption(pluginName: String, identifier: String) -> String? {
 func setOption(pluginName: String, identifier: String, val: Any) {
     let defaults = UserDefaults(suiteName: defaultsSuiteName(pluginName))!
     defaults.set(val, forKey: identifier)
+    PluginManager.shared.optionValueChangeCnt += 1
 }
 
 func removeOptionsOf(pluginName: String) {
