@@ -17,9 +17,7 @@ struct SelectedTextContext {
     var URLs = [String]() // all urls in text
     var Address: String = "" // last address in text
     var Editable: Bool = false // 当前窗口是否可编辑。浏览器里的怎么判断？
-    // TODO：
-    // 1. 浏览器下，获取当前网页的 url
-    // 2. IDE 或者 Editor 下，获取当前编辑文件名、行号等
+    // TODO: IDE 或者 Editor 下，获取当前编辑文件名、行号等
 }
 
 
