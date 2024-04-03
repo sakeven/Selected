@@ -25,6 +25,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         DispatchQueue.main.async {
             ClipService.shared.startMonitoring()
         }
+        DispatchQueue.main.async {
+            HotKeyManager().registerHotKey()
+        }
     }
     
     func application(_ application: NSApplication, open urls: [URL]) {

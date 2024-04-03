@@ -8,6 +8,8 @@
 import Foundation
 import Cocoa
 import SwiftUI
+import Carbon
+
 
 class ClipService {
     static let shared = ClipService()
@@ -83,7 +85,7 @@ class ClipService {
     }
 }
 
-struct ClipData {
+struct ClipData: Identifiable {
     var id: String
     var timeStamp: Int64
     var types: [NSPasteboard.PasteboardType]
@@ -153,24 +155,87 @@ extension String {
     }
 }
 
+private var globalHotKeyHandler: EventHandlerRef?
+
+// 热键激活时调用的全局函数
+private func hotKeyHandler(nextHandler: EventHandlerCallRef?, theEvent: EventRef?, userData: UnsafeMutableRawPointer?) -> OSStatus {
+    print("全局热键 Option+Space 被触发")
+    
+    testWindow?.close()
+    let window = ImageWindowController(rootView: AnyView(ClipView(datas: ClipService.shared.getHistory())))
+    testWindow = window
+    window.showWindow(nil)
+    return noErr
+}
+
+class HotKeyManager {
+    private var hotKeyId: EventHotKeyID
+    private var hotKeyRef: EventHotKeyRef?
+        
+    init() {
+        hotKeyId = EventHotKeyID(signature: OSType("opts".fourCharCodeValue), id: 1)
+    }
+    
+    func registerHotKey() {
+        let optionKey = UInt32(optionKey) // optionKey是一个来自于Carbon框架中kEventHotKey...系列常量的标识符
+        let spaceKey = UInt32(kVK_Space)
+        
+        RegisterEventHotKey(spaceKey, optionKey, hotKeyId, GetApplicationEventTarget(), 0, &hotKeyRef)
+        
+        var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
+                    // 安装事件处理器
+                    InstallEventHandler(GetApplicationEventTarget(), hotKeyHandler, 1, &eventType, nil, &globalHotKeyHandler)
+    }
+    
+    func unregisterHotKey() {
+        if let hotKeyRef = hotKeyRef {
+            UnregisterEventHotKey(hotKeyRef)
+            self.hotKeyRef = nil
+        }
+        if let handlerRef = globalHotKeyHandler {
+            RemoveEventHandler(handlerRef)
+        }
+    }
+}
+
+extension String {
+    var fourCharCodeValue: FourCharCode {
+        var result: FourCharCode = 0
+        for char in self.utf16 {
+            result = (result << 8) + FourCharCode(char)
+        }
+        return result
+    }
+}
+
 // MARK: - test
 private var testWindow: ImageWindowController?
 
 
-struct ImageView: View {
-    var content: Data
+struct ClipView: View {
+    var  datas:    [ClipData]
     
     var body: some View {
-        Image(nsImage: NSImage(data: content)!).resizable().aspectRatio(contentMode: .fit).frame(minWidth: 200, minHeight: 200)
+        VStack {
+            List{
+                ForEach(datas) {
+                    clipData in
+                    if clipData.types.first == .png {
+                        Image(nsImage: NSImage(data: clipData.png!)!).resizable().aspectRatio(contentMode: .fit).frame(minWidth: 200, minHeight: 200)
+                    } else if clipData.types.first == .rtf {
+                        Text(clipData.plainText!).frame(minWidth: 200, minHeight: 200)
+                    }
+                }
+            }
+        }.frame(minWidth: 200, minHeight: 200)
     }
 }
 
 
 private class ImageWindowController: NSWindowController, NSWindowDelegate {
     init(rootView: AnyView) {
-        let window = NSWindow(
+        let window = FloatingPanel(
             contentRect: .zero,
-            styleMask: [.titled, .closable,.resizable, .miniaturizable, .fullSizeContentView],
             backing: .buffered,
             defer: false
         )
