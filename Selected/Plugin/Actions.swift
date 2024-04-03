@@ -275,6 +275,7 @@ class CopyAction: Decodable{
                                 generic, complete: { ctx in
             NSPasteboard.general.declareTypes([.string], owner: nil)
             let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
             pasteboard.setString(ctx.Text, forType: .string)
         })
     }

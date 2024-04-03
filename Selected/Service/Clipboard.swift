@@ -23,6 +23,9 @@ class ClipService {
     private var changeCount: Int = 0
     private var skip = false
     
+    init() {
+        changeCount = pasteboard.changeCount
+    }
     
     func startMonitoring() {
         eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.keyUp, .leftMouseUp]) { [weak self] event in
@@ -46,16 +49,18 @@ class ClipService {
         }
     }
     
-    func pauseMonitor() {
+    func pauseMonitor(_ id: String) {
         lock.lock()
+        NSLog("pasteboard \(id) pauseMonitor changeCount \(changeCount)")
         skip = true
         lock.unlock()
     }
     
-    func resumeMonitor() {
+    func resumeMonitor(_ id: String) {
         lock.lock()
         skip = false
         changeCount = pasteboard.changeCount
+        NSLog("pasteboard \(id) resumeMonitor changeCount \(changeCount)")
         lock.unlock()
     }
     
@@ -64,19 +69,25 @@ class ClipService {
     }
     
     private func checkPasteboard() {
+        lock.lock()
+        defer { lock.unlock()}
+
         let currentChangeCount = pasteboard.changeCount
         if changeCount != currentChangeCount {
-            lock.lock()
             changeCount = currentChangeCount
-            lock.unlock()
 
-            guard let types = pasteboard.types else {
+            NSLog("pasteboard changeCount \(changeCount)")
+
+            guard pasteboard.types != nil else {
                 return
             }
             
             // 剪贴板内容发生变化，处理变化
             NSLog("pasteboard \(String(describing: pasteboard.types))")
             let clipData = ClipData(pasteboard: pasteboard)
+            if skip {
+                return
+            }
             cache.insert(clipData, at: 0)
             if cache.count > 10 {
                 cache.remove(at: 10)
@@ -120,11 +131,6 @@ struct ClipData: Identifiable {
             } else if type == .png {
                 if let content = pasteboard.data(forType: type) {
                     png = content
-//                        NSLog("read png")
-//                        testWindow?.close()
-//                        let window = ImageWindowController(rootView: AnyView(ImageView(content: content)))
-//                        testWindow = window
-//                        window.showWindow(nil)
                 }
             } else if type.rawValue == "org.chromium.source-url" {
                 if let content = pasteboard.string(forType: type) {
@@ -211,25 +217,109 @@ extension String {
 // MARK: - test
 private var testWindow: ImageWindowController?
 
-
-struct ClipView: View {
-    var  datas:    [ClipData]
-    
+struct ClipDataView: View {
+    var data: ClipData
     var body: some View {
-        VStack {
-            List{
-                ForEach(datas) {
-                    clipData in
-                    if clipData.types.first == .png {
-                        Image(nsImage: NSImage(data: clipData.png!)!).resizable().aspectRatio(contentMode: .fit).frame(minWidth: 200, minHeight: 200)
-                    } else if clipData.types.first == .rtf {
-                        Text(clipData.plainText!).frame(minWidth: 200, minHeight: 200)
+            VStack(alignment: .leading){
+                if data.rtf != nil {
+                    RTFView(rtfData: data.rtf!)
+                } else if data.plainText != nil {
+                    ScrollView{
+                        HStack{
+                            Text(data.plainText!)
+                            Spacer()
+                        }
                     }
                 }
-            }
-        }.frame(minWidth: 200, minHeight: 200)
+                Divider()
+                Text("Application: \(data.appBundleID)")
+                Text("Date: \(getDate(ts:data.timeStamp))")
+                if let url = data.url {
+                    Link(url, destination: URL(string: url)!)
+//                    Text("URL: \(url)")
+                }
+            }.padding()
     }
 }
+
+func getDate(ts: Int64) -> Date {
+    let date = Date(timeIntervalSince1970: TimeInterval(ts))
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.timeStyle = DateFormatter.Style.medium //Set time style
+//        dateFormatter.dateStyle = DateFormatter.Style.medium //Set date style
+//        dateFormatter.timeZone = .current
+//        let localDate = dateFormatter.string(from: date)
+    return date
+}
+
+struct RTFView: NSViewRepresentable {
+    var rtfData: String
+    
+    func makeNSView(context: Context) -> NSScrollView {
+        let textView = NSTextView()
+        textView.isEditable = false // 设为false禁止编辑
+        textView.autoresizingMask = [.width]
+        textView.translatesAutoresizingMaskIntoConstraints = true
+        if let attributedString =
+            try? NSMutableAttributedString(data: rtfData.data(using: .utf8)!,
+                                    options: [
+                                        .documentType: NSAttributedString.DocumentType.rtf],
+                                    documentAttributes: nil) {
+            let originalRange = NSMakeRange(0, attributedString.length);
+            attributedString.addAttribute(NSAttributedString.Key.backgroundColor,  value: NSColor.clear, range: originalRange)
+
+            textView.textStorage?.setAttributedString(attributedString)
+        }
+        textView.drawsBackground = false // 确保不会绘制默认的背景
+        textView.backgroundColor = .clear
+
+        let scrollView = NSScrollView()
+        scrollView.hasVerticalScroller = true
+        scrollView.documentView = textView
+        scrollView.backgroundColor = .clear
+        scrollView.drawsBackground = false // 确保不会绘制默认的背景
+        return scrollView
+    }
+    
+    func updateNSView(_ nsView: NSScrollView, context: Context) {
+        // 用于更新视图
+    }
+}
+
+struct ClipView: View {
+    var datas: [ClipData]
+ 
+    var body: some View {
+        NavigationView{
+            List(datas){
+                    clipData in
+                NavigationLink(destination: ClipDataView(data: clipData)){
+                    if clipData.types.first == .png {
+                        Label(
+                            title: { Text("Image").padding()},
+                            icon: {
+                                Image(nsImage: NSImage(data: clipData.png!)!).resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20)
+                            }
+                        )
+                    } else if clipData.types.first == .rtf ||
+                                clipData.types.first == .string ||
+                                clipData.types.first == .html
+                    {
+                        Label(
+                            title: { Text(clipData.plainText!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding() },
+                            icon: { Image(systemName: "text.quote").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
+                        )
+                    }
+                }.frame(height: 30)
+            }.frame(width: 300)
+        }.frame(width: 800, height: 400)
+    }
+}
+
+#Preview {
+    ClipView(datas: ClipService.shared.getHistory())
+}
+
 
 
 private class ImageWindowController: NSWindowController, NSWindowDelegate {
@@ -257,9 +347,9 @@ private class ImageWindowController: NSWindowController, NSWindowDelegate {
         let x = min(screenFrame.maxX - windowFrame.width,
                     max(mouseLocation.x - windowFrame.width/2, screenFrame.minX))
         
-        var y =  mouseLocation.y + 18
+        var y =  mouseLocation.y
         if y > screenFrame.maxY {
-            y =  mouseLocation.y - 30 - 18
+            y =  screenFrame.maxY
         }
         window.setFrameOrigin(NSPoint(x: x, y: y))
     }
