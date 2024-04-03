@@ -4,6 +4,16 @@
     "" : {
 
     },
+    "%@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        }
+      }
+    },
     "Actions" : {
       "localizations" : {
         "zh-Hans" : {
@@ -54,12 +64,12 @@
         }
       }
     },
-    "Application: %@" : {
+    "Application:" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "应用： %@"
+            "value" : "应用："
           }
         }
       }
@@ -74,12 +84,22 @@
         }
       }
     },
-    "Date: %@" : {
+    "Clipboard History" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "时间： %@"
+            "value" : "剪贴板历史"
+          }
+        }
+      }
+    },
+    "Date:" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日期："
           }
         }
       }
@@ -279,6 +299,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分享"
+          }
+        }
+      }
+    },
+    "URL:" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "链接："
           }
         }
       }

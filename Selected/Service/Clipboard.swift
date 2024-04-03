@@ -25,6 +25,11 @@ class ClipService {
     
     init() {
         changeCount = pasteboard.changeCount
+        NSEvent.addGlobalMonitorForEvents(matching:
+                                            [.leftMouseDown, .rightMouseDown, .otherMouseDown]
+        ) { (event) in
+            _ = ClipWindowManager.shared.closeWindow()
+        }
     }
     
     func startMonitoring() {
@@ -40,10 +45,6 @@ class ClipService {
             
             if shouldSkip {
                 return
-            }
-            
-            if event.type == .leftMouseUp {
-                usleep(500000)
             }
             checkPasteboard()
         }
@@ -69,13 +70,15 @@ class ClipService {
     }
     
     private func checkPasteboard() {
-        lock.lock()
-        defer { lock.unlock()}
+       
+//        defer {}
 
         let currentChangeCount = pasteboard.changeCount
         if changeCount != currentChangeCount {
+            lock.lock()
             changeCount = currentChangeCount
-
+            lock.unlock()
+            
             NSLog("pasteboard changeCount \(changeCount)")
 
             guard pasteboard.types != nil else {
@@ -110,7 +113,7 @@ struct ClipData: Identifiable {
     
     init(pasteboard: NSPasteboard) {
         self.id = UUID().uuidString
-        self.timeStamp = Int64(Date().timeIntervalSince1970)
+        self.timeStamp = Int64(Date().timeIntervalSince1970*1000)
         self.types = pasteboard.types!
         self.appBundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier ?? "unknown"
 
@@ -167,10 +170,7 @@ private var globalHotKeyHandler: EventHandlerRef?
 private func hotKeyHandler(nextHandler: EventHandlerCallRef?, theEvent: EventRef?, userData: UnsafeMutableRawPointer?) -> OSStatus {
     print("全局热键 Option+Space 被触发")
     
-    testWindow?.close()
-    let window = ImageWindowController(rootView: AnyView(ClipView(datas: ClipService.shared.getHistory())))
-    testWindow = window
-    window.showWindow(nil)
+    ClipWindowManager.shared.createWindow()
     return noErr
 }
 
@@ -215,13 +215,15 @@ extension String {
 }
 
 // MARK: - test
-private var testWindow: ImageWindowController?
+private var testWindow: ClipWindowController?
 
 struct ClipDataView: View {
     var data: ClipData
     var body: some View {
             VStack(alignment: .leading){
-                if data.rtf != nil {
+                if data.png != nil {
+                    Image(nsImage: NSImage(data: data.png!)!).resizable().aspectRatio(contentMode: .fit)
+                } else if data.rtf != nil {
                     RTFView(rtfData: data.rtf!)
                 } else if data.plainText != nil {
                     ScrollView{
@@ -232,24 +234,46 @@ struct ClipDataView: View {
                     }
                 }
                 Divider()
-                Text("Application: \(data.appBundleID)")
-                Text("Date: \(getDate(ts:data.timeStamp))")
-                if let url = data.url {
-                    Link(url, destination: URL(string: url)!)
-//                    Text("URL: \(url)")
+                
+                HStack {
+                    Text("Application:")
+                    Spacer()
+                    getIcon(data.appBundleID)
+                    Text(getAppName(data.appBundleID))
                 }
-            }.padding()
+                
+                HStack {
+                    Text("Date:")
+                    Spacer()
+                    Text("\(getDate(ts:data.timeStamp))")
+                }
+                
+                if let url = data.url {
+                    HStack {
+                        Text("URL:")
+                        Spacer()
+                        Link(destination: URL(string: url)!, label: {
+                            Text(url).lineLimit(1)
+                        })
+                    }
+                }
+            }.padding().frame(width: 550)
+    }
+    
+    
+    private func getAppName(_ bundleID: String) -> String {
+        let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)!
+        return FileManager.default.displayName(atPath: bundleURL.path)
+    }
+    
+    private func getIcon(_ bundleID: String) -> some View {
+        let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)!
+        return AnyView(Image(nsImage: NSWorkspace.shared.icon(forFile: bundleURL.path)))
     }
 }
 
 func getDate(ts: Int64) -> Date {
-    let date = Date(timeIntervalSince1970: TimeInterval(ts))
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.timeStyle = DateFormatter.Style.medium //Set time style
-//        dateFormatter.dateStyle = DateFormatter.Style.medium //Set date style
-//        dateFormatter.timeZone = .current
-//        let localDate = dateFormatter.string(from: date)
-    return date
+    return Date(timeIntervalSince1970: TimeInterval(ts/1000))
 }
 
 struct RTFView: NSViewRepresentable {
@@ -288,15 +312,19 @@ struct RTFView: NSViewRepresentable {
 
 struct ClipView: View {
     var datas: [ClipData]
+    @State var eventMonitor: Any?
+    
+    // 默认选择第一条，必须同时设置 List 和 NavigationLink 的 selection
+    @State var selected : Int64?
  
     var body: some View {
         NavigationView{
-            List(datas){
+            List(datas, id: \.self.timeStamp, selection: $selected){
                     clipData in
-                NavigationLink(destination: ClipDataView(data: clipData)){
+                NavigationLink(destination: ClipDataView(data: clipData), tag: clipData.timeStamp, selection: $selected){
                     if clipData.types.first == .png {
                         Label(
-                            title: { Text("Image").padding()},
+                            title: { Text("Image").padding(.leading, 10)},
                             icon: {
                                 Image(nsImage: NSImage(data: clipData.png!)!).resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20)
                             }
@@ -306,12 +334,18 @@ struct ClipView: View {
                                 clipData.types.first == .html
                     {
                         Label(
-                            title: { Text(clipData.plainText!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding() },
+                            title: { Text(clipData.plainText!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
                             icon: { Image(systemName: "text.quote").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
                         )
                     }
                 }.frame(height: 30)
-            }.frame(width: 300)
+            }.frame(width: 250).frame(minWidth: 250, maxWidth: 250) .onAppear(){
+                selected = datas.first?.timeStamp
+            }
+             
+            if datas.isEmpty {
+                Text("Clipboard History")
+            }
         }.frame(width: 800, height: 400)
     }
 }
@@ -321,8 +355,36 @@ struct ClipView: View {
 }
 
 
+class ClipWindowManager {
+    static let shared =  ClipWindowManager()
+            
+    private var windowCtr: ClipWindowController?
+    
+    fileprivate func createWindow() {
+        windowCtr?.close()
+        let window = ClipWindowController(rootView: AnyView(ClipView(datas: ClipService.shared.getHistory())))
+        windowCtr = window
+        window.showWindow(nil)
+        return
+    }
+    
+    fileprivate func closeWindow() -> Bool {
+        guard let windowCtr = windowCtr else {
+            return true
+        }
+        var closed = false
+                let frame =  windowCtr.window!.frame
+                if !frame.contains(NSEvent.mouseLocation){
+                    windowCtr.close()
+                    closed = true
+                }
+        return closed
+    }
+    
+}
 
-private class ImageWindowController: NSWindowController, NSWindowDelegate {
+
+private class ClipWindowController: NSWindowController, NSWindowDelegate {
     init(rootView: AnyView) {
         let window = FloatingPanel(
             contentRect: .zero,
@@ -337,22 +399,31 @@ private class ImageWindowController: NSWindowController, NSWindowDelegate {
         window.contentView = NSHostingView(rootView: rootView)
         window.delegate = self // 设置代理为自己来监听窗口事件
         
+        if WindowPositionManager.shared.restorePosition(for: window) {
+           return
+        }
+        
         let windowFrame = window.frame
         NSLog("windowFrame \(windowFrame.height), \(windowFrame.width)")
         let screenFrame = NSScreen.main?.visibleFrame ?? .zero // 获取主屏幕的可见区域
         
-        let mouseLocation = NSEvent.mouseLocation  // 获取鼠标当前位置
-        
         // 确保窗口不会超出屏幕边缘
-        let x = min(screenFrame.maxX - windowFrame.width,
-                    max(mouseLocation.x - windowFrame.width/2, screenFrame.minX))
-        
-        var y =  mouseLocation.y
-        if y > screenFrame.maxY {
-            y =  screenFrame.maxY
-        }
+        let x = (screenFrame.maxX - windowFrame.width) / 2
+        let y = (screenFrame.maxY - windowFrame.height)*3 / 4
         window.setFrameOrigin(NSPoint(x: x, y: y))
     }
+    
+    func windowDidMove(_ notification: Notification) {
+            if let window = notification.object as? NSWindow {
+                WindowPositionManager.shared.storePosition(of: window)
+            }
+        }
+
+    func windowDidResize(_ notification: Notification) {
+            if let window = notification.object as? NSWindow {
+                WindowPositionManager.shared.storePosition(of: window)
+            }
+        }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -364,5 +435,24 @@ private class ImageWindowController: NSWindowController, NSWindowDelegate {
     
     override func showWindow(_ sender: Any?) {
         super.showWindow(sender)
+    }
+}
+
+
+class WindowPositionManager {
+    static let shared = WindowPositionManager()
+    
+    func storePosition(of window: NSWindow) {
+        let frameString = NSStringFromRect(window.frame)
+        UserDefaults.standard.set(frameString, forKey: "windowPosition")
+    }
+    
+    func restorePosition(for window: NSWindow) -> Bool {
+        if let frameString = UserDefaults.standard.string(forKey: "windowPosition") {
+            let frame = NSRectFromString(frameString)
+            window.setFrame(frame, display: true)
+            return true
+        }
+        return false
     }
 }
