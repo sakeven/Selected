@@ -122,7 +122,7 @@ func monitorMouseMove() {
             var updatedSelectedText = false
             if eventState.isSelected(event: event) {
                 if let ctx = getSelectedText() {
-                    NSLog("SelectedContext \(ctx)")
+                    print("SelectedContext %@", ctx)
                     if !ctx.Text.isEmpty {
                         updatedSelectedText = true
                         if lastSelectedText != ctx.Text {
