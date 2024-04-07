@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 import PDFKit
 
-
 struct ClipDataView: View {
     var data: ClipData
     
@@ -98,40 +97,6 @@ func getDate(ts: Int64) -> Date {
     return Date(timeIntervalSince1970: TimeInterval(ts/1000))
 }
 
-struct RTFView: NSViewRepresentable {
-    var rtfData: Data
-    
-    func makeNSView(context: Context) -> NSScrollView {
-        let textView = NSTextView()
-        textView.isEditable = false // 设为false禁止编辑
-        textView.autoresizingMask = [.width]
-        textView.translatesAutoresizingMaskIntoConstraints = true
-        if let attributedString =
-            try? NSMutableAttributedString(data: rtfData,
-                                           options: [
-                                            .documentType: NSAttributedString.DocumentType.rtf],
-                                           documentAttributes: nil) {
-            let originalRange = NSMakeRange(0, attributedString.length);
-            attributedString.addAttribute(NSAttributedString.Key.backgroundColor,  value: NSColor.clear, range: originalRange)
-            
-            textView.textStorage?.setAttributedString(attributedString)
-        }
-        textView.drawsBackground = false // 确保不会绘制默认的背景
-        textView.backgroundColor = .clear
-        
-        let scrollView = NSScrollView()
-        scrollView.hasVerticalScroller = true
-        scrollView.documentView = textView
-        scrollView.backgroundColor = .clear
-        scrollView.drawsBackground = false // 确保不会绘制默认的背景
-        return scrollView
-    }
-    
-    func updateNSView(_ nsView: NSScrollView, context: Context) {
-        // 用于更新视图
-    }
-}
-
 
 class ClipViewModel: ObservableObject {
     static let shared = ClipViewModel()
@@ -198,24 +163,4 @@ struct ClipView: View {
 
 #Preview {
     ClipView(datas: ClipService.shared.getHistory())
-}
-
-
-struct PDFKitRepresentedView: NSViewRepresentable {
-    let url: URL
-
-    func makeNSView(context: Context) -> PDFView {
-        let pdfView = PDFView()
-        pdfView.autoScales = true // Automatically scale the PDF to fit the view
-        pdfView.autoresizingMask = [.width, .height]
-        // 加载 PDF 文档
-        if let document = PDFDocument(url: url) {
-            pdfView.document = document
-        }
-        return pdfView
-    }
-
-    func updateNSView(_ nsView: PDFView, context: Context) {
-        // 这个方法里面可以留空，因为 PDFView 的内容不会经常改变
-    }
 }

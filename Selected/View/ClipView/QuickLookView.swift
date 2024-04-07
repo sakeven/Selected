@@ -8,9 +8,6 @@
 import SwiftUI
 import QuickLookUI
 
-//import SwiftUI
-//import Quartz // 包含 QLPreviewView
-
 struct QuickLookPreview: NSViewRepresentable {
     var url: URL
     
