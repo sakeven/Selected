@@ -4,17 +4,6 @@
     "" : {
 
     },
-    "(data.types.first!)" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        }
-      }
-    },
     "%@" : {
       "localizations" : {
         "zh-Hans" : {
@@ -172,6 +161,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "反馈"
+          }
+        }
+      }
+    },
+    "file" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件"
           }
         }
       }

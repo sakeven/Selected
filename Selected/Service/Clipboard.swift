@@ -70,9 +70,6 @@ class ClipService {
     }
     
     private func checkPasteboard() {
-        
-        //        defer {}
-        
         let currentChangeCount = pasteboard.changeCount
         if changeCount != currentChangeCount {
             lock.lock()
@@ -92,21 +89,22 @@ class ClipService {
                 return
             }
             cache.insert(clipData, at: 0)
-            if cache.count > 10 {
-                cache.remove(at: 10)
+            if cache.count > 20 {
+                cache.remove(at: 20)
             }
         }
     }
 }
 
 private let SupportedPasteboardTypes: Set<NSPasteboard.PasteboardType> = [
-    NSPasteboard.PasteboardType.URL,
-    NSPasteboard.PasteboardType.color,
-    NSPasteboard.PasteboardType.html,
-    NSPasteboard.PasteboardType.pdf,
-    NSPasteboard.PasteboardType.png,
-    NSPasteboard.PasteboardType.rtf,
-    NSPasteboard.PasteboardType.string,
+    .URL,
+    .color,
+    .html,
+    .pdf,
+    .png,
+    .rtf,
+    .string,
+    .fileURL,
     NSPasteboard.PasteboardType("org.chromium.source-url"),
 ]
 
@@ -165,6 +163,10 @@ struct ClipData: Identifiable {
                 if let content = pasteboard.string(forType: type) {
                     url = content
                 }
+            } else if type == .fileURL {
+                if let content = pasteboard.string(forType: type) {
+                    url = content
+                }
             }
         }
     }
@@ -199,11 +201,6 @@ private var globalHotKeyHandler: EventHandlerRef?
 
 // 热键激活时调用的全局函数
 private func hotKeyHandler(nextHandler: EventHandlerCallRef?, theEvent: EventRef?, userData: UnsafeMutableRawPointer?) -> OSStatus {
-    print("全局热键 Option+Space 被触发")
-    if let e = theEvent {
-        NSLog("\(e.debugDescription)")
-        GetEventKind(e)
-    }
     
     var receivedHotKeyID = EventHotKeyID()
     
@@ -227,13 +224,17 @@ private func hotKeyHandler(nextHandler: EventHandlerCallRef?, theEvent: EventRef
                         pboard.setString(item.plainText!, forType: .string)
                     case .html:
                         pboard.setString(item.html!, forType: .html)
-                    case  NSPasteboard.PasteboardType("org.chromium.source-url"):
+                    case NSPasteboard.PasteboardType("org.chromium.source-url"):
                         pboard.setString(item.url!, forType: t)
                     case .png:
                         pboard.setData(item.png, forType: t)
+                    case .fileURL:
+                        pboard.setString(item.url!, forType: t)
                     default: break
                 }
             }
+            // 粘贴时需要取消 key window，才能复制到当前的应用上。
+            ClipWindowManager.shared.resignKey()
             PressPasteKey()
             ClipWindowManager.shared.forceCloseWindow()
             ClipService.shared.resumeMonitor(id)
@@ -243,35 +244,6 @@ private func hotKeyHandler(nextHandler: EventHandlerCallRef?, theEvent: EventRef
     }
     
     return noErr
-}
-
-private var globalEnterHotKeyHandler: EventHandlerRef?
-
-// 热键激活时调用的全局函数
-private func enterHotKeyHandler(nextHandler: EventHandlerCallRef?, theEvent: EventRef?, userData: UnsafeMutableRawPointer?) -> OSStatus {
-    print("全局热键 Enter 被触发")
-    return noErr
-}
-
-class EnterHotKeyManager {
-    private var hotKeyRef: EventHotKeyRef?
-    
-    static let hotKeyId = EventHotKeyID(signature: OSType("entr".fourCharCodeValue), id: 2)
-    
-    
-    func registerHotKey() {
-        let spaceKey = UInt32(kVK_Return)
-        NSLog("RegisterEventHotKey")
-        RegisterEventHotKey(spaceKey, 0, EnterHotKeyManager.hotKeyId, GetApplicationEventTarget(), 0, &hotKeyRef)
-    }
-    
-    func unregisterHotKey() {
-        if let hotKeyRef = hotKeyRef {
-            NSLog("UnregisterEventHotKey")
-            UnregisterEventHotKey(hotKeyRef)
-            self.hotKeyRef = nil
-        }
-    }
 }
 
 class HotKeyManager {
@@ -304,6 +276,27 @@ class HotKeyManager {
     }
 }
 
+
+class EnterHotKeyManager {
+    private var hotKeyRef: EventHotKeyRef?
+    
+    static let hotKeyId = EventHotKeyID(signature: OSType("entr".fourCharCodeValue), id: 2)
+    
+    func registerHotKey() {
+        let spaceKey = UInt32(kVK_Return)
+        NSLog("RegisterEventHotKey")
+        RegisterEventHotKey(spaceKey, 0, EnterHotKeyManager.hotKeyId, GetApplicationEventTarget(), 0, &hotKeyRef)
+    }
+    
+    func unregisterHotKey() {
+        if let hotKeyRef = hotKeyRef {
+            NSLog("UnregisterEventHotKey")
+            UnregisterEventHotKey(hotKeyRef)
+            self.hotKeyRef = nil
+        }
+    }
+}
+
 extension String {
     var fourCharCodeValue: FourCharCode {
         var result: FourCharCode = 0
@@ -331,168 +324,10 @@ let descriptionOfPasteboardType: [NSPasteboard.PasteboardType: String]  = [
     .pdf: "PDF",
     .rtf: "rich text format",
     .string: "plain text",
+    .fileURL: "file"
 ]
 
-// MARK: - test
-private var testWindow: ClipWindowController?
-
-struct ClipDataView: View {
-    var data: ClipData
-    
-    var body: some View {
-        VStack(alignment: .leading){
-            if data.png != nil {
-                Image(nsImage: NSImage(data: data.png!)!).resizable().aspectRatio(contentMode: .fit)
-            } else if data.rtf != nil {
-                RTFView(rtfData: data.rtf!)
-            } else if data.plainText != nil {
-                ScrollView{
-                    HStack{
-                        Text(data.plainText!)
-                        Spacer()
-                    }
-                }
-            }
-            Divider()
-            
-            HStack {
-                Text("Application:")
-                Spacer()
-                getIcon(data.appBundleID)
-                Text(getAppName(data.appBundleID))
-            }.frame(height: 17)
-            
-            HStack {
-                Text("Content type:")
-                Spacer()
-                let str = "\(data.types.first!)"
-                Text(NSLocalizedString(str, comment: ""))
-            }.frame(height: 17)
-            
-            HStack {
-                Text("Date:")
-                Spacer()
-                Text("\(getDate(ts:data.timeStamp))")
-            }.frame(height: 17)
-            
-            if let url = data.url {
-                HStack {
-                    Text("URL:")
-                    Spacer()
-                    Link(destination: URL(string: url)!, label: {
-                        Text(url).lineLimit(1)
-                    })
-                }.frame(height: 17)
-            }
-        }.padding().frame(width: 550)
-    }
-    
-    
-    private func getAppName(_ bundleID: String) -> String {
-        let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)!
-        return FileManager.default.displayName(atPath: bundleURL.path)
-    }
-    
-    private func getIcon(_ bundleID: String) -> some View {
-        let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)!
-        return AnyView(
-            Image(nsImage: NSWorkspace.shared.icon(forFile: bundleURL.path)).resizable().aspectRatio(contentMode: .fit).frame(width: 15, height: 15)
-        )
-    }
-}
-
-func getDate(ts: Int64) -> Date {
-    return Date(timeIntervalSince1970: TimeInterval(ts/1000))
-}
-
-struct RTFView: NSViewRepresentable {
-    var rtfData: String
-    
-    func makeNSView(context: Context) -> NSScrollView {
-        let textView = NSTextView()
-        textView.isEditable = false // 设为false禁止编辑
-        textView.autoresizingMask = [.width]
-        textView.translatesAutoresizingMaskIntoConstraints = true
-        if let attributedString =
-            try? NSMutableAttributedString(data: rtfData.data(using: .utf8)!,
-                                           options: [
-                                            .documentType: NSAttributedString.DocumentType.rtf],
-                                           documentAttributes: nil) {
-            let originalRange = NSMakeRange(0, attributedString.length);
-            attributedString.addAttribute(NSAttributedString.Key.backgroundColor,  value: NSColor.clear, range: originalRange)
-            
-            textView.textStorage?.setAttributedString(attributedString)
-        }
-        textView.drawsBackground = false // 确保不会绘制默认的背景
-        textView.backgroundColor = .clear
-        
-        let scrollView = NSScrollView()
-        scrollView.hasVerticalScroller = true
-        scrollView.documentView = textView
-        scrollView.backgroundColor = .clear
-        scrollView.drawsBackground = false // 确保不会绘制默认的背景
-        return scrollView
-    }
-    
-    func updateNSView(_ nsView: NSScrollView, context: Context) {
-        // 用于更新视图
-    }
-}
-
-
-
-class ClipViewModel: ObservableObject {
-    static let shared = ClipViewModel()
-    @Published var selectedItem: ClipData?
-}
-
-
-struct ClipView: View {
-    var datas: [ClipData]
-    
-    @State var eventMonitor: Any?
-    @ObservedObject var viewModel = ClipViewModel.shared
-    
-    // 默认选择第一条，必须同时设置 List 和 NavigationLink 的 selection
-    //    @State var selected : ClipData?
-    
-    var body: some View {
-        NavigationView{
-            List(datas, id: \.self, selection:  $viewModel.selectedItem){
-                clipData in
-                NavigationLink(destination: ClipDataView(data: clipData), tag: clipData, selection:  $viewModel.selectedItem){
-                    if clipData.types.first == .png {
-                        Label(
-                            title: { Text("Image").padding(.leading, 10)},
-                            icon: {
-                                Image(nsImage: NSImage(data: clipData.png!)!).resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20)
-                            }
-                        )
-                    } else if clipData.types.first == .rtf ||
-                                clipData.types.first == .string ||
-                                clipData.types.first == .html
-                    {
-                        Label(
-                            title: { Text(clipData.plainText!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
-                            icon: { Image(systemName: "text.quote").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
-                        )
-                    }
-                }.frame(height: 30)
-            }.frame(width: 250).frame(minWidth: 250, maxWidth: 250) .onAppear(){
-                ClipViewModel.shared.selectedItem = datas.first
-            }
-            
-            if datas.isEmpty {
-                Text("Clipboard History")
-            }
-        }.frame(width: 800, height: 400)
-    }
-}
-
-#Preview {
-    ClipView(datas: ClipService.shared.getHistory())
-}
-
+// MARK: - window
 
 class ClipWindowManager {
     static let shared =  ClipWindowManager()
@@ -521,7 +356,11 @@ class ClipWindowManager {
         return closed
     }
     
-    fileprivate func forceCloseWindow() {
+    func resignKey(){
+        windowCtr?.window?.resignKey()
+    }
+    
+    func forceCloseWindow() {
         guard let windowCtr = windowCtr else {
             return
         }
@@ -537,7 +376,8 @@ private class ClipWindowController: NSWindowController, NSWindowDelegate {
         let window = FloatingPanel(
             contentRect: .zero,
             backing: .buffered,
-            defer: false
+            defer: false,
+            key: true // 成为 key 和 main window 就可以用一些快捷键，比如方向键，以及可以文本编辑。
         )
         
         super.init(window: window)
@@ -546,13 +386,12 @@ private class ClipWindowController: NSWindowController, NSWindowDelegate {
         window.level = .screenSaver
         window.contentView = NSHostingView(rootView: rootView)
         window.delegate = self // 设置代理为自己来监听窗口事件
-        
+        window.makeKeyAndOrderFront(nil)
         if WindowPositionManager.shared.restorePosition(for: window) {
             return
         }
         
         let windowFrame = window.frame
-        NSLog("windowFrame \(windowFrame.height), \(windowFrame.width)")
         let screenFrame = NSScreen.main?.visibleFrame ?? .zero // 获取主屏幕的可见区域
         
         // 确保窗口不会超出屏幕边缘

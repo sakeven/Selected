@@ -42,6 +42,7 @@
 		38DF1D4D2BB94DCD0063A879 /* ApplicationSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D4C2BB94DCD0063A879 /* ApplicationSettingView.swift */; };
 		38DF1D552BC269760063A879 /* MathParser in Frameworks */ = {isa = PBXBuildFile; productRef = 38DF1D542BC269760063A879 /* MathParser */; };
 		38DF1D4F2BB964EC0063A879 /* Clipboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D4E2BB964EC0063A879 /* Clipboard.swift */; };
+		38DF1D522BC2408A0063A879 /* ClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D512BC2408A0063A879 /* ClipView.swift */; };
 		38E20A472BB44D5A0035A3AA /* SharingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A462BB44D5A0035A3AA /* SharingButton.swift */; };
 		38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A482BB5A3D80035A3AA /* SpeakAction.swift */; };
 		38E20A4B2BB5A7E20035A3AA /* TTS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A4A2BB5A7E20035A3AA /* TTS.swift */; };
@@ -107,6 +108,7 @@
 		38DF1D492BB7A3BC0063A879 /* Option.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Option.swift; sourceTree = "<group>"; };
 		38DF1D4C2BB94DCD0063A879 /* ApplicationSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationSettingView.swift; sourceTree = "<group>"; };
 		38DF1D4E2BB964EC0063A879 /* Clipboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clipboard.swift; sourceTree = "<group>"; };
+		38DF1D512BC2408A0063A879 /* ClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipView.swift; sourceTree = "<group>"; };
 		38E20A462BB44D5A0035A3AA /* SharingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingButton.swift; sourceTree = "<group>"; };
 		38E20A482BB5A3D80035A3AA /* SpeakAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakAction.swift; sourceTree = "<group>"; };
 		38E20A4A2BB5A7E20035A3AA /* TTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTS.swift; sourceTree = "<group>"; };
@@ -248,6 +250,7 @@
 		386AD74C2B8F79F1008C346D /* View */ = {
 			isa = PBXGroup;
 			children = (
+				38DF1D502BC240700063A879 /* ClipView */,
 				38DF1D4B2BB94DB40063A879 /* PluginView */,
 				386AD74D2B8F7A16008C346D /* MenuItemView.swift */,
 				38049D612B9DF8B100E02ECA /* Base */,
@@ -280,6 +283,14 @@
 				38DF1D4C2BB94DCD0063A879 /* ApplicationSettingView.swift */,
 			);
 			path = PluginView;
+			sourceTree = "<group>";
+		};
+		38DF1D502BC240700063A879 /* ClipView */ = {
+			isa = PBXGroup;
+			children = (
+				38DF1D512BC2408A0063A879 /* ClipView.swift */,
+			);
+			path = ClipView;
 			sourceTree = "<group>";
 		};
 		38F5E2A02B9AB345002FEEFE /* SyntaxHighlighter */ = {
@@ -469,6 +480,7 @@
 				38E20A4B2BB5A7E20035A3AA /* TTS.swift in Sources */,
 				38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */,
 				38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */,
+				38DF1D522BC2408A0063A879 /* ClipView.swift in Sources */,
 				3831FD362BA6DE3D00A4262B /* UserConfigs.swift in Sources */,
 				38DF1D4A2BB7A3BC0063A879 /* Option.swift in Sources */,
 				38CC554C2BA9B6E900069553 /* RunCommandAction.swift in Sources */,

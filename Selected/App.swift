@@ -12,6 +12,7 @@ import Foundation
 
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
         setDefaultAppForCustomFileType()
         // 不需要主窗口，不需要显示在 dock 上
@@ -28,6 +29,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         DispatchQueue.main.async {
             HotKeyManager().registerHotKey()
         }
+        
+        // 注册空间改变通知
+        // 这里不能使用 NotificationCenter.default.
+        NSWorkspace.shared.notificationCenter.addObserver(self,
+                                                       selector: #selector(spaceDidChange),
+                                                       name: NSWorkspace.activeSpaceDidChangeNotification,
+                                                       object: nil)
+    }
+    
+    @objc func spaceDidChange() {
+        // 当空间改变时触发
+        ClipWindowManager.shared.forceCloseWindow()
     }
     
     func application(_ application: NSApplication, open urls: [URL]) {
@@ -46,12 +59,6 @@ func setDefaultAppForCustomFileType() {
     NSLog("bundleIdentifier \(bundleIdentifier)")
 
     LSSetDefaultRoleHandlerForContentType(customUTI as CFString, .editor, bundleIdentifier as CFString)
-    
-//    
-//     let bundleUrl = Bundle.main.bundleURL
-//
-//     NSLog("\(bundleUrl.path)")
-//     NSWorkspace.shared.setDefaultApplication(at: bundleUrl, toOpen: .init(customUTI)!)
 }
 
 
