@@ -425,3 +425,4 @@ func FilterActions(_ ctx: SelectedTextContext, list: [PerformAction] ) -> [Perfo
     }
     return filtered
 }
+

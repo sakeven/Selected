@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "ddmathparser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/davedelong/DDMathParser",
+      "state" : {
+        "revision" : "0a159109e2393c3e1db4e2b638009c82e6650b4d",
+        "version" : "3.1.0"
+      }
+    },
+    {
       "identity" : "defaults",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sindresorhus/Defaults.git",

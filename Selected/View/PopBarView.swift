@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MathParser
 
 struct PopBarView: View {
     var actions:  [PerformAction]
@@ -39,11 +40,26 @@ struct PopBarView: View {
                 })
             }
             SharingButton(message: ctx.Text)
+            if let res = calculate(ctx.Text) {
+                let v = valueFormatter.string(from: NSNumber(value: res))!
+                Text(v).fontWeight(.bold).frame(height: 30).frame(width: 10*CGFloat(v.count))
+            }
         }.frame(height: 30)
             .padding(.leading, 10).padding(.trailing, 10)
             .background(.gray).cornerRadius(5)
     }
 }
+
+func calculate(_ equation: String) -> Double? {
+    try? equation.evaluate()
+}
+
+private var valueFormatter: NumberFormatter = {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .decimal
+    formatter.maximumFractionDigits = 2
+    return formatter
+}()
 
 #Preview {
     PopBarView(actions: GetActions(ctx: SelectedTextContext(Text: "word", BundleID: "xxx",Editable: false)), ctx: SelectedTextContext(Text: "word", BundleID: "xxx",Editable: false))

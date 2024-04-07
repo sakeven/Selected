@@ -40,6 +40,7 @@
 		38DEBE392B9DDD0500CD2A35 /* AI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DEBE382B9DDD0500CD2A35 /* AI.swift */; };
 		38DF1D4A2BB7A3BC0063A879 /* Option.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D492BB7A3BC0063A879 /* Option.swift */; };
 		38DF1D4D2BB94DCD0063A879 /* ApplicationSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D4C2BB94DCD0063A879 /* ApplicationSettingView.swift */; };
+		38DF1D552BC269760063A879 /* MathParser in Frameworks */ = {isa = PBXBuildFile; productRef = 38DF1D542BC269760063A879 /* MathParser */; };
 		38E20A472BB44D5A0035A3AA /* SharingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A462BB44D5A0035A3AA /* SharingButton.swift */; };
 		38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A482BB5A3D80035A3AA /* SpeakAction.swift */; };
 		38E20A4B2BB5A7E20035A3AA /* TTS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A4A2BB5A7E20035A3AA /* TTS.swift */; };
@@ -117,6 +118,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				38F5E2A72B9AB3A5002FEEFE /* Splash in Frameworks */,
+				38DF1D552BC269760063A879 /* MathParser in Frameworks */,
 				386AD7442B8F6E77008C346D /* Defaults in Frameworks */,
 				38F5E29C2B98ACB9002FEEFE /* OpenAI in Frameworks */,
 				38DEBE372B9DD80300CD2A35 /* GoogleGenerativeAI in Frameworks */,
@@ -310,6 +312,7 @@
 				38F5E2A62B9AB3A5002FEEFE /* Splash */,
 				38DEBE362B9DD80300CD2A35 /* GoogleGenerativeAI */,
 				3831FD322BA532D400A4262B /* Yams */,
+				38DF1D542BC269760063A879 /* MathParser */,
 			);
 			productName = Selected;
 			productReference = 386AD7142B8F6BFA008C346D /* Selected.app */;
@@ -392,6 +395,7 @@
 				38F5E2A52B9AB3A5002FEEFE /* XCRemoteSwiftPackageReference "Splash" */,
 				38DEBE352B9DD80300CD2A35 /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
 				3831FD312BA532D400A4262B /* XCRemoteSwiftPackageReference "Yams" */,
+				38DF1D532BC269760063A879 /* XCRemoteSwiftPackageReference "DDMathParser" */,
 			);
 			productRefGroup = 386AD7152B8F6BFA008C346D /* Products */;
 			projectDirPath = "";
@@ -836,6 +840,14 @@
 				minimumVersion = 0.4.8;
 			};
 		};
+		38DF1D532BC269760063A879 /* XCRemoteSwiftPackageReference "DDMathParser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/davedelong/DDMathParser";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.0;
+			};
+		};
 		38F5E29A2B98ACB9002FEEFE /* XCRemoteSwiftPackageReference "OpenAI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MacPaw/OpenAI";
@@ -882,6 +894,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 38DEBE352B9DD80300CD2A35 /* XCRemoteSwiftPackageReference "generative-ai-swift" */;
 			productName = GoogleGenerativeAI;
+		};
+		38DF1D542BC269760063A879 /* MathParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 38DF1D532BC269760063A879 /* XCRemoteSwiftPackageReference "DDMathParser" */;
+			productName = MathParser;
 		};
 		38F5E29B2B98ACB9002FEEFE /* OpenAI */ = {
 			isa = XCSwiftPackageProductDependency;
