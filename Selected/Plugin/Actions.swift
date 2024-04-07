@@ -241,16 +241,11 @@ class KeycomboAction: Decodable {
         PressKey(keycode: keycode, flags:  flags)
     }
     
-    func isMatched(bundleID: String, url: String) -> Bool {
+    private func isMatched(bundleID: String, url: String) -> Bool {
         guard let supported = self.supported else{
             return true
         }
-        
-        let noURL = supported.notMatchURL(url: url)
-        let noApp = supported.notMatchApp(bundleID: bundleID)
-        // If the text context does not match both the URL and the app at the same time,
-        // then it is truly not a match; otherwise, it is considered a match.
-        return !(noURL && noApp)
+       return supported.match(url: url, bundleID: bundleID)
     }
     
     func supported(ctx: SelectedTextContext) -> Bool {

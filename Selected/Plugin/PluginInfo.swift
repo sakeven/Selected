@@ -18,31 +18,30 @@ struct Supported: Decodable {
     var apps: [SupportedApp]?
     var urls: [String]?
     
-    func notMatchURL(url: String) -> Bool {
-        guard let urls = urls else {
-            return false
+    func match(url: String, bundleID: String) -> Bool {
+        if apps == nil && urls == nil {
+            return true
         }
-        for supportedURL in urls {
-            if url.contains(supportedURL) {
-                return false
+        var appsEmpty = true
+        if let apps = apps {
+            for app in apps {
+                if app.bundleID == bundleID {
+                    return true
+                }
             }
+            appsEmpty = apps.isEmpty
         }
-        return !urls.isEmpty
-    }
-    
-    func notMatchApp(bundleID: String) -> Bool {
-        if bundleID.isEmpty {
-            return false
-        }
-        guard let apps = apps else {
-            return false
-        }
-        for app in apps {
-            if app.bundleID == bundleID {
-                return false
+        
+        var urlsEmpty = true
+        if let urls = urls {
+            for supportedURL in urls {
+                if url.contains(supportedURL) {
+                    return true
+                }
             }
+            urlsEmpty = url.isEmpty
         }
-        return !apps.isEmpty
+        return urlsEmpty && appsEmpty
     }
 }
 
