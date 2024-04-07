@@ -258,6 +258,16 @@
         }
       }
     },
+    "Path:" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "路径："
+          }
+        }
+      }
+    },
     "plain text" : {
       "extractionState" : "manual",
       "localizations" : {

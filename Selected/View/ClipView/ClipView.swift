@@ -49,13 +49,23 @@ struct ClipDataView: View {
             }.frame(height: 17)
             
             if let url = data.url {
-                HStack {
-                    Text("URL:")
-                    Spacer()
-                    Link(destination: URL(string: url)!, label: {
-                        Text(url).lineLimit(1)
-                    })
-                }.frame(height: 17)
+                
+                if data.types.first == .fileURL {
+                    let trim = url.trimPrefix("file://")
+                    HStack {
+                        Text("Path:")
+                        Spacer()
+                        Text(trim).lineLimit(1)
+                    }.frame(height: 17)
+                } else {
+                    HStack {
+                        Text("URL:")
+                        Spacer()
+                        Link(destination: URL(string: url)!, label: {
+                            Text(url).lineLimit(1)
+                        })
+                    }.frame(height: 17)
+                }
             }
         }.padding().frame(width: 550)
     }
@@ -138,27 +148,25 @@ struct ClipView: View {
                                 Image(nsImage: NSImage(data: clipData.png!)!).resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20)
                             }
                         )
-                    } else if  clipData.types.first == .fileURL {
+                    } else if clipData.types.first == .fileURL {
                         Label(
-                            title: { Text(clipData.plainText!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
+                            title: { Text(clipData.url!.trimPrefix("file://")).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
                             icon: { Image(systemName: "doc.on.doc").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
                         )
-                    }else if clipData.types.first == .rtf {
+                    } else if clipData.types.first == .rtf {
                         Label(
                             title: { Text(clipData.plainText!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
                             icon: { Image(systemName: "doc.richtext").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
                         )
-                    }else if
-                        clipData.types.first == .string  {
+                    } else if clipData.types.first == .string {
                         Label(
                             title: { Text(clipData.plainText!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
                             icon: { Image(systemName: "doc.plaintext").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
                         )
-                    }else if
-                                clipData.types.first == .html {
+                    }else if clipData.types.first == .html {
                         Label(
                             title: { Text(clipData.plainText!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
-                            icon: { Image(systemName: "text.quote").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
+                            icon: { Image(systemName: "circle.dashed.rectangle").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
                         )
                     }
                 }.frame(height: 30)
