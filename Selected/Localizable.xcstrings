@@ -208,12 +208,18 @@
         }
       }
     },
-    "Image" : {
+    "Image %@ * %@" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Image %1$@ * %2$@"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "图像"
+            "value" : "图像 %1$@ * %2$@"
           }
         }
       }

@@ -54,12 +54,6 @@ func calculate(_ equation: String) -> Double? {
     try? equation.evaluate()
 }
 
-private var valueFormatter: NumberFormatter = {
-    let formatter = NumberFormatter()
-    formatter.numberStyle = .none
-    formatter.maximumFractionDigits = 2
-    return formatter
-}()
 
 #Preview {
     PopBarView(actions: GetActions(ctx: SelectedTextContext(Text: "word", BundleID: "xxx",Editable: false)), ctx: SelectedTextContext(Text: "word", BundleID: "xxx",Editable: false))

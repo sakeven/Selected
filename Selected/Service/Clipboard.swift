@@ -88,6 +88,9 @@ class ClipService {
             if skip {
                 return
             }
+            if clipData.types.isEmpty {
+                return
+            }
             cache.insert(clipData, at: 0)
             if cache.count > 20 {
                 cache.remove(at: 20)
@@ -108,17 +111,19 @@ private let SupportedPasteboardTypes: Set<NSPasteboard.PasteboardType> = [
     NSPasteboard.PasteboardType("org.chromium.source-url"),
 ]
 
+struct ClipItem {
+    var type: NSPasteboard.PasteboardType
+    var data: Data
+}
 
 struct ClipData: Identifiable {
     var id: String
     var timeStamp: Int64
     var types: [NSPasteboard.PasteboardType]
     var appBundleID: String
+    var items: [ClipItem]
     
     var plainText: String?
-    var rtf: String?
-    var html: String?
-    var png: Data?
     var url: String?
     
     static private func filterPasteboardTypes(_ types: [NSPasteboard.PasteboardType]?) -> [NSPasteboard.PasteboardType] {
@@ -141,23 +146,14 @@ struct ClipData: Identifiable {
         self.appBundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier ?? "unknown"
         self.types = ClipData.filterPasteboardTypes(pasteboard.types)
         
-        
+        var items = [ClipItem]()
         for type in types {
-            if type == .rtf {
-                if let content = pasteboard.string(forType: type) {
-                    rtf = content
-                }
-            } else if type.rawValue == "public.utf8-plain-text" {
+            let item = ClipItem(type: type, data: pasteboard.data(forType: type)!)
+            items.append(item)
+            
+            if type == .string {
                 if let content = pasteboard.string(forType: type) {
                     plainText = content
-                }
-            } else if type == .html {
-                if let content = pasteboard.string(forType: type) {
-                    html = content
-                }
-            } else if type == .png {
-                if let content = pasteboard.data(forType: type) {
-                    png = content
                 }
             } else if type.rawValue == "org.chromium.source-url" {
                 if let content = pasteboard.string(forType: type) {
@@ -169,10 +165,15 @@ struct ClipData: Identifiable {
                 }
             }
         }
+        self.items = items
     }
 }
 
 extension ClipData: Hashable {
+    static func == (lhs: ClipData, rhs: ClipData) -> Bool {
+        return lhs.timeStamp == rhs.timeStamp
+    }
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(timeStamp)
     }
@@ -216,22 +217,8 @@ private func hotKeyHandler(nextHandler: EventHandlerCallRef?, theEvent: EventRef
             ClipService.shared.pauseMonitor(id)
             let pboard = NSPasteboard.general
             pboard.clearContents()
-            for t in item.types {
-                switch t {
-                    case .rtf:
-                        pboard.setString(item.rtf!, forType: .rtf)
-                    case .string:
-                        pboard.setString(item.plainText!, forType: .string)
-                    case .html:
-                        pboard.setString(item.html!, forType: .html)
-                    case NSPasteboard.PasteboardType("org.chromium.source-url"):
-                        pboard.setString(item.url!, forType: t)
-                    case .png:
-                        pboard.setData(item.png, forType: t)
-                    case .fileURL:
-                        pboard.setString(item.url!, forType: t)
-                    default: break
-                }
+            for t in item.items {
+                pboard.setData(t.data, forType: t.type)
             }
             // 粘贴时需要取消 key window，才能复制到当前的应用上。
             ClipWindowManager.shared.resignKey()

@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import PDFKit
 
 
 struct ClipDataView: View {
@@ -14,18 +15,26 @@ struct ClipDataView: View {
     
     var body: some View {
         VStack(alignment: .leading){
-            if data.png != nil {
-                Image(nsImage: NSImage(data: data.png!)!).resizable().aspectRatio(contentMode: .fit)
-            } else if data.rtf != nil {
-                RTFView(rtfData: data.rtf!)
+            let item = data.items.first!
+            if item.type == .png {
+                Image(nsImage: NSImage(data: item.data)!).resizable().aspectRatio(contentMode: .fit)
+            } else if item.type == .rtf {
+                RTFView(rtfData: item.data)
+            } else if item.type == .fileURL {
+                let url = URL(string: String(decoding: item.data, as: UTF8.self))!
+                let name = url.lastPathComponent.removingPercentEncoding!
+                if name.hasSuffix(".pdf") {
+                    PDFKitRepresentedView(url: url)
+                }
             } else if data.plainText != nil {
                 ScrollView{
                     HStack{
                         Text(data.plainText!)
-                        Spacer()
                     }
                 }
             }
+            
+            Spacer()
             Divider()
             
             HStack {
@@ -38,7 +47,7 @@ struct ClipDataView: View {
             HStack {
                 Text("Content type:")
                 Spacer()
-                let str = "\(data.types.first!)"
+                let str = "\(item.type)"
                 Text(NSLocalizedString(str, comment: ""))
             }.frame(height: 17)
             
@@ -49,13 +58,12 @@ struct ClipDataView: View {
             }.frame(height: 17)
             
             if let url = data.url {
-                
-                if data.types.first == .fileURL {
-                    let trim = url.trimPrefix("file://")
+                if item.type == .fileURL {
+                    let url = URL(string: String(decoding: item.data, as: UTF8.self))!
                     HStack {
                         Text("Path:")
                         Spacer()
-                        Text(trim).lineLimit(1)
+                        Text(url.path().removingPercentEncoding!).lineLimit(1)
                     }.frame(height: 17)
                 } else {
                     HStack {
@@ -89,7 +97,7 @@ func getDate(ts: Int64) -> Date {
 }
 
 struct RTFView: NSViewRepresentable {
-    var rtfData: String
+    var rtfData: Data
     
     func makeNSView(context: Context) -> NSScrollView {
         let textView = NSTextView()
@@ -97,7 +105,7 @@ struct RTFView: NSViewRepresentable {
         textView.autoresizingMask = [.width]
         textView.translatesAutoresizingMaskIntoConstraints = true
         if let attributedString =
-            try? NSMutableAttributedString(data: rtfData.data(using: .utf8)!,
+            try? NSMutableAttributedString(data: rtfData,
                                            options: [
                                             .documentType: NSAttributedString.DocumentType.rtf],
                                            documentAttributes: nil) {
@@ -140,30 +148,35 @@ struct ClipView: View {
         NavigationView{
             List(datas, id: \.self, selection:  $viewModel.selectedItem){
                 clipData in
+                let item = clipData.items.first!
                 NavigationLink(destination: ClipDataView(data: clipData), tag: clipData, selection:  $viewModel.selectedItem){
-                    if clipData.types.first == .png {
+                    if item.type == .png {
+                        let im = NSImage(data: item.data)!
+                        let height = valueFormatter.string(from: NSNumber(value: Double(im.size.height)))
+                        let width = valueFormatter.string(from: NSNumber(value: Double(im.size.width)))
                         Label(
-                            title: { Text("Image").padding(.leading, 10)},
+                            title: { Text("Image \(width!) * \(height!)").padding(.leading, 10)},
                             icon: {
-                                Image(nsImage: NSImage(data: clipData.png!)!).resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20)
+                                Image(nsImage: NSImage(data: item.data)!).resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20)
                             }
                         )
-                    } else if clipData.types.first == .fileURL {
+                    } else if item.type == .fileURL {
+                        let url = URL(string: String(decoding: item.data, as: UTF8.self))!
                         Label(
-                            title: { Text(clipData.url!.trimPrefix("file://")).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
+                            title: { Text(url.lastPathComponent.removingPercentEncoding!).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
                             icon: { Image(systemName: "doc.on.doc").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
                         )
-                    } else if clipData.types.first == .rtf {
+                    } else if item.type == .rtf {
                         Label(
                             title: { Text(clipData.plainText!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
                             icon: { Image(systemName: "doc.richtext").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
                         )
-                    } else if clipData.types.first == .string {
+                    } else if item.type == .string {
                         Label(
                             title: { Text(clipData.plainText!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
                             icon: { Image(systemName: "doc.plaintext").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
                         )
-                    }else if clipData.types.first == .html {
+                    } else if item.type == .html {
                         Label(
                             title: { Text(clipData.plainText!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
                             icon: { Image(systemName: "circle.dashed.rectangle").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
@@ -183,4 +196,24 @@ struct ClipView: View {
 
 #Preview {
     ClipView(datas: ClipService.shared.getHistory())
+}
+
+
+struct PDFKitRepresentedView: NSViewRepresentable {
+    let url: URL
+
+    func makeNSView(context: Context) -> PDFView {
+        let pdfView = PDFView()
+        pdfView.autoScales = true // Automatically scale the PDF to fit the view
+        pdfView.autoresizingMask = [.width, .height]
+        // 加载 PDF 文档
+        if let document = PDFDocument(url: url) {
+            pdfView.document = document
+        }
+        return pdfView
+    }
+
+    func updateNSView(_ nsView: PDFView, context: Context) {
+        // 这个方法里面可以留空，因为 PDFView 的内容不会经常改变
+    }
 }
