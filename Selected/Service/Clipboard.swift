@@ -9,7 +9,7 @@ import Foundation
 import Cocoa
 import SwiftUI
 import Carbon
-
+import Defaults
 
 class ClipService {
     static let shared = ClipService()
@@ -35,6 +35,7 @@ class ClipService {
     func startMonitoring() {
         eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.keyUp, .leftMouseUp]) { [weak self] event in
             guard let self = self else { return }
+            guard Defaults[.enableClipboard] else { return }
             
             NSLog("clip event \(eventTypeMap[event.type]!)")
             

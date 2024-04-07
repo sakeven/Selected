@@ -11,6 +11,7 @@ import OpenAI
 
 // Service Configuration
 extension Defaults.Keys {
+    static let enableClipboard = Key<Bool>("EnableClipboard", default: false)
     
     static let search = Key<String>("SearchURL", default: "https://www.google.com/search?q={selected.text}")
 

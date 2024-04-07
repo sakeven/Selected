@@ -24,6 +24,7 @@ struct SettingsView: View {
     @Default(.openAIModel) var openAIModel
     
     @Default(.search) var searchURL
+    @Default(.enableClipboard) var enableClipboard
     
     @State var launchAtLogin: Bool
     
@@ -52,6 +53,10 @@ struct SettingsView: View {
                                 launchAtLogin = oldValue
                             }
                         }
+                        
+                        Toggle(isOn: $enableClipboard, label: {
+                            Text("Clipboard History")
+                        })
                         TextField("Search URL", text: $searchURL)
                     }
                     

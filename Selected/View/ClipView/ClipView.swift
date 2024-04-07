@@ -25,6 +25,8 @@ struct ClipDataView: View {
                 let name = url.lastPathComponent.removingPercentEncoding!
                 if name.hasSuffix(".pdf") {
                     PDFKitRepresentedView(url: url)
+                } else {
+                    QuickLookPreview(url: url)
                 }
             } else if data.plainText != nil {
                 ScrollView{
