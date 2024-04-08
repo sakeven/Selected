@@ -48,8 +48,12 @@ struct ClipDataView: View {
             HStack {
                 Text("Content type:")
                 Spacer()
-                let str = "\(item.type)"
-                Text(NSLocalizedString(str, comment: ""))
+                if let text = data.plainText, isValidHttpUrl(text) {
+                    Text("Link")
+                } else {
+                    let str = "\(item.type)"
+                    Text(NSLocalizedString(str, comment: ""))
+                }
             }.frame(height: 17)
             
             HStack {
@@ -95,6 +99,18 @@ struct ClipDataView: View {
 
 func getDate(ts: Int64) -> Date {
     return Date(timeIntervalSince1970: TimeInterval(ts/1000))
+}
+
+func isValidHttpUrl(_ string: String) -> Bool {
+    guard let url = URL(string: string) else {
+        return false
+    }
+    
+    guard let scheme = url.scheme, scheme == "http" || scheme == "https" else {
+        return false
+    }
+    
+    return url.host != nil
 }
 
 
@@ -147,6 +163,11 @@ struct ClipView: View {
                         Label(
                             title: { Text(clipData.plainText!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
                             icon: { Image(systemName: "circle.dashed.rectangle").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
+                        )
+                    } else if item.type == .URL {
+                        Label(
+                            title: { Text(clipData.url!.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).frame(alignment: .leading).padding(.leading, 10) },
+                            icon: { Image(systemName: "link").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
                         )
                     }
                 }.frame(height: 30)

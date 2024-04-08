@@ -164,6 +164,10 @@ struct ClipData: Identifiable {
                 if let content = pasteboard.string(forType: type) {
                     url = content
                 }
+            } else if type == .URL {
+                if let content = pasteboard.string(forType: type) {
+                    url = content
+                }
             }
         }
         self.items = items
@@ -306,7 +310,7 @@ extension String.StringInterpolation {
 }
 
 let descriptionOfPasteboardType: [NSPasteboard.PasteboardType: String]  = [
-    .URL: "url",
+    .URL: "URL",
     .png: "PNG image",
     .html: "HTML",
     .pdf: "PDF",
