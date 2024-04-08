@@ -42,7 +42,7 @@ struct PopBarView: View {
             SharingButton(message: ctx.Text)
             if let res = calculate(ctx.Text) {
                 let v = valueFormatter.string(from: NSNumber(value: res))!
-                Text(v).fontWeight(.bold).frame(height: 30).frame(width: 10*CGFloat(v.count))
+                Text(v).fontWeight(.bold).frame(height: 30).frame(width: 9*CGFloat(v.count))
             }
         }.frame(height: 30)
             .padding(.leading, 10).padding(.trailing, 10)
@@ -56,7 +56,7 @@ func calculate(_ equation: String) -> Double? {
 
 private var valueFormatter: NumberFormatter = {
     let formatter = NumberFormatter()
-    formatter.numberStyle = .decimal
+    formatter.numberStyle = .none
     formatter.maximumFractionDigits = 2
     return formatter
 }()
