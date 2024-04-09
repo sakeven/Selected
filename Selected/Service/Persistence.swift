@@ -50,7 +50,6 @@ struct PersistenceController {
         clipHistoryData.plainText = clipData.plainText
         clipHistoryData.url = clipData.url
         for item in clipData.items {
-            
             let clipHistoryItem =
             NSEntityDescription.insertNewObject(
                 forEntityName: "ClipHistoryItem", into: ctx)
@@ -61,10 +60,31 @@ struct PersistenceController {
             clipHistoryItem.refer = clipHistoryData
             clipHistoryData.addToItems(clipHistoryItem)
         }
-        
+        clipHistoryData.md5 = clipHistoryData.MD5()
+        if let got = get(byMD5: clipHistoryData.md5!) {
+            if got != clipHistoryData {
+                clipHistoryData.firstCopiedAt = got.firstCopiedAt
+                clipHistoryData.numberOfCopies = got.numberOfCopies + 1
+                ctx.delete(got)
+                NSLog("saved \(clipHistoryData.firstCopiedAt!) \(got.firstCopiedAt!)")
+            }
+        }
         do {
             try ctx.save()
-            NSLog("saved")
+            NSLog("saved \(clipHistoryData.md5!)")
+        } catch {
+            fatalError("\(error)")
+        }
+    }
+    
+    func get(byMD5 md5: String) -> ClipHistoryData? {
+        let fetchRequest = NSFetchRequest<ClipHistoryData>(entityName: "ClipHistoryData")
+        fetchRequest.predicate = NSPredicate(format: "md5 = %@",md5 )
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: true)]
+        let ctx = PersistenceController.shared.container.viewContext
+        do{
+            let res = try ctx.fetch(fetchRequest)
+            return res.first
         } catch {
             fatalError("\(error)")
         }
@@ -72,8 +92,17 @@ struct PersistenceController {
 }
 
 
+import CryptoKit
 
 
+func MD5(string: String) -> String {
+    var md5 = Insecure.MD5()
+    md5.update(data: Data(string.utf8))
+    let digest = md5.finalize()
+    return digest.map {
+        String(format: "%02hhx", $0)
+    }.joined()
+}
 
 
 extension ClipHistoryData {
@@ -82,5 +111,16 @@ extension ClipHistoryData {
             return items.array as! [ClipHistoryItem]
         }
         return []
+    }
+    
+    func MD5() -> String {
+        var md5 = Insecure.MD5()
+        for item in getItems(){
+            md5.update(data: item.data!)
+        }
+        let digest = md5.finalize()
+        return digest.map {
+            String(format: "%02hhx", $0)
+        }.joined()
     }
 }

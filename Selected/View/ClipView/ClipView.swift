@@ -60,14 +60,19 @@ struct ClipDataView: View {
             HStack {
                 Text("Date:")
                 Spacer()
-                Text("\(data.firstCopiedAt!)")
+                Text("\(format(data.firstCopiedAt!))")
             }.frame(height: 17)
             
             if data.numberOfCopies > 1 {
                 HStack {
-                    Text("Times copied:")
+                    Text("Last copied:")
                     Spacer()
-                    Text("\(data.numberOfCopies)")
+                    Text("\(format(data.lastCopiedAt!))")
+                }.frame(height: 17)
+                HStack {
+                    Text("Copied:")
+                    Spacer()
+                    Text("\(data.numberOfCopies) times")
                 }.frame(height: 17)
             }
             
@@ -105,6 +110,13 @@ struct ClipDataView: View {
     }
 }
 
+func format(_ d: Date) -> String{
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateStyle = .medium
+    dateFormatter.timeStyle = .short
+    return dateFormatter.string(from: d)
+}
+
 func isValidHttpUrl(_ string: String) -> Bool {
     guard let url = URL(string: string) else {
         return false
@@ -128,7 +140,7 @@ struct ClipView: View {
     
     // 维护一个 FetchRequest 实例
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \ClipHistoryData.firstCopiedAt, ascending: false)],
+        sortDescriptors: [NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: false)],
         animation: .default)
     private var clips: FetchedResults<ClipHistoryData>
     

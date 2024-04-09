@@ -207,7 +207,7 @@ private func hotKeyHandler(nextHandler: EventHandlerCallRef?, theEvent: EventRef
     if err == noErr {
         // 确认是哪个热键被按下
         if receivedHotKeyID.signature == EnterHotKeyManager.hotKeyId.signature && receivedHotKeyID.id == EnterHotKeyManager.hotKeyId.id {
-            guard let item = ClipViewModel.shared.selectedItem  else {
+            guard let item = ClipViewModel.shared.selectedItem else {
                 return noErr
             }
             let id = UUID().uuidString
@@ -322,7 +322,7 @@ class ClipWindowManager {
     
     fileprivate func createWindow() {
         windowCtr?.close()
-        var view = ClipView().environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+        let view = ClipView().environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
         let window = ClipWindowController(rootView: AnyView(view))
         windowCtr = window
         window.showWindow(nil)
@@ -413,6 +413,7 @@ private class ClipWindowController: NSWindowController, NSWindowDelegate {
     
     func windowWillClose(_ notification: Notification) {
         hotkeyMgr.unregisterHotKey()
+        ClipViewModel.shared.selectedItem = nil
     }
 }
 

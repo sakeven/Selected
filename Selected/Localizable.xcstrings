@@ -14,8 +14,15 @@
         }
       }
     },
-    "%d" : {
-
+    "%d times" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d 次"
+          }
+        }
+      }
     },
     "Actions" : {
       "localizations" : {
@@ -103,6 +110,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "类型："
+          }
+        }
+      }
+    },
+    "Copied:" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已复制："
           }
         }
       }
@@ -223,6 +240,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "图像 %1$@ * %2$@"
+          }
+        }
+      }
+    },
+    "Last copied:" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近复制于："
           }
         }
       }
@@ -387,16 +414,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分享"
-          }
-        }
-      }
-    },
-    "Times copied:" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "复制次数："
           }
         }
       }
