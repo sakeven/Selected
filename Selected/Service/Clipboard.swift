@@ -16,7 +16,6 @@ class ClipService {
     
     private var eventMonitor: Any?
     private var pasteboard: NSPasteboard = .general
-    private var cache = [ClipData]()
     
     //
     private var lock = NSLock()
@@ -66,10 +65,6 @@ class ClipService {
         lock.unlock()
     }
     
-    func getHistory() -> [ClipData] {
-        return cache
-    }
-    
     private func checkPasteboard() {
         let currentChangeCount = pasteboard.changeCount
         if changeCount != currentChangeCount {
@@ -92,10 +87,7 @@ class ClipService {
             if clipData.types.isEmpty {
                 return
             }
-            cache.insert(clipData, at: 0)
-            if cache.count > 20 {
-                cache.remove(at: 20)
-            }
+            PersistenceController.shared.store(clipData)
         }
     }
 }
@@ -222,9 +214,10 @@ private func hotKeyHandler(nextHandler: EventHandlerCallRef?, theEvent: EventRef
             ClipService.shared.pauseMonitor(id)
             let pboard = NSPasteboard.general
             pboard.clearContents()
-            for t in item.items {
-                pboard.setData(t.data, forType: t.type)
+            for t in item.getItems() {
+                pboard.setData(t.data, forType: NSPasteboard.PasteboardType(rawValue: t.type!))
             }
+            PersistenceController.shared.updateClipHistoryData(item)
             // 粘贴时需要取消 key window，才能复制到当前的应用上。
             ClipWindowManager.shared.resignKey()
             PressPasteKey()
@@ -329,7 +322,8 @@ class ClipWindowManager {
     
     fileprivate func createWindow() {
         windowCtr?.close()
-        let window = ClipWindowController(rootView: AnyView(ClipView(datas: ClipService.shared.getHistory())))
+        var view = ClipView().environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+        let window = ClipWindowController(rootView: AnyView(view))
         windowCtr = window
         window.showWindow(nil)
         return

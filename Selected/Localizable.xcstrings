@@ -14,6 +14,9 @@
         }
       }
     },
+    "%d" : {
+
+    },
     "Actions" : {
       "localizations" : {
         "zh-Hans" : {
@@ -384,6 +387,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分享"
+          }
+        }
+      }
+    },
+    "Times copied:" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制次数："
           }
         }
       }
