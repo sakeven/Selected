@@ -161,6 +161,7 @@ func getSelectedTextBySimulateCommandC() -> String {
     
     let id = UUID().uuidString
     ClipService.shared.pauseMonitor(id)
+    defer {ClipService.shared.resumeMonitor(id)}
     
     NSLog("changeCount PressCopyKey \(id)")
 
@@ -179,7 +180,6 @@ func getSelectedTextBySimulateCommandC() -> String {
     pboard.setString(lastCopyText ?? "", forType: .string)
     NSLog("changeCount b \(pboard.changeCount)")
 
-    ClipService.shared.resumeMonitor(id)
     return selectText ?? ""
 }
 
