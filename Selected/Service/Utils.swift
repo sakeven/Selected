@@ -237,3 +237,11 @@ func replaceOptions(content: String, selectedText: String, options: [String:Stri
     }
     return message
 }
+
+
+var valueFormatter: NumberFormatter = {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .none
+    formatter.maximumFractionDigits = 2
+    return formatter
+}()

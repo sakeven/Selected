@@ -16,6 +16,7 @@ enum CloseWindowMode: String {
 class WindowManager {
     static let shared =  WindowManager()
     
+    // TODO: lock
     private var windowCtr: WindowController?
         
     func createPopBarWindow(_ ctx: SelectedTextContext) {

@@ -16,6 +16,7 @@
 		38230CA42BA33596002A52E9 /* SelectedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386AD7292B8F6BFC008C346D /* SelectedTests.swift */; };
 		3831FD332BA532D400A4262B /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 3831FD322BA532D400A4262B /* Yams */; };
 		3831FD362BA6DE3D00A4262B /* UserConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3831FD352BA6DE3D00A4262B /* UserConfigs.swift */; };
+		384A03732BC4173B00916303 /* ClipHistory.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 384A03712BC4173B00916303 /* ClipHistory.xcdatamodeld */; };
 		386AD7182B8F6BFA008C346D /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386AD7172B8F6BFA008C346D /* App.swift */; };
 		386AD71A2B8F6BFA008C346D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386AD7192B8F6BFA008C346D /* ContentView.swift */; };
 		386AD71C2B8F6BFB008C346D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71B2B8F6BFB008C346D /* Assets.xcassets */; };
@@ -31,6 +32,8 @@
 		3888D8032BA8615900A7B75D /* IconImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3888D8022BA8615900A7B75D /* IconImage.swift */; };
 		3888D8052BA86A0F00A7B75D /* PluginListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3888D8042BA86A0F00A7B75D /* PluginListView.swift */; };
 		3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3888D8062BA86AF600A7B75D /* WindowManager.swift */; };
+		388DABA82BC42798000B2739 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388DABA72BC42798000B2739 /* Persistence.swift */; };
+		388DABAA2BC6C683000B2739 /* OCR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388DABA92BC6C683000B2739 /* OCR.swift */; };
 		38CC18B42B9C46CA0023DF18 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B32B9C46CA0023DF18 /* SettingsView.swift */; };
 		38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */; };
 		38CC554C2BA9B6E900069553 /* RunCommandAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC554B2BA9B6E900069553 /* RunCommandAction.swift */; };
@@ -40,7 +43,12 @@
 		38DEBE392B9DDD0500CD2A35 /* AI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DEBE382B9DDD0500CD2A35 /* AI.swift */; };
 		38DF1D4A2BB7A3BC0063A879 /* Option.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D492BB7A3BC0063A879 /* Option.swift */; };
 		38DF1D4D2BB94DCD0063A879 /* ApplicationSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D4C2BB94DCD0063A879 /* ApplicationSettingView.swift */; };
+		38DF1D4F2BB964EC0063A879 /* Clipboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D4E2BB964EC0063A879 /* Clipboard.swift */; };
+		38DF1D522BC2408A0063A879 /* ClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D512BC2408A0063A879 /* ClipView.swift */; };
 		38DF1D552BC269760063A879 /* MathParser in Frameworks */ = {isa = PBXBuildFile; productRef = 38DF1D542BC269760063A879 /* MathParser */; };
+		38DF1D572BC2BC120063A879 /* QuickLookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D562BC2BC120063A879 /* QuickLookView.swift */; };
+		38DF1D592BC2BF9F0063A879 /* RTFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D582BC2BF9F0063A879 /* RTFView.swift */; };
+		38DF1D5B2BC2BFCA0063A879 /* PDFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D5A2BC2BFCA0063A879 /* PDFView.swift */; };
 		38E20A472BB44D5A0035A3AA /* SharingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A462BB44D5A0035A3AA /* SharingButton.swift */; };
 		38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A482BB5A3D80035A3AA /* SpeakAction.swift */; };
 		38E20A4B2BB5A7E20035A3AA /* TTS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A4A2BB5A7E20035A3AA /* TTS.swift */; };
@@ -78,6 +86,7 @@
 		38230CA22BA1DBA8002A52E9 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		3831FD342BA5C88300A4262B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		3831FD352BA6DE3D00A4262B /* UserConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConfigs.swift; sourceTree = "<group>"; };
+		384A03722BC4173B00916303 /* ClipHistory.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ClipHistory.xcdatamodel; sourceTree = "<group>"; };
 		386AD7142B8F6BFA008C346D /* Selected.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Selected.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		386AD7172B8F6BFA008C346D /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		386AD7192B8F6BFA008C346D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -97,6 +106,8 @@
 		3888D8042BA86A0F00A7B75D /* PluginListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginListView.swift; sourceTree = "<group>"; };
 		3888D8062BA86AF600A7B75D /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		3888D8082BA884DB00A7B75D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		388DABA72BC42798000B2739 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		388DABA92BC6C683000B2739 /* OCR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCR.swift; sourceTree = "<group>"; };
 		38CC18B32B9C46CA0023DF18 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopBarView.swift; sourceTree = "<group>"; };
 		38CC554B2BA9B6E900069553 /* RunCommandAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunCommandAction.swift; sourceTree = "<group>"; };
@@ -105,6 +116,11 @@
 		38DEBE382B9DDD0500CD2A35 /* AI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AI.swift; sourceTree = "<group>"; };
 		38DF1D492BB7A3BC0063A879 /* Option.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Option.swift; sourceTree = "<group>"; };
 		38DF1D4C2BB94DCD0063A879 /* ApplicationSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationSettingView.swift; sourceTree = "<group>"; };
+		38DF1D4E2BB964EC0063A879 /* Clipboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clipboard.swift; sourceTree = "<group>"; };
+		38DF1D512BC2408A0063A879 /* ClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipView.swift; sourceTree = "<group>"; };
+		38DF1D562BC2BC120063A879 /* QuickLookView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLookView.swift; sourceTree = "<group>"; };
+		38DF1D582BC2BF9F0063A879 /* RTFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RTFView.swift; sourceTree = "<group>"; };
+		38DF1D5A2BC2BFCA0063A879 /* PDFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFView.swift; sourceTree = "<group>"; };
 		38E20A462BB44D5A0035A3AA /* SharingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingButton.swift; sourceTree = "<group>"; };
 		38E20A482BB5A3D80035A3AA /* SpeakAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakAction.swift; sourceTree = "<group>"; };
 		38E20A4A2BB5A7E20035A3AA /* TTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTS.swift; sourceTree = "<group>"; };
@@ -205,6 +221,7 @@
 				386AD7562B90D867008C346D /* GetText.swift */,
 				3888D8062BA86AF600A7B75D /* WindowManager.swift */,
 				381843F02BB01A9B0061BB27 /* Localizable.xcstrings */,
+				384A03712BC4173B00916303 /* ClipHistory.xcdatamodeld */,
 			);
 			path = Selected;
 			sourceTree = "<group>";
@@ -246,6 +263,7 @@
 		386AD74C2B8F79F1008C346D /* View */ = {
 			isa = PBXGroup;
 			children = (
+				38DF1D502BC240700063A879 /* ClipView */,
 				38DF1D4B2BB94DB40063A879 /* PluginView */,
 				386AD74D2B8F7A16008C346D /* MenuItemView.swift */,
 				38049D612B9DF8B100E02ECA /* Base */,
@@ -267,6 +285,9 @@
 				38DEBE382B9DDD0500CD2A35 /* AI.swift */,
 				38230CA22BA1DBA8002A52E9 /* Utils.swift */,
 				38E20A4A2BB5A7E20035A3AA /* TTS.swift */,
+				38DF1D4E2BB964EC0063A879 /* Clipboard.swift */,
+				388DABA72BC42798000B2739 /* Persistence.swift */,
+				388DABA92BC6C683000B2739 /* OCR.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -277,6 +298,17 @@
 				38DF1D4C2BB94DCD0063A879 /* ApplicationSettingView.swift */,
 			);
 			path = PluginView;
+			sourceTree = "<group>";
+		};
+		38DF1D502BC240700063A879 /* ClipView */ = {
+			isa = PBXGroup;
+			children = (
+				38DF1D512BC2408A0063A879 /* ClipView.swift */,
+				38DF1D562BC2BC120063A879 /* QuickLookView.swift */,
+				38DF1D582BC2BF9F0063A879 /* RTFView.swift */,
+				38DF1D5A2BC2BFCA0063A879 /* PDFView.swift */,
+			);
+			path = ClipView;
 			sourceTree = "<group>";
 		};
 		38F5E2A02B9AB345002FEEFE /* SyntaxHighlighter */ = {
@@ -448,23 +480,31 @@
 				38049D632B9DF8EA00E02ECA /* FloatingPanel.swift in Sources */,
 				386AD74E2B8F7A16008C346D /* MenuItemView.swift in Sources */,
 				38230C9F2B9F332D002A52E9 /* PluginInfo.swift in Sources */,
+				38DF1D4F2BB964EC0063A879 /* Clipboard.swift in Sources */,
+				38DF1D5B2BC2BFCA0063A879 /* PDFView.swift in Sources */,
 				38E20A472BB44D5A0035A3AA /* SharingButton.swift in Sources */,
 				386AD71A2B8F6BFA008C346D /* ContentView.swift in Sources */,
+				388DABAA2BC6C683000B2739 /* OCR.swift in Sources */,
 				3888D8052BA86A0F00A7B75D /* PluginListView.swift in Sources */,
+				38DF1D572BC2BC120063A879 /* QuickLookView.swift in Sources */,
 				386AD7472B8F6FCE008C346D /* Defaults.swift in Sources */,
 				38DEBE392B9DDD0500CD2A35 /* AI.swift in Sources */,
+				38DF1D592BC2BF9F0063A879 /* RTFView.swift in Sources */,
 				386AD7552B90CF97008C346D /* CommandView.swift in Sources */,
+				384A03732BC4173B00916303 /* ClipHistory.xcdatamodeld in Sources */,
 				38230CA32BA1DBA8002A52E9 /* Utils.swift in Sources */,
 				386AD7182B8F6BFA008C346D /* App.swift in Sources */,
 				38CC18B42B9C46CA0023DF18 /* SettingsView.swift in Sources */,
 				38230CA12B9F44FC002A52E9 /* BarButton.swift in Sources */,
 				386AD7572B90D867008C346D /* GetText.swift in Sources */,
+				388DABA82BC42798000B2739 /* Persistence.swift in Sources */,
 				38F5E2A22B9AB361002FEEFE /* SplashCodeSyntaxHighlighter.swift in Sources */,
 				3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */,
 				3801CA4E2BA522B6007D7868 /* Actions.swift in Sources */,
 				38E20A4B2BB5A7E20035A3AA /* TTS.swift in Sources */,
 				38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */,
 				38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */,
+				38DF1D522BC2408A0063A879 /* ClipView.swift in Sources */,
 				3831FD362BA6DE3D00A4262B /* UserConfigs.swift in Sources */,
 				38DF1D4A2BB7A3BC0063A879 /* Option.swift in Sources */,
 				38CC554C2BA9B6E900069553 /* RunCommandAction.swift in Sources */,
@@ -916,6 +956,19 @@
 			productName = Splash;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		384A03712BC4173B00916303 /* ClipHistory.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				384A03722BC4173B00916303 /* ClipHistory.xcdatamodel */,
+			);
+			currentVersion = 384A03722BC4173B00916303 /* ClipHistory.xcdatamodel */;
+			path = ClipHistory.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 386AD70C2B8F6BFA008C346D /* Project object */;
 }

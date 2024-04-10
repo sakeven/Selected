@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23E214" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="ClipHistoryData" representedClassName="ClipHistoryData" syncable="YES" codeGenerationType="class">
+        <attribute name="application" attributeType="String"/>
+        <attribute name="firstCopiedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastCopiedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="md5" optional="YES" attributeType="String"/>
+        <attribute name="numberOfCopies" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="plainText" optional="YES" attributeType="String"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ClipHistoryItem" inverseName="refer" inverseEntity="ClipHistoryItem"/>
+    </entity>
+    <entity name="ClipHistoryItem" representedClassName="ClipHistoryItem" syncable="YES" codeGenerationType="class">
+        <attribute name="data" attributeType="Binary"/>
+        <attribute name="type" attributeType="String"/>
+        <relationship name="refer" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ClipHistoryData" inverseName="items" inverseEntity="ClipHistoryData"/>
+    </entity>
+</model>
