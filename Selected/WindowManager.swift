@@ -34,6 +34,19 @@ class WindowManager {
         createWindow(rootView: AnyView(contentView), resultWindow: true)
     }
     
+    func closeOnlyPopbarWindows(_ mode: CloseWindowMode) -> Bool {
+        guard let windowCtr = windowCtr else {
+            return false
+        }
+        if showingSharingPicker {
+            return false
+        }
+        if !windowCtr.resultWindow {
+            return closeWindow(mode, windowCtr: windowCtr)
+        }
+        return false
+    }
+    
     func closeAllWindows(_ mode: CloseWindowMode) -> Bool {
         guard let windowCtr = windowCtr else {
             return false
@@ -89,6 +102,8 @@ class WindowManager {
 
 
 private class WindowController: NSWindowController, NSWindowDelegate {
+    var resultWindow: Bool
+    
     init(rootView: AnyView, resultWindow: Bool) {
         var window: NSWindow
         // 必须用 NSPanel 并设置 .nonactivatingPanel 以及 level 为 .screenSaver
@@ -105,6 +120,7 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         } else {
             window.alphaValue = 0.9
         }
+        self.resultWindow = resultWindow
         
         super.init(window: window)
         
@@ -119,15 +135,22 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         
         let mouseLocation = NSEvent.mouseLocation  // 获取鼠标当前位置
         
-        // 确保窗口不会超出屏幕边缘
-        let x = min(screenFrame.maxX - windowFrame.width,
-                    max(mouseLocation.x - windowFrame.width/2, screenFrame.minX))
-        
-        var y =  mouseLocation.y + 18
-        if y > screenFrame.maxY {
-            y =  mouseLocation.y - 30 - 18
+        if resultWindow {
+                    // 确保窗口不会超出屏幕边缘
+                    let x = (screenFrame.maxX - windowFrame.width) / 2
+                    let y = (screenFrame.maxY - windowFrame.height)*3 / 4
+                    window.setFrameOrigin(NSPoint(x: x, y: y))
+        } else{
+            // 确保窗口不会超出屏幕边缘
+            let x = min(screenFrame.maxX - windowFrame.width,
+                        max(mouseLocation.x - windowFrame.width/2, screenFrame.minX))
+            
+            var y =  mouseLocation.y + 18
+            if y > screenFrame.maxY {
+                y =  mouseLocation.y - 30 - 18
+            }
+            window.setFrameOrigin(NSPoint(x: x, y: y))
         }
-        window.setFrameOrigin(NSPoint(x: x, y: y))
     }
     
     deinit{

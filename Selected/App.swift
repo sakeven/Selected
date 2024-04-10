@@ -104,7 +104,7 @@ func monitorMouseMove() {
                                         [.mouseMoved, .leftMouseUp, .leftMouseDragged, .keyDown, .scrollWheel]
     ) { (event) in
         if event.type == .mouseMoved {
-            if WindowManager.shared.closeAllWindows(.expanded) {
+            if WindowManager.shared.closeOnlyPopbarWindows(.expanded) {
                 lastSelectedText = ""
             }
             eventState.lastMouseEventType = .mouseMoved

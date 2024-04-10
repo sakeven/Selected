@@ -16,27 +16,29 @@ struct TranslationView: View {
     var to: String = "cn"
     
     var body: some View {
-        
             VStack(alignment: .leading) {
-                Markdown(self.transText)
-                    .markdownCodeSyntaxHighlighter(.splash(theme: .sunset(withFont: .init(size: 16))))
-                    .padding(.leading, 10.0)
-                    .padding(.trailing, 10.0)
-                    .padding(.top, 10)
-                    .frame(width: 400)
-                    .task {
-                        if isPreview {
-                            return
-                        }
-                        await Translation(toLanguage: to).translate(content: text) { content in
-                            if !hasRep {
-                                transText = content
-                                hasRep = true
-                            } else {
-                                transText = transText + content
+                ScrollView{
+                    Markdown(self.transText)
+                        .markdownCodeSyntaxHighlighter(.splash(theme: .sunset(withFont: .init(size: 16))))
+                        .padding(.leading, 20.0)
+                        .padding(.trailing, 20.0)
+                        .padding(.top, 20)
+                        .frame(width: 550)
+                        .task {
+                            if isPreview {
+                                return
+                            }
+                            await Translation(toLanguage: to).translate(content: text) { content in
+                                if !hasRep {
+                                    transText = content
+                                    hasRep = true
+                                } else {
+                                    transText = transText + content
+                                }
                             }
                         }
-                    }
+                }.frame(width: 550, height: 300)
+                Divider()
                 HStack{
                     Button(action: {
                         let pasteboard = NSPasteboard.general
@@ -56,7 +58,7 @@ struct TranslationView: View {
                         Image(systemName: "play.circle")
                     }.foregroundColor(Color.white)
                         .cornerRadius(5)
-                }.frame(width: 400, height: 20)
+                }.frame(width: 550, height: 30)
             }
     }
 }
@@ -73,25 +75,28 @@ struct ChatTextView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Markdown(self.respText)
-                .markdownCodeSyntaxHighlighter(.splash(theme: .sunset(withFont: .init(size: 16))))
-                .padding(.leading, 10.0)
-                .padding(.trailing, 10.0)
-                .padding(.top, 10)
-                .frame(width: 400)
-                .task {
-                    if isPreview {
-                        return
-                    }
-                    await ChatService(prompt: prompt).chat(content: text, options: options) { content in
-                        if !hasRep {
-                            respText = content
-                            hasRep = true
-                        } else {
-                            respText = respText + content
+            ScrollView{
+                Markdown(self.respText)
+                    .markdownCodeSyntaxHighlighter(.splash(theme: .sunset(withFont: .init(size: 16))))
+                    .padding(.leading, 10.0)
+                    .padding(.trailing, 10.0)
+                    .padding(.top, 10)
+                    .frame(width: 550)
+                    .task {
+                        if isPreview {
+                            return
+                        }
+                        await ChatService(prompt: prompt).chat(content: text, options: options) { content in
+                            if !hasRep {
+                                respText = content
+                                hasRep = true
+                            } else {
+                                respText = respText + content
+                            }
                         }
                     }
-                }
+            }.frame(width: 550, height: 300)
+            Divider()
             HStack{
                 Button(action: {
                     let pasteboard = NSPasteboard.general
@@ -111,7 +116,7 @@ struct ChatTextView: View {
                     Image(systemName: "play.circle")
                 }.foregroundColor(Color.white)
                     .cornerRadius(5)
-            }.frame(width: 400, height: 20)
+            }.frame(width: 550, height: 30)
         }
     }
 }
