@@ -13,7 +13,8 @@ struct GeminiPrompt {
     let prompt: String
     
     func chat(selectedText: String, options: [String:String] = [String:String](), completion: @escaping (_: String) -> Void) async -> Void {
-        let model = GenerativeModel(name: "gemini-pro", apiKey: Defaults[.geminiAPIKey], requestOptions: RequestOptions(apiVersion: "v1beta") )
+        
+        let model = GenerativeModel(name: "gemini-1.5-pro-latest", apiKey: Defaults[.geminiAPIKey], requestOptions: RequestOptions(apiVersion: "v1beta") )
         let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
         
         NSLog("prompt is \(message)")
