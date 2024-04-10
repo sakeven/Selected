@@ -160,6 +160,10 @@ struct ClipData: Identifiable {
                 if let content = pasteboard.string(forType: type) {
                     url = content
                 }
+            } else if type == .png {
+//                TODO: OCR
+//                let image = NSImage(data: item.data)!
+//                recognizeTextInImage(image)
             }
         }
         self.items = items
