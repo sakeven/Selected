@@ -153,3 +153,18 @@ var isPreview: Bool {
 """
     )
 }
+
+
+struct PopResultView: View {
+    var text: String
+    
+    var body: some View {
+        VStack(alignment: .center){
+            Text(text)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.top, 10).padding(.leading, 10).padding(.trailing, 10)
+                .background(.gray).cornerRadius(5)
+        }
+    }
+}

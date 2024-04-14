@@ -72,6 +72,8 @@ class RunCommandAction: Decodable {
                     let pasteboard = NSPasteboard.general
                     pasteboard.clearContents()
                     pasteboard.setString(output, forType: .string)
+                } else if generic.after == kAfterShow {
+                    WindowManager.shared.createTextWindow(output)
                 }
             }
         })

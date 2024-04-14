@@ -13,6 +13,7 @@ import Defaults
 
 let kAfterPaste = "paste"
 let kAfterCopy = "copy"
+let kAfterShow = "show"
 
 struct GenericAction: Decodable {
     var title: String

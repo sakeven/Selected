@@ -71,6 +71,19 @@ class WindowManager {
         }
     }
     
+    func createTextWindow(_ text: String) {
+        // 使用任意视图创建 WindowController
+        let windowController = WindowController(text: text)
+        windowCtr?.close()
+        windowController.showWindow(nil)
+        windowCtr = windowController
+        
+        // 如果你需要处理窗口关闭事件，你可以添加一个通知观察者
+        NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: windowController.window, queue: nil) { _ in
+            self.windowCtr = nil
+        }
+    }
+    
     private func closeWindow(_ mode: CloseWindowMode, windowCtr: WindowController) -> Bool {
         var closed = false
         switch mode {
@@ -104,6 +117,36 @@ class WindowManager {
 
 private class WindowController: NSWindowController, NSWindowDelegate {
     var resultWindow: Bool
+    init(text: String) {
+        let window = TextResultWindow(text)
+        window.alphaValue = 0.9
+        window.isOpaque = true
+        window.backgroundColor = .clear
+        self.resultWindow = true
+        
+        super.init(window: window)
+        
+        window.center()
+        window.level = .screenSaver
+        window.delegate = self // 设置代理为自己来监听窗口事件
+        
+        let windowFrame = window.frame
+        NSLog("windowFrame \(windowFrame.height), \(windowFrame.width)")
+        let screenFrame = NSScreen.main?.visibleFrame ?? .zero // 获取主屏幕的可见区域
+        
+        let mouseLocation = NSEvent.mouseLocation  // 获取鼠标当前位置
+        
+        
+        // 确保窗口不会超出屏幕边缘
+        let x = min(screenFrame.maxX - windowFrame.width,
+                    max(mouseLocation.x - windowFrame.width/2, screenFrame.minX))
+        
+        var y =  mouseLocation.y + 18
+        if y > screenFrame.maxY {
+            y =  mouseLocation.y - 30 - 18
+        }
+        window.setFrameOrigin(NSPoint(x: x, y: y))
+    }
     
     init(rootView: AnyView, resultWindow: Bool) {
         var window: NSWindow
@@ -169,4 +212,17 @@ private class WindowController: NSWindowController, NSWindowDelegate {
     override func showWindow(_ sender: Any?) {
         super.showWindow(sender)
     }
+}
+
+
+func TextResultWindow(_ text: String) -> NSWindow{
+    let window = FloatingPanel(
+        contentRect: .zero,
+        backing: .buffered,
+        defer: false
+    )
+   
+    let view = PopResultView(text: text)
+    window.contentView = NSHostingView(rootView: view.fixedSize())
+    return window
 }
