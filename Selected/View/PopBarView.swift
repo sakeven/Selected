@@ -42,11 +42,11 @@ struct PopBarView: View {
             SharingButton(message: ctx.Text)
             if let res = calculate(ctx.Text) {
                 let v = valueFormatter.string(from: NSNumber(value: res))!
-                Text(v).fontWeight(.bold).frame(height: 30).frame(width: 9*CGFloat(v.count))
+                Text(v).fontWeight(.bold)
             }
         }.frame(height: 30)
             .padding(.leading, 10).padding(.trailing, 10)
-            .background(.gray).cornerRadius(5)
+            .background(.gray).cornerRadius(5).fixedSize()
     }
 }
 

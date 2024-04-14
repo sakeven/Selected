@@ -126,7 +126,7 @@ struct ChatTextView: View {
                 Button(action: {
                     let pasteboard = NSPasteboard.general
                     pasteboard.clearContents()
-                    let painText  = MarkdownContent(self.respText).renderPlainText()
+                    let painText = MarkdownContent(self.respText).renderPlainText()
                     pasteboard.setString(painText, forType: .string)
                 }, label: {
                     Image(systemName: "doc.on.clipboard.fill")
@@ -195,10 +195,9 @@ struct PopResultView: View {
     var body: some View {
         VStack(alignment: .center){
             Text(text)
-                .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.top, 10).padding(.leading, 10).padding(.trailing, 10)
-                .background(.gray).cornerRadius(5)
+                .background(.gray).cornerRadius(5).fixedSize()
         }
     }
 }

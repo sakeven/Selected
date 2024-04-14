@@ -223,6 +223,6 @@ func TextResultWindow(_ text: String) -> NSWindow{
     )
    
     let view = PopResultView(text: text)
-    window.contentView = NSHostingView(rootView: view.fixedSize())
+    window.contentView = NSHostingView(rootView: view)
     return window
 }
