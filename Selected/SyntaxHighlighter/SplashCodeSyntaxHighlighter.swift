@@ -5,28 +5,33 @@
 //  Created by sake on 2024/3/8.
 //
 
-import MarkdownUI
-import Splash
 import SwiftUI
+import Highlightr
 
-struct SplashCodeSyntaxHighlighter: CodeSyntaxHighlighter {
-  private let syntaxHighlighter: SyntaxHighlighter<TextOutputFormat>
 
-  init(theme: Splash.Theme) {
-    self.syntaxHighlighter = SyntaxHighlighter(format: TextOutputFormat(theme: theme))
-  }
-
-  func highlightCode(_ content: String, language: String?) -> Text {
-//    guard language?.lowercased() == "plaintext" else {
-//      return Text(content)
-//    }
-
-    return self.syntaxHighlighter.highlight(content)
-  }
+enum CodeTheme: String {
+    case dark = "monokai-sublime"
+    case light = "github"
 }
 
-extension CodeSyntaxHighlighter where Self == SplashCodeSyntaxHighlighter {
-  static func splash(theme: Splash.Theme) -> Self {
-    SplashCodeSyntaxHighlighter(theme: theme)
-  }
+struct CustomCodeSyntaxHighlighter {
+    private let syntaxHighlighter: Highlightr
+    
+    init(theme: CodeTheme) {
+        let highlightr = Highlightr()!
+        highlightr.setTheme(to: theme.rawValue)
+        highlightr.ignoreIllegals = true
+        syntaxHighlighter = highlightr
+    }
+    
+    func highlightCode(_ content: String, language: String?) -> Text {
+        guard var language = language else {
+            return Text(content)
+        }
+        if !syntaxHighlighter.supportedLanguages().contains(language) {
+            language = "plaintext"
+        }
+        let highlightedCode = syntaxHighlighter.highlight(content, as: language)!
+        return Text(AttributedString(highlightedCode))
+    }
 }

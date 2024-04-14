@@ -8,6 +8,7 @@
 import SwiftUI
 import MarkdownUI
 import Splash
+import Highlightr
 
 struct TranslationView: View {
     @State var text: String
@@ -15,51 +16,67 @@ struct TranslationView: View {
     @State private var hasRep = false
     var to: String = "cn"
     
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
-            VStack(alignment: .leading) {
-                ScrollView{
-                    Markdown(self.transText)
-                        .markdownCodeSyntaxHighlighter(.splash(theme: .sunset(withFont: .init(size: 16))))
-                        .padding(.leading, 20.0)
-                        .padding(.trailing, 20.0)
-                        .padding(.top, 20)
-                        .frame(width: 550)
-                        .task {
-                            if isPreview {
-                                return
-                            }
-                            await Translation(toLanguage: to).translate(content: text) { content in
-                                if !hasRep {
-                                    transText = content
-                                    hasRep = true
-                                } else {
-                                    transText = transText + content
-                                }
-                            }
-                        }
-                }.frame(width: 550, height: 300)
-                Divider()
-                HStack{
-                    Button(action: {
-                        let pasteboard = NSPasteboard.general
-                        pasteboard.clearContents()
-                        let painText  = MarkdownContent(self.transText).renderPlainText()
-                        pasteboard.setString(painText, forType: .string)
-                    }, label: {
-                        Image(systemName: "doc.on.clipboard.fill")
+        VStack(alignment: .leading) {
+            ScrollView(.vertical){
+                Markdown(self.transText)
+                    .markdownBlockStyle(\.codeBlock, body: {label in
+                        // wrap long lines
+                        CustomCodeSyntaxHighlighter(theme: codeTheme).highlightCode(label.content, language: label.language).padding()
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .markdownMargin(top: .zero, bottom: .em(0.8))
                     })
-                    .foregroundColor(Color.white)
-                    .cornerRadius(5)
-                    Button {
-                        Task{
-                           await speak(MarkdownContent(self.transText).renderPlainText())
+                    .padding(.leading, 20.0)
+                    .padding(.trailing, 20.0)
+                    .padding(.top, 20)
+                    .frame(width: 550)
+                    .task {
+                        if isPreview {
+                            return
                         }
-                    } label: {
-                        Image(systemName: "play.circle")
-                    }.foregroundColor(Color.white)
-                        .cornerRadius(5)
-                }.frame(width: 550, height: 30)
-            }
+                        await Translation(toLanguage: to).translate(content: text) { content in
+                            if !hasRep {
+                                transText = content
+                                hasRep = true
+                            } else {
+                                transText = transText + content
+                            }
+                        }
+                    }
+            }.frame(width: 550, height: 300)
+            Divider()
+            HStack{
+                Button(action: {
+                    let pasteboard = NSPasteboard.general
+                    pasteboard.clearContents()
+                    let painText  = MarkdownContent(self.transText).renderPlainText()
+                    pasteboard.setString(painText, forType: .string)
+                }, label: {
+                    Image(systemName: "doc.on.clipboard.fill")
+                })
+                .foregroundColor(Color.white)
+                .cornerRadius(5)
+                Button {
+                    Task{
+                        await speak(MarkdownContent(self.transText).renderPlainText())
+                    }
+                } label: {
+                    Image(systemName: "play.circle")
+                }.foregroundColor(Color.white)
+                    .cornerRadius(5)
+            }.frame(width: 550, height: 30)
+        }
+    }
+    
+    private var codeTheme: CodeTheme {
+        switch self.colorScheme {
+            case .dark:
+                return .dark
+            default:
+                return .light
+        }
     }
 }
 
@@ -71,13 +88,18 @@ struct ChatTextView: View {
     @State var respText: String = "..."
     @State private var hasRep = false
     
-    @State private var width = 100
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(alignment: .leading) {
-            ScrollView{
+            ScrollView(.vertical){
                 Markdown(self.respText)
-                    .markdownCodeSyntaxHighlighter(.splash(theme: .sunset(withFont: .init(size: 16))))
+                    .markdownBlockStyle(\.codeBlock, body: {label in
+                        // wrap long lines
+                        CustomCodeSyntaxHighlighter(theme: codeTheme).highlightCode(label.content, language: label.language).padding()
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .markdownMargin(top: .zero, bottom: .em(0.8))
+                    })
                     .padding(.leading, 10.0)
                     .padding(.trailing, 10.0)
                     .padding(.top, 10)
@@ -110,13 +132,22 @@ struct ChatTextView: View {
                 .cornerRadius(5)
                 Button {
                     Task {
-                     await   speak(MarkdownContent(self.respText).renderPlainText())
+                        await speak(MarkdownContent(self.respText).renderPlainText())
                     }
                 } label: {
                     Image(systemName: "play.circle")
                 }.foregroundColor(Color.white)
                     .cornerRadius(5)
             }.frame(width: 550, height: 30)
+        }
+    }
+    
+    private var codeTheme: CodeTheme {
+        switch self.colorScheme {
+            case .dark:
+                return .dark
+            default:
+                return .light
         }
     }
 }

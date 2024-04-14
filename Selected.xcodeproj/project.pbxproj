@@ -34,6 +34,7 @@
 		3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3888D8062BA86AF600A7B75D /* WindowManager.swift */; };
 		388DABA82BC42798000B2739 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388DABA72BC42798000B2739 /* Persistence.swift */; };
 		388DABAA2BC6C683000B2739 /* OCR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388DABA92BC6C683000B2739 /* OCR.swift */; };
+		388DABAD2BCC0A1A000B2739 /* Highlightr in Frameworks */ = {isa = PBXBuildFile; productRef = 388DABAC2BCC0A1A000B2739 /* Highlightr */; };
 		38CC18B42B9C46CA0023DF18 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B32B9C46CA0023DF18 /* SettingsView.swift */; };
 		38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */; };
 		38CC554C2BA9B6E900069553 /* RunCommandAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC554B2BA9B6E900069553 /* RunCommandAction.swift */; };
@@ -55,8 +56,6 @@
 		38F5E29C2B98ACB9002FEEFE /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E29B2B98ACB9002FEEFE /* OpenAI */; };
 		38F5E29F2B9AB332002FEEFE /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E29E2B9AB332002FEEFE /* MarkdownUI */; };
 		38F5E2A22B9AB361002FEEFE /* SplashCodeSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F5E2A12B9AB361002FEEFE /* SplashCodeSyntaxHighlighter.swift */; };
-		38F5E2A42B9AB380002FEEFE /* TextOutputFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F5E2A32B9AB380002FEEFE /* TextOutputFormat.swift */; };
-		38F5E2A72B9AB3A5002FEEFE /* Splash in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E2A62B9AB3A5002FEEFE /* Splash */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -125,7 +124,6 @@
 		38E20A482BB5A3D80035A3AA /* SpeakAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakAction.swift; sourceTree = "<group>"; };
 		38E20A4A2BB5A7E20035A3AA /* TTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTS.swift; sourceTree = "<group>"; };
 		38F5E2A12B9AB361002FEEFE /* SplashCodeSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashCodeSyntaxHighlighter.swift; sourceTree = "<group>"; };
-		38F5E2A32B9AB380002FEEFE /* TextOutputFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOutputFormat.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,13 +131,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				38F5E2A72B9AB3A5002FEEFE /* Splash in Frameworks */,
 				38DF1D552BC269760063A879 /* MathParser in Frameworks */,
 				386AD7442B8F6E77008C346D /* Defaults in Frameworks */,
 				38F5E29C2B98ACB9002FEEFE /* OpenAI in Frameworks */,
 				38DEBE372B9DD80300CD2A35 /* GoogleGenerativeAI in Frameworks */,
 				3831FD332BA532D400A4262B /* Yams in Frameworks */,
 				386AD7512B8F7AA5008C346D /* SettingsAccess in Frameworks */,
+				388DABAD2BCC0A1A000B2739 /* Highlightr in Frameworks */,
 				38F5E29F2B9AB332002FEEFE /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -315,7 +313,6 @@
 			isa = PBXGroup;
 			children = (
 				38F5E2A12B9AB361002FEEFE /* SplashCodeSyntaxHighlighter.swift */,
-				38F5E2A32B9AB380002FEEFE /* TextOutputFormat.swift */,
 			);
 			path = SyntaxHighlighter;
 			sourceTree = "<group>";
@@ -341,10 +338,10 @@
 				386AD7502B8F7AA5008C346D /* SettingsAccess */,
 				38F5E29B2B98ACB9002FEEFE /* OpenAI */,
 				38F5E29E2B9AB332002FEEFE /* MarkdownUI */,
-				38F5E2A62B9AB3A5002FEEFE /* Splash */,
 				38DEBE362B9DD80300CD2A35 /* GoogleGenerativeAI */,
 				3831FD322BA532D400A4262B /* Yams */,
 				38DF1D542BC269760063A879 /* MathParser */,
+				388DABAC2BCC0A1A000B2739 /* Highlightr */,
 			);
 			productName = Selected;
 			productReference = 386AD7142B8F6BFA008C346D /* Selected.app */;
@@ -424,10 +421,10 @@
 				386AD74F2B8F7AA5008C346D /* XCRemoteSwiftPackageReference "SettingsAccess" */,
 				38F5E29A2B98ACB9002FEEFE /* XCRemoteSwiftPackageReference "OpenAI" */,
 				38F5E29D2B9AB332002FEEFE /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
-				38F5E2A52B9AB3A5002FEEFE /* XCRemoteSwiftPackageReference "Splash" */,
 				38DEBE352B9DD80300CD2A35 /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
 				3831FD312BA532D400A4262B /* XCRemoteSwiftPackageReference "Yams" */,
 				38DF1D532BC269760063A879 /* XCRemoteSwiftPackageReference "DDMathParser" */,
+				388DABAB2BCC0A1A000B2739 /* XCRemoteSwiftPackageReference "Highlightr" */,
 			);
 			productRefGroup = 386AD7152B8F6BFA008C346D /* Products */;
 			projectDirPath = "";
@@ -475,7 +472,6 @@
 				38DF1D4D2BB94DCD0063A879 /* ApplicationSettingView.swift in Sources */,
 				38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */,
 				38DEBE342B9DD7CA00CD2A35 /* Gemini.swift in Sources */,
-				38F5E2A42B9AB380002FEEFE /* TextOutputFormat.swift in Sources */,
 				3888D8032BA8615900A7B75D /* IconImage.swift in Sources */,
 				38049D632B9DF8EA00E02ECA /* FloatingPanel.swift in Sources */,
 				386AD74E2B8F7A16008C346D /* MenuItemView.swift in Sources */,
@@ -872,6 +868,14 @@
 				version = 1.4.0;
 			};
 		};
+		388DABAB2BCC0A1A000B2739 /* XCRemoteSwiftPackageReference "Highlightr" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/raspu/Highlightr";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.2;
+			};
+		};
 		38DEBE352B9DD80300CD2A35 /* XCRemoteSwiftPackageReference "generative-ai-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/generative-ai-swift";
@@ -904,14 +908,6 @@
 				minimumVersion = 2.3.0;
 			};
 		};
-		38F5E2A52B9AB3A5002FEEFE /* XCRemoteSwiftPackageReference "Splash" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/JohnSundell/Splash";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.16.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -929,6 +925,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 386AD74F2B8F7AA5008C346D /* XCRemoteSwiftPackageReference "SettingsAccess" */;
 			productName = SettingsAccess;
+		};
+		388DABAC2BCC0A1A000B2739 /* Highlightr */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 388DABAB2BCC0A1A000B2739 /* XCRemoteSwiftPackageReference "Highlightr" */;
+			productName = Highlightr;
 		};
 		38DEBE362B9DD80300CD2A35 /* GoogleGenerativeAI */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -949,11 +950,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 38F5E29D2B9AB332002FEEFE /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
 			productName = MarkdownUI;
-		};
-		38F5E2A62B9AB3A5002FEEFE /* Splash */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 38F5E2A52B9AB3A5002FEEFE /* XCRemoteSwiftPackageReference "Splash" */;
-			productName = Splash;
 		};
 /* End XCSwiftPackageProductDependency section */
 
