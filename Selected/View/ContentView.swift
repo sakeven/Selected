@@ -7,16 +7,16 @@
 
 import SwiftUI
 import MarkdownUI
-import Splash
 import Highlightr
 
 struct TranslationView: View {
-    @State var text: String
+    var text: String
     @State var transText: String = "..."
     @State private var hasRep = false
     var to: String = "cn"
     
     @Environment(\.colorScheme) private var colorScheme
+    var highlighter = CustomCodeSyntaxHighlighter()
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -24,7 +24,8 @@ struct TranslationView: View {
                 Markdown(self.transText)
                     .markdownBlockStyle(\.codeBlock, body: {label in
                         // wrap long lines
-                        CustomCodeSyntaxHighlighter(theme: codeTheme).highlightCode(label.content, language: label.language).padding()
+                        highlighter.setTheme(theme: codeTheme).highlightCode(label.content, language: label.language)
+                            .padding()
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .markdownMargin(top: .zero, bottom: .em(0.8))
                     })
@@ -80,15 +81,15 @@ struct TranslationView: View {
     }
 }
 
-
 struct ChatTextView: View {
-    @State var text: String
+    var text: String
     var prompt: String
     var options: [String:String]
     @State var respText: String = "..."
     @State private var hasRep = false
     
     @Environment(\.colorScheme) private var colorScheme
+    var highlighter = CustomCodeSyntaxHighlighter()
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -96,9 +97,10 @@ struct ChatTextView: View {
                 Markdown(self.respText)
                     .markdownBlockStyle(\.codeBlock, body: {label in
                         // wrap long lines
-                        CustomCodeSyntaxHighlighter(theme: codeTheme).highlightCode(label.content, language: label.language).padding()
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .markdownMargin(top: .zero, bottom: .em(0.8))
+                        highlighter.setTheme(theme: codeTheme).highlightCode(label.content, language: label.language)
+                                .padding()
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .markdownMargin(top: .zero, bottom: .em(0.8))
                     })
                     .padding(.leading, 10.0)
                     .padding(.trailing, 10.0)
@@ -108,6 +110,7 @@ struct ChatTextView: View {
                         if isPreview {
                             return
                         }
+                        
                         await ChatService(prompt: prompt).chat(content: text, options: options) { content in
                             if !hasRep {
                                 respText = content

@@ -10,7 +10,12 @@ import Defaults
 import SwiftUI
 import AVFoundation
 
-let OpenAIModels: [Model] = [.gpt4_turbo_preview, .gpt4, .gpt4_32k, .gpt3_5Turbo, .gpt3_5Turbo_16k]
+public extension Model {
+    /// `gpt-4-turbo`, the latest gpt-4 model with improved instruction following, JSON mode, reproducible outputs, parallel function calling and more. Maximum of 4096 output tokens
+    static let gpt4_turbo = "gpt-4-turbo"
+}
+
+let OpenAIModels: [Model] = [.gpt4_turbo, .gpt4, .gpt4_32k, .gpt3_5Turbo, .gpt3_5Turbo_16k]
 
 struct OpenAIPrompt {
     let prompt: String
@@ -19,19 +24,17 @@ struct OpenAIPrompt {
         let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
         let openAI = OpenAI(configuration: configuration)
         
-        let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
-        let query = ChatQuery(model: Defaults[.openAIModel], messages: [.init(role: .user, content: message)])
         
-        openAI.chatsStream(query: query) { partialResult in
-            switch partialResult {
-                case .success(let result):
-                    if result.choices[0].finishReason.isNil{
-                        completion(result.choices[0].delta.content!)
-                    }
-                case .failure(let error):
-                    NSLog("chunk error \(error)")
+        let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
+        let query = ChatQuery(messages: [.init(role: .user, content: message)!], model: Defaults[.openAIModel])
+        
+        do {
+            for try await result in openAI.chatsStream(query: query) {
+                if result.choices[0].finishReason.isNil{
+                    completion(result.choices[0].delta.content!)
+                }
             }
-        } completion: { error in
+        } catch {
             NSLog("completion error \(String(describing: error))")
         }
     }
@@ -74,15 +77,13 @@ func openAITTS(_ text: String) async {
     let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
     let openAI = OpenAI(configuration: configuration)
     let query = AudioSpeechQuery(model: .tts_1, input: text, voice: .shimmer, responseFormat: .mp3, speed: 1.0)
-
+    
     do {
         let result = try await openAI.audioCreateSpeech(query: query)
-        if let data = result.audioData {
-            voiceDataCache[text.hash] = VoiceData(data: data, lastAccessTime: Date())
-            audioPlayer?.stop()
-            audioPlayer = try! AVAudioPlayer(data: data)
-            audioPlayer!.play()
-        }
+        voiceDataCache[text.hash] = VoiceData(data: result.audio , lastAccessTime: Date())
+        audioPlayer?.stop()
+        audioPlayer = try! AVAudioPlayer(data:  result.audio)
+        audioPlayer!.play()
     } catch {
         NSLog("audioCreateSpeech \(error)")
         return
