@@ -10,7 +10,7 @@ import CoreData
 import Cocoa
 import SwiftUI
 
-struct PersistenceController {
+class PersistenceController {
     static let shared = PersistenceController()
 
     let container: NSPersistentContainer
@@ -88,6 +88,38 @@ struct PersistenceController {
         } catch {
             fatalError("\(error)")
         }
+    }
+    
+    func deleteBefore(byDate date: Date){
+        let fetchRequest = NSFetchRequest<ClipHistoryData>(entityName: "ClipHistoryData")
+        fetchRequest.predicate = NSPredicate(format: "lastCopiedAt < %@", date as NSDate)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: true)]
+        let ctx = PersistenceController.shared.container.viewContext
+        do{
+            let res = try ctx.fetch(fetchRequest)
+            for data in res {
+                ctx.delete(data)
+            }
+            try ctx.save()
+        } catch {
+            fatalError("\(error)")
+        }
+    }
+    
+    func startDailyTimer() {
+        dailyTask()
+        let timer = Timer.scheduledTimer(timeInterval: 86400, // 24 * 60 * 60 seconds
+                                         target: self,
+                                         selector: #selector(dailyTask),
+                                         userInfo: nil,
+                                         repeats: true)
+        RunLoop.main.add(timer, forMode: .common)
+    }
+    
+    @objc private func dailyTask() {
+        // 清理 7 天前的
+        let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date())!
+        deleteBefore(byDate: sevenDaysAgo)
     }
 }
 

@@ -18,6 +18,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // 不需要主窗口，不需要显示在 dock 上
         NSApp.setActivationPolicy(NSApplication.ActivationPolicy.accessory)
         requestAccessibilityPermissions()
+        
+        DispatchQueue.main.async {
+            PersistenceController.shared.startDailyTimer()
+        }
+        
         PluginManager.shared.loadPlugins()
         ConfigurationManager.shared.loadConfiguration()
         DispatchQueue.main.async {
