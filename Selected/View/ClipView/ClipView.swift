@@ -29,11 +29,7 @@ struct ClipDataView: View {
                     QuickLookPreview(url: url)
                 }
             } else if data.plainText != nil {
-                ScrollView{
-                    HStack{
-                        Text(data.plainText!)
-                    }
-                }
+                TextView(text: data.plainText!)
             }
             
             Spacer()
