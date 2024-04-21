@@ -1,46 +1,46 @@
-# 功能
+# Function
+A Mac tool that allows various operations on selected text.
 
-一个选择文本后可以进行各种操作的 mac 工具。
+When you select text with the mouse or through the keyboard (cmd+A, cmd+shift+arrow keys), the Selected toolbar will automatically pop up, allowing quick text operations such as copying, translating, searching, querying GPT, reading text aloud, opening links, keyboard operations, executing commands, etc. It also supports custom extensions.
 
-当你鼠标选择文本、或者通过键盘选择文本（cmd+A, cmd+shift+方向键）后，会自动弹出 Selected 工具栏，进行快捷的文本操作，比如复制、翻译、搜索、询问 GPT、朗读文本、打开链接、键盘操作、执行命令等等，并且支持自定义插件。
+<img src="DocImages/tool.png" alt="image-20240421174659528" style="zoom: 50%;" />
 
-![Screenshot](DocImages/Screenshot.png)
+1. Allows for the customization of operation lists for different applications. (This can be configured in "Settings - Applications")
 
-1. 本工具可以对不同应用实现自定义操作列表。(在“设置-应用”中可以配置)
-2. 本工具支持自定义 OpenAI 与 Gemini API 的地址与 key。翻译与询问 GPT 功能依赖于此。
-3. 本工具支持自定义插件（暂时缺乏文档，还未完整实现）。
+2. Supports customizing the addresses and keys for OpenAI and Gemini API. The translation and inquiry GPT functions depend on this.
+3. Supports custom extensions.
 
-## 自定义操作列表
+# Custom Action List
 
-在“设置-应用”中可以配置。
+This can be configured in "Settings - Applications".
 
-<img src="DocImages/Application-Settings.png" alt="image-20240325203050807" style="zoom:50%;" />
+<img src="DocImages/Application-Settings.png" alt="image-20240421175133604" style="zoom: 33%;" />
 
-1. 支持增加当前正在运行中的应用（暂不支持删除一个应用）
-   * 通过“增加-选择一个应用”增加
-2. 支持为某个应用设置一系列操作
-   - 通过“增加-选择一个操作”增加
-   - 支持删除一个操作
-   - 支持拖拽操作以调整排列顺序
+1. Supports adding currently running applications (does not support deleting an application)
+   * Add through "Add - Select an Application"
+2. Supports setting a series of actions for an application
+  - Add through "Add - Select an Action"
+  - Supports deleting an action
+  - Supports drag-and-drop to rearrange the order of actions
 
-## 内置操作
+## Built-in Operations
 
-| 操作名               | 操作标识action.identifier | 功能                                                         | 图标 |
+| Action          | action.identifier | function                                                 | icon |
 | -------------------- | ------------------------ | ------------------------------------------------------------ | ---- |
-| Web Search           | selected.websearch       | 通过 https://www.google.com/search 进行搜索。可以在设置页面自定义。 | 🔍    |
-| OpenLinks            | selected.openlinks       | 同时打开文本中的所有 URL 链接                                            | 🔗    |
-| Copy                 | selected.copy            | 复制当前选中文本                                             | 📃    |
-| Speak                | selected.speak           | 朗读文本。如果配置了 OpenAI API Key 则使用 OpenAI 的 TTS 服务生成语音，否则使用系统朗读功能。 | ▶️    |
-| 翻译到中文           | selected.translation.cn  | 翻译到中文，如果选中的文本为单词，则翻译单词的详细意思。需在设置里配置 API key | 字典 |
-| Translate to English | selected.translation.en  | 翻译到英文。需在设置里配置 OpenAI 或者 Gemini API key        | 🌍    |
+| Web Search           | selected.websearch       | Search via https://www.google.com/search. It can be customized in the settings page. | 🔍    |
+| OpenLinks            | selected.openlinks       | Open all URL links in the text at the same time. | 🔗    |
+| Copy                 | selected.copy            | Copy the currently selected text.            | 📃    |
+| Speak                | selected.speak           | Read the text. If an OpenAI API Key is configured, use OpenAI's TTS (Text-to-Speech) service to generate speech, otherwise use the system's text reading functionality. | ▶️    |
+| 翻译到中文           | selected.translation.cn  | Translate to Chinese. If the selected text is a word, translate the detailed meaning of the word. An API key must be configured in the settings. | 译中 |
+| Translate to English | selected.translation.en  | Translate to English. You need to configure the OpenAI or Gemini API key in the settings. | 🌍    |
 
-## 自定义插件
+## Custom Extentions
 
-插件放置在 `Library/Application Support/Selected/Extensions` 目录下，一个插件一个目录。
+The extension is placed in the `Library/Application Support/Selected/Extensions` directory, with one directory per extension.
 
-插件目录里，必须有 `config.yaml` 文件，用以说明插件的相关信息。
+Inside the extension directory, there must be a `config.yaml` file that describes the relevant information about the extension.
 
-示例：
+Example：
 
 ```yam
 info:
@@ -57,38 +57,36 @@ actions:
     url: https://pkg.go.dev/search?limit=25&m=symbol&q={text}
 ```
 
-| 字段名                     | 类型   | 含义                                                         |
+| Fields                | Type | Description                                  |
 | -------------------------- | ------ | ------------------------------------------------------------ |
-| info                       | object | 插件的基本信息                                               |
-| info.icon                  | 字符串 | 图标。图标尺寸应该为 30*30。支持使用 file:// 指定文件。`file://./go-logo-white.svg` 即是从插件目录下的文件加载图标。也支持直接配置 [sf symbol](https://developer.apple.com/cn/sf-symbols/)，比如 `magnifyingglass` （🔍）。显示在设置的插件列表里（还没实现）。 |
-| info.name                  | 字符串 | 插件名。显示在设置的插件列表里（还没实现）。                                 |
-| enabled                    | 布尔   | 是否激活该插件                                               |
-| actions                    | 列表   | 操作（action）列表                                           |
-| action.meta                | object | 操作的元信息                                                 |
-| action.meta.title          | 字符串 | 操作的标题。用于在鼠标悬浮在工具栏上显示操作的名称。  |
-| action.meta.icon           | 字符串 | 配置与 `info.icon` 相同。用于显示在工具栏上。                |
-| action.meta.identifier     | 字符串 | action 的 id，唯一标识符                                     |
-| action.meta.after     | 字符串 | action 执行完成之后的处理。必填。支持配置空（""）、paste、copy。 |
-| action.meta.regex | 字符串 | 正则表达式，用于匹配选择的文本，只有匹配时才显示 action。可选值。 |
-| action.url                 | object | url 类型的操作                                               |
-| action.url.url             | 字符串 | 一个链接，点击操作（action）之后会打开这个链接。支持打开其它应用的 scheme。比如 `https://www.google.com.hk/search?q={text}` 进行谷歌搜索。或者打开 `things:///add?title={text}&show-quick-entry=true` 打开 [Things3](https://culturedcode.com/things/) 添加待办。{text} 用于替换选中的文本。 |
-| action.service             | object | service 类型的操作                                           |
-| action.service.name | 字符串 | service 名称。比如 `Make Sticky` 新建一个便条（便笺应用）。              |
-| action.keycombo            | object | 快捷键类型的操作                                             |
-| action.keycombo.keycombo   | 字符串 | 快捷键，比如 "cmd i" 等。支持 "cmd" "shift" "ctr" "option" "fn" "caps" 功能键，以及小写字母、数字、符号等键位。键位支持暂不完整，待测试完善。 |
-| action.gpt                 | object | 与 GPT 交互，比如 OpenAI（3.5 turbo 模型）、Gemini。需要在设置里配置相关的 api key。 |
-| action.gpt.prompt          | 字符串 | GPT 提示词，比如`丰富细化以下内容。内容为：{text}`。使用 `{text}` 替换选中的文本。 |
-| action.runCommand | object | 执行一个命令 |
-| action.runCommand.command | 字符串 | 命令与参数列表。命令执行时的工作目录为插件目录。目前提供的环境变量包括：`SELECTED_TEXT`、`SELECTED_BUNDLEID` 分别为当前选中的文本，以及当前所在的应用。 |
+| info                       | object | Base information of the extension.         |
+| info.icon                  | string | Icon. The icon size should be 30*30. It supports specifying files with `file://`. `file://./go-logo-white.svg` is an example of loading the icon from the extension directory. It also supports direct configuration of sf symbols, such as `magnifyingglass` (🔍). The icon will be displayed in the configured extension list. |
+| info.name                  | string | Extension name                |
+| enabled                    | boolean | Whether activate this extension or not. |
+| actions                    | list | Action List                                |
+| action.meta                | object | Meta information of the Action                    |
+| action.meta.title          | string | Action title. Used to display the name of the operation when the mouse hovers over the toolbar. |
+| action.meta.icon           | string | The setup is the same as info.icon. It is used for display on the toolbar. |
+| action.meta.identifier     | string  | action's id, unique identifier       |
+| action.meta.after     | string | Handling after the action is executed. Required. Supports configuration of empty (`""`), `paste`, `copy`, `show`. |
+| action.meta.regex | string | Regular expressions, used to match selected text, only display action when a match occurs. Optional values. |
+| action.url                 | object | Action of URL type |
+| action.url.url             | string | A link that, upon clicking (action), will open this link. It supports schemes to open other apps. For example, `https://www.google.com.hk/search?q={selected.text} `for conducting a Google search. Or open `things:///add?title={selected.text}&show-quick-entry=true` to add a task in Things3. `{selected.text}` is used to replace the selected text. |
+| action.service             | object | Action of service type                   |
+| action.service.name | string | Service Name。For example, `Make Sticky` creates a new note (note application). |
+| action.keycombo            | object | Shortcut key type action |
+| action.keycombo.keycombo   | string | Shortcut keys, such as "cmd i", etc. Support for function keys like "cmd", "shift", "ctrl", "option", "fn", "caps", as well as lowercase letters, numbers, symbols, and other key positions. Key positioning support is not yet complete, pending further testing and improvement. |
+| action.gpt                 | object | To interact with GPT, such as OpenAI (3.5 turbo model) or Gemini, you need to configure the relevant API key in the settings. |
+| action.gpt.prompt          | string | GPT prompt words, such as `enriching and refining the following content. The content reads: {selected.text}.` Use `{selected.text}` to replace the selected text. |
+| action.runCommand | object | Execute a command |
+| action.runCommand.command | string | Command and parameter list. The working directory during command execution is the plugin directory. The environment variables currently provided include: `SELECTED_TEXT` and `SELECTED_BUNDLEID`, which represent the currently selected text and the current application, respectively. |
 
-每个 action 只能且必须配置 action.url、action.service、action.keycombo、action.gpt、action.runCommand 中的一个。
+Each action can and must be configured with only one of the following: action.url, action.service, action.keycombo, action.gpt, or action.runCommand.
 
-# 说明
+# Note
+This tool is a hobby project of the author and is still under rapid development and iteration, with incomplete features. Everyone is welcome to submit suggestions for features and implementation code.
 
-本工具是作者的业余项目，还在快速开发迭代中，功能并不完善。欢迎大家提交功能建议与实现代码。
+# Contribution
+This project welcomes any contributions.
 
-# 贡献
-
-本项目欢迎任何的贡献。
-
-由于作者是零基础的 Swift、SwiftUI、macOS App 开发小白，所有实现都是通过 GPT、搜索、阅读相关项目（EasyDict、PopClip）的代码与文档获得的，所以如果需要贡献代码，请清楚地说明代码是如何实现的，以及为什么这么实现，以帮助作者理解你代码。
+As the author is a complete beginner in Swift, SwiftUI, and macOS App development, all implementations are acquired through GPT, searching, and reading the code and documentation of related projects (EasyDict, PopClip). Therefore, if you wish to contribute code, please clearly explain how the code is implemented and why it is implemented in this way, to help the author understand your code.
