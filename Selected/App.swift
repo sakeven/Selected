@@ -9,6 +9,7 @@ import SwiftUI
 import Accessibility
 import AppKit
 import Foundation
+import Defaults
 
 
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -32,7 +33,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             ClipService.shared.startMonitoring()
         }
         DispatchQueue.main.async {
-            HotKeyManager().registerHotKey()
+            HotKeyManager.shared.registerHotKey()
+//            clip()
         }
         
         // 注册空间改变通知
@@ -53,6 +55,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // 处理打开的文件
             NSLog("\(url.path)")
             PluginManager.shared.install(url: url)
+        }
+    }
+    
+    func applicationWillBecomeActive(_ notification: Notification) {
+        // 当 app 变为活跃时关闭全局热键
+        HotKeyManager.shared.unregisterHotKey()
+    }
+
+    func applicationDidResignActive(_ notification: Notification) {
+        if Defaults[.enableClipboard] {
+            // 当 app 退到后台时开启全局热键
+            HotKeyManager.shared.registerHotKey()
         }
     }
 }

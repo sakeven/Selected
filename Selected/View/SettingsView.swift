@@ -24,7 +24,6 @@ struct SettingsView: View {
     @Default(.openAIModel) var openAIModel
     
     @Default(.search) var searchURL
-    @Default(.enableClipboard) var enableClipboard
     
     @State var launchAtLogin: Bool
     
@@ -54,9 +53,6 @@ struct SettingsView: View {
                             }
                         }
                         
-                        Toggle(isOn: $enableClipboard, label: {
-                            Text("Clipboard History")
-                        })
                         TextField("Search URL", text: $searchURL)
                     }
                     
@@ -111,10 +107,41 @@ struct SettingsView: View {
                     Image(systemName: "apple.terminal")
                 }
             }
+            ShortcutView().tabItem() {
+                Label {
+                    Text("Clipboard")
+                } icon: {
+                    Image(systemName: "doc.on.clipboard.fill")
+                }
+            }
         }
     }
 }
 
+import ShortcutRecorder
+
+struct ShortcutView: View {
+    @Default(.clipboardShortcut) var shortcut
+    @Default(.enableClipboard) var enableClipboard
+    
+    var body: some View {
+        VStack {
+            Form{
+                Section(header: Text("General")) {
+                    Toggle(isOn: $enableClipboard, label: {
+                        Text("Clipboard History")
+                    })
+                    HStack{
+                        Text("HotKey")
+                        ShortcutRecorderView(shortcut: $shortcut)
+                            .frame(height: 25)
+                    }
+                }
+            }.formStyle(.grouped) // 成组
+                .frame(width: 400).padding()
+        }
+    }
+}
 
 #Preview {
     SettingsView()

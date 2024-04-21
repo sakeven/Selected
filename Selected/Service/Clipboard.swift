@@ -161,9 +161,9 @@ struct ClipData: Identifiable {
                     url = content
                 }
             } else if type == .png {
-//                TODO: OCR
-//                let image = NSImage(data: item.data)!
-//                recognizeTextInImage(image)
+                //                TODO: OCR
+                //                let image = NSImage(data: item.data)!
+                //                recognizeTextInImage(image)
             }
         }
         self.items = items
@@ -236,6 +236,8 @@ private func hotKeyHandler(nextHandler: EventHandlerCallRef?, theEvent: EventRef
 }
 
 class HotKeyManager {
+    static let shared = HotKeyManager()
+    
     private var hotKeyId: EventHotKeyID
     private var hotKeyRef: EventHotKeyRef?
     
@@ -244,10 +246,11 @@ class HotKeyManager {
     }
     
     func registerHotKey() {
-        let optionKey = UInt32(optionKey) // optionKey是一个来自于Carbon框架中kEventHotKey...系列常量的标识符
-        let spaceKey = UInt32(kVK_Space)
+        if hotKeyRef != nil {
+            return
+        }
         
-        RegisterEventHotKey(spaceKey, optionKey, hotKeyId, GetApplicationEventTarget(), 0, &hotKeyRef)
+        RegisterEventHotKey(Defaults[.clipboardShortcut].carbonKeyCode,  Defaults[.clipboardShortcut].carbonModifierFlags, hotKeyId, GetApplicationEventTarget(), 0, &hotKeyRef)
         
         var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
         // 安装事件处理器

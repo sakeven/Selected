@@ -8,13 +8,13 @@
 import Defaults
 import Foundation
 import OpenAI
+import ShortcutRecorder
 
 // Service Configuration
 extension Defaults.Keys {
-    static let enableClipboard = Key<Bool>("EnableClipboard", default: false)
     
     static let search = Key<String>("SearchURL", default: "https://www.google.com/search?q={selected.text}")
-
+    
     
     static let aiService = Key<String>("AIService", default: "OpenAI")
     
@@ -26,7 +26,37 @@ extension Defaults.Keys {
     // Gemini
     static let geminiAPIKey = Key<String>("GeminiAPIKey", default: "")
     static let geminiAPIHost = Key<String>("GeminiAPIHost", default: "")
+    
+    // clipboard
+    static let enableClipboard = Key<Bool>("EnableClipboard", default: false)
+    static let clipboardShortcut = Key<Shortcut>("ClipboardShortcut", default: Shortcut(keyEquivalent: "⌥Space")!)
 }
+
+extension Shortcut: Defaults.Serializable{
+    public static let bridge = ShortcutBridge()
+}
+
+public struct ShortcutBridge: Defaults.Bridge {
+    public typealias Value = Shortcut
+    public typealias Serializable = [ShortcutKey: Any]
+    
+    public func serialize(_ value: Value?) -> Serializable? {
+        guard let value else {
+            return nil
+        }
+        return value.dictionaryRepresentation
+    }
+    
+    public func deserialize(_ object: Serializable?) -> Value? {
+        guard
+            let val = object
+        else {
+            return nil
+        }
+        return Shortcut(dictionary: val)
+    }
+}
+
 
 
 // 应用程序支持目录的URL
