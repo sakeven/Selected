@@ -10,7 +10,7 @@ import AppKit
 
 struct TextView: NSViewRepresentable {
     var text: String
-    var font: NSFont? = NSFont(name: "UbuntuMono Nerd Font Mono", size: 14)
+    var font: NSFont? = NSFont(name: "UbuntuMonoNFM", size: 14)
     
     func makeNSView(context: Context) -> NSScrollView {
         let scrollView = NSScrollView()

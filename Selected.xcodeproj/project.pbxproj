@@ -38,6 +38,7 @@
 		388DABAF2BD147F6000B2739 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388DABAE2BD147F6000B2739 /* TextView.swift */; };
 		388DABB22BD549EE000B2739 /* ShortcutRecorder in Frameworks */ = {isa = PBXBuildFile; productRef = 388DABB12BD549EE000B2739 /* ShortcutRecorder */; };
 		388DABB42BD54A03000B2739 /* ShortcutRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388DABB32BD54A03000B2739 /* ShortcutRecorderView.swift */; };
+		388DABB92BD6A5CF000B2739 /* UbuntuMonoNerdFontMono-Regular.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 388DABB62BD6980D000B2739 /* UbuntuMonoNerdFontMono-Regular.ttf */; };
 		38CC18B42B9C46CA0023DF18 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B32B9C46CA0023DF18 /* SettingsView.swift */; };
 		38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */; };
 		38CC554C2BA9B6E900069553 /* RunCommandAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC554B2BA9B6E900069553 /* RunCommandAction.swift */; };
@@ -78,6 +79,19 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		388DABB82BD6A5BB000B2739 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Fonts;
+			dstSubfolderSpec = 7;
+			files = (
+				388DABB92BD6A5CF000B2739 /* UbuntuMonoNerdFontMono-Regular.ttf in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		3801CA4C2BA47A09007D7868 /* icon.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = icon.md; sourceTree = "<group>"; };
 		3801CA4D2BA522B6007D7868 /* Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Actions.swift; sourceTree = "<group>"; };
@@ -112,6 +126,7 @@
 		388DABA92BC6C683000B2739 /* OCR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCR.swift; sourceTree = "<group>"; };
 		388DABAE2BD147F6000B2739 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		388DABB32BD54A03000B2739 /* ShortcutRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorderView.swift; sourceTree = "<group>"; };
+		388DABB62BD6980D000B2739 /* UbuntuMonoNerdFontMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "UbuntuMonoNerdFontMono-Regular.ttf"; sourceTree = "<group>"; };
 		38CC18B32B9C46CA0023DF18 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopBarView.swift; sourceTree = "<group>"; };
 		38CC554B2BA9B6E900069553 /* RunCommandAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunCommandAction.swift; sourceTree = "<group>"; };
@@ -214,6 +229,7 @@
 		386AD7162B8F6BFA008C346D /* Selected */ = {
 			isa = PBXGroup;
 			children = (
+				388DABB52BD697F9000B2739 /* Fonts */,
 				3888D8082BA884DB00A7B75D /* Info.plist */,
 				38230C9D2B9F3307002A52E9 /* Plugin */,
 				38DEBE302B9D67E800CD2A35 /* Service */,
@@ -283,6 +299,14 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		388DABB52BD697F9000B2739 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				388DABB62BD6980D000B2739 /* UbuntuMonoNerdFontMono-Regular.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		38DEBE302B9D67E800CD2A35 /* Service */ = {
 			isa = PBXGroup;
 			children = (
@@ -335,6 +359,7 @@
 				386AD7102B8F6BFA008C346D /* Sources */,
 				386AD7112B8F6BFA008C346D /* Frameworks */,
 				386AD7122B8F6BFA008C346D /* Resources */,
+				388DABB82BD6A5BB000B2739 /* CopyFiles */,
 			);
 			buildRules = (
 			);
