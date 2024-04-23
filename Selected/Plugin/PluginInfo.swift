@@ -236,7 +236,7 @@ class PluginManager: ObservableObject {
         ))
         
         let pluginList = plugins
-        NSLog("get alll")
+        NSLog("get all")
         pluginList.forEach { Plugin in
             if !Plugin.info.enabled {
                 return

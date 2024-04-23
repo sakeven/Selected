@@ -123,7 +123,8 @@ import ShortcutRecorder
 struct ShortcutView: View {
     @Default(.clipboardShortcut) var shortcut
     @Default(.enableClipboard) var enableClipboard
-    
+    @Default(.clipboardHistoryTime) var keepTime: ClipboardHistoryTime
+
     var body: some View {
         VStack {
             Form{
@@ -135,6 +136,13 @@ struct ShortcutView: View {
                         Text("HotKey")
                         ShortcutRecorderView(shortcut: $shortcut)
                             .frame(height: 25)
+                    }
+                    Picker("Keep History For", selection: $keepTime, content: {
+                        ForEach(ClipboardHistoryTime.allCases, id: \.self) {
+                            Text($0.localizedName)
+                        }
+                    }).pickerStyle(DefaultPickerStyle()).onChange(of: keepTime) { _, _ in
+                        PersistenceController.shared.cleanTask()
                     }
                 }
             }.formStyle(.grouped) // 成组

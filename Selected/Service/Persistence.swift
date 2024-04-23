@@ -9,6 +9,7 @@ import Foundation
 import CoreData
 import Cocoa
 import SwiftUI
+import Defaults
 
 class PersistenceController {
     static let shared = PersistenceController()
@@ -107,19 +108,32 @@ class PersistenceController {
     }
     
     func startDailyTimer() {
-        dailyTask()
+        cleanTask()
         let timer = Timer.scheduledTimer(timeInterval: 86400, // 24 * 60 * 60 seconds
                                          target: self,
-                                         selector: #selector(dailyTask),
+                                         selector: #selector(cleanTask),
                                          userInfo: nil,
                                          repeats: true)
         RunLoop.main.add(timer, forMode: .common)
     }
     
-    @objc private func dailyTask() {
-        // 清理 7 天前的
-        let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date())!
-        deleteBefore(byDate: sevenDaysAgo)
+    @objc func cleanTask() {
+        var ago: Date
+        switch Defaults[.clipboardHistoryTime] {
+            case .OneDay:
+                ago = Calendar.current.date(byAdding: .hour, value: -24, to: Date())!
+            case .SevenDays:
+                ago = Calendar.current.date(byAdding: .day, value: -7, to: Date())!
+            case .ThirtyDays:
+                ago = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
+            case .ThreeMonths:
+                ago = Calendar.current.date(byAdding: .month, value: -3, to: Date())!
+            case .SixMonths:
+                ago = Calendar.current.date(byAdding: .month, value: -6, to: Date())!
+            case .OneYear:
+                ago = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
+        }
+        deleteBefore(byDate: ago)
     }
 }
 

@@ -9,6 +9,7 @@ import Defaults
 import Foundation
 import OpenAI
 import ShortcutRecorder
+import SwiftUI
 
 // Service Configuration
 extension Defaults.Keys {
@@ -30,7 +31,16 @@ extension Defaults.Keys {
     // clipboard
     static let enableClipboard = Key<Bool>("EnableClipboard", default: false)
     static let clipboardShortcut = Key<Shortcut>("ClipboardShortcut", default: Shortcut(keyEquivalent: "⌥Space")!)
+    static let clipboardHistoryTime = Key<ClipboardHistoryTime>("ClipboardHistoryTime", default: ClipboardHistoryTime.SevenDays)
 }
+
+enum ClipboardHistoryTime: String, Defaults.Serializable, CaseIterable {
+    case OneDay = "24 Hours", SevenDays="7 Days", ThirtyDays = "30 Days"
+    case ThreeMonths = "3 Months", SixMonths="6 Months", OneYear = "1 Year"
+    
+    var localizedName: LocalizedStringKey { LocalizedStringKey(rawValue) }
+}
+
 
 extension Shortcut: Defaults.Serializable{
     public static let bridge = ShortcutBridge()
