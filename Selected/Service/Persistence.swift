@@ -91,6 +91,16 @@ class PersistenceController {
         }
     }
     
+    func delete(item: ClipHistoryData) {
+        let ctx = PersistenceController.shared.container.viewContext
+        do{
+            ctx.delete(item)
+            try ctx.save()
+        } catch {
+            fatalError("\(error)")
+        }
+    }
+    
     func deleteBefore(byDate date: Date){
         let fetchRequest = NSFetchRequest<ClipHistoryData>(entityName: "ClipHistoryData")
         fetchRequest.predicate = NSPredicate(format: "lastCopiedAt < %@", date as NSDate)
