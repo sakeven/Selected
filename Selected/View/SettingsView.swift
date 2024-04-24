@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import Defaults
 import ServiceManagement
+import OpenAI
 
 
 struct SettingsView: View {
@@ -24,6 +25,8 @@ struct SettingsView: View {
     @Default(.openAIModel) var openAIModel
     
     @Default(.search) var searchURL
+    
+    @Default(.openAIVoice) var openAIVoice
     
     @State var launchAtLogin: Bool
     
@@ -69,6 +72,12 @@ struct SettingsView: View {
                         Picker("Model", selection: $openAIModel, content: {
                             ForEach(OpenAIModels, id: \.self) {
                                 Text($0)
+                            }
+                        }).pickerStyle(DefaultPickerStyle())
+                        
+                        Picker("Voice", selection: $openAIVoice, content: {
+                            ForEach(AudioSpeechQuery.AudioSpeechVoice.allCases, id: \.self) {
+                                Text($0.rawValue)
                             }
                         }).pickerStyle(DefaultPickerStyle())
                     }

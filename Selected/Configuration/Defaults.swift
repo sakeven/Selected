@@ -23,6 +23,8 @@ extension Defaults.Keys {
     static let openAIAPIKey = Key<String>("OpenAIAPIKey", default: "")
     static let openAIAPIHost = Key<String>("OpenAIAPIHost",default: "api.openai.com")
     static let openAIModel = Key<Model>("OpenAIModel", default: "gpt-3.5-turbo")
+    static let openAIVoice = Key<AudioSpeechQuery.AudioSpeechVoice>("OpenAIVoice", default: .shimmer)
+
     
     // Gemini
     static let geminiAPIKey = Key<String>("GeminiAPIKey", default: "")
@@ -40,6 +42,9 @@ enum ClipboardHistoryTime: String, Defaults.Serializable, CaseIterable {
     
     var localizedName: LocalizedStringKey { LocalizedStringKey(rawValue) }
 }
+
+
+extension AudioSpeechQuery.AudioSpeechVoice: Defaults.Serializable{}
 
 
 extension Shortcut: Defaults.Serializable{

@@ -520,6 +520,16 @@
           }
         }
       }
+    },
+    "Voice" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "声音"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -76,7 +76,7 @@ func openAITTS(_ text: String) async {
     
     let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
     let openAI = OpenAI(configuration: configuration)
-    let query = AudioSpeechQuery(model: .tts_1, input: text, voice: .shimmer, responseFormat: .mp3, speed: 1.0)
+    let query = AudioSpeechQuery(model: .tts_1, input: text, voice: Defaults[.openAIVoice], responseFormat: .mp3, speed: 1.0)
     
     do {
         let result = try await openAI.audioCreateSpeech(query: query)
