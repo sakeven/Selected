@@ -56,7 +56,7 @@ func getSelectedTextByAX(bundleID: String) -> String {
     return ""
 }
 
-func getUIElementProperties(_ element: AXUIElement) {
+func getUIElementProperties(_ element: AXUIElement) -> String? {
     var titleValue: CFTypeRef?
     AXUIElementCopyAttributeValue(element, kAXTitleAttribute as CFString, &titleValue)
     
@@ -68,7 +68,9 @@ func getUIElementProperties(_ element: AXUIElement) {
     }
     if let role = roleValue as? String {
         print("UI element role: \(role)")
+        return role
     }
+    return nil
 }
 
 func getSelectedText() -> SelectedTextContext? {
@@ -81,6 +83,9 @@ func getSelectedText() -> SelectedTextContext? {
     }
     
     ctx.Editable = isCurrentFocusedElementEditable() ?? false
+    if copyableAppList.contains(bundleID) {
+        ctx.Editable = true
+    }
     
     var selectedText = ""
     if isBrowser(id: bundleID) {
@@ -153,6 +158,7 @@ let SupportedCmdCAppList: [String] = ["com.microsoft.VSCode",
                                       "dev.warp.Warp-Stable",
                                       "com.apple.iBooksX",
                                       "com.tencent.xinWeChat"]
+let copyableAppList: [String] = ["dev.warp.Warp-Stable"]
 
 func getSelectedTextBySimulateCommandC() -> String {
     let pboard =  NSPasteboard.general
@@ -201,7 +207,11 @@ func isCurrentFocusedElementEditable() -> Bool? {
         return nil
     }
     
-    getUIElementProperties(axFocusedElement)
+    if let role = getUIElementProperties(axFocusedElement) {
+        if role == "AXTextArea" {
+            return true
+        }
+    }
     
     // Attempt to determine if the element is a text field by checking for a value attribute
     var value: AnyObject?
@@ -211,6 +221,7 @@ func isCurrentFocusedElementEditable() -> Bool? {
     if valueResult == .success, value != nil {
         var isAttributeSettable: DarwinBoolean = false
         AXUIElementIsAttributeSettable(axFocusedElement, kAXValueAttribute as CFString, &isAttributeSettable)
+        NSLog("editable \(isAttributeSettable.boolValue)")
         return isAttributeSettable.boolValue
     }
     return nil

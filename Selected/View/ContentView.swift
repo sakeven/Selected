@@ -84,7 +84,7 @@ struct TranslationView: View {
 struct ChatTextView: View {
     var text: String
     var prompt: String
-    var options: [String:String]
+    var options: [String: String]
     @State var respText: String = "..."
     @State private var hasRep = false
     

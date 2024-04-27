@@ -291,10 +291,19 @@ class GptAction: Decodable{
     }
     
     func generate(pluginInfo: PluginInfo,  generic: GenericAction) -> PerformAction {
-        return PerformAction(actionMeta:
-                                generic, complete: { ctx in
-            WindowManager.shared.createChatWindow(withText: ctx.Text, prompt: self.prompt, options: pluginInfo.getOptionsValue())
-        })
+        if generic.after == kAfterPaste  {
+            return PerformAction(
+                actionMeta: generic, complete: { ctx in
+                    await ChatService(prompt: self.prompt).chat(content: ctx.Text, options: pluginInfo.getOptionsValue()) { ret in
+                        pasteText(ret)
+                    }
+                })
+        } else {
+            return PerformAction(
+                actionMeta: generic, complete: { ctx in
+                    WindowManager.shared.createChatWindow(withText: ctx.Text, prompt: self.prompt, options: pluginInfo.getOptionsValue())
+            })
+        }
     }
 }
 

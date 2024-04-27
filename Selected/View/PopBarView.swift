@@ -35,8 +35,6 @@ struct PopBarView: View {
                             isLoading = false
                         }
                     }
-                   
-                    NSLog("end")
                 })
             }
             SharingButton(message: ctx.Text)

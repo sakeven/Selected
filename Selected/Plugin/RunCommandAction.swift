@@ -60,25 +60,37 @@ class RunCommandAction: Decodable {
                 arguments: [String](self.command[1...]),
                 withEnv: env) {
                 if ctx.Editable && generic.after == kAfterPaste {
-                    let pasteboard = NSPasteboard.general
-                    let lastCopyText = pasteboard.string(forType: .string)
-                    
-                    pasteboard.clearContents()
-                    pasteboard.setString(output, forType: .string)
-                    PressPasteKey()
-                    usleep(100000)
-                    pasteboard.setString(lastCopyText ?? "", forType: .string)
+                    pasteText(output)
                 } else if generic.after == kAfterCopy {
-                    let pasteboard = NSPasteboard.general
-                    pasteboard.clearContents()
-                    pasteboard.setString(output, forType: .string)
+                    copyText(output)
                 } else if generic.after == kAfterShow {
                     WindowManager.shared.createTextWindow(output)
                 }
             }
         })
     }
+}
+
+func pasteText(_ text: String) {
+    let id = UUID().uuidString
+    ClipService.shared.pauseMonitor(id)
+    defer {
+        ClipService.shared.resumeMonitor(id)
+    }
+    let pasteboard = NSPasteboard.general
+    let lastCopyText = pasteboard.string(forType: .string)
     
+    pasteboard.clearContents()
+    pasteboard.setString(text, forType: .string)
+    PressPasteKey()
+    usleep(100000)
+    pasteboard.setString(lastCopyText ?? "", forType: .string)
+}
+
+func copyText(_ text: String) {
+    let pasteboard = NSPasteboard.general
+    pasteboard.clearContents()
+    pasteboard.setString(text, forType: .string)
 }
 
 private func executeCommand(
