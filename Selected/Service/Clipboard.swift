@@ -80,7 +80,10 @@ class ClipService {
             
             // 剪贴板内容发生变化，处理变化
             NSLog("pasteboard \(String(describing: pasteboard.types))")
-            let clipData = ClipData(pasteboard: pasteboard)
+            guard let clipData = ClipData(pasteboard: pasteboard) else {
+                return
+            }
+            
             if skip {
                 return
             }
@@ -133,7 +136,7 @@ struct ClipData: Identifiable {
         return support
     }
     
-    init(pasteboard: NSPasteboard) {
+    init?(pasteboard: NSPasteboard) {
         self.id = UUID().uuidString
         self.timeStamp = Int64(Date().timeIntervalSince1970*1000)
         self.appBundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier ?? "unknown"
@@ -165,6 +168,9 @@ struct ClipData: Identifiable {
                 //                let image = NSImage(data: item.data)!
                 //                recognizeTextInImage(image)
             }
+        }
+        if types.first == .html && self.plainText == nil {
+            return nil
         }
         self.items = items
     }
