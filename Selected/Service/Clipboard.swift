@@ -169,7 +169,7 @@ struct ClipData: Identifiable {
                 //                recognizeTextInImage(image)
             }
         }
-        if types.first == .html && self.plainText == nil {
+        if (types.first == .html || types.first == .rtf ) && self.plainText == nil {
             return nil
         }
         self.items = items
