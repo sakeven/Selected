@@ -3,7 +3,7 @@ A Mac tool that allows various operations on selected text.
 
 When you select text with the mouse or through the keyboard (cmd+A, cmd+shift+arrow keys), the Selected toolbar will automatically pop up, allowing quick text operations such as copying, translating, searching, querying GPT, reading text aloud, opening links, keyboard operations, executing commands, etc. It also supports custom extensions.
 
-<img src="DocImages/tool.png" alt="image-20240421174659528" style="zoom: 50%;" />
+<img src="DocImages/tool.png" alt="image-20240421174659528" width="400" />
 
 1. Allows for the customization of operation lists for different applications. (This can be configured in "Settings - Applications")
 
@@ -14,7 +14,7 @@ When you select text with the mouse or through the keyboard (cmd+A, cmd+shift+ar
 
 This can be configured in "Settings - Applications".
 
-<img src="DocImages/Application-Settings.png" alt="image-20240421175133604" style="zoom: 33%;" />
+<img src="DocImages/Application-Settings.png" alt="image-20240421175133604" width="400" />
 
 1. Supports adding currently running applications (does not support deleting an application)
    * Add through "Add - Select an Application"
