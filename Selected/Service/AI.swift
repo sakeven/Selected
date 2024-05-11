@@ -8,7 +8,15 @@
 import Defaults
 import SwiftUI
 
-
+func isWord(str: String) -> Bool {
+     for c in str {
+        if c.isLetter || c == "-" {
+             continue
+         }
+         return false
+     }
+     return true
+ }
 
 struct Translation {
     let toLanguage: String

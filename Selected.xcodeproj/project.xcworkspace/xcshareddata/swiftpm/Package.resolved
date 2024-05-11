@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "grdb.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/groue/GRDB.swift",
+      "state" : {
+        "revision" : "639fa9168d36931b36a79e60dc06b7d23852f1f4",
+        "version" : "6.27.0"
+      }
+    },
+    {
       "identity" : "highlightr",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/raspu/Highlightr",

@@ -40,7 +40,7 @@ struct OpenAIPrompt {
     }
 }
 
-let OpenAIWordTrans = OpenAIPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出例句。使用 markdown 的格式回复。单词为：{selected.text}")
+let OpenAIWordTrans = OpenAIPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}")
 
 let OpenAITrans2Chinese = OpenAIPrompt(prompt:"翻译以下内容到中文。内容为：{selected.text}")
 

@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "[%@]" : {
+
+    },
     "%@" : {
       "localizations" : {
         "zh-Hans" : {
@@ -238,6 +241,16 @@
         }
       }
     },
+    "exchange" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "变形"
+          }
+        }
+      }
+    },
     "Extensions" : {
       "localizations" : {
         "zh-Hans" : {
@@ -403,6 +416,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "路径："
+          }
+        }
+      }
+    },
+    "phonetic" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音标"
           }
         }
       }

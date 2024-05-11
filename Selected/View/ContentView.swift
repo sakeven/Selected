@@ -18,8 +18,25 @@ struct TranslationView: View {
     @Environment(\.colorScheme) private var colorScheme
     var highlighter = CustomCodeSyntaxHighlighter()
     
+    @State private var word: Word?
+    
     var body: some View {
         VStack(alignment: .leading) {
+            if let w = word {
+                Label {
+                    Text("[\(w.phonetic)]")
+                } icon: {
+                    Text("phonetic")
+                }.padding(.top, 20).padding(.leading, 20)
+                if w.exchange != "" {
+                    Label {
+                        Text(w.exchange)
+                    } icon: {
+                        Text("exchange")
+                    }.padding(.leading, 20)
+                }
+                Divider()
+            }
             ScrollView(.vertical){
                 Markdown(self.transText)
                     .markdownBlockStyle(\.codeBlock, body: {label in
@@ -32,10 +49,13 @@ struct TranslationView: View {
                     .padding(.leading, 20.0)
                     .padding(.trailing, 20.0)
                     .padding(.top, 20)
-                    .frame(width: 550)
+                    .frame(width: 550, alignment: .leading)
                     .task {
                         if isPreview {
                             return
+                        }
+                        if isWord(str: text) {
+                            word = try! StarDict.shared.query(word: text)
                         }
                         await Translation(toLanguage: to).translate(content: text) { content in
                             if !hasRep {
@@ -67,7 +87,7 @@ struct TranslationView: View {
                     Image(systemName: "play.circle")
                 }.foregroundColor(Color.white)
                     .cornerRadius(5)
-            }.frame(width: 550, height: 30)
+            }.frame(width: 550, height: 30).padding(.bottom, 10)
         }
     }
     
@@ -102,10 +122,10 @@ struct ChatTextView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                 .markdownMargin(top: .zero, bottom: .em(0.8))
                     })
-                    .padding(.leading, 10.0)
-                    .padding(.trailing, 10.0)
-                    .padding(.top, 10)
-                    .frame(width: 550)
+                    .padding(.leading, 20.0)
+                    .padding(.trailing, 20.0)
+                    .padding(.top, 20)
+                    .frame(width: 550, alignment: .leading)
                     .task {
                         if isPreview {
                             return
