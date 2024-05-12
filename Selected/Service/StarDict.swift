@@ -35,9 +35,19 @@ class StarDict {
     
     func query(word: String) throws -> Word?{
         let dbQueue = try DatabaseQueue(path: databaseFileURL.path)
-        return try dbQueue.read { db in
+        if let ret = try dbQueue.read({ db in
             try Word.filter(Column("word") == word).fetchOne(db)
+        }) {
+            return ret
         }
+        
+        return try dbQueue.read { db in
+            try Word.filter(Column("word") == stripWord(word)).fetchOne(db)
+        }
+    }
+    
+    private func stripWord(_ word: String) -> String {
+        return word.filter({ $0.isLetter || $0.isNumber }).lowercased()
     }
 }
 
