@@ -13,9 +13,11 @@ import AVFoundation
 public extension Model {
     /// `gpt-4-turbo`, the latest gpt-4 model with improved instruction following, JSON mode, reproducible outputs, parallel function calling and more. Maximum of 4096 output tokens
     static let gpt4_turbo = "gpt-4-turbo"
+    /// GPT-4o (“o” for “omni”) is most advanced model. It is multimodal (accepting text or image inputs and outputting text), and it has the same high intelligence as GPT-4 Turbo but is much more efficient—it generates text 2x faster and is 50% cheaper.
+    static let gpt_4o = "gpt-4o"
 }
 
-let OpenAIModels: [Model] = [.gpt4_turbo, .gpt4, .gpt4_32k, .gpt3_5Turbo, .gpt3_5Turbo_16k]
+let OpenAIModels: [Model] = [.gpt4_turbo, .gpt3_5Turbo, .gpt_4o]
 
 struct OpenAIPrompt {
     let prompt: String
