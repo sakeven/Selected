@@ -21,26 +21,112 @@ let OpenAIModels: [Model] = [.gpt4_turbo, .gpt3_5Turbo, .gpt_4o]
 
 struct OpenAIPrompt {
     let prompt: String
+    //    let function: ChatQuery.ChatCompletionToolParam.FunctionDefinition
+    
+    typealias ChatFunctionCall = ChatQuery.ChatCompletionMessageParam.ChatCompletionAssistantMessageParam.ChatCompletionMessageToolCallParam.FunctionCall
     
     func chat(selectedText: String, options: [String:String] = [String:String](), completion: @escaping (_: String) -> Void) async -> Void {
         let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
         let openAI = OpenAI(configuration: configuration)
         
-        
         let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
-        let query = ChatQuery(messages: [.init(role: .user, content: message)!], model: Defaults[.openAIModel])
+        let query = ChatQuery(
+            messages: [.init(role: .user, content: message)!],
+            model: Defaults[.openAIModel],
+            tools: [.init(
+                function: ChatQuery.ChatCompletionToolParam.FunctionDefinition(
+                    name: "dalle3",
+                    description: "Whenever a description of an image is given, create a prompt that dalle can use to generate the image. The prompt must be in English. Translate to English if needed. The url of the image will be returned.",
+                    parameters: .init(type: .object, properties:[
+                        "prompt": .init(type: .string, description: "the generated prompt set to dalle3")
+                    ])
+                ))]
+        )
         
+        var hasTools = false
+        var toolCallsDict = [Int: ChatCompletionMessageToolCallParam]()
         do {
             for try await result in openAI.chatsStream(query: query) {
-                if result.choices[0].finishReason.isNil{
+                if let toolCalls = result.choices[0].delta.toolCalls {
+                    hasTools = true
+                    for f in toolCalls {
+                        let toolCallID = f.index
+                        if var toolCall = toolCallsDict[toolCallID] {
+                            toolCall.function.arguments = toolCall.function.arguments + f.function!.arguments!
+                            toolCallsDict[toolCallID] = toolCall
+                        } else {
+                            let toolCall = ChatCompletionMessageToolCallParam(id: f.id!, function: .init(arguments: f.function!.arguments!, name: f.function!.name!))
+                            toolCallsDict[toolCallID] = toolCall
+                        }
+                    }
+                }
+                
+                if result.choices[0].finishReason.isNil && result.choices[0].delta.content != nil {
                     completion(result.choices[0].delta.content!)
                 }
             }
         } catch {
             NSLog("completion error \(String(describing: error))")
+            return
+        }
+        
+        var messages = query.messages
+        if hasTools {
+            var tools  =  [ChatQuery.ChatCompletionMessageParam.ChatCompletionAssistantMessageParam.ChatCompletionMessageToolCallParam]()
+            for (_, tool) in toolCallsDict {
+                let function =
+                try! JSONDecoder().decode(ChatFunctionCall.self, from: JSONEncoder().encode(tool.function))
+                tools.append(.init(id: tool.id, function: function))
+            }
+            messages.append(.assistant(.init(toolCalls: tools)))
+            
+            for (_, tool) in toolCallsDict {
+                if tool.function.name == "dalle3" {
+                    NSLog("\(tool.function.arguments)")
+                    do {
+                        let url = try await dalle3(openAI: openAI, arguments: tool.function.arguments)
+                        messages.append(.tool(.init(content: url, toolCallId: tool.id)))
+                    } catch {
+                        NSLog("call function error \(String(describing: error))")
+                        return
+                    }
+                }
+            }
+            
+            let query = ChatQuery(
+                messages: messages,
+                model: Defaults[.openAIModel]
+            )
+            
+            var content = ""
+            do {
+                for try await result in openAI.chatsStream(query: query) {
+                    if result.choices[0].finishReason.isNil{
+                        content += result.choices[0].delta.content!
+                        NSLog("content is \(content)")
+                        completion(result.choices[0].delta.content!)
+                    }
+                }
+            } catch {
+                NSLog("completion error \(String(describing: error))")
+            }
         }
     }
 }
+
+private func dalle3(openAI: OpenAI, arguments: String) async throws -> String {
+    var content =  ""
+    
+    let prompt = try JSONDecoder().decode(Dalle3Prompt.self, from: arguments.data(using: .utf8)!)
+    let imageQuery = ImagesQuery(
+        prompt: prompt.prompt,
+        model: .dall_e_3)
+    let res = try await openAI.images(query: imageQuery)
+    content = res.data[0].url!
+    NSLog("image url is \(content)")
+    return content
+}
+
 
 let OpenAIWordTrans = OpenAIPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}")
 
@@ -90,4 +176,37 @@ func openAITTS(_ text: String) async {
         NSLog("audioCreateSpeech \(error)")
         return
     }
+}
+
+struct ChatCompletionMessageToolCallParam: Codable, Equatable {
+    public typealias ToolsType = ChatQuery.ChatCompletionToolParam.ToolsType
+    
+    /// The ID of the tool call.
+    public let id: String
+    /// The function that the model called.
+    public var function: Self.FunctionCall
+    /// The type of the tool. Currently, only `function` is supported.
+    public let type: Self.ToolsType
+    
+    public init(
+        id: String,
+        function:  Self.FunctionCall
+    ) {
+        self.id = id
+        self.function = function
+        self.type = .function
+    }
+    
+    public struct FunctionCall: Codable, Equatable {
+        /// The arguments to call the function with, as generated by the model in JSON format. Note that the model does not always generate valid JSON, and may hallucinate parameters not defined by your function schema. Validate the arguments in your code before calling your function.
+        public var arguments: String
+        /// The name of the function to call.
+        public let name: String
+    }
+}
+
+
+struct Dalle3Prompt: Codable, Equatable {
+    /// The ID of the tool call.
+    public let prompt: String
 }
