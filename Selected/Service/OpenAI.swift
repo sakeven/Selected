@@ -38,7 +38,7 @@ struct OpenAIPrompt {
                     name: "dalle3",
                     description: "Whenever a description of an image is given, create a prompt that dalle can use to generate the image. The prompt must be in English. Translate to English if needed. The url of the image will be returned.",
                     parameters: .init(type: .object, properties:[
-                        "prompt": .init(type: .string, description: "the generated prompt set to dalle3")
+                        "prompt": .init(type: .string, description: "the generated prompt sent to dalle3")
                     ])
                 ))]
         )
