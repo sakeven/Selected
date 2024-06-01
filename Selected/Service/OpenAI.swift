@@ -19,28 +19,65 @@ public extension Model {
 
 let OpenAIModels: [Model] = [.gpt4_turbo, .gpt3_5Turbo, .gpt_4o]
 
+struct FunctionDefinition: Codable, Equatable{
+    public let name: String
+    
+    /// The description of what the function does.
+    public let description: String
+    public let parameters: String
+    public var command: [String]?
+    
+    func Do() -> String? {
+        guard let command = self.command else {
+            return nil
+        }
+        return executeCommand(workdir: FileManager.default.homeDirectoryForCurrentUser.path, command: command[0], arguments: [String](command[1...]), withEnv: [:])
+    }
+    
+    func getParameters() -> FunctionParameters?{
+        let p = try! JSONDecoder().decode(FunctionParameters.self, from: self.parameters.data(using: .utf8)!)
+        return p
+    }
+}
+
+let dalle3Def = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
+    name: "dalle3",
+    description: "Whenever a description of an image is given, create a prompt that dalle can use to generate the image. The prompt must be in English. Translate to English if needed. The url of the image will be returned. Must display image after the tool called.",
+    parameters: .init(type: .object, properties:[
+        "prompt": .init(type: .string, description: "the generated prompt sent to dalle3")
+    ])
+)
+
+
+typealias ChatFunctionCall = OpenAIChatCompletionMessageToolCallParam.FunctionCall
+typealias OpenAIChatCompletionMessageToolCallParam = ChatQuery.ChatCompletionMessageParam.ChatCompletionAssistantMessageParam.ChatCompletionMessageToolCallParam
+typealias FunctionParameters = ChatQuery.ChatCompletionToolParam.FunctionDefinition.FunctionParameters
+
+
 struct OpenAIPrompt {
     let prompt: String
-    //    let function: ChatQuery.ChatCompletionToolParam.FunctionDefinition
-    
-    typealias ChatFunctionCall = ChatQuery.ChatCompletionMessageParam.ChatCompletionAssistantMessageParam.ChatCompletionMessageToolCallParam.FunctionCall
+    var function: FunctionDefinition?
     
     func chat(selectedText: String, options: [String:String] = [String:String](), completion: @escaping (_: String) -> Void) async -> Void {
         let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
         let openAI = OpenAI(configuration: configuration)
         
         let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
+        
+        var tools: [ChatQuery.ChatCompletionToolParam] = [.init(function: dalle3Def)]
+        if let function = function {
+            let fc = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
+                name: function.name,
+                description: function.description,
+                parameters: function.getParameters()
+            )
+            tools.append(.init(function: fc))
+        }
         let query = ChatQuery(
-            messages: [.init(role: .user, content: message)!],
+            messages: [
+                .init(role: .user, content: message)!],
             model: Defaults[.openAIModel],
-            tools: [.init(
-                function: ChatQuery.ChatCompletionToolParam.FunctionDefinition(
-                    name: "dalle3",
-                    description: "Whenever a description of an image is given, create a prompt that dalle can use to generate the image. The prompt must be in English. Translate to English if needed. The url of the image will be returned.",
-                    parameters: .init(type: .object, properties:[
-                        "prompt": .init(type: .string, description: "the generated prompt sent to dalle3")
-                    ])
-                ))]
+            tools: tools
         )
         
         var hasTools = false
@@ -70,46 +107,52 @@ struct OpenAIPrompt {
             return
         }
         
+        if !hasTools {
+            return
+        }
+        
         var messages = query.messages
-        if hasTools {
-            var tools  =  [ChatQuery.ChatCompletionMessageParam.ChatCompletionAssistantMessageParam.ChatCompletionMessageToolCallParam]()
-            for (_, tool) in toolCallsDict {
-                let function =
-                try! JSONDecoder().decode(ChatFunctionCall.self, from: JSONEncoder().encode(tool.function))
-                tools.append(.init(id: tool.id, function: function))
-            }
-            messages.append(.assistant(.init(toolCalls: tools)))
-            
-            for (_, tool) in toolCallsDict {
-                if tool.function.name == "dalle3" {
-                    NSLog("\(tool.function.arguments)")
-                    do {
-                        let url = try await dalle3(openAI: openAI, arguments: tool.function.arguments)
-                        messages.append(.tool(.init(content: url, toolCallId: tool.id)))
-                    } catch {
-                        NSLog("call function error \(String(describing: error))")
-                        return
-                    }
+        var callTools  =  [OpenAIChatCompletionMessageToolCallParam]()
+        for (_, tool) in toolCallsDict {
+            let function =
+            try! JSONDecoder().decode(ChatFunctionCall.self, from: JSONEncoder().encode(tool.function))
+            callTools.append(.init(id: tool.id, function: function))
+        }
+        messages.append(.assistant(.init(toolCalls: callTools)))
+        
+        for (_, tool) in toolCallsDict {
+            if tool.function.name == "dalle3" {
+                NSLog("\(tool.function.arguments)")
+                do {
+                    let url = try await dalle3(openAI: openAI, arguments: tool.function.arguments)
+                    messages.append(.tool(.init(content: url, toolCallId: tool.id)))
+                } catch {
+                    NSLog("call function error \(String(describing: error))")
+                    return
+                }
+            } else if tool.function.name == function?.name {
+                if let ret = function?.Do() {
+                    messages.append(.tool(.init(content: ret, toolCallId: tool.id)))
                 }
             }
-            
-            let query = ChatQuery(
-                messages: messages,
-                model: Defaults[.openAIModel]
-            )
-            
-            var content = ""
-            do {
-                for try await result in openAI.chatsStream(query: query) {
-                    if result.choices[0].finishReason.isNil{
-                        content += result.choices[0].delta.content!
-                        NSLog("content is \(content)")
-                        completion(result.choices[0].delta.content!)
-                    }
+        }
+        
+        let query2 = ChatQuery(
+            messages: messages,
+            model: Defaults[.openAIModel]
+        )
+        
+        var content = ""
+        do {
+            for try await result in openAI.chatsStream(query: query2) {
+                if result.choices[0].finishReason.isNil{
+                    content += result.choices[0].delta.content!
+                    NSLog("content is \(content)")
+                    completion(result.choices[0].delta.content!)
                 }
-            } catch {
-                NSLog("completion error \(String(describing: error))")
             }
+        } catch {
+            NSLog("completion error \(String(describing: error))")
         }
     }
 }

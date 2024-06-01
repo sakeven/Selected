@@ -285,6 +285,7 @@ class CopyAction: Decodable{
 
 class GptAction: Decodable{
     var prompt: String
+    var tools: FunctionDefinition?
     
     init(prompt: String) {
         self.prompt = prompt
@@ -299,6 +300,7 @@ class GptAction: Decodable{
                     }
                 })
         } else {
+            // TODO: tools
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
                     WindowManager.shared.createChatWindow(withText: ctx.Text, prompt: self.prompt, options: pluginInfo.getOptionsValue())

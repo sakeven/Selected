@@ -9,14 +9,14 @@ import Defaults
 import SwiftUI
 
 func isWord(str: String) -> Bool {
-     for c in str {
+    for c in str {
         if c.isLetter || c == "-" {
-             continue
-         }
-         return false
-     }
-     return true
- }
+            continue
+        }
+        return false
+    }
+    return true
+}
 
 struct Translation {
     let toLanguage: String
@@ -29,9 +29,9 @@ struct Translation {
         }
     }
     
-   private func isWord(str: String) -> Bool {
+    private func isWord(str: String) -> Bool {
         for c in str {
-           if c.isLetter || c == "-" {
+            if c.isLetter || c == "-" {
                 continue
             }
             return false
@@ -87,5 +87,16 @@ struct ChatService {
             default:
                 completion("no model \(Defaults[.aiService])")
         }
+    }
+}
+
+
+struct OpenAIService {
+    let prompt: String
+    var functionDef: FunctionDefinition?
+    
+    func chat(content: String, options: [String:String], completion: @escaping (_: String) -> Void) async -> Void{
+        await OpenAIPrompt(prompt: prompt, function: functionDef)
+            .chat(selectedText: content, options: options, completion: completion)
     }
 }

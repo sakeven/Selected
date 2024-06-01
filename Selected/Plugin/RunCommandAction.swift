@@ -93,7 +93,7 @@ func copyText(_ text: String) {
     pasteboard.setString(text, forType: .string)
 }
 
-private func executeCommand(
+public func executeCommand(
     workdir: String, command: String, arguments: [String] = [], withEnv env: [String:String]) -> String? {
         let process = Process()
         let pipe = Pipe()
@@ -102,7 +102,7 @@ private func executeCommand(
         process.arguments = arguments
         process.standardOutput = pipe
         process.standardError = pipe
-        process.currentDirectoryURL =  URL(fileURLWithPath: workdir)
+        process.currentDirectoryURL = URL(fileURLWithPath: workdir)
        
         var copiedEnv = env
         if let path = ProcessInfo.processInfo.environment["PATH"] {
