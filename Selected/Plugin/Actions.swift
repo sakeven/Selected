@@ -283,32 +283,6 @@ class CopyAction: Decodable{
 }
 
 
-class GptAction: Decodable{
-    var prompt: String
-    var tools: FunctionDefinition?
-    
-    init(prompt: String) {
-        self.prompt = prompt
-    }
-    
-    func generate(pluginInfo: PluginInfo,  generic: GenericAction) -> PerformAction {
-        if generic.after == kAfterPaste  {
-            return PerformAction(
-                actionMeta: generic, complete: { ctx in
-                    await ChatService(prompt: self.prompt).chat(content: ctx.Text, options: pluginInfo.getOptionsValue()) { ret in
-                        pasteText(ret)
-                    }
-                })
-        } else {
-            // TODO: tools
-            return PerformAction(
-                actionMeta: generic, complete: { ctx in
-                    WindowManager.shared.createChatWindow(withText: ctx.Text, prompt: self.prompt, options: pluginInfo.getOptionsValue())
-            })
-        }
-    }
-}
-
 class TranslationAction: Decodable {
     var target: String
     

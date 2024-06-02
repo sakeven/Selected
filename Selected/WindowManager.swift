@@ -18,7 +18,7 @@ class WindowManager {
     
     // TODO: lock
     private var windowCtr: WindowController?
-        
+    
     func createPopBarWindow(_ ctx: SelectedTextContext) {
         let contentView = PopBarView(actions: GetActions(ctx: ctx), ctx: ctx)
         createWindow(rootView: AnyView(contentView), resultWindow: false)
@@ -30,8 +30,8 @@ class WindowManager {
     }
     
     
-    func createChatWindow(withText text: String, prompt: String, options: [String:String]) {
-        let contentView = ChatTextView(text: text, prompt: prompt, options: options)
+    func createChatWindow(chatService: AIChatService, withText text: String, options: [String:String]) {
+        let contentView = ChatTextView(text: text, options: options, chatService: chatService)
         createWindow(rootView: AnyView(contentView), resultWindow: true)
     }
     
@@ -153,9 +153,9 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         // 必须用 NSPanel 并设置 .nonactivatingPanel 以及 level 为 .screenSaver
         // 保证悬浮在全屏应用之上
         window = FloatingPanel(
-                contentRect: .zero,
-                backing: .buffered,
-                defer: false
+            contentRect: .zero,
+            backing: .buffered,
+            defer: false
         )
         
         if !resultWindow{
@@ -180,10 +180,10 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         let mouseLocation = NSEvent.mouseLocation  // 获取鼠标当前位置
         
         if resultWindow {
-                    // 确保窗口不会超出屏幕边缘
-                    let x = (screenFrame.maxX - windowFrame.width) / 2
-                    let y = (screenFrame.maxY - windowFrame.height)*3 / 4
-                    window.setFrameOrigin(NSPoint(x: x, y: y))
+            // 确保窗口不会超出屏幕边缘
+            let x = (screenFrame.maxX - windowFrame.width) / 2
+            let y = (screenFrame.maxY - windowFrame.height)*3 / 4
+            window.setFrameOrigin(NSPoint(x: x, y: y))
         } else{
             // 确保窗口不会超出屏幕边缘
             let x = min(screenFrame.maxX - windowFrame.width,
@@ -221,7 +221,7 @@ func TextResultWindow(_ text: String) -> NSWindow{
         backing: .buffered,
         defer: false
     )
-   
+    
     let view = PopResultView(text: text)
     window.contentView = NSHostingView(rootView: view)
     return window

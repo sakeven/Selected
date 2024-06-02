@@ -27,11 +27,13 @@ struct FunctionDefinition: Codable, Equatable{
     public let parameters: String
     public var command: [String]?
     
-    func Do() -> String? {
+    func Run(arguments: String) -> String? {
         guard let command = self.command else {
             return nil
         }
-        return executeCommand(workdir: FileManager.default.homeDirectoryForCurrentUser.path, command: command[0], arguments: [String](command[1...]), withEnv: [:])
+        var args = [String](command[1...])
+        args.append(arguments)
+        return executeCommand(workdir: FileManager.default.homeDirectoryForCurrentUser.path, command: command[0], arguments: args, withEnv: [:])
     }
     
     func getParameters() -> FunctionParameters?{
@@ -131,7 +133,7 @@ struct OpenAIPrompt {
                     return
                 }
             } else if tool.function.name == function?.name {
-                if let ret = function?.Do() {
+                if let ret = function?.Run(arguments: tool.function.arguments) {
                     messages.append(.tool(.init(content: ret, toolCallId: tool.id)))
                 }
             }
@@ -166,10 +168,9 @@ private func dalle3(openAI: OpenAI, arguments: String) async throws -> String {
         model: .dall_e_3)
     let res = try await openAI.images(query: imageQuery)
     content = res.data[0].url!
-    NSLog("image url is \(content)")
+    NSLog("image URL: %@", content)
     return content
 }
-
 
 let OpenAIWordTrans = OpenAIPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}")
 

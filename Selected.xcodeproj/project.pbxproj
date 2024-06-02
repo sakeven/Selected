@@ -42,6 +42,7 @@
 		388DABBB2BEA5B3C000B2739 /* StarDict.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388DABBA2BEA5B3C000B2739 /* StarDict.swift */; };
 		388DABC02BEA5E73000B2739 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 388DABBF2BEA5E73000B2739 /* GRDB */; };
 		388DABC22BEF9D2D000B2739 /* stardict.tar.gz in Resources */ = {isa = PBXBuildFile; fileRef = 388DABC12BEF9D2D000B2739 /* stardict.tar.gz */; };
+		38AD8D6F2C0C023600EAFA5D /* GPTAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38AD8D6E2C0C023600EAFA5D /* GPTAction.swift */; };
 		38CC18B42B9C46CA0023DF18 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B32B9C46CA0023DF18 /* SettingsView.swift */; };
 		38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */; };
 		38CC554C2BA9B6E900069553 /* RunCommandAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC554B2BA9B6E900069553 /* RunCommandAction.swift */; };
@@ -132,6 +133,7 @@
 		388DABB62BD6980D000B2739 /* UbuntuMonoNerdFontMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "UbuntuMonoNerdFontMono-Regular.ttf"; sourceTree = "<group>"; };
 		388DABBA2BEA5B3C000B2739 /* StarDict.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarDict.swift; sourceTree = "<group>"; };
 		388DABC12BEF9D2D000B2739 /* stardict.tar.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; path = stardict.tar.gz; sourceTree = "<group>"; };
+		38AD8D6E2C0C023600EAFA5D /* GPTAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTAction.swift; sourceTree = "<group>"; };
 		38CC18B32B9C46CA0023DF18 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopBarView.swift; sourceTree = "<group>"; };
 		38CC554B2BA9B6E900069553 /* RunCommandAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunCommandAction.swift; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 				38CC554B2BA9B6E900069553 /* RunCommandAction.swift */,
 				38E20A482BB5A3D80035A3AA /* SpeakAction.swift */,
 				38DF1D492BB7A3BC0063A879 /* Option.swift */,
+				38AD8D6E2C0C023600EAFA5D /* GPTAction.swift */,
 			);
 			path = Plugin;
 			sourceTree = "<group>";
@@ -515,6 +518,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				38AD8D6F2C0C023600EAFA5D /* GPTAction.swift in Sources */,
 				38DF1D4D2BB94DCD0063A879 /* ApplicationSettingView.swift in Sources */,
 				38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */,
 				38DEBE342B9DD7CA00CD2A35 /* Gemini.swift in Sources */,

@@ -103,8 +103,8 @@ struct TranslationView: View {
 
 struct ChatTextView: View {
     var text: String
-    var prompt: String
     var options: [String: String]
+    var chatService: AIChatService
     @State var respText: String = "..."
     @State private var hasRep = false
     
@@ -118,9 +118,9 @@ struct ChatTextView: View {
                     .markdownBlockStyle(\.codeBlock, body: {label in
                         // wrap long lines
                         highlighter.setTheme(theme: codeTheme).highlightCode(label.content, language: label.language)
-                                .padding()
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                .markdownMargin(top: .zero, bottom: .em(0.8))
+                            .padding()
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .markdownMargin(top: .zero, bottom: .em(0.8))
                     })
                     .padding(.leading, 20.0)
                     .padding(.trailing, 20.0)
@@ -131,7 +131,7 @@ struct ChatTextView: View {
                             return
                         }
                         
-                        await ChatService(prompt: prompt).chat(content: text, options: options) { content in
+                        await chatService.chat(content: text, options: options) { content in
                             if !hasRep {
                                 respText = content
                                 hasRep = true

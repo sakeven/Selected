@@ -74,7 +74,7 @@ struct Translation {
     }
 }
 
-struct ChatService {
+struct ChatService: AIChatService{
     let prompt: String
     
     func chat(content: String, options: [String:String], completion: @escaping (_: String) -> Void) async -> Void{
@@ -91,7 +91,7 @@ struct ChatService {
 }
 
 
-struct OpenAIService {
+struct OpenAIService: AIChatService{
     let prompt: String
     var functionDef: FunctionDefinition?
     
@@ -99,4 +99,9 @@ struct OpenAIService {
         await OpenAIPrompt(prompt: prompt, function: functionDef)
             .chat(selectedText: content, options: options, completion: completion)
     }
+}
+
+
+public protocol AIChatService {
+    func chat(content: String, options: [String:String], completion: @escaping (_: String) -> Void) async -> Void
 }
