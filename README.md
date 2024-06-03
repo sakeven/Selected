@@ -1,4 +1,14 @@
-# Function
+# OS Requirements
+macOS Sonoma 14.0 or above
+
+# Installation
+
+1. Download Selected.app.zip from [releases](https://github.com/sakeven/Selected/releases).
+2. Unzip it, and move it to the Applications directory.
+3. For the first installation, you need to set up Accessibility features to allow this app to capture selected text.
+
+
+# Features
 A Mac tool that allows various operations on selected text.
 
 When you select text with the mouse or through the keyboard (cmd+A, cmd+shift+arrow keys), the Selected toolbar will automatically pop up, allowing quick text operations such as copying, translating, searching, querying GPT, reading text aloud, opening links, keyboard operations, executing commands, etc. It also supports custom extensions.
@@ -17,11 +27,11 @@ This can be configured in "Settings - Applications".
 <img src="DocImages/Application-Settings.png" alt="image-20240421175133604" width="400" />
 
 1. Supports adding currently running applications (does not support deleting an application)
-   * Add through "Add - Select an Application"
+    * Add through "Add - Select an Application"
 2. Supports setting a series of actions for an application
-  - Add through "Add - Select an Action"
-  - Supports deleting an action
-  - Supports drag-and-drop to rearrange the order of actions
+    - Add through "Add - Select an Action"
+    - Supports deleting an action
+    - Supports drag-and-drop to rearrange the order of actions
 
 ## Built-in Operations
 
