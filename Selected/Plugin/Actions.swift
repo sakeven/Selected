@@ -385,8 +385,13 @@ func GetActions(ctx: SelectedTextContext) -> [PerformAction] {
 // If ctx isn't editable, not return editable actions.
 func FilterActions(_ ctx: SelectedTextContext, list: [PerformAction] ) -> [PerformAction] {
     var filtered = [PerformAction]()
-    for action in list {
-        
+    var l = list
+    // Here are default actions.
+    l.append(OpenLinksAction().generate(
+        generic: GenericAction(title: "OpenLinks", icon: "symbol:link", after: "", identifier: "selected.openlinks")
+    ))
+    l.append(MapAction().generate(generic: GenericAction(title: "Map", icon: "symbol:mappin.and.ellipse", after: "", identifier: "selected.map")))
+    for action in l {
         if let supported = action.supported {
             if !supported(ctx) {
                 continue

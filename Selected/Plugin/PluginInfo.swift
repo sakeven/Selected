@@ -268,17 +268,11 @@ class PluginManager: ObservableObject {
             }
         }
         
-        //    list.append(GptAction(prompt: "{text}").generate(
-        //    generic: GenericAction(title: "chat", icon: "character.bubble", after: "", identifier: "selected.chat")
-        //    ))
         list.append(TranslationAction(target: "cn").generate(
             generic: GenericAction(title: "翻译到中文", icon: "square 译中", after: "", identifier: "selected.translation.cn")
         ))
         list.append(TranslationAction(target: "en").generate(
             generic: GenericAction(title: "Translate to English", icon: "symbol:e.square", after: "", identifier: "selected.translation.en")
-        ))
-        list.append(OpenLinksAction().generate(
-            generic: GenericAction(title: "OpenLinks", icon: "symbol:link", after: "", identifier: "selected.openlinks")
         ))
         list.append(CopyAction().generate(
             generic: GenericAction(title: "Copy", icon: "symbol:doc.on.clipboard", after: "", identifier: "selected.copy")
@@ -286,7 +280,7 @@ class PluginManager: ObservableObject {
         list.append(SpeackAction().generate(
             generic: GenericAction(title: "Speak", icon: "symbol:play.circle", after: "", identifier: "selected.speak")
         ))
-        list.append(MapAction().generate(generic: GenericAction(title: "Map", icon: "symbol:mappin.and.ellipse", after: "", identifier: "selected.map")))
+        
         return list
     }
 }
