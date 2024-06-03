@@ -21,12 +21,20 @@ struct MenuItemView: View {
             Divider()
             feedbackItem
             docItem
+            aboutItem
             Divider()
             quitItem
                 .keyboardShortcut(.init("q"))
         }
     }
     
+    @ViewBuilder
+    private var aboutItem: some View {
+        Button("About") {
+            NSApp.activate(ignoringOtherApps: true)
+            NSApp.orderFrontStandardAboutPanel(nil)
+        }
+    }
     
     @ViewBuilder
     private var feedbackItem: some View {
