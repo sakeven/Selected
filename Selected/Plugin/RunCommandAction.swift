@@ -97,17 +97,24 @@ public func executeCommand(
     workdir: String, command: String, arguments: [String] = [], withEnv env: [String:String]) -> String? {
         let process = Process()
         let pipe = Pipe()
+        var path: String?
+        if let p = ProcessInfo.processInfo.environment["PATH"] {
+            path = "/opt/homebrew/bin:/opt/homebrew/sbin:" + p
+        }
         
-        process.executableURL = URL(fileURLWithPath: command)
+        let executableURL = findExecutablePath(commandName: command,
+                                               currentDirectoryURL:  URL(fileURLWithPath: workdir),
+                                               path: path)
+        
+        process.executableURL = executableURL
         process.arguments = arguments
         process.standardOutput = pipe
         process.standardError = pipe
         process.currentDirectoryURL = URL(fileURLWithPath: workdir)
-       
+        
         var copiedEnv = env
-        if let path = ProcessInfo.processInfo.environment["PATH"] {
-            copiedEnv["PATH"] = "/opt/homebrew/bin:/opt/homebrew/sbin:" + path
-        }
+        copiedEnv["PATH"] = path
+        
         process.environment = copiedEnv
         
         do {
@@ -125,3 +132,34 @@ public func executeCommand(
         return nil
     }
 
+
+private func findExecutablePath(commandName: String, currentDirectoryURL: URL? = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first, path: String? = ProcessInfo.processInfo.environment["PATH"]) -> URL? {
+    let fileManager = FileManager.default
+    // 先检查是否是绝对路径
+    let executableURL = URL(fileURLWithPath: commandName)
+    if executableURL.isFileURL, fileManager.isExecutableFile(atPath: executableURL.path) {
+        return executableURL
+    }
+    
+    // 检查命令是否在当前目录
+    if let currentDirectoryURL = currentDirectoryURL {
+        let currentDirectoryExecutable = currentDirectoryURL.appendingPathComponent(commandName)
+        if FileManager.default.isExecutableFile(atPath: currentDirectoryExecutable.path) {
+            return currentDirectoryExecutable
+        }
+    }
+    
+    // 然后检查命令是否在 PATH 环境变量中的某个目录
+    if let path = path {
+        let paths = path.split(separator: ":").map { String($0) }
+        for p in paths {
+            let potentialURL = URL(fileURLWithPath: p).appendingPathComponent(commandName)
+            if FileManager.default.isExecutableFile(atPath: potentialURL.path) {
+                return potentialURL
+            }
+        }
+    }
+    
+    // 如果找不到可执行文件返回 nil
+    return nil
+}

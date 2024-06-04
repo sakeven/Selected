@@ -33,6 +33,7 @@ struct FunctionDefinition: Codable, Equatable{
         }
         var args = [String](command[1...])
         args.append(arguments)
+        // TODO: use plugin dir.
         return executeCommand(workdir: FileManager.default.homeDirectoryForCurrentUser.path, command: command[0], arguments: args, withEnv: [:])
     }
     
@@ -135,6 +136,9 @@ struct OpenAIPrompt {
             } else if tool.function.name == function?.name {
                 if let ret = function?.Run(arguments: tool.function.arguments) {
                     messages.append(.tool(.init(content: ret, toolCallId: tool.id)))
+                } else {
+                    NSLog("call function not return result")
+                    return
                 }
             }
         }
