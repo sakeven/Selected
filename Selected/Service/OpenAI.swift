@@ -26,6 +26,7 @@ struct FunctionDefinition: Codable, Equatable{
     public let description: String
     public let parameters: String
     public var command: [String]?
+    public var workdir: String?
     
     func Run(arguments: String) -> String? {
         guard let command = self.command else {
@@ -33,8 +34,7 @@ struct FunctionDefinition: Codable, Equatable{
         }
         var args = [String](command[1...])
         args.append(arguments)
-        // TODO: use plugin dir.
-        return executeCommand(workdir: FileManager.default.homeDirectoryForCurrentUser.path, command: command[0], arguments: args, withEnv: [:])
+        return executeCommand(workdir: workdir!, command: command[0], arguments: args, withEnv: [:])
     }
     
     func getParameters() -> FunctionParameters?{

@@ -214,6 +214,12 @@ class PluginManager: ObservableObject {
                             runCommand.pluginPath = extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).path
                         }
                         
+                        if let gpt = action.gpt, gpt.tool != nil {
+                            if gpt.tool!.workdir == nil {
+                                gpt.tool!.workdir  = extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).path
+                            }
+                        }
+                        
                         if let regex = action.meta.regex {
                             _ = try Regex(regex)
                         }
