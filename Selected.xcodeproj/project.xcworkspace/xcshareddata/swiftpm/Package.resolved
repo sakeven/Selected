@@ -1,4 +1,5 @@
 {
+  "originHash" : "b96d2c6a8a97721e32cef56da29cd9ee61e85a4bc661a66a6fb4fd644c674fc0",
   "pins" : [
     {
       "identity" : "ddmathparser",
@@ -23,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/generative-ai-swift",
       "state" : {
-        "revision" : "0976d0f6bb7bb8b1cf061a68c3cb59477c27730f",
-        "version" : "0.4.10"
+        "revision" : "54784005b57c2235a7669e0c12e8dafa68f0ca5f",
+        "version" : "0.5.4"
       }
     },
     {
@@ -59,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/MacPaw/OpenAI",
       "state" : {
-        "revision" : "5861c597799016026e9c879fb28a8207e59a5b6b",
-        "version" : "0.2.7"
+        "revision" : "fd13a41e987004d14f1793c570721953a2767b03",
+        "version" : "0.2.9"
       }
     },
     {
@@ -95,10 +96,10 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jpsim/Yams.git",
       "state" : {
-        "revision" : "0d9ee7ea8c4ebd4a489ad7a73d5c6cad55d6fed3",
-        "version" : "5.0.6"
+        "revision" : "9234124cff5e22e178988c18d8b95a8ae8007f76",
+        "version" : "5.1.2"
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

@@ -10,22 +10,21 @@ import Defaults
 import SwiftUI
 import AVFoundation
 
-public extension Model {
-    /// `gpt-4-turbo`, the latest gpt-4 model with improved instruction following, JSON mode, reproducible outputs, parallel function calling and more. Maximum of 4096 output tokens
-    static let gpt4_turbo = "gpt-4-turbo"
-    /// GPT-4o (“o” for “omni”) is most advanced model. It is multimodal (accepting text or image inputs and outputting text), and it has the same high intelligence as GPT-4 Turbo but is much more efficient—it generates text 2x faster and is 50% cheaper.
-    static let gpt_4o = "gpt-4o"
-}
-
-let OpenAIModels: [Model] = [.gpt4_turbo, .gpt3_5Turbo, .gpt_4o]
+let OpenAIModels: [Model] = [.gpt4_turbo, .gpt3_5Turbo, .gpt4_o]
 
 struct FunctionDefinition: Codable, Equatable{
+    /// The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64.
     public let name: String
     
     /// The description of what the function does.
     public let description: String
+    /// The parameters the functions accepts, described as a JSON Schema object. See the guide for examples, and the JSON Schema reference for documentation about the format.
+    /// Omitting parameters defines a function with an empty parameter list.
     public let parameters: String
+    
+    /// The command to execute
     public var command: [String]?
+    /// In which dir to execute command.
     public var workdir: String?
     
     func Run(arguments: String) -> String? {
