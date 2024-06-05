@@ -117,7 +117,7 @@ func getSelectedText() -> SelectedTextContext? {
     }
     
     // get urls from selected text.
-    let detector = try! NSDataDetector(types: 
+    let detector = try! NSDataDetector(types:
                                         NSTextCheckingResult.CheckingType.link.rawValue |
                                        NSTextCheckingResult.CheckingType.address.rawValue
     )
@@ -158,7 +158,8 @@ let SupportedCmdCAppList: [String] = ["com.microsoft.VSCode",
                                       "dev.warp.Warp-Stable",
                                       "com.apple.iBooksX",
                                       "com.tencent.xinWeChat"]
-let copyableAppList: [String] = ["dev.warp.Warp-Stable"]
+let copyableAppList: [String] = ["dev.warp.Warp-Stable",
+                                 "dev.zed.Zed"]
 
 func getSelectedTextBySimulateCommandC() -> String {
     let pboard =  NSPasteboard.general
@@ -170,7 +171,7 @@ func getSelectedTextBySimulateCommandC() -> String {
     defer {ClipService.shared.resumeMonitor(id)}
     
     NSLog("changeCount PressCopyKey \(id)")
-
+    
     PressCopyKey()
     
     usleep(100000) // sleep 0.1s to wait NSPasteboard get copy string.
@@ -185,7 +186,7 @@ func getSelectedTextBySimulateCommandC() -> String {
     NSLog("last content: \(String(describing: lastCopyText))")
     pboard.setString(lastCopyText ?? "", forType: .string)
     NSLog("changeCount b \(pboard.changeCount)")
-
+    
     return selectText ?? ""
 }
 
