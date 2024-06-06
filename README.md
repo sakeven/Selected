@@ -11,7 +11,7 @@ macOS Sonoma 14.0 or above
 # Features
 A Mac tool that allows various operations on selected text.
 
-When you select text with the mouse or through the keyboard (cmd+A, cmd+shift+arrow keys), the Selected toolbar will automatically pop up, allowing quick text operations such as copying, translating, searching, querying GPT, reading text aloud, opening links, keyboard operations, executing commands, etc. It also supports custom extensions.
+When you select text with the mouse or through the keyboard (cmd+A, cmd+shift+arrow keys), the Selected toolbar will automatically pop up, allowing quick text operations such as copying, translating, searching, querying GPT, reading text aloud, opening links, keyboard operations, executing commands, calculating expression or sharing the text, etc. It also supports custom extensions.
 
 <img src="DocImages/tool.png" alt="image-20240421174659528" width="400" />
 
@@ -43,6 +43,8 @@ This can be configured in "Settings - Applications".
 | Speak                | selected.speak           | Read the text. If an OpenAI API Key is configured, use OpenAI's TTS (Text-to-Speech) service to generate speech, otherwise use the system's text reading functionality. | ▶️    |
 | 翻译到中文           | selected.translation.cn  | Translate to Chinese. If the selected text is a word, translate the detailed meaning of the word. An API key must be configured in the settings. | 译中 |
 | Translate to English | selected.translation.en  | Translate to English. You need to configure the OpenAI or Gemini API key in the settings. | 🌍    |
+| Share | (none) | Share the selected text by macOS share extension. | 📤 |
+| Calculator | (none) | Auto calculate the expression like 1+2/3*4-5 when you selected it. | (none) |
 
 ## Custom Extentions
 
