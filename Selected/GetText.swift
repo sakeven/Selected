@@ -160,6 +160,8 @@ let SupportedCmdCAppList: [String] = ["com.microsoft.VSCode",
                                       "dev.zed.Zed",
                                       "dev.warp.Warp-Stable",
                                       "com.apple.iBooksX",
+                                      "ru.keepcoder.Telegram",
+                                      "com.laiwang.DingTalk",
                                       "com.tencent.xinWeChat"]
 
 let copyableAppList: [String] = ["dev.warp.Warp-Stable",

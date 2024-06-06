@@ -20,6 +20,12 @@ When you select text with the mouse or through the keyboard (cmd+A, cmd+shift+ar
 2. Supports customizing the addresses and keys for OpenAI and Gemini API. The translation and inquiry GPT functions depend on this.
 3. Supports custom extensions.
 
+# Supported Applications
+
+Some applications have already been tested, while others that have not been tested may also be supported.
+
+See https://github.com/sakeven/Selected/wiki/Supported-Applications
+
 # Custom Action List
 
 This can be configured in "Settings - Applications".
