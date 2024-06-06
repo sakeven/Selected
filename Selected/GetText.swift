@@ -154,11 +154,18 @@ extension StringProtocol {
 }
 
 let SupportedCmdCAppList: [String] = ["com.microsoft.VSCode",
+                                      "com.microsoft.onenote.mac",
+                                      "com.microsoft.Word",
+                                      "com.microsoft.Powerpoint",
                                       "dev.zed.Zed",
                                       "dev.warp.Warp-Stable",
                                       "com.apple.iBooksX",
                                       "com.tencent.xinWeChat"]
+
 let copyableAppList: [String] = ["dev.warp.Warp-Stable",
+                                 "com.microsoft.onenote.mac",
+                                 "com.microsoft.Word",
+                                 "com.microsoft.Powerpoint",
                                  "dev.zed.Zed"]
 
 func getSelectedTextBySimulateCommandC() -> String {
