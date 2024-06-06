@@ -93,6 +93,10 @@ actions:
 
 Each action can and must be configured with only one of the following: action.url, action.service, action.keycombo, action.gpt, or action.runCommand.
 
+# Official Extensions
+
+See https://github.com/sakeven/Selected-Extensions
+
 # Note
 This tool is a hobby project of the author and is still under rapid development and iteration, with incomplete features. Everyone is welcome to submit suggestions for features and implementation code.
 
