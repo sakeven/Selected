@@ -45,7 +45,10 @@ struct BarButton: View {
         }.frame(width: 40, height: 30)
             .buttonStyle(BarButtonStyle()).onHover(perform: { hovering in
                 hoverWorkItem?.cancel()
-                
+                if title.count == 0 {
+                    shouldPopover = false
+                    return
+                }
                 if !hovering{
                     shouldPopover = false
                     return

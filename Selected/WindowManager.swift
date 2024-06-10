@@ -29,6 +29,11 @@ class WindowManager {
         createWindow(rootView: AnyView(contentView), resultWindow: true)
     }
     
+    func createTTSWindow(withText text: String) {
+        let contentView = AudioPlayerView(text: text)
+        createWindow(rootView: AnyView(contentView), resultWindow: true)
+    }
+    
     
     func createChatWindow(chatService: AIChatService, withText text: String, options: [String:String]) {
         let contentView = ChatTextView(text: text, options: options, chatService: chatService)

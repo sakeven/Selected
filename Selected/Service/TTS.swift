@@ -21,11 +21,12 @@ func systemSpeak(_ text: String) {
     speechSynthesizer.speak(utterance)
 }
 
-func speak(_ text: String) async {
+func speak(_ text: String) {
     if Defaults[.openAIAPIKey].isEmpty {
         systemSpeak(text)
     } else {
-        await openAITTS(text)
+        WindowManager.shared.createTTSWindow(withText: text)
+        //await openAITTS(text)
     }
 }
 
