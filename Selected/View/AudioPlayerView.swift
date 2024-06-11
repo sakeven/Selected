@@ -13,7 +13,7 @@ struct AudioPlayerView: View {
     @StateObject private var audioPlayer = AudioPlayer()
     @State private var sliderValue: Double = 0.0
     
-    let text: String
+    let audio: Data
     
     var body: some View {
         HStack {
@@ -44,11 +44,8 @@ struct AudioPlayerView: View {
             Spacer()
         }
         .onAppear() {
-            Task{
-                if let data = await openAITTS2(text) {
-                    audioPlayer.loadAudio(data: data)
-                }
-            }
+            audioPlayer.loadAudio(data: audio)
+            audioPlayer.play()
         }
     }
 }

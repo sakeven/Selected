@@ -28,8 +28,10 @@ func speak(_ text: String) async {
         if isWord(str: text) {
             await openAITTS(text)
         } else {
-            DispatchQueue.main.async {
-                WindowManager.shared.createTTSWindow(withText: text)
+            if let data = await openAITTS2(text) {
+                DispatchQueue.main.async {
+                    WindowManager.shared.createAudioPlayerWindow(data)
+                }
             }
         }
     }

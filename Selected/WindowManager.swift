@@ -29,8 +29,8 @@ class WindowManager {
         createWindow(rootView: AnyView(contentView), resultWindow: true)
     }
     
-    func createTTSWindow(withText text: String) {
-        let contentView = AudioPlayerView(text: text)
+    func createAudioPlayerWindow(_ audio: Data) {
+        let contentView = AudioPlayerView(audio: audio)
         createWindow(rootView: AnyView(contentView), resultWindow: true)
     }
     
