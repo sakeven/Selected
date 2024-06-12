@@ -7,13 +7,33 @@
 
 import Foundation
 import SwiftUI
+import DSWaveformImageViews
 
+
+struct ProgressWaveformView: View {
+    let audioURL: URL
+    let progress: Binding<Double>
+
+    var body: some View {
+        GeometryReader { geometry in
+            WaveformView(audioURL: audioURL) { shape in
+                shape.fill(.clear)
+                shape.fill(.gray).mask(alignment: .leading) {
+                    Rectangle().frame(width: geometry.size.width * progress.wrappedValue)
+                }
+            }
+        }
+    }
+}
 
 struct AudioPlayerView: View {
     @StateObject private var audioPlayer = AudioPlayer()
     @State private var sliderValue: Double = 0.0
     
     let audio: Data
+    @State var audioURL = Bundle.main.url(forResource: "example_sound", withExtension: "m4a")!
+    @State var progress: Double = 0
+    
     
     var body: some View {
         HStack {
@@ -21,30 +41,40 @@ struct AudioPlayerView: View {
                 .foregroundColor(Color.black.opacity(0.6))
                 .font(.custom("Quicksand Regular", size: 14))
                 .frame(width: 40)
-            
-            Slider(value: $sliderValue, in: 0...audioPlayer.duration) { isEditing in
-                if !isEditing {
-                    audioPlayer.seek(to: sliderValue)
-                }
+        
+            ZStack{
+                ProgressWaveformView(audioURL: audioURL, progress: $progress).frame(width: 400)
+                Slider(value: $sliderValue, in: 0...audioPlayer.duration) { isEditing in
+                    if !isEditing {
+                        audioPlayer.seek(to: sliderValue)
+                    }
+                }.foregroundColor(.clear).background(.clear).opacity(0.1)
+                .controlSize(.mini).frame(width: 400)
+                    .onChange(of: audioPlayer.currentTime) { newValue in
+                        sliderValue = newValue
+                        progress = sliderValue/audioPlayer.duration
+                    }.frame(width: 300)
             }
-            .padding()
-            .onChange(of: audioPlayer.currentTime) { newValue in
-                sliderValue = newValue
-            }.frame(width: 300)
+            
+            Text(String(format: "%02d:%02d", ((Int)((audioPlayer.duration))) / 60, ((Int)((audioPlayer.duration))) % 60))
+                .foregroundColor(Color.black.opacity(0.6))
+                .font(.custom("Quicksand Regular", size: 14))
+                .frame(width: 40)
             
             BarButton(icon: audioPlayer.isPlaying ? "symbol:pause.fill" : "symbol:play.fill", title: "" , clicked: {
                 $isLoading in
                 audioPlayer.isPlaying ? audioPlayer.pause() : audioPlayer.play()
-            })
+            }).frame(height: 30)
             
             BarButton(icon: "symbol:square.and.arrow.down", title: "" , clicked: {
                 $isLoading in
                 audioPlayer.saveCurrentState()
-            })
+            }).frame(height: 30)
             Spacer()
-        }
+        }.frame(height: 50)
         .onAppear() {
-            audioPlayer.loadAudio(data: audio)
+//            audioPlayer.loadAudio(data: audio)
+            audioPlayer.loadAudio(url: audioURL)
             audioPlayer.play()
         }
     }
@@ -70,6 +100,15 @@ class AudioPlayer: ObservableObject {
         }
     }
     
+    func loadAudio(url: URL) {
+        do {
+            player = try AVAudioPlayer(contentsOf: url)
+            duration = player?.duration ?? 0.0
+        } catch {
+            print("Error loading audio file: \(error)")
+        }
+    }
+    
     func play() {
         player?.play()
         isPlaying = true
@@ -83,7 +122,7 @@ class AudioPlayer: ObservableObject {
     }
     
     private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             guard let self = self else { return }
             self.currentTime = self.player?.currentTime ?? 0.0
             self.isPlaying =  self.player?.isPlaying ?? false
