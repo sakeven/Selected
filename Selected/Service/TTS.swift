@@ -28,12 +28,12 @@ func speak(_ text: String) async {
         if isWord(str: text) {
             await openAITTS(text)
         } else {
-//            if let data = await openAITTS2(text) {
+            if let data = await openAITTS2(text) {
                 DispatchQueue.main.async {
-                    let data = Data()
+//                    let data = Data()
                     WindowManager.shared.createAudioPlayerWindow(data)
                 }
-//            }
+            }
         }
     }
 }

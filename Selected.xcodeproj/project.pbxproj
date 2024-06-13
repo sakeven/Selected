@@ -46,7 +46,6 @@
 		38AD8D872C1725C600EAFA5D /* AudioPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38AD8D862C1725C600EAFA5D /* AudioPlayerView.swift */; };
 		38AD8D8A2C19D2DB00EAFA5D /* DSWaveformImage in Frameworks */ = {isa = PBXBuildFile; productRef = 38AD8D892C19D2DB00EAFA5D /* DSWaveformImage */; };
 		38AD8D8C2C19D2DB00EAFA5D /* DSWaveformImageViews in Frameworks */ = {isa = PBXBuildFile; productRef = 38AD8D8B2C19D2DB00EAFA5D /* DSWaveformImageViews */; };
-		38AD8D8E2C19D49100EAFA5D /* example_sound.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 38AD8D8D2C19D49100EAFA5D /* example_sound.m4a */; };
 		38CC18B42B9C46CA0023DF18 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B32B9C46CA0023DF18 /* SettingsView.swift */; };
 		38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */; };
 		38CC554C2BA9B6E900069553 /* RunCommandAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC554B2BA9B6E900069553 /* RunCommandAction.swift */; };
@@ -139,7 +138,6 @@
 		388DABC12BEF9D2D000B2739 /* stardict.tar.gz */ = {isa = PBXFileReference; lastKnownFileType = archive.gzip; path = stardict.tar.gz; sourceTree = "<group>"; };
 		38AD8D6E2C0C023600EAFA5D /* GPTAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPTAction.swift; sourceTree = "<group>"; };
 		38AD8D862C1725C600EAFA5D /* AudioPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerView.swift; sourceTree = "<group>"; };
-		38AD8D8D2C19D49100EAFA5D /* example_sound.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = example_sound.m4a; sourceTree = "<group>"; };
 		38CC18B32B9C46CA0023DF18 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopBarView.swift; sourceTree = "<group>"; };
 		38CC554B2BA9B6E900069553 /* RunCommandAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunCommandAction.swift; sourceTree = "<group>"; };
@@ -246,7 +244,6 @@
 		386AD7162B8F6BFA008C346D /* Selected */ = {
 			isa = PBXGroup;
 			children = (
-				38AD8D8D2C19D49100EAFA5D /* example_sound.m4a */,
 				388DABB52BD697F9000B2739 /* Fonts */,
 				3888D8082BA884DB00A7B75D /* Info.plist */,
 				38230C9D2B9F3307002A52E9 /* Plugin */,
@@ -506,7 +503,6 @@
 				386AD71F2B8F6BFB008C346D /* Preview Assets.xcassets in Resources */,
 				388DABC22BEF9D2D000B2739 /* stardict.tar.gz in Resources */,
 				386AD71C2B8F6BFB008C346D /* Assets.xcassets in Resources */,
-				38AD8D8E2C19D49100EAFA5D /* example_sound.m4a in Resources */,
 				381843F12BB01A9B0061BB27 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

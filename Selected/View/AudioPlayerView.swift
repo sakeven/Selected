@@ -18,7 +18,7 @@ struct ProgressWaveformView: View {
         GeometryReader { geometry in
             WaveformView(audioURL: audioURL) { shape in
                 shape.fill(.clear)
-                shape.fill(.gray).mask(alignment: .leading) {
+                shape.fill(.blue).mask(alignment: .leading) {
                     Rectangle().frame(width: geometry.size.width * progress.wrappedValue)
                 }
             }
@@ -26,21 +26,20 @@ struct ProgressWaveformView: View {
     }
 }
 
+
 struct AudioPlayerView: View {
     @StateObject private var audioPlayer = AudioPlayer()
     @State private var sliderValue: Double = 0.0
     
-    let audio: Data
-    @State var audioURL = Bundle.main.url(forResource: "example_sound", withExtension: "m4a")!
+    let audioURL: URL
     @State var progress: Double = 0
-    
     
     var body: some View {
         HStack {
             Text(String(format: "%02d:%02d", ((Int)((audioPlayer.currentTime))) / 60, ((Int)((audioPlayer.currentTime))) % 60))
                 .foregroundColor(Color.black.opacity(0.6))
                 .font(.custom("Quicksand Regular", size: 14))
-                .frame(width: 40)
+                .frame(width: 40).padding(.leading, 10)
         
             ZStack{
                 ProgressWaveformView(audioURL: audioURL, progress: $progress).frame(width: 400)
@@ -54,7 +53,7 @@ struct AudioPlayerView: View {
                         sliderValue = newValue
                         progress = sliderValue/audioPlayer.duration
                     }.frame(width: 300)
-            }
+            }.frame(height: 30)
             
             Text(String(format: "%02d:%02d", ((Int)((audioPlayer.duration))) / 60, ((Int)((audioPlayer.duration))) % 60))
                 .foregroundColor(Color.black.opacity(0.6))
@@ -64,16 +63,17 @@ struct AudioPlayerView: View {
             BarButton(icon: audioPlayer.isPlaying ? "symbol:pause.fill" : "symbol:play.fill", title: "" , clicked: {
                 $isLoading in
                 audioPlayer.isPlaying ? audioPlayer.pause() : audioPlayer.play()
-            }).frame(height: 30)
+            }).frame(height: 30).cornerRadius(5)
             
             BarButton(icon: "symbol:square.and.arrow.down", title: "" , clicked: {
                 $isLoading in
                 audioPlayer.saveCurrentState()
-            }).frame(height: 30)
+            }).frame(height: 30).cornerRadius(5)
             Spacer()
         }.frame(height: 50)
+            .background(.white)
+            .cornerRadius(5).fixedSize()
         .onAppear() {
-//            audioPlayer.loadAudio(data: audio)
             audioPlayer.loadAudio(url: audioURL)
             audioPlayer.play()
         }
@@ -91,18 +91,10 @@ class AudioPlayer: ObservableObject {
     
     private var timer: Timer?
     
-    func loadAudio(data: Data) {
-        do {
-            player = try AVAudioPlayer(data: data)
-            duration = player?.duration ?? 0.0
-        } catch {
-            print("Error loading audio file: \(error)")
-        }
-    }
-    
     func loadAudio(url: URL) {
         do {
             player = try AVAudioPlayer(contentsOf: url)
+            // TODO: add AVAudioPlayerDelegate to be notified when a sound has finished playing
             duration = player?.duration ?? 0.0
         } catch {
             print("Error loading audio file: \(error)")
@@ -126,6 +118,10 @@ class AudioPlayer: ObservableObject {
             guard let self = self else { return }
             self.currentTime = self.player?.currentTime ?? 0.0
             self.isPlaying =  self.player?.isPlaying ?? false
+            if !self.isPlaying {
+                stopTimer()
+            }
+//            NSLog("timer \(currentTime) \(isPlaying)")
         }
     }
     
