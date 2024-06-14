@@ -55,10 +55,33 @@ struct AudioPlayerView: View {
                     }.frame(width: 300)
             }.frame(height: 30)
             
-            Text(String(format: "%02d:%02d", ((Int)((audioPlayer.duration))) / 60, ((Int)((audioPlayer.duration))) % 60))
+            Text(String(format: "%02d:%02d", ((Int)((audioPlayer.duration-audioPlayer.currentTime))) / 60, ((Int)((audioPlayer.duration-audioPlayer.currentTime))) % 60))
                 .foregroundColor(Color.black.opacity(0.6))
                 .font(.custom("Quicksand Regular", size: 14))
                 .frame(width: 40)
+            
+            BarButton(icon: "symbol:gobackward.5", title: "" , clicked: {
+                $isLoading in
+                var val = sliderValue - 15
+                if val < 0 {
+                    val = 0
+                }
+                sliderValue = val
+                audioPlayer.seek(to: sliderValue)
+            }).frame(height: 30).cornerRadius(5)
+            
+            BarButton(icon: "symbol:goforward.5", title: "" , clicked: {
+                $isLoading in
+                var val = sliderValue + 15
+                if val > audioPlayer.duration {
+                    val = audioPlayer.duration
+                }
+                sliderValue = val
+                audioPlayer.seek(to: sliderValue)
+                if  val == audioPlayer.duration {
+                    audioPlayer.pause()
+                }
+            }).frame(height: 30).cornerRadius(5)
             
             BarButton(icon: audioPlayer.isPlaying ? "symbol:pause.fill" : "symbol:play.fill", title: "" , clicked: {
                 $isLoading in
@@ -121,7 +144,6 @@ class AudioPlayer: ObservableObject {
             if !self.isPlaying {
                 stopTimer()
             }
-//            NSLog("timer \(currentTime) \(isPlaying)")
         }
     }
     
