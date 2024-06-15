@@ -13,7 +13,7 @@ import DSWaveformImageViews
 struct ProgressWaveformView: View {
     let audioURL: URL
     let progress: Binding<Double>
-
+    
     var body: some View {
         GeometryReader { geometry in
             WaveformView(audioURL: audioURL) { shape in
@@ -40,7 +40,7 @@ struct AudioPlayerView: View {
                 .foregroundColor(Color.black.opacity(0.6))
                 .font(.custom("Quicksand Regular", size: 14))
                 .frame(width: 40).padding(.leading, 10)
-        
+            
             ZStack{
                 ProgressWaveformView(audioURL: audioURL, progress: $progress).frame(width: 400)
                 Slider(value: $sliderValue, in: 0...audioPlayer.duration) { isEditing in
@@ -48,7 +48,7 @@ struct AudioPlayerView: View {
                         audioPlayer.seek(to: sliderValue)
                     }
                 }.foregroundColor(.clear).background(.clear).opacity(0.1)
-                .controlSize(.mini).frame(width: 400)
+                    .controlSize(.mini).frame(width: 400)
                     .onChange(of: audioPlayer.currentTime) { newValue in
                         sliderValue = newValue
                         progress = sliderValue/audioPlayer.duration
@@ -90,16 +90,17 @@ struct AudioPlayerView: View {
             
             BarButton(icon: "symbol:square.and.arrow.down", title: "" , clicked: {
                 $isLoading in
-                audioPlayer.saveCurrentState()
+                audioPlayer.pause()
+                audioPlayer.save(audioURL)
             }).frame(height: 30).cornerRadius(5)
             Spacer()
         }.frame(height: 50)
             .background(.white)
             .cornerRadius(5).fixedSize()
-        .onAppear() {
-            audioPlayer.loadAudio(url: audioURL)
-            audioPlayer.play()
-        }
+            .onAppear() {
+                audioPlayer.loadAudio(url: audioURL)
+                audioPlayer.play()
+            }
     }
 }
 
@@ -157,7 +158,19 @@ class AudioPlayer: ObservableObject {
         currentTime = time
     }
     
-    func saveCurrentState() {
-        // Implement save logic here
+    func save(_ audioURL: URL) {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        guard let documentsDirectory = paths.first else{
+            return
+        }
+        let unixTime = Int(Date().timeIntervalSince1970)
+        let tts = documentsDirectory.appending(path: "Selected/tts-\(unixTime).mp3")
+        do{
+            try FileManager.default.createDirectory(at: tts.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try FileManager.default.moveItem(at: audioURL, to: tts)
+            NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: tts.deletingLastPathComponent().path)
+        } catch {
+            NSLog("move failed \(error)")
+        }
     }
 }
