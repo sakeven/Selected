@@ -1,5 +1,5 @@
 # OS Requirements
-macOS Sonoma 14.0 or above
+macOS Ventura 13.0 or above
 
 # Installation
 

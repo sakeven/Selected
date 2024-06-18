@@ -47,7 +47,7 @@ struct ApplicationActionListView: View {
                             Text(app.localizedName)
                         }
                     }
-                }).onChange(of: toAddApp, { old, new in
+                }).onChange(of: toAddApp, perform: { new in
                     if new == "" {
                         return
                     }
@@ -219,7 +219,7 @@ struct OnePicker: View {
             ForEach(getAllActionsExcept(exceptActions), id: \.self.actionMeta.identifier) { action in
                 Text(action.actionMeta.title)
             }
-        }).onChange(of: toAddAction, { old, new in
+        }).onChange(of: toAddAction, perform: {  new in
             if new == "" {
                 return
             }

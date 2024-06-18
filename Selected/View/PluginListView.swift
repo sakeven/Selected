@@ -80,7 +80,7 @@ struct OptionView: View {
     var body: some View {
         switch option.type {
             case .boolean:
-                Toggle(option.identifier, isOn: $toggle).onChange(of: toggle) { oldValue, newValue in
+                Toggle(option.identifier, isOn: $toggle).onChange(of: toggle) { newValue in
                     NSLog("value changed \(newValue)")
                     setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
                 }
@@ -89,15 +89,15 @@ struct OptionView: View {
                     ForEach(option.values!, id: \.self) {
                         Text($0)
                     }
-                }).pickerStyle(DefaultPickerStyle()).onChange(of: text) { oldValue, newValue in
+                }).pickerStyle(DefaultPickerStyle()).onChange(of: text) {  newValue in
                     setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
                 }
             case .string:
-                TextField(option.identifier, text: $text).onChange(of: text) { oldValue, newValue in
+                TextField(option.identifier, text: $text).onChange(of: text) { newValue in
                     setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
                 }
             case .secret:
-                SecureField(option.identifier, text: $text).onChange(of: text) { oldValue, newValue in
+                SecureField(option.identifier, text: $text).onChange(of: text) { newValue in
                     setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
                 }
         }

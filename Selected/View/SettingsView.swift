@@ -41,7 +41,7 @@ struct SettingsView: View {
                     Section(header: Text("General")) {
                         Toggle(isOn: $launchAtLogin, label: {
                             Text("Launch at login")
-                        }).onChange(of: launchAtLogin) { oldValue, newValue in
+                        }).onChange(of: launchAtLogin) {  newValue in
                             do {
                                 if newValue {
                                     try SMAppService.mainApp.register()
@@ -49,10 +49,7 @@ struct SettingsView: View {
                                     try SMAppService.mainApp.unregister()
                                 }
                             } catch {
-                                Swift.print(error.localizedDescription)
-                            }
-                            if newValue != (SMAppService.mainApp.status == .enabled) {
-                                launchAtLogin = oldValue
+                                NSLog(error.localizedDescription)
                             }
                         }
                         
@@ -150,7 +147,7 @@ struct ShortcutView: View {
                         ForEach(ClipboardHistoryTime.allCases, id: \.self) {
                             Text($0.localizedName)
                         }
-                    }).pickerStyle(DefaultPickerStyle()).onChange(of: keepTime) { _, _ in
+                    }).pickerStyle(DefaultPickerStyle()).onChange(of: keepTime) { _ in
                         PersistenceController.shared.cleanTask()
                     }
                 }
