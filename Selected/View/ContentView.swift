@@ -14,12 +14,12 @@ struct TranslationView: View {
     @State var transText: String = "..."
     @State private var hasRep = false
     var to: String = "cn"
-    
+
     @Environment(\.colorScheme) private var colorScheme
     var highlighter = CustomCodeSyntaxHighlighter()
-    
+
     @State private var word: Word?
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             if let w = word {
@@ -90,7 +90,7 @@ struct TranslationView: View {
             }.frame(width: 550, height: 30).padding(.bottom, 10)
         }
     }
-    
+
     private var codeTheme: CodeTheme {
         switch self.colorScheme {
             case .dark:
@@ -101,52 +101,95 @@ struct TranslationView: View {
     }
 }
 
+import NetworkImage
+
+
+/// The default image provider, which loads images from the network.
+public struct MarkdownImageProvider: ImageProvider {
+    public func makeImage(url: URL?) -> some View {
+        NetworkImage(url: url) { state in
+            switch state {
+                case .empty, .failure:
+                    Color.clear
+                        .frame(width: 0, height: 0)
+                case .success(let image, _):
+                    //                    ResizeToFit(idealSize: idealSize) {
+                    image.resizable().aspectRatio(contentMode: .fit).frame(width: 510)
+                    //                    }
+            }
+        }
+    }
+}
+
+
+class MessageViewModel: ObservableObject {
+    @Published var messages: [ResponseMessage] = []
+    var chatService: AIChatService
+
+    init(chatService: AIChatService) {
+        self.chatService = chatService
+        self.messages.append(ResponseMessage(message: "waiting", role: "none"))
+    }
+
+
+    func fetchMessages(content: String, options: [String:String]) async -> Void{
+        await chatService.chat(content: content, options: options) { [weak self]  index, message in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                if self.messages.count < index+1 {
+                    self.messages.append(ResponseMessage(message: "", role: ""))
+                }
+                if message.new {
+                    self.messages[index].message = message.message
+                } else {
+                    self.messages[index].message += message.message
+                }
+                NSLog("\(index) \(self.messages[index].message)")
+                self.messages[index].role = message.role
+            }
+        }
+    }
+}
+
+
+
+
 struct ChatTextView: View {
     var text: String
     var options: [String: String]
-    var chatService: AIChatService
-    @State var respText: String = "..."
+    @ObservedObject var viewModel: MessageViewModel
     @State private var hasRep = false
-    
+
     @Environment(\.colorScheme) private var colorScheme
     var highlighter = CustomCodeSyntaxHighlighter()
-    
+
     var body: some View {
         VStack(alignment: .leading) {
-            ScrollView(.vertical){
-                Markdown(self.respText)
+            List(viewModel.messages) { message in
+                Text(LocalizedStringKey(message.role))
+                Markdown(message.message)
                     .markdownBlockStyle(\.codeBlock, body: {label in
                         // wrap long lines
                         highlighter.setTheme(theme: codeTheme).highlightCode(label.content, language: label.language)
                             .padding()
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .markdownMargin(top: .zero, bottom: .em(0.8))
+                            .markdownMargin(top: .em(0.8), bottom: .em(0.8))
                     })
+                    .frame(width: 480, alignment: .leading)
                     .padding(.leading, 20.0)
                     .padding(.trailing, 20.0)
                     .padding(.top, 20)
                     .frame(width: 550, alignment: .leading)
-                    .task {
-                        if isPreview {
-                            return
-                        }
-                        
-                        await chatService.chat(content: text, options: options) { content in
-                            if !hasRep {
-                                respText = content
-                                hasRep = true
-                            } else {
-                                respText = respText + content
-                            }
-                        }
-                    }
-            }.frame(width: 550, height: 300)
+            }.scrollContentBackground(.hidden)
+            .frame(width: 550, height: 300).task {
+                await viewModel.fetchMessages(content: text, options: options)
+            }
             Divider()
             HStack{
                 Button(action: {
                     let pasteboard = NSPasteboard.general
                     pasteboard.clearContents()
-                    let painText = MarkdownContent(self.respText).renderPlainText()
+                    let painText = MarkdownContent(viewModel.messages[0].message).renderPlainText()
                     pasteboard.setString(painText, forType: .string)
                 }, label: {
                     Image(systemName: "doc.on.clipboard.fill")
@@ -155,7 +198,7 @@ struct ChatTextView: View {
                 .cornerRadius(5)
                 Button {
                     Task {
-                        await speak(MarkdownContent(self.respText).renderPlainText())
+                        await speak(MarkdownContent(viewModel.messages[0].message).renderPlainText())
                     }
                 } label: {
                     Image(systemName: "play.circle")
@@ -164,7 +207,7 @@ struct ChatTextView: View {
             }.frame(width: 550, height: 30)
         }
     }
-    
+
     private var codeTheme: CodeTheme {
         switch self.colorScheme {
             case .dark:
@@ -174,8 +217,6 @@ struct ChatTextView: View {
         }
     }
 }
-
-
 
 var isPreview: Bool {
     return ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
@@ -186,23 +227,23 @@ var isPreview: Bool {
 ### Word
 
 - **意思1：** 单词；语言的基本单位，用来表达概念、事物或动作。语言的基本单位，用来表达概念、事物或动作。语言的基本单位，用来表达概念、事物或动作。语言的基本单位，用来表达概念、事物或动作。语言的基本单位，用来表达概念、事物或动作。语言的基本单位，用来表达概念、事物或动作。
-  
+
   **例句：** He asked me to spell the word "responsibility".
 
 - **意思1：** 单词；语言的基本单位，用来表达概念、事物或动作。
-  
+
   **例句：** He asked me to spell the word "responsibility".
 
 - **意思1：** 单词；语言的基本单位，用来表达概念、事物或动作。
-  
+
   **例句：** He asked me to spell the word "responsibility".
 
 - **意思1：** 单词；语言的基本单位，用来表达概念、事物或动作。
-  
+
   **例句：** He asked me to spell the word "responsibility".
 
 - **意思2：** 单词；语言的基本单位，用来表达概念、事物或动作。
-  
+
   **例句：** He asked me to spell the word "responsibility".
 """
     )
@@ -211,7 +252,7 @@ var isPreview: Bool {
 
 struct PopResultView: View {
     var text: String
-    
+
     var body: some View {
         VStack(alignment: .center){
             Text(text)

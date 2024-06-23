@@ -19,8 +19,8 @@ class GptAction: Decodable{
         if generic.after == kAfterPaste  {
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
-                    await ChatService(prompt: self.prompt).chat(content: ctx.Text, options: pluginInfo.getOptionsValue()) { ret in
-                        pasteText(ret)
+                    await ChatService(prompt: self.prompt).chat(content: ctx.Text, options: pluginInfo.getOptionsValue()) { _, ret in
+                        pasteText(ret.message)
                     }
                 })
         } else {

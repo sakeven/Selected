@@ -15,18 +15,18 @@ let OpenAIModels: [Model] = [.gpt4_turbo, .gpt3_5Turbo, .gpt4_o]
 struct FunctionDefinition: Codable, Equatable{
     /// The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64.
     public let name: String
-    
+
     /// The description of what the function does.
     public let description: String
     /// The parameters the functions accepts, described as a JSON Schema object. See the guide for examples, and the JSON Schema reference for documentation about the format.
     /// Omitting parameters defines a function with an empty parameter list.
     public let parameters: String
-    
+
     /// The command to execute
     public var command: [String]?
     /// In which dir to execute command.
     public var workdir: String?
-    
+
     func Run(arguments: String) -> String? {
         guard let command = self.command else {
             return nil
@@ -35,7 +35,7 @@ struct FunctionDefinition: Codable, Equatable{
         args.append(arguments)
         return executeCommand(workdir: workdir!, command: command[0], arguments: args, withEnv: [:])
     }
-    
+
     func getParameters() -> FunctionParameters?{
         let p = try! JSONDecoder().decode(FunctionParameters.self, from: self.parameters.data(using: .utf8)!)
         return p
@@ -44,7 +44,7 @@ struct FunctionDefinition: Codable, Equatable{
 
 let dalle3Def = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
     name: "dalle3",
-    description: "Whenever a description of an image is given, create a prompt that dalle can use to generate the image. The prompt must be in English. Translate to English if needed. The url of the image will be returned. Must display image after the tool called.",
+    description: "Whenever a description of an image is given, create a prompt that dalle can use to generate the image. The prompt must be in English. Translate to English if needed. The url of the image will be returned.",
     parameters: .init(type: .object, properties:[
         "prompt": .init(type: .string, description: "the generated prompt sent to dalle3")
     ])
@@ -59,112 +59,163 @@ typealias FunctionParameters = ChatQuery.ChatCompletionToolParam.FunctionDefinit
 struct OpenAIPrompt {
     let prompt: String
     var function: FunctionDefinition?
-    
-    func chat(selectedText: String, options: [String:String] = [String:String](), completion: @escaping (_: String) -> Void) async -> Void {
-        let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
-        let openAI = OpenAI(configuration: configuration)
-        
-        let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
-        
-        var tools: [ChatQuery.ChatCompletionToolParam] = [.init(function: dalle3Def)]
-        if let function = function {
-            let fc = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
-                name: function.name,
-                description: function.description,
-                parameters: function.getParameters()
+
+
+    func chatOne(
+        selectedText: String,
+        options: [String:String] = [String:String](),
+        completion: @escaping (_: String) -> Void) async -> Void {
+            let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
+            let openAI = OpenAI(configuration: configuration)
+
+            let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
+
+            let query = ChatQuery(
+                messages: [
+                    .init(role: .user, content: message)!],
+                model: Defaults[.openAIModel]
             )
-            tools.append(.init(function: fc))
-        }
-        let query = ChatQuery(
-            messages: [
-                .init(role: .user, content: message)!],
-            model: Defaults[.openAIModel],
-            tools: tools
-        )
-        
-        var hasTools = false
-        var toolCallsDict = [Int: ChatCompletionMessageToolCallParam]()
-        do {
-            for try await result in openAI.chatsStream(query: query) {
-                if let toolCalls = result.choices[0].delta.toolCalls {
-                    hasTools = true
-                    for f in toolCalls {
-                        let toolCallID = f.index
-                        if var toolCall = toolCallsDict[toolCallID] {
-                            toolCall.function.arguments = toolCall.function.arguments + f.function!.arguments!
-                            toolCallsDict[toolCallID] = toolCall
-                        } else {
-                            let toolCall = ChatCompletionMessageToolCallParam(id: f.id!, function: .init(arguments: f.function!.arguments!, name: f.function!.name!))
-                            toolCallsDict[toolCallID] = toolCall
-                        }
+
+
+            do {
+                for try await result in openAI.chatsStream(query: query) {
+                    if result.choices[0].finishReason.isNil && result.choices[0].delta.content != nil {
+                        completion( result.choices[0].delta.content!)
                     }
                 }
-                
-                if result.choices[0].finishReason.isNil && result.choices[0].delta.content != nil {
-                    completion(result.choices[0].delta.content!)
+            } catch {
+                NSLog("completion error \(String(describing: error))")
+                return
+            }
+
+        }
+
+    func chat(
+        selectedText: String,
+        options: [String:String] = [String:String](),
+        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
+            let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
+            let openAI = OpenAI(configuration: configuration)
+
+            let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
+
+            var tools: [ChatQuery.ChatCompletionToolParam] = [.init(function: dalle3Def)]
+            if let function = function {
+                let fc = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
+                    name: function.name,
+                    description: function.description,
+                    parameters: function.getParameters()
+                )
+                tools.append(.init(function: fc))
+            }
+            let query = ChatQuery(
+                messages: [
+                    .init(role: .user, content: message)!],
+                model: Defaults[.openAIModel],
+                tools: tools
+            )
+
+            var hasTools = false
+            var toolCallsDict = [Int: ChatCompletionMessageToolCallParam]()
+            var index = 0
+            var hasMessage =  false
+            do {
+                for try await result in openAI.chatsStream(query: query) {
+                    if let toolCalls = result.choices[0].delta.toolCalls {
+                        hasTools = true
+                        for f in toolCalls {
+                            let toolCallID = f.index
+                            if var toolCall = toolCallsDict[toolCallID] {
+                                toolCall.function.arguments = toolCall.function.arguments + f.function!.arguments!
+                                toolCallsDict[toolCallID] = toolCall
+                            } else {
+                                let toolCall = ChatCompletionMessageToolCallParam(id: f.id!, function: .init(arguments: f.function!.arguments!, name: f.function!.name!))
+                                toolCallsDict[toolCallID] = toolCall
+                            }
+                        }
+                    }
+
+                    if result.choices[0].finishReason.isNil && result.choices[0].delta.content != nil {
+                        var newMessage = false
+                        if !hasMessage {
+                            hasMessage = true
+                            newMessage = true
+                        }
+                        let message = ResponseMessage(message: result.choices[0].delta.content!, role: "assistant", new: newMessage)
+                        completion(index, message)
+                    }
+                }
+            } catch {
+                NSLog("completion error \(String(describing: error))")
+                return
+            }
+            if hasMessage {
+                index += 1
+            }
+
+            if !hasTools {
+                return
+            }
+
+            var messages = query.messages
+            var callTools  =  [OpenAIChatCompletionMessageToolCallParam]()
+            for (_, tool) in toolCallsDict {
+                let function =
+                try! JSONDecoder().decode(ChatFunctionCall.self, from: JSONEncoder().encode(tool.function))
+                callTools.append(.init(id: tool.id, function: function))
+            }
+            messages.append(.assistant(.init(toolCalls: callTools)))
+
+            for (_, tool) in toolCallsDict {
+                completion(index,  ResponseMessage(message: "Calling \(tool.function.name)...", role: "tool", new: true))
+                if tool.function.name == "dalle3" {
+                    NSLog("\(tool.function.arguments)")
+                    do {
+                        let url = try await dalle3(openAI: openAI, arguments: tool.function.arguments)
+                        messages.append(.tool(.init(content: url, toolCallId: tool.id)))
+                        let ret = "![this is picture]("+url+")"
+                        // 画一个碧海蓝天的图吧。
+                        print(ret)
+                        let message = ResponseMessage(message: ret, role: "tool",  new: true)
+                        completion(index, message)
+                    } catch {
+                        NSLog("call function error \(String(describing: error))")
+                        return
+                    }
+                } else if tool.function.name == function?.name {
+                    if let ret = function?.Run(arguments: tool.function.arguments) {
+                        let message = ResponseMessage(message: ret, role: "tool",  new: true)
+                        completion(index, message)
+                        messages.append(.tool(.init(content: ret, toolCallId: tool.id)))
+                    } else {
+                        NSLog("call function not return result")
+                        return
+                    }
                 }
             }
-        } catch {
-            NSLog("completion error \(String(describing: error))")
-            return
-        }
-        
-        if !hasTools {
-            return
-        }
-        
-        var messages = query.messages
-        var callTools  =  [OpenAIChatCompletionMessageToolCallParam]()
-        for (_, tool) in toolCallsDict {
-            let function =
-            try! JSONDecoder().decode(ChatFunctionCall.self, from: JSONEncoder().encode(tool.function))
-            callTools.append(.init(id: tool.id, function: function))
-        }
-        messages.append(.assistant(.init(toolCalls: callTools)))
-        
-        for (_, tool) in toolCallsDict {
-            if tool.function.name == "dalle3" {
-                NSLog("\(tool.function.arguments)")
-                do {
-                    let url = try await dalle3(openAI: openAI, arguments: tool.function.arguments)
-                    messages.append(.tool(.init(content: url, toolCallId: tool.id)))
-                } catch {
-                    NSLog("call function error \(String(describing: error))")
-                    return
+            index += 1
+
+            let query2 = ChatQuery(
+                messages: messages,
+                model: Defaults[.openAIModel]
+            )
+
+            do {
+                for try await result in openAI.chatsStream(query: query2) {
+                    if result.choices[0].finishReason.isNil{
+                        let message = ResponseMessage(message: result.choices[0].delta.content!, role: "assistant")
+                        completion(index, message)
+                    }
                 }
-            } else if tool.function.name == function?.name {
-                if let ret = function?.Run(arguments: tool.function.arguments) {
-                    messages.append(.tool(.init(content: ret, toolCallId: tool.id)))
-                } else {
-                    NSLog("call function not return result")
-                    return
-                }
+            } catch {
+                NSLog("completion error \(String(describing: error))")
             }
         }
-        
-        let query2 = ChatQuery(
-            messages: messages,
-            model: Defaults[.openAIModel]
-        )
-        
-        var content = ""
-        do {
-            for try await result in openAI.chatsStream(query: query2) {
-                if result.choices[0].finishReason.isNil{
-                    content += result.choices[0].delta.content!
-                    NSLog("content is \(content)")
-                    completion(result.choices[0].delta.content!)
-                }
-            }
-        } catch {
-            NSLog("completion error \(String(describing: error))")
-        }
-    }
 }
 
 private func dalle3(openAI: OpenAI, arguments: String) async throws -> String {
     var content =  ""
-    
+
     let prompt = try JSONDecoder().decode(Dalle3Prompt.self, from: arguments.data(using: .utf8)!)
     let imageQuery = ImagesQuery(
         prompt: prompt.prompt,
@@ -208,11 +259,11 @@ func openAITTS(_ text: String) async {
         audioPlayer!.play()
         return
     }
-    
+
     let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
     let openAI = OpenAI(configuration: configuration)
     let query = AudioSpeechQuery(model: .tts_1, input: text, voice: Defaults[.openAIVoice], responseFormat: .mp3, speed: 1.0)
-    
+
     do {
         let result = try await openAI.audioCreateSpeech(query: query)
         voiceDataCache[text.hash] = VoiceData(data: result.audio , lastAccessTime: Date())
@@ -231,11 +282,11 @@ func openAITTS2(_ text: String) async -> Data? {
         NSLog("cached tts")
         return data.data
     }
-    
+
     let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
     let openAI = OpenAI(configuration: configuration)
     let query = AudioSpeechQuery(model: .tts_1, input: text, voice: Defaults[.openAIVoice], responseFormat: .mp3, speed: 1.0)
-    
+
     do {
         let result = try await openAI.audioCreateSpeech(query: query)
         voiceDataCache[text.hash] = VoiceData(data: result.audio , lastAccessTime: Date())
@@ -248,14 +299,14 @@ func openAITTS2(_ text: String) async -> Data? {
 
 struct ChatCompletionMessageToolCallParam: Codable, Equatable {
     public typealias ToolsType = ChatQuery.ChatCompletionToolParam.ToolsType
-    
+
     /// The ID of the tool call.
     public let id: String
     /// The function that the model called.
     public var function: Self.FunctionCall
     /// The type of the tool. Currently, only `function` is supported.
     public let type: Self.ToolsType
-    
+
     public init(
         id: String,
         function:  Self.FunctionCall
@@ -264,7 +315,7 @@ struct ChatCompletionMessageToolCallParam: Codable, Equatable {
         self.function = function
         self.type = .function
     }
-    
+
     public struct FunctionCall: Codable, Equatable {
         /// The arguments to call the function with, as generated by the model in JSON format. Note that the model does not always generate valid JSON, and may hallucinate parameters not defined by your function schema. Validate the arguments in your code before calling your function.
         public var arguments: String

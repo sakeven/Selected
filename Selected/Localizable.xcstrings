@@ -170,6 +170,17 @@
         }
       }
     },
+    "assistant" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "助理"
+          }
+        }
+      }
+    },
     "Clipboard" : {
       "localizations" : {
         "zh-Hans" : {
@@ -540,6 +551,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分享"
+          }
+        }
+      }
+    },
+    "tool" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工具"
           }
         }
       }

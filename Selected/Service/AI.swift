@@ -44,19 +44,19 @@ struct Translation {
             case "OpenAI":
                 NSLog("OpenAI")
                 if isWord(str: content) {
-                    await OpenAIWordTrans.chat(selectedText: content, completion: completion)
+                    await OpenAIWordTrans.chatOne(selectedText: content, completion: completion)
                 } else {
-                    await OpenAITrans2Chinese.chat(selectedText: content, completion: completion)
+                    await OpenAITrans2Chinese.chatOne(selectedText: content, completion: completion)
                 }
             case "Gemini":
                 NSLog("Gemini")
                 if isWord(str: content) {
-                    await GeminiWordTrans.chat(selectedText: content, completion: completion)
+                    await GeminiWordTrans.chatOne(selectedText: content, completion: completion)
                 } else {
-                    await GeminiTrans2Chinese.chat(selectedText: content, completion: completion)
+                    await GeminiTrans2Chinese.chatOne(selectedText: content, completion: completion)
                 }
-            default:
-                completion("no model \(Defaults[.aiService])")
+            default: break
+//                completion("no model \(Defaults[.aiService]))
         }
     }
     
@@ -64,28 +64,33 @@ struct Translation {
         switch Defaults[.aiService] {
             case "OpenAI":
                 NSLog("OpenAI")
-                await OpenAITrans2English.chat(selectedText: content, completion: completion)
+                await OpenAITrans2English.chatOne(selectedText: content, completion: completion)
             case "Gemini":
                 NSLog("Gemini")
-                await GeminiTrans2English.chat(selectedText: content, completion: completion)
-            default:
-                completion("no model \(Defaults[.aiService])")
+                await GeminiTrans2English.chatOne(selectedText: content, completion: completion)
+            default: break
+
+//                completion("no model \(Defaults[.aiService])")
         }
+    }
+
+    private func convert(index: Int, message: ResponseMessage)->Void {
+
     }
 }
 
 struct ChatService: AIChatService{
     let prompt: String
     
-    func chat(content: String, options: [String:String], completion: @escaping (_: String) -> Void) async -> Void{
+    func chat(content: String, options: [String:String], completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
                 await OpenAIPrompt(prompt: prompt).chat(selectedText: content, options: options, completion: completion)
             case "Gemini":
                 NSLog("Gemini")
                 await GeminiPrompt(prompt: prompt).chat(selectedText: content, options: options, completion: completion)
-            default:
-                completion("no model \(Defaults[.aiService])")
+            default: break
+//                completion("no model \(Defaults[.aiService])")
         }
     }
 }
@@ -95,7 +100,7 @@ struct OpenAIService: AIChatService{
     let prompt: String
     var functionDef: FunctionDefinition?
     
-    func chat(content: String, options: [String:String], completion: @escaping (_: String) -> Void) async -> Void{
+    func chat(content: String, options: [String:String], completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
         await OpenAIPrompt(prompt: prompt, function: functionDef)
             .chat(selectedText: content, options: options, completion: completion)
     }
@@ -103,5 +108,13 @@ struct OpenAIService: AIChatService{
 
 
 public protocol AIChatService {
-    func chat(content: String, options: [String:String], completion: @escaping (_: String) -> Void) async -> Void
+    func chat(content: String, options: [String:String], completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void
+}
+
+
+public struct ResponseMessage: Identifiable{
+    public var id = UUID()
+    var message: String
+    var role: String
+    var new: Bool = false // new start of message
 }
