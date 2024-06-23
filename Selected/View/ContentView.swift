@@ -191,8 +191,7 @@ struct MessageView: View {
                         copyToClipboard(configuration.content)
                     }
             }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
+            .padding(.horizontal, 5)
 
             Divider()
 

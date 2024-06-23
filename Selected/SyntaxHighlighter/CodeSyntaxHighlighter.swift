@@ -46,12 +46,19 @@ class CustomCodeSyntaxHighlighter {
             return Text(content)
         }
         
+        if language == "sh" {
+            language = "shell"
+        }
         if !syntaxHighlighter.supportedLanguages().contains(language) {
             language = "plaintext"
         }
         let highlightedCode = syntaxHighlighter.highlight(content, as: language)!
         
-        let v = Text(AttributedString(highlightedCode))
+        let attributedString = NSMutableAttributedString(attributedString: highlightedCode)
+        let font = NSFont(name: "UbuntuMonoNFM", size: 14)!
+        attributedString.addAttribute(.font, value: font, range: NSRange(location: 0, length: attributedString.length))
+
+        let v = Text(AttributedString(attributedString))
         cacheCode[content] = v
         return v
     }
