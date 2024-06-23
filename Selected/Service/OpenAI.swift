@@ -69,7 +69,7 @@ struct OpenAIPrompt {
             let openAI = OpenAI(configuration: configuration)
 
             let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
-
+            NSLog("message is \(message)")
             let query = ChatQuery(
                 messages: [
                     .init(role: .user, content: message)!],
@@ -228,9 +228,9 @@ private func dalle3(openAI: OpenAI, arguments: String) async throws -> String {
 
 let OpenAIWordTrans = OpenAIPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}")
 
-let OpenAITrans2Chinese = OpenAIPrompt(prompt:"翻译以下内容到中文。内容为：{selected.text}")
+let OpenAITrans2Chinese = OpenAIPrompt(prompt:"你是一位精通简体中文的专业翻译。翻译指定的内容到中文。规则： 请直接回复翻译后的内容。内容为：{selected.text}")
 
-let OpenAITrans2English = OpenAIPrompt(prompt:"Translate the following content into English. The content is：{selected.text}")
+let OpenAITrans2English = OpenAIPrompt(prompt:"You are a professional translator proficient in English. Translate the following content into English. Rule: reply with the translated content directly. The content is：{selected.text}")
 
 internal var audioPlayer: AVAudioPlayer?
 
