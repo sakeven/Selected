@@ -152,6 +152,79 @@ class MessageViewModel: ObservableObject {
 }
 
 
+struct MessageView: View {
+    let message: ResponseMessage
+    
+    @Environment(\.colorScheme) private var colorScheme
+    var highlighter = CustomCodeSyntaxHighlighter()
+
+    var body: some View {
+        VStack(alignment: .leading){
+            Text(LocalizedStringKey(message.role))
+                .foregroundStyle(.blue.gradient).font(.headline)
+
+            Markdown(message.message)
+                .markdownBlockStyle(\.codeBlock) {
+                    codeBlock($0)
+                }
+                .frame(width: 480, alignment: .leading)
+                .padding(.leading, 20.0)
+                .padding(.trailing, 20.0)
+                .padding(.top, 5)
+                .padding(.bottom, 20)
+        }
+    }
+
+
+
+    @ViewBuilder
+    private func codeBlock(_ configuration: CodeBlockConfiguration) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text(configuration.language ?? "plain text")
+                    .font(.system(.caption, design: .monospaced))
+                    .fontWeight(.semibold)
+                Spacer()
+
+                Image(systemName: "clipboard")
+                    .onTapGesture {
+                        copyToClipboard(configuration.content)
+                    }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+
+            Divider()
+
+            // wrap long lines
+            highlighter.setTheme(theme: codeTheme).highlightCode(configuration.content, language: configuration.language)
+                .padding(5)
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.black, lineWidth: 2)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .markdownMargin(top: .zero, bottom: .em(0.8))
+    }
+
+
+
+    private func copyToClipboard(_ string: String) {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(string, forType: .string)
+    }
+
+    private var codeTheme: CodeTheme {
+        switch self.colorScheme {
+            case .dark:
+                return .dark
+            default:
+                return .light
+        }
+    }
+}
 
 
 struct ChatTextView: View {
@@ -160,30 +233,15 @@ struct ChatTextView: View {
     @ObservedObject var viewModel: MessageViewModel
     @State private var hasRep = false
 
-    @Environment(\.colorScheme) private var colorScheme
-    var highlighter = CustomCodeSyntaxHighlighter()
-
     var body: some View {
         VStack(alignment: .leading) {
             List(viewModel.messages) { message in
-                Text(LocalizedStringKey(message.role))
-                Markdown(message.message)
-                    .markdownBlockStyle(\.codeBlock, body: {label in
-                        // wrap long lines
-                        highlighter.setTheme(theme: codeTheme).highlightCode(label.content, language: label.language)
-                            .padding()
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .markdownMargin(top: .em(0.8), bottom: .em(0.8))
-                    })
-                    .frame(width: 480, alignment: .leading)
-                    .padding(.leading, 20.0)
-                    .padding(.trailing, 20.0)
-                    .padding(.top, 20)
-                    .frame(width: 550, alignment: .leading)
+                MessageView(message: message)
             }.scrollContentBackground(.hidden)
+                .listStyle(.inset)
             .frame(width: 550, height: 300).task {
-                await viewModel.fetchMessages(content: text, options: options)
-            }
+                    await viewModel.fetchMessages(content: text, options: options)
+                }
             Divider()
             HStack{
                 Button(action: {
@@ -205,15 +263,6 @@ struct ChatTextView: View {
                 }.foregroundColor(Color.white)
                     .cornerRadius(5)
             }.frame(width: 550, height: 30)
-        }
-    }
-
-    private var codeTheme: CodeTheme {
-        switch self.colorScheme {
-            case .dark:
-                return .dark
-            default:
-                return .light
         }
     }
 }

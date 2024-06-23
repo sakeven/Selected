@@ -30,7 +30,6 @@ class CustomCodeSyntaxHighlighter {
     
     deinit {
         cacheCode = [:]
-//        NSLog("dinit CustomCodeSyntaxHighlighter")
     }
     
     func setTheme(theme: CodeTheme) -> Self {
