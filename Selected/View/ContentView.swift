@@ -44,7 +44,7 @@ struct TranslationView: View {
                         highlighter.setTheme(theme: codeTheme).highlightCode(label.content, language: label.language)
                             .padding()
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .markdownMargin(top: .zero, bottom: .em(0.8))
+                            .markdownMargin(top: .em(1), bottom: .em(1))
                     })
                     .padding(.leading, 20.0)
                     .padding(.trailing, 20.0)
@@ -197,7 +197,9 @@ struct MessageView: View {
 
             // wrap long lines
             highlighter.setTheme(theme: codeTheme).highlightCode(configuration.content, language: configuration.language)
+                .relativeLineSpacing(.em(0.5))
                 .padding(5)
+                .markdownMargin(top: .em(1), bottom: .em(1))
         }
         .overlay(
             RoundedRectangle(cornerRadius: 10)

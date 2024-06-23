@@ -168,12 +168,13 @@ struct OpenAIPrompt {
 
             for (_, tool) in toolCallsDict {
                 completion(index,  ResponseMessage(message: "Calling \(tool.function.name)...", role: "tool", new: true))
+
+                NSLog("\(tool.function.arguments)")
                 if tool.function.name == "dalle3" {
-                    NSLog("\(tool.function.arguments)")
                     do {
                         let url = try await dalle3(openAI: openAI, arguments: tool.function.arguments)
                         messages.append(.tool(.init(content: url, toolCallId: tool.id)))
-                        let ret = "![this is picture]("+url+")"
+                        let ret = "[![this is picture]("+url+")]("+url+")"
                         // 画一个碧海蓝天的图吧。
                         print(ret)
                         let message = ResponseMessage(message: ret, role: "tool",  new: true)
