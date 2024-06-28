@@ -144,7 +144,7 @@ class MessageViewModel: ObservableObject {
                 } else {
                     self.messages[index].message += message.message
                 }
-                NSLog("\(index) \(self.messages[index].message)")
+//                NSLog("\(index) \(self.messages[index].message)")
                 self.messages[index].role = message.role
             }
         }
