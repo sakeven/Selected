@@ -126,9 +126,16 @@ public protocol AIChatService {
 }
 
 
-public struct ResponseMessage: Identifiable{
+public class ResponseMessage: ObservableObject, Identifiable{
     public var id = UUID()
-    var message: String
-    var role: String
+    @Published var message: String
+    @Published var role: String
     var new: Bool = false // new start of message
+
+    init(id: UUID = UUID(), message: String, role: String, new: Bool = false) {
+        self.id = id
+        self.message = message
+        self.role = role
+        self.new = new
+    }
 }

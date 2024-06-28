@@ -136,14 +136,18 @@ class MessageViewModel: ObservableObject {
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 if self.messages.count < index+1 {
-                    self.messages.append(ResponseMessage(message: "", role: ""))
+                    self.messages.append(ResponseMessage(message: "", role:  message.role))
                 }
+
+                if message.role != self.messages[index].role {
+                    self.messages[index].role = message.role
+                }
+
                 if message.new {
                     self.messages[index].message = message.message
                 } else {
                     self.messages[index].message += message.message
                 }
-                self.messages[index].role = message.role
             }
         }
     }
@@ -151,8 +155,8 @@ class MessageViewModel: ObservableObject {
 
 
 struct MessageView: View {
-    let message: ResponseMessage
-    
+    @ObservedObject var message: ResponseMessage
+
     @Environment(\.colorScheme) private var colorScheme
     var highlighter = CustomCodeSyntaxHighlighter()
 
@@ -234,11 +238,11 @@ struct ChatTextView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            List(viewModel.messages) { message in
+            List($viewModel.messages) { $message in
                 MessageView(message: message)
             }.scrollContentBackground(.hidden)
                 .listStyle(.inset)
-            .frame(width: 550, height: 300).task {
+                .frame(width: 550, height: 300).task {
                     await viewModel.fetchMessages(content: text, options: options)
                 }
             Divider()

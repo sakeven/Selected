@@ -275,7 +275,7 @@ struct OpenAIPrompt {
                 } else  {
                     if let f = fcSet[tool.function.name] {
                         if let ret = f.Run(arguments: tool.function.arguments) {
-                            var message = ResponseMessage(message: ret, role: "tool",  new: true)
+                            let message = ResponseMessage(message: ret, role: "tool",  new: true)
                             if let show = f.showResult, !show {
                                 message.message = "\(f.name) called"
                             }

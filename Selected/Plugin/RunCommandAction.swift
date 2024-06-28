@@ -12,35 +12,35 @@ import AppKit
 class RunCommandAction: Decodable {
     var command: [String]
     var pluginPath: String? // we will execute command in pluginPath.
-    
+
     enum CodingKeys: String, CodingKey {
         case command
     }
-    
+
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         command = try values.decode([String].self, forKey: .command)
     }
-    
-    
+
+
     init(command: [String], options: [Option]) {
         self.command = command
     }
-    
+
     func generate(pluginInfo: PluginInfo, generic: GenericAction) -> PerformAction {
         return PerformAction(actionMeta:
                                 generic, complete: { ctx in
             guard self.command.count > 0 else {
                 return
             }
-            
+
             guard let pluginPath = self.pluginPath else {
                 return
             }
-            
-            
+
+
             let joinedURLs = ctx.URLs.joined(separator: "\n")
-            
+
             var env = ["SELECTED_TEXT": ctx.Text,
                        "SELECTED_BUNDLEID": ctx.BundleID,
                        "SELECTED_ACTION": generic.identifier,
@@ -53,7 +53,7 @@ class RunCommandAction: Decodable {
             if let path = ProcessInfo.processInfo.environment["PATH"] {
                 env["PATH"] = "/opt/homebrew/bin:/opt/homebrew/sbin:" + path
             }
-            
+
             if let output = executeCommand(
                 workdir: pluginPath,
                 command: self.command[0],
@@ -79,7 +79,7 @@ func pasteText(_ text: String) {
     }
     let pasteboard = NSPasteboard.general
     let lastCopyText = pasteboard.string(forType: .string)
-    
+
     pasteboard.clearContents()
     pasteboard.setString(text, forType: .string)
     PressPasteKey()
@@ -115,14 +115,13 @@ public func executeCommand(
 
         var copiedEnv = env
         copiedEnv["PATH"] = path
-
         process.environment = copiedEnv
-
-        // Create a Dispatch group to handle reading from pipes asynchronously
-        let group = DispatchGroup()
 
         var stdOutData = Data()
         var stdErrData = Data()
+
+        // Create a Dispatch group to handle reading from pipes asynchronously
+        let group = DispatchGroup()
 
         // Asynchronously read stdout
         group.enter()
@@ -148,6 +147,7 @@ public func executeCommand(
             }
         }
 
+        var output: String? = nil
         do {
             try process.run()
             process.waitUntilExit()
@@ -155,13 +155,12 @@ public func executeCommand(
             // Ensure all data has been read
             group.wait()
 
-            let output = String(data: stdOutData + stdErrData, encoding: .utf8)
+            output = String(data: stdOutData + stdErrData, encoding: .utf8)
             print(output ?? "")
-            return output
         } catch {
             print("Failed to execute command: \(error.localizedDescription)")
         }
-        return nil
+        return output
     }
 
 
@@ -172,7 +171,7 @@ private func findExecutablePath(commandName: String, currentDirectoryURL: URL? =
     if executableURL.isFileURL, fileManager.isExecutableFile(atPath: executableURL.path) {
         return executableURL
     }
-    
+
     // 检查命令是否在当前目录
     if let currentDirectoryURL = currentDirectoryURL {
         let currentDirectoryExecutable = currentDirectoryURL.appendingPathComponent(commandName)
@@ -180,7 +179,7 @@ private func findExecutablePath(commandName: String, currentDirectoryURL: URL? =
             return currentDirectoryExecutable
         }
     }
-    
+
     // 然后检查命令是否在 PATH 环境变量中的某个目录
     if let path = path {
         let paths = path.split(separator: ":").map { String($0) }
@@ -191,7 +190,7 @@ private func findExecutablePath(commandName: String, currentDirectoryURL: URL? =
             }
         }
     }
-    
+
     // 如果找不到可执行文件返回 nil
     return nil
 }
