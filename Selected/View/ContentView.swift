@@ -121,7 +121,6 @@ public struct MarkdownImageProvider: ImageProvider {
     }
 }
 
-
 class MessageViewModel: ObservableObject {
     @Published var messages: [ResponseMessage] = []
     var chatService: AIChatService
@@ -144,7 +143,6 @@ class MessageViewModel: ObservableObject {
                 } else {
                     self.messages[index].message += message.message
                 }
-//                NSLog("\(index) \(self.messages[index].message)")
                 self.messages[index].role = message.role
             }
         }

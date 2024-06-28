@@ -61,12 +61,14 @@ struct OpenAIPrompt {
     let prompt: String
     var function: [FunctionDefinition]?
     let openAI: OpenAI
+    var query: ChatQuery
 
     init(prompt: String, function: [FunctionDefinition]? = nil) {
         self.prompt = prompt
         self.function = function
         let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
         self.openAI = OpenAI(configuration: configuration)
+        self.query = OpenAIPrompt.createQuery(function: function)
     }
 
 
@@ -74,12 +76,13 @@ struct OpenAIPrompt {
         selectedText: String,
         options: [String:String] = [String:String](),
         completion: @escaping (_: String) -> Void) async -> Void {
+            var messages = query.messages
             let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
-            NSLog("message is \(message)")
+            messages.append(.init(role: .user, content: message)!)
             let query = ChatQuery(
-                messages: [
-                    .init(role: .user, content: message)!],
-                model: Defaults[.openAIModel]
+                messages: messages,
+                model: Defaults[.openAIModel],
+                tools: query.tools
             )
 
 
@@ -96,20 +99,19 @@ struct OpenAIPrompt {
 
         }
 
-    private func createQuery(selectedText: String,
-                     options: [String:String] = [String:String]()) -> ChatQuery {
-        let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
-
-        var tools: [ChatQuery.ChatCompletionToolParam] = [.init(function: dalle3Def)]
+    private static func createQuery(function: [FunctionDefinition]?) -> ChatQuery {
+        var tools: [ChatQuery.ChatCompletionToolParam]? = nil
         if let function = function {
+            var _tools: [ChatQuery.ChatCompletionToolParam] = [.init(function: dalle3Def)]
             for fc in function {
                 let fc = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
                     name: fc.name,
                     description: fc.description,
                     parameters: fc.getParameters()
                 )
-                tools.append(.init(function: fc))
+                _tools.append(.init(function: fc))
             }
+            tools = _tools
         }
 
         let dateFormatter = DateFormatter()
@@ -121,27 +123,71 @@ struct OpenAIPrompt {
                 .init(role: .system, content: """
                       Current time is \(localDate).
                       You are a tool running on macOS called Selected. You can help user do anything.
-                      """)!,
-                .init(role: .user, content: message)!],
+                      """)!],
             model: Defaults[.openAIModel],
             tools: tools
         )
     }
 
-    func chat(
+    mutating func updateQuery(message: ChatQuery.ChatCompletionMessageParam) {
+        var messages = query.messages
+        messages.append(message)
+        query = ChatQuery(
+            messages: messages,
+            model: Defaults[.openAIModel],
+            tools: query.tools
+        )
+    }
+
+    mutating func updateQuery(messages: [ChatQuery.ChatCompletionMessageParam]) {
+        var _messages = query.messages
+        _messages.append(contentsOf: messages)
+        query = ChatQuery(
+            messages: _messages,
+            model: Defaults[.openAIModel],
+            tools: query.tools
+        )
+    }
+
+    mutating func chat(
         selectedText: String,
         options: [String:String] = [String:String](),
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
-            let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
-            let openAI = OpenAI(configuration: configuration)
+            let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
+            updateQuery(message: .init(role: .user, content: message)!)
 
-            let query = createQuery(selectedText: selectedText, options: options)
+            var index = -1
+            while let last = query.messages.last, last.role != .assistant {
+                await chatOneRound(index: &index, completion: completion)
+                if index >= 10 {
+                    NSLog("call too much")
+                    return
+                }
+            }
+        }
 
-            NSLog("\(query.messages[0].content!)")
+    mutating func chatFollow(
+        index: Int,
+        userMessage: String,
+        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
+            updateQuery(message: .init(role: .user, content: userMessage)!)
+            var newIndex = index
+            while let last = query.messages.last, last.role != .assistant {
+                await chatOneRound(index: &newIndex, completion: completion)
+                if newIndex-index >= 10 {
+                    NSLog("call too much")
+                    return
+                }
+            }
+        }
+
+    mutating func chatOneRound(
+        index: inout Int,
+        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
             var hasTools = false
             var toolCallsDict = [Int: ChatCompletionMessageToolCallParam]()
-            var index = 0
             var hasMessage =  false
+            var assistantMessage = ""
             do {
                 for try await result in openAI.chatsStream(query: query) {
                     if let toolCalls = result.choices[0].delta.toolCalls {
@@ -161,10 +207,12 @@ struct OpenAIPrompt {
                     if result.choices[0].finishReason.isNil && result.choices[0].delta.content != nil {
                         var newMessage = false
                         if !hasMessage {
+                            index += 1
                             hasMessage = true
                             newMessage = true
                         }
                         let message = ResponseMessage(message: result.choices[0].delta.content!, role: "assistant", new: newMessage)
+                        assistantMessage += message.message
                         completion(index, message)
                     }
                 }
@@ -172,55 +220,37 @@ struct OpenAIPrompt {
                 NSLog("completion error \(String(describing: error))")
                 return
             }
-            if hasMessage {
-                index += 1
-            }
 
             if !hasTools {
+                updateQuery(message: .assistant(.init(content:assistantMessage)))
                 return
             }
 
-            var messages = query.messages
             var toolCalls  =  [OpenAIChatCompletionMessageToolCallParam]()
             for (_, tool) in toolCallsDict {
                 let function =
                 try! JSONDecoder().decode(ChatFunctionCall.self, from: JSONEncoder().encode(tool.function))
                 toolCalls.append(.init(id: tool.id, function: function))
             }
-            messages.append(.assistant(.init(toolCalls: toolCalls)))
+            updateQuery(message: .assistant(.init(content:assistantMessage, toolCalls: toolCalls)))
 
-
-            let toolMessages = await callTools(index: index, toolCallsDict: toolCallsDict, completion: completion)
+            let toolMessages = await callTools(index: &index, toolCallsDict: toolCallsDict, completion: completion)
             if toolMessages.isEmpty {
                 return
             }
-            messages.append(contentsOf: toolMessages)
-
-            let query2 = ChatQuery(
-                messages: messages,
-                model: Defaults[.openAIModel]
-            )
-
-            index += 1
-            do {
-                for try await result in openAI.chatsStream(query: query2) {
-                    if result.choices[0].finishReason.isNil && result.choices[0].delta.content != nil {
-                        let message = ResponseMessage(message: result.choices[0].delta.content!, role: "assistant")
-                        completion(index, message)
-                    }
-                }
-            } catch {
-                NSLog("completion error \(String(describing: error))")
-            }
+            updateQuery(messages: toolMessages)
         }
 
     private func callTools(
-        index: Int,
+        index: inout Int,
         toolCallsDict: [Int: ChatCompletionMessageToolCallParam],
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> [ChatQuery.ChatCompletionMessageParam] {
             guard let fcs = function else {
                 return []
             }
+
+            index += 1
+            NSLog("tool index \(index)")
 
             var fcSet = [String: FunctionDefinition]()
             for fc in fcs {

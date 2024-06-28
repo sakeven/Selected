@@ -7,6 +7,7 @@
 
 import Defaults
 import SwiftUI
+import OpenAI
 
 func isWord(str: String) -> Bool {
     for c in str {
@@ -81,11 +82,12 @@ struct Translation {
 
 struct ChatService: AIChatService{
     let prompt: String
-    
+
     func chat(content: String, options: [String:String], completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
-                await OpenAIPrompt(prompt: prompt).chat(selectedText: content, options: options, completion: completion)
+                var openai = OpenAIPrompt(prompt: prompt)
+                await openai.chat(selectedText: content, options: options, completion: completion)
             case "Gemini":
                 NSLog("Gemini")
                 await GeminiPrompt(prompt: prompt).chat(selectedText: content, options: options, completion: completion)
@@ -93,19 +95,27 @@ struct ChatService: AIChatService{
 //                completion("no model \(Defaults[.aiService])")
         }
     }
+
+    func GetAllQueryMessages() -> [ChatQuery.ChatCompletionMessageParam] {
+        return []
+    }
 }
 
 
-struct OpenAIService: AIChatService{
-    let prompt: String
-    var functionDef: [FunctionDefinition]?
+class OpenAIService: AIChatService{
+    var openAI: OpenAIPrompt
 
-    func chat(content: String, options: [String:String], completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
+
+    init(prompt: String, functionDef: [FunctionDefinition]? = nil) {
         var fcs = [FunctionDefinition]()
         if let def = functionDef {
             fcs.append(contentsOf: def)
         }
-        await OpenAIPrompt(prompt: prompt, function: fcs)
+        openAI = OpenAIPrompt(prompt: prompt, function: fcs)
+    }
+
+    func chat(content: String, options: [String:String], completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
+        await openAI
             .chat(selectedText: content, options: options, completion: completion)
     }
 }
