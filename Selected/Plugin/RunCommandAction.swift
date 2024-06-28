@@ -96,36 +96,68 @@ func copyText(_ text: String) {
 public func executeCommand(
     workdir: String, command: String, arguments: [String] = [], withEnv env: [String:String]) -> String? {
         let process = Process()
-        let pipe = Pipe()
+        let stdOutPipe = Pipe()
+        let stdErrPipe = Pipe()
         var path: String?
         if let p = ProcessInfo.processInfo.environment["PATH"] {
             path = "/opt/homebrew/bin:/opt/homebrew/sbin:" + p
         }
-        
+
         let executableURL = findExecutablePath(commandName: command,
                                                currentDirectoryURL:  URL(fileURLWithPath: workdir),
                                                path: path)
-        
+
         process.executableURL = executableURL
         process.arguments = arguments
-        process.standardOutput = pipe
-        process.standardError = pipe
+        process.standardOutput = stdOutPipe
+        process.standardError = stdErrPipe
         process.currentDirectoryURL = URL(fileURLWithPath: workdir)
-        
+
         var copiedEnv = env
         copiedEnv["PATH"] = path
-        
+
         process.environment = copiedEnv
-        
+
+        // Create a Dispatch group to handle reading from pipes asynchronously
+        let group = DispatchGroup()
+
+        var stdOutData = Data()
+        var stdErrData = Data()
+
+        // Asynchronously read stdout
+        group.enter()
+        stdOutPipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            if data.isEmpty {
+                stdOutPipe.fileHandleForReading.readabilityHandler = nil
+                group.leave()
+            } else {
+                stdOutData.append(data)
+            }
+        }
+
+        // Asynchronously read stderr
+        group.enter()
+        stdErrPipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            if data.isEmpty {
+                stdErrPipe.fileHandleForReading.readabilityHandler = nil
+                group.leave()
+            } else {
+                stdErrData.append(data)
+            }
+        }
+
         do {
             try process.run()
             process.waitUntilExit()
-            
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            if let output = String(data: data, encoding: .utf8) {
-                print(output)
-                return output
-            }
+
+            // Ensure all data has been read
+            group.wait()
+
+            let output = String(data: stdOutData + stdErrData, encoding: .utf8)
+            print(output ?? "")
+            return output
         } catch {
             print("Failed to execute command: \(error.localizedDescription)")
         }

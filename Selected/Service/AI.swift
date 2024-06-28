@@ -98,12 +98,12 @@ struct ChatService: AIChatService{
 
 struct OpenAIService: AIChatService{
     let prompt: String
-    var functionDef: FunctionDefinition?
-    
+    var functionDef: [FunctionDefinition]?
+
     func chat(content: String, options: [String:String], completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
         var fcs = [FunctionDefinition]()
         if let def = functionDef {
-            fcs.append(def)
+            fcs.append(contentsOf: def)
         }
         await OpenAIPrompt(prompt: prompt, function: fcs)
             .chat(selectedText: content, options: options, completion: completion)

@@ -192,9 +192,26 @@ struct OpenAIPrompt {
             )
 
             index += 1
+            hasTools = false
+            toolCallsDict = [Int: ChatCompletionMessageToolCallParam]()
             do {
                 for try await result in openAI.chatsStream(query: query2) {
-                    if result.choices[0].finishReason.isNil{
+                    if let toolCalls = result.choices[0].delta.toolCalls {
+                        hasTools = true
+                        for f in toolCalls {
+                            let toolCallID = f.index
+                            if var toolCall = toolCallsDict[toolCallID] {
+                                toolCall.function.arguments = toolCall.function.arguments + f.function!.arguments!
+                                toolCallsDict[toolCallID] = toolCall
+                            } else {
+                                let toolCall = ChatCompletionMessageToolCallParam(id: f.id!, function: .init(arguments: f.function!.arguments!, name: f.function!.name!))
+                                NSLog("next call: \(toolCall.function.name)")
+                                toolCallsDict[toolCallID] = toolCall
+                            }
+                        }
+                    }
+
+                    if result.choices[0].finishReason.isNil  && result.choices[0].delta.content != nil {
                         let message = ResponseMessage(message: result.choices[0].delta.content!, role: "assistant")
                         completion(index, message)
                     }

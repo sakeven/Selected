@@ -9,8 +9,8 @@ import Foundation
 
 class GptAction: Decodable{
     var prompt: String
-    var tool: FunctionDefinition?
-    
+    var tool: [FunctionDefinition]?
+
     init(prompt: String) {
         self.prompt = prompt
     }
