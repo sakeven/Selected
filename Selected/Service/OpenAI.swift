@@ -184,6 +184,7 @@ struct OpenAIPrompt {
     mutating func chatOneRound(
         index: inout Int,
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
+            NSLog("index is \(index)")
             var hasTools = false
             var toolCallsDict = [Int: ChatCompletionMessageToolCallParam]()
             var hasMessage =  false

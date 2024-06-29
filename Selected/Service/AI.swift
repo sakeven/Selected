@@ -96,8 +96,10 @@ struct ChatService: AIChatService{
         }
     }
 
-    func GetAllQueryMessages() -> [ChatQuery.ChatCompletionMessageParam] {
-        return []
+    func chatFollow(
+        index: Int,
+        userMessage: String,
+        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
     }
 }
 
@@ -118,15 +120,31 @@ class OpenAIService: AIChatService{
         await openAI
             .chat(selectedText: content, options: options, completion: completion)
     }
+
+    func chatFollow(
+        index: Int,
+        userMessage: String,
+        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
+        await openAI
+            .chatFollow(index: index, userMessage: userMessage, completion: completion)
+    }
 }
 
 
 public protocol AIChatService {
     func chat(content: String, options: [String:String], completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void
+    func chatFollow(
+        index: Int,
+        userMessage: String,
+        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void
 }
 
 
-public class ResponseMessage: ObservableObject, Identifiable{
+public class ResponseMessage: ObservableObject, Identifiable, Equatable{
+    public static func == (lhs: ResponseMessage, rhs: ResponseMessage) -> Bool {
+        lhs.id == rhs.id
+    }
+
     public var id = UUID()
     @Published var message: String
     @Published var role: String

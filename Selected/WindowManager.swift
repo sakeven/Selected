@@ -204,10 +204,12 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         var window: NSWindow
         // 必须用 NSPanel 并设置 .nonactivatingPanel 以及 level 为 .screenSaver
         // 保证悬浮在全屏应用之上
+        let key = windType == .Alpha
         window = FloatingPanel(
             contentRect: .zero,
             backing: .buffered,
-            defer: false
+            defer: false,
+            key: key
         )
         
         switch windType {

@@ -411,6 +411,9 @@
         }
       }
     },
+    "new message" : {
+
+    },
     "OpenAI" : {
       "localizations" : {
         "zh-Hans" : {
@@ -472,6 +475,9 @@
           }
         }
       }
+    },
+    "Press cmd+enter send new message" : {
+
     },
     "Quit" : {
       "localizations" : {

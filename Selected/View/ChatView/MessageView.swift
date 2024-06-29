@@ -21,27 +21,27 @@ struct MessageView: View {
             HStack{
                 Text(LocalizedStringKey(message.role))
                     .foregroundStyle(.blue.gradient).font(.headline)
-
                 Spacer()
-                Button(action: {
-                    let pasteboard = NSPasteboard.general
-                    pasteboard.clearContents()
-                    pasteboard.setString(message.message, forType: .string)
-                }, label: {
-                    Image(systemName: "doc.on.clipboard.fill")
-                })
-                .foregroundColor(Color.white)
-                .cornerRadius(5)
-                Button {
-                    Task {
-                        await speak(MarkdownContent(message.message).renderPlainText(), view: false)
-                    }
-                } label: {
-                    Image(systemName: "play.circle")
-                }.foregroundColor(Color.white)
+                if message.role == "assistant" {
+                    Button(action: {
+                        let pasteboard = NSPasteboard.general
+                        pasteboard.clearContents()
+                        pasteboard.setString(message.message, forType: .string)
+                    }, label: {
+                        Image(systemName: "doc.on.clipboard.fill")
+                    })
+                    .foregroundColor(Color.white)
                     .cornerRadius(5)
+                    Button {
+                        Task {
+                            await speak(MarkdownContent(message.message).renderPlainText(), view: false)
+                        }
+                    } label: {
+                        Image(systemName: "play.circle")
+                    }.foregroundColor(Color.white)
+                        .cornerRadius(5)
+                }
             }.frame(width: 500, height: 30)
-
 
             Markdown(message.message)
                 .markdownBlockStyle(\.codeBlock) {

@@ -3,7 +3,7 @@ macOS Ventura 13.0 or above
 
 # Installation
 
-1. Download Selected.app.zip from [releases](https://github.com/sakeven/Selected/releases).
+1. Download Selected.zip from [releases](https://github.com/sakeven/Selected/releases).
 2. Unzip it, and move it to the Applications directory.
 3. For the first installation, you need to set up Accessibility features to allow this app to capture selected text.
 
