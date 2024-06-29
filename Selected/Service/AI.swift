@@ -106,12 +106,12 @@ class OpenAIService: AIChatService{
     var openAI: OpenAIPrompt
 
 
-    init(prompt: String, functionDef: [FunctionDefinition]? = nil) {
+    init(prompt: String, tools: [FunctionDefinition]? = nil) {
         var fcs = [FunctionDefinition]()
-        if let def = functionDef {
-            fcs.append(contentsOf: def)
+        if let tools = tools {
+            fcs.append(contentsOf: tools)
         }
-        openAI = OpenAIPrompt(prompt: prompt, function: fcs)
+        openAI = OpenAIPrompt(prompt: prompt, tools: fcs)
     }
 
     func chat(content: String, options: [String:String], completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{

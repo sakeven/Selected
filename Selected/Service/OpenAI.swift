@@ -59,16 +59,16 @@ typealias FunctionParameters = ChatQuery.ChatCompletionToolParam.FunctionDefinit
 
 struct OpenAIPrompt {
     let prompt: String
-    var function: [FunctionDefinition]?
+    var tools: [FunctionDefinition]?
     let openAI: OpenAI
     var query: ChatQuery
 
-    init(prompt: String, function: [FunctionDefinition]? = nil) {
+    init(prompt: String, tools: [FunctionDefinition]? = nil) {
         self.prompt = prompt
-        self.function = function
+        self.tools = tools
         let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
         self.openAI = OpenAI(configuration: configuration)
-        self.query = OpenAIPrompt.createQuery(function: function)
+        self.query = OpenAIPrompt.createQuery(functions: tools)
     }
 
 
@@ -99,11 +99,11 @@ struct OpenAIPrompt {
 
         }
 
-    private static func createQuery(function: [FunctionDefinition]?) -> ChatQuery {
+    private static func createQuery(functions: [FunctionDefinition]?) -> ChatQuery {
         var tools: [ChatQuery.ChatCompletionToolParam]? = nil
-        if let function = function {
+        if let functions = functions {
             var _tools: [ChatQuery.ChatCompletionToolParam] = [.init(function: dalle3Def)]
-            for fc in function {
+            for fc in functions {
                 let fc = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
                     name: fc.name,
                     description: fc.description,
@@ -245,7 +245,7 @@ struct OpenAIPrompt {
         index: inout Int,
         toolCallsDict: [Int: ChatCompletionMessageToolCallParam],
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> [ChatQuery.ChatCompletionMessageParam] {
-            guard let fcs = function else {
+            guard let fcs = tools else {
                 return []
             }
 

@@ -9,7 +9,7 @@ import Foundation
 
 class GptAction: Decodable{
     var prompt: String
-    var tool: [FunctionDefinition]?
+    var tools: [FunctionDefinition]?
 
     init(prompt: String) {
         self.prompt = prompt
@@ -25,8 +25,8 @@ class GptAction: Decodable{
                 })
         } else {
             var chatService: AIChatService = ChatService(prompt: prompt)
-            if let tool = tool {
-                chatService = OpenAIService(prompt: prompt, functionDef: tool)
+            if let tools = tools {
+                chatService = OpenAIService(prompt: prompt, tools: tools)
             }
             
             return PerformAction(

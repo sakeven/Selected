@@ -17,7 +17,7 @@ When you select text with the mouse or through the keyboard (cmd+A, cmd+shift+ar
 
 1. Allows for the customization of operation lists for different applications. (This can be configured in "Settings - Applications")
 
-2. Supports customizing the addresses and keys for OpenAI and Gemini API. The translation and inquiry GPT functions depend on this.
+2. Supports customizing the addresses and keys for OpenAI and Gemini API. The translation and inquiry GPT functions depend on this. It also supports OpenAI's function calling. You can have GPT perform searches, fetch web content, write emails, or control your macOS, and virtually anything else.
 3. Supports custom extensions.
 
 # Supported Applications
@@ -85,18 +85,25 @@ actions:
 | action.meta                | object | Meta information of the Action                    |
 | action.meta.title          | string | Action title. Used to display the name of the operation when the mouse hovers over the toolbar. |
 | action.meta.icon           | string | The setup is the same as info.icon. It is used for display on the toolbar. |
-| action.meta.identifier     | string  | action's id, unique identifier       |
+| action.meta.identifier     | string  | action's id, unique identifier.      |
 | action.meta.after     | string | Handling after the action is executed. Required. Supports configuration of empty (`""`), `paste`, `copy`, `show`. |
 | action.meta.regex | string | Regular expressions, used to match selected text, only display action when a match occurs. Optional values. |
-| action.url                 | object | Action of URL type |
+| action.url                 | object | Action of URL type. |
 | action.url.url             | string | A link that, upon clicking (action), will open this link. It supports schemes to open other apps. For example, `https://www.google.com.hk/search?q={selected.text} `for conducting a Google search. Or open `things:///add?title={selected.text}&show-quick-entry=true` to add a task in Things3. `{selected.text}` is used to replace the selected text. |
-| action.service             | object | Action of service type                   |
+| action.service             | object | Action of service type.                  |
 | action.service.name | string | Service Name。For example, `Make Sticky` creates a new note (note application). |
-| action.keycombo            | object | Shortcut key type action |
+| action.keycombo            | object | Shortcut key type action. |
 | action.keycombo.keycombo   | string | Shortcut keys, such as "cmd i", etc. Support for function keys like "cmd", "shift", "ctrl", "option", "fn", "caps", as well as lowercase letters, numbers, symbols, and other key positions. Key positioning support is not yet complete, pending further testing and improvement. |
+| action.keycombo.keycombos   | string list | A list of Shortcut keys. Only one of keycombo or keycombos can be set in action.keycombo.|
 | action.gpt                 | object | To interact with GPT, such as OpenAI (3.5 turbo model) or Gemini, you need to configure the relevant API key in the settings. |
 | action.gpt.prompt          | string | GPT prompt words, such as `enriching and refining the following content. The content reads: {selected.text}.` Use `{selected.text}` to replace the selected text. |
-| action.runCommand | object | Execute a command |
+| action.gpt.tools          | tool list | GPT function calling definition. A list of tool. |
+| tool.name          | string | GPT function name. |
+| tool.description| string | GPT function description. |
+| tool.parameters| string | JSON schema of GPT function parameters.|
+| tool.command| string list | When call the function, run the command. |
+| tool.showResult| boolean | Whether show function result in GUI window. |
+| action.runCommand | object | Execute a command. |
 | action.runCommand.command | string | Command and parameter list. The working directory during command execution is the plugin directory. The environment variables currently provided include: `SELECTED_TEXT` and `SELECTED_BUNDLEID`, which represent the currently selected text and the current application, respectively. |
 
 Each action can and must be configured with only one of the following: action.url, action.service, action.keycombo, action.gpt, or action.runCommand.
