@@ -21,11 +21,11 @@ func systemSpeak(_ text: String) {
     speechSynthesizer.speak(utterance)
 }
 
-func speak(_ text: String) async {
+func speak(_ text: String, view: Bool = true) async {
     if Defaults[.openAIAPIKey].isEmpty {
         systemSpeak(text)
     } else {
-        if isWord(str: text) {
+        if isWord(str: text) || !view{
             await openAITTS(text)
         } else {
             if let data = await openAITTS2(text) {
