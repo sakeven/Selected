@@ -9,12 +9,17 @@ import SwiftUI
 import Defaults
 import GoogleGenerativeAI
 
-struct GeminiPrompt {
+struct GeminiPrompt: AIChatService{
     let prompt: String
+    let options: [String:String]
+
+    init(prompt: String, options: [String:String] = [String:String]()) {
+        self.prompt = prompt
+        self.options = options
+    }
 
     func chat(
-        selectedText: String,
-        options: [String:String] = [String:String](),
+        content selectedText: String,
         completion: @escaping (_ : Int, _: ResponseMessage) -> Void) async -> Void {
 
             let model = GenerativeModel(name: "gemini-1.5-pro-latest", apiKey: Defaults[.geminiAPIKey], requestOptions: RequestOptions(apiVersion: "v1beta") )
@@ -37,7 +42,6 @@ struct GeminiPrompt {
 
     func chatOne(
         selectedText: String,
-        options: [String:String] = [String:String](),
         completion: @escaping (_: String) -> Void) async -> Void {
 
             let model = GenerativeModel(name: "gemini-1.5-pro-latest", apiKey: Defaults[.geminiAPIKey], requestOptions: RequestOptions(apiVersion: "v1beta") )
@@ -56,6 +60,12 @@ struct GeminiPrompt {
                 NSLog("Unexpected error: \(error).")
             }
         }
+
+    func chatFollow(
+        index: Int,
+        userMessage: String,
+        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
+    }
 }
 
 let GeminiWordTrans = GeminiPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}")

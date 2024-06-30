@@ -41,18 +41,18 @@ struct MessageView: View {
                     }.foregroundColor(Color.white)
                         .cornerRadius(5)
                 }
-            }.frame(width: 500, height: 30)
+            }.frame(height: 20).padding(.trailing, 30.0)
 
             Markdown(message.message)
                 .markdownBlockStyle(\.codeBlock) {
                     codeBlock($0)
                 }
-                .frame(width: 480, alignment: .leading)
+//                .frame(width: 500, alignment: .leading)
                 .padding(.leading, 20.0)
-                .padding(.trailing, 20.0)
+                .padding(.trailing, 40.0)
                 .padding(.top, 5)
                 .padding(.bottom, 20)
-        }
+        }.frame(width: 550)
     }
 
     @ViewBuilder
@@ -103,4 +103,3 @@ struct MessageView: View {
         }
     }
 }
-

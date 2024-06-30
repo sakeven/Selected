@@ -28,13 +28,21 @@ struct FunctionDefinition: Codable, Equatable{
     public var workdir: String?
     public var showResult: Bool? = true
 
-    func Run(arguments: String) -> String? {
+    func Run(arguments: String, options: [String:String] = [String:String]()) -> String? {
         guard let command = self.command else {
             return nil
         }
         var args = [String](command[1...])
         args.append(arguments)
-        return executeCommand(workdir: workdir!, command: command[0], arguments: args, withEnv: [:])
+        
+        var env = [String:String]()
+        options.forEach{ (key: String, value: String) in
+            env["SELECTED_OPTIONS_"+key.uppercased()] = value
+        }
+        if let path = ProcessInfo.processInfo.environment["PATH"] {
+            env["PATH"] = "/opt/homebrew/bin:/opt/homebrew/sbin:" + path
+        }
+        return executeCommand(workdir: workdir!, command: command[0], arguments: args, withEnv: env)
     }
 
     func getParameters() -> FunctionParameters?{
@@ -62,19 +70,20 @@ struct OpenAIPrompt {
     var tools: [FunctionDefinition]?
     let openAI: OpenAI
     var query: ChatQuery
+    var options: [String:String]
 
-    init(prompt: String, tools: [FunctionDefinition]? = nil) {
+    init(prompt: String, tools: [FunctionDefinition]? = nil, options: [String:String] = [String:String]()) {
         self.prompt = prompt
         self.tools = tools
         let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
         self.openAI = OpenAI(configuration: configuration)
+        self.options = options
         self.query = OpenAIPrompt.createQuery(functions: tools)
     }
 
 
     func chatOne(
         selectedText: String,
-        options: [String:String] = [String:String](),
         completion: @escaping (_: String) -> Void) async -> Void {
             var messages = query.messages
             let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
@@ -151,7 +160,6 @@ struct OpenAIPrompt {
 
     mutating func chat(
         selectedText: String,
-        options: [String:String] = [String:String](),
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
             let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
             updateQuery(message: .init(role: .user, content: message)!)
@@ -275,11 +283,12 @@ struct OpenAIPrompt {
                     }
                 } else  {
                     if let f = fcSet[tool.function.name] {
-                        if let ret = f.Run(arguments: tool.function.arguments) {
+                        if let ret = f.Run(arguments: tool.function.arguments, options: options) {
                             let message = ResponseMessage(message: ret, role: "tool",  new: true)
                             if let show = f.showResult, !show {
                                 message.message = "\(f.name) called"
                             }
+                            NSLog("command \(ret)")
                             completion(index, message)
                             messages.append(.tool(.init(content: ret, toolCallId: tool.id)))
                         } else {

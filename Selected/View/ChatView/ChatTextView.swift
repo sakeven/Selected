@@ -12,7 +12,6 @@ import MarkdownUI
 
 struct ChatTextView: View {
     var text: String
-    var options: [String: String]
     @ObservedObject var viewModel: MessageViewModel
 
     var body: some View {
@@ -23,7 +22,7 @@ struct ChatTextView: View {
                 }.scrollContentBackground(.hidden)
                     .listStyle(.inset)
                     .frame(width: 550, height: 400).task {
-                        await viewModel.fetchMessages(content: text, options: options)
+                        await viewModel.fetchMessages(content: text)
                     }.onChange(of: viewModel.messages) { _ in
                         if let lastItemIndex = $viewModel.messages.last?.id {
                             // Scroll to the last item
@@ -35,9 +34,11 @@ struct ChatTextView: View {
 
             }
             ChatInputView(viewModel: viewModel)
-                .frame(width: 550).frame(minHeight: 50)
+                .frame(minHeight: 50)
+                .padding(.leading, 20.0)
+                .padding(.trailing, 20.0)
                 .padding(.bottom, 10)
-        }
+        }.frame(width: 550)
     }
 }
 

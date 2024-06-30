@@ -19,19 +19,19 @@ class GptAction: Decodable{
         if generic.after == kAfterPaste  {
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
-                    await ChatService(prompt: self.prompt).chat(content: ctx.Text, options: pluginInfo.getOptionsValue()) { _, ret in
+                    await ChatService(prompt: self.prompt, options: pluginInfo.getOptionsValue())!.chat(content: ctx.Text) { _, ret in
                         pasteText(ret.message)
                     }
                 })
         } else {
-            var chatService: AIChatService = ChatService(prompt: prompt)
+            var chatService: AIChatService = ChatService(prompt: prompt, options: pluginInfo.getOptionsValue())!
             if let tools = tools {
-                chatService = OpenAIService(prompt: prompt, tools: tools)
+                chatService = OpenAIService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
             }
             
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
-                    WindowManager.shared.createChatWindow(chatService: chatService, withText: ctx.Text, options: pluginInfo.getOptionsValue())
+                    WindowManager.shared.createChatWindow(chatService: chatService, withText: ctx.Text)
                 })
         }
     }

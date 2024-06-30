@@ -45,8 +45,8 @@ class MessageViewModel: ObservableObject {
         }
     }
 
-    func fetchMessages(content: String, options: [String:String]) async -> Void{
-        await chatService.chat(content: content, options: options) { [weak self]  index, message in
+    func fetchMessages(content: String) async -> Void{
+        await chatService.chat(content: content) { [weak self]  index, message in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 if self.messages.count < index+1 {

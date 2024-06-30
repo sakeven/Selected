@@ -81,25 +81,29 @@ struct Translation {
 }
 
 struct ChatService: AIChatService{
-    let prompt: String
+    var chatService: AIChatService
 
-    func chat(content: String, options: [String:String], completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
+    init?(prompt: String, options: [String:String]){
         switch Defaults[.aiService] {
             case "OpenAI":
-                var openai = OpenAIPrompt(prompt: prompt)
-                await openai.chat(selectedText: content, options: options, completion: completion)
+                chatService = OpenAIService(prompt: prompt, options: options)
             case "Gemini":
                 NSLog("Gemini")
-                await GeminiPrompt(prompt: prompt).chat(selectedText: content, options: options, completion: completion)
-            default: break
-//                completion("no model \(Defaults[.aiService])")
+                chatService = GeminiPrompt(prompt: prompt, options: options)
+            default:
+                return nil
         }
+    }
+
+    func chat(content: String, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
+        await chatService.chat(content: content, completion: completion)
     }
 
     func chatFollow(
         index: Int,
         userMessage: String,
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
+            await chatService.chatFollow(index: index, userMessage: userMessage, completion: completion)
     }
 }
 
@@ -107,18 +111,17 @@ struct ChatService: AIChatService{
 class OpenAIService: AIChatService{
     var openAI: OpenAIPrompt
 
-
-    init(prompt: String, tools: [FunctionDefinition]? = nil) {
+    init(prompt: String, tools: [FunctionDefinition]? = nil, options: [String:String]) {
         var fcs = [FunctionDefinition]()
         if let tools = tools {
             fcs.append(contentsOf: tools)
         }
-        openAI = OpenAIPrompt(prompt: prompt, tools: fcs)
+        openAI = OpenAIPrompt(prompt: prompt, tools: fcs,  options: options)
     }
 
-    func chat(content: String, options: [String:String], completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
+    func chat(content: String, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
         await openAI
-            .chat(selectedText: content, options: options, completion: completion)
+            .chat(selectedText: content, completion: completion)
     }
 
     func chatFollow(
@@ -132,7 +135,7 @@ class OpenAIService: AIChatService{
 
 
 public protocol AIChatService {
-    func chat(content: String, options: [String:String], completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void
+    func chat(content: String, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void
     func chatFollow(
         index: Int,
         userMessage: String,
