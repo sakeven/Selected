@@ -288,7 +288,6 @@ struct OpenAIPrompt {
                             if let show = f.showResult, !show {
                                 message.message = "\(f.name) called"
                             }
-                            NSLog("command \(ret)")
                             completion(index, message)
                             messages.append(.tool(.init(content: ret, toolCallId: tool.id)))
                         } else {

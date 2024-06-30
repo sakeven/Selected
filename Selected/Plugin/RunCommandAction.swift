@@ -156,7 +156,6 @@ public func executeCommand(
             group.wait()
 
             output = String(data: stdOutData + stdErrData, encoding: .utf8)
-            print(output ?? "")
         } catch {
             print("Failed to execute command: \(error.localizedDescription)")
         }
