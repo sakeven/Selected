@@ -142,6 +142,7 @@ class WindowManager {
                                            height: frame.size.height + kExpandedLength * 2)
                 if !expandedFrame.contains(NSEvent.mouseLocation){
                     windowCtr.close()
+                    self.windowCtr = nil
                     closed = true
                 }
                 
@@ -149,11 +150,13 @@ class WindowManager {
                 let frame =  windowCtr.window!.frame
                 if !frame.contains(NSEvent.mouseLocation){
                     windowCtr.close()
+                    self.windowCtr = nil
                     closed = true
                 }
                 
             case .force:
                 windowCtr.close()
+                self.windowCtr = nil
                 closed = true
         }
         return closed

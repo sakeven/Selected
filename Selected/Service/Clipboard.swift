@@ -339,6 +339,10 @@ class ClipWindowManager {
         let window = ClipWindowController(rootView: AnyView(view))
         windowCtr = window
         window.showWindow(nil)
+
+        NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: window.window, queue: nil) { _ in
+            self.windowCtr = nil
+        }
         return
     }
     
@@ -351,6 +355,7 @@ class ClipWindowManager {
         if !frame.contains(NSEvent.mouseLocation){
             windowCtr.close()
             closed = true
+            self.windowCtr = nil
         }
         return closed
     }
@@ -364,6 +369,7 @@ class ClipWindowManager {
             return
         }
         windowCtr.close()
+        self.windowCtr = nil
     }
 }
 
