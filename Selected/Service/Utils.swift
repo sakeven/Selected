@@ -17,13 +17,13 @@ func PressPasteKey() {
 
 func PressKey(keycode: CGKeyCode, flags: CGEventFlags) {
     guard let keydownEvent = CGEvent(keyboardEventSource: nil, virtualKey: keycode, keyDown: true) else{return}
-    
+
     keydownEvent.flags = flags
     keydownEvent.post(tap: .cghidEventTap)
-    
-    
+
+
     guard let keyupEvent = CGEvent(keyboardEventSource: nil, virtualKey: keycode, keyDown: false) else{return}
-    
+
     keyupEvent.flags = flags
     keyupEvent.post(tap: .cghidEventTap)
 }
@@ -84,7 +84,7 @@ let KeycodeMapping: [String: UInt16] = [
     "7"                         : 0x1A,
     "8"                         : 0x1C,
     "9"                         : 0x19,
-    
+
     "="                         : 0x18,
     "-"                         : 0x1B,
     ";"                         : 0x29,
@@ -100,7 +100,7 @@ let KeycodeMapping: [String: UInt16] = [
 
 // from https://gist.github.com/swillits/df648e87016772c7f7e5dbed2b345066
 struct Keycode {
-    
+
     // Layout-independent Keys
     // eg.These key codes are always the same key on all layouts.
     static let returnKey                 : UInt16 = 0x24
@@ -152,7 +152,7 @@ struct Keycode {
     static let f18                       : UInt16 = 0x4F
     static let f19                       : UInt16 = 0x50
     static let f20                       : UInt16 = 0x5A
-    
+
     // US-ANSI Keyboard Positions
     // eg. These key codes are for the physical key (in any keyboard layout)
     // at the location of the named key in the US-ANSI layout.
@@ -193,7 +193,7 @@ struct Keycode {
     static let seven                     : UInt16 = 0x1A
     static let eight                     : UInt16 = 0x1C
     static let nine                      : UInt16 = 0x19
-    
+
     static let equals                    : UInt16 = 0x18
     static let minus                     : UInt16 = 0x1B
     static let semicolon                 : UInt16 = 0x29
@@ -205,7 +205,7 @@ struct Keycode {
     static let grave                     : UInt16 = 0x32
     static let leftBracket               : UInt16 = 0x21
     static let rightBracket              : UInt16 = 0x1E
-    
+
     static let keypadDecimal             : UInt16 = 0x41
     static let keypadMultiply            : UInt16 = 0x43
     static let keypadPlus                : UInt16 = 0x45
@@ -245,3 +245,14 @@ var valueFormatter: NumberFormatter = {
     formatter.maximumFractionDigits = 2
     return formatter
 }()
+
+
+func getCurrentAppLanguage() -> String {
+    if let languageCode = Locale.preferredLanguages.first {
+        let locale = Locale.current
+        if let language = locale.localizedString(forLanguageCode: languageCode) {
+            return language
+        }
+    }
+    return "English"
+}

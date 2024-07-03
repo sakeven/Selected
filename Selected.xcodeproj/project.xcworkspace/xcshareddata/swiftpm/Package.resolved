@@ -1,5 +1,5 @@
 {
-  "originHash" : "7cbd5d2669efa909fc9654768a5bfeb3b3ca7799fe909687a00df8d2c3af6147",
+  "originHash" : "cf0e41357b4d845411bd304ada171961d5264bf6f276625169ff88cf67c2bcfc",
   "pins" : [
     {
       "identity" : "ddmathparser",
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/raspu/Highlightr",
       "state" : {
-        "revision" : "93199b9e434f04bda956a613af8f571933f9f037",
-        "version" : "2.1.2"
+        "revision" : "fa483d37c692961ecc2391eac568ba3d3935e663",
+        "version" : "2.2.0"
       }
     },
     {
@@ -96,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/gonzalezreal/swift-markdown-ui",
       "state" : {
-        "revision" : "ae799d015a5374708f7b4c85f3294c05f2a564e2",
-        "version" : "2.3.0"
+        "revision" : "9a8119b37e09a770367eeb26e05267c75d854053",
+        "version" : "2.3.1"
       }
     },
     {

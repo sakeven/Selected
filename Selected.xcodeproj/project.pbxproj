@@ -22,6 +22,7 @@
 		3860105C2C2FA0A700EB9AE7 /* PopResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3860105B2C2FA0A700EB9AE7 /* PopResultView.swift */; };
 		3860105E2C2FA0C900EB9AE7 /* ChatTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3860105D2C2FA0C900EB9AE7 /* ChatTextView.swift */; };
 		386010602C2FA10200EB9AE7 /* TranslationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3860105F2C2FA10200EB9AE7 /* TranslationView.swift */; };
+		386010632C35926100EB9AE7 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386010622C35926100EB9AE7 /* LocationManager.swift */; };
 		386AD7182B8F6BFA008C346D /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386AD7172B8F6BFA008C346D /* App.swift */; };
 		386AD71C2B8F6BFB008C346D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71B2B8F6BFB008C346D /* Assets.xcassets */; };
 		386AD71F2B8F6BFB008C346D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71E2B8F6BFB008C346D /* Preview Assets.xcassets */; };
@@ -119,6 +120,7 @@
 		3860105B2C2FA0A700EB9AE7 /* PopResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopResultView.swift; sourceTree = "<group>"; };
 		3860105D2C2FA0C900EB9AE7 /* ChatTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextView.swift; sourceTree = "<group>"; };
 		3860105F2C2FA10200EB9AE7 /* TranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationView.swift; sourceTree = "<group>"; };
+		386010622C35926100EB9AE7 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		386AD7142B8F6BFA008C346D /* Selected.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Selected.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		386AD7172B8F6BFA008C346D /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		386AD71B2B8F6BFB008C346D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -356,6 +358,7 @@
 				388DABA72BC42798000B2739 /* Persistence.swift */,
 				388DABA92BC6C683000B2739 /* OCR.swift */,
 				388DABBA2BEA5B3C000B2739 /* StarDict.swift */,
+				386010622C35926100EB9AE7 /* LocationManager.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -565,6 +568,7 @@
 				3860105E2C2FA0C900EB9AE7 /* ChatTextView.swift in Sources */,
 				388DABAA2BC6C683000B2739 /* OCR.swift in Sources */,
 				3888D8052BA86A0F00A7B75D /* PluginListView.swift in Sources */,
+				386010632C35926100EB9AE7 /* LocationManager.swift in Sources */,
 				38DF1D572BC2BC120063A879 /* QuickLookView.swift in Sources */,
 				386AD7472B8F6FCE008C346D /* Defaults.swift in Sources */,
 				38DEBE392B9DDD0500CD2A35 /* AI.swift in Sources */,
@@ -759,7 +763,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "Selected/Preview\\ Content";
 				DEVELOPMENT_TEAM = K38MUDUK3K;
@@ -792,7 +796,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "Selected/Preview\\ Content";
 				DEVELOPMENT_TEAM = K38MUDUK3K;

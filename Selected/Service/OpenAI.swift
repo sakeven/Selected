@@ -127,12 +127,23 @@ struct OpenAIPrompt {
         dateFormatter.locale = Locale.current
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         let localDate = dateFormatter.string(from: Date())
+
+        let language = getCurrentAppLanguage()
+        var currentLocation = ""
+        if let location = LocationManager.shared.place {
+            currentLocation = "I'm at \(location)"
+        }
+        let systemPrompt = """
+                      Current time is \(localDate).
+                      \(currentLocation)
+                      You are a tool running on macOS called Selected. You can help user do anything.
+                      The system language is \(language), you should try to reply in \(language) as much as possible, unless the user specifies to use another language, such as specifying to translate into a certain language.
+                      """
+
+        // 通过 Swift 获取当前应用的语言
         return ChatQuery(
             messages: [
-                .init(role: .system, content: """
-                      Current time is \(localDate).
-                      You are a tool running on macOS called Selected. You can help user do anything.
-                      """)!],
+                .init(role: .system, content: systemPrompt)!],
             model: Defaults[.openAIModel],
             tools: tools
         )
