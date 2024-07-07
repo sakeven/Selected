@@ -27,6 +27,7 @@ struct FunctionDefinition: Codable, Equatable{
     /// In which dir to execute command.
     public var workdir: String?
     public var showResult: Bool? = true
+    public var template: String?
 
     func Run(arguments: String, options: [String:String] = [String:String]()) -> String? {
         guard let command = self.command else {
@@ -298,6 +299,9 @@ struct OpenAIPrompt {
                             let message = ResponseMessage(message: ret, role: "tool",  new: true)
                             if let show = f.showResult, !show {
                                 message.message = "\(f.name) called"
+                            } else if let template = f.template{
+                                message.message =  renderTemplate(templateString: template, json: tool.function.arguments)
+                                NSLog("\(message.message)")
                             }
                             completion(index, message)
                             messages.append(.tool(.init(content: ret, toolCallId: tool.id)))

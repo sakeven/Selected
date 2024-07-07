@@ -23,6 +23,8 @@
 		3860105E2C2FA0C900EB9AE7 /* ChatTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3860105D2C2FA0C900EB9AE7 /* ChatTextView.swift */; };
 		386010602C2FA10200EB9AE7 /* TranslationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3860105F2C2FA10200EB9AE7 /* TranslationView.swift */; };
 		386010632C35926100EB9AE7 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386010622C35926100EB9AE7 /* LocationManager.swift */; };
+		386010662C3AE22C00EB9AE7 /* Stencil in Frameworks */ = {isa = PBXBuildFile; productRef = 386010652C3AE22C00EB9AE7 /* Stencil */; };
+		386010682C3AE24000EB9AE7 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386010672C3AE24000EB9AE7 /* Template.swift */; };
 		386AD7182B8F6BFA008C346D /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386AD7172B8F6BFA008C346D /* App.swift */; };
 		386AD71C2B8F6BFB008C346D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71B2B8F6BFB008C346D /* Assets.xcassets */; };
 		386AD71F2B8F6BFB008C346D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71E2B8F6BFB008C346D /* Preview Assets.xcassets */; };
@@ -121,6 +123,7 @@
 		3860105D2C2FA0C900EB9AE7 /* ChatTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTextView.swift; sourceTree = "<group>"; };
 		3860105F2C2FA10200EB9AE7 /* TranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationView.swift; sourceTree = "<group>"; };
 		386010622C35926100EB9AE7 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		386010672C3AE24000EB9AE7 /* Template.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
 		386AD7142B8F6BFA008C346D /* Selected.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Selected.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		386AD7172B8F6BFA008C346D /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		386AD71B2B8F6BFB008C346D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -175,6 +178,7 @@
 				38DF1D552BC269760063A879 /* MathParser in Frameworks */,
 				388DABC02BEA5E73000B2739 /* GRDB in Frameworks */,
 				38AD8D8A2C19D2DB00EAFA5D /* DSWaveformImage in Frameworks */,
+				386010662C3AE22C00EB9AE7 /* Stencil in Frameworks */,
 				38AD8D8C2C19D2DB00EAFA5D /* DSWaveformImageViews in Frameworks */,
 				386AD7442B8F6E77008C346D /* Defaults in Frameworks */,
 				38F5E29C2B98ACB9002FEEFE /* OpenAI in Frameworks */,
@@ -359,6 +363,7 @@
 				388DABA92BC6C683000B2739 /* OCR.swift */,
 				388DABBA2BEA5B3C000B2739 /* StarDict.swift */,
 				386010622C35926100EB9AE7 /* LocationManager.swift */,
+				386010672C3AE24000EB9AE7 /* Template.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -420,6 +425,7 @@
 				388DABBF2BEA5E73000B2739 /* GRDB */,
 				38AD8D892C19D2DB00EAFA5D /* DSWaveformImage */,
 				38AD8D8B2C19D2DB00EAFA5D /* DSWaveformImageViews */,
+				386010652C3AE22C00EB9AE7 /* Stencil */,
 			);
 			productName = Selected;
 			productReference = 386AD7142B8F6BFA008C346D /* Selected.app */;
@@ -506,6 +512,7 @@
 				388DABB02BD549EE000B2739 /* XCRemoteSwiftPackageReference "ShortcutRecorder" */,
 				388DABBE2BEA5E73000B2739 /* XCRemoteSwiftPackageReference "GRDB" */,
 				38AD8D882C19D2DB00EAFA5D /* XCRemoteSwiftPackageReference "DSWaveformImage" */,
+				386010642C3AE22C00EB9AE7 /* XCRemoteSwiftPackageReference "Stencil" */,
 			);
 			productRefGroup = 386AD7152B8F6BFA008C346D /* Products */;
 			projectDirPath = "";
@@ -556,6 +563,7 @@
 				38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */,
 				386010582C2FA00400EB9AE7 /* MessageView.swift in Sources */,
 				3860105A2C2FA07600EB9AE7 /* MessageViewModel.swift in Sources */,
+				386010682C3AE24000EB9AE7 /* Template.swift in Sources */,
 				38DEBE342B9DD7CA00CD2A35 /* Gemini.swift in Sources */,
 				3888D8032BA8615900A7B75D /* IconImage.swift in Sources */,
 				38049D632B9DF8EA00E02ECA /* FloatingPanel.swift in Sources */,
@@ -948,6 +956,14 @@
 				minimumVersion = 5.0.6;
 			};
 		};
+		386010642C3AE22C00EB9AE7 /* XCRemoteSwiftPackageReference "Stencil" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stencilproject/Stencil.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.1;
+			};
+		};
 		386AD7422B8F6E77008C346D /* XCRemoteSwiftPackageReference "Defaults" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/Defaults.git";
@@ -1035,6 +1051,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3831FD312BA532D400A4262B /* XCRemoteSwiftPackageReference "Yams" */;
 			productName = Yams;
+		};
+		386010652C3AE22C00EB9AE7 /* Stencil */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 386010642C3AE22C00EB9AE7 /* XCRemoteSwiftPackageReference "Stencil" */;
+			productName = Stencil;
 		};
 		386AD7432B8F6E77008C346D /* Defaults */ = {
 			isa = XCSwiftPackageProductDependency;
