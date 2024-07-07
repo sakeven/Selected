@@ -280,7 +280,15 @@ struct OpenAIPrompt {
 
             var messages = [ChatQuery.ChatCompletionMessageParam]()
             for (_, tool) in toolCallsDict {
-                completion(index,  ResponseMessage(message: "Calling \(tool.function.name)...", role: "tool", new: true))
+                let message =  ResponseMessage(message: "Calling \(tool.function.name)...", role: "tool", new: true)
+
+                if let f = fcSet[tool.function.name] {
+                    if let template = f.template {
+                        message.message =  renderTemplate(templateString: template, json: tool.function.arguments)
+                        NSLog("\(message.message)")
+                    }
+                }
+                completion(index, message)
                 NSLog("\(tool.function.arguments)")
                 if tool.function.name == dalle3Def.name {
                     do {
@@ -298,10 +306,12 @@ struct OpenAIPrompt {
                         if let ret = f.Run(arguments: tool.function.arguments, options: options) {
                             let message = ResponseMessage(message: ret, role: "tool",  new: true)
                             if let show = f.showResult, !show {
-                                message.message = "\(f.name) called"
-                            } else if let template = f.template{
-                                message.message =  renderTemplate(templateString: template, json: tool.function.arguments)
-                                NSLog("\(message.message)")
+                                if  f.template != nil {
+                                    message.message = ""
+                                    message.new = false
+                                } else {
+                                    message.message = "\(f.name) called"
+                                }
                             }
                             completion(index, message)
                             messages.append(.tool(.init(content: ret, toolCallId: tool.id)))
