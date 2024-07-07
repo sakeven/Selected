@@ -13,6 +13,7 @@ import MarkdownUI
 struct ChatTextView: View {
     var text: String
     @ObservedObject var viewModel: MessageViewModel
+    @State private var task: Task<Void, Never>? = nil
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -22,7 +23,9 @@ struct ChatTextView: View {
                 }.scrollContentBackground(.hidden)
                     .listStyle(.inset)
                     .frame(width: 550, height: 400).task {
-                        await viewModel.fetchMessages(content: text)
+                        task = Task{
+                            await viewModel.fetchMessages(content: text)
+                        }
                     }.onChange(of: viewModel.messages) { _ in
                         if let lastItemIndex = $viewModel.messages.last?.id {
                             // Scroll to the last item
@@ -38,13 +41,16 @@ struct ChatTextView: View {
                 .padding(.leading, 20.0)
                 .padding(.trailing, 20.0)
                 .padding(.bottom, 10)
-        }.frame(width: 550)
+        }.frame(width: 550).onDisappear(){
+            task?.cancel()
+        }
     }
 }
 
 struct ChatInputView: View {
     var viewModel: MessageViewModel
     @State private var newText: String = ""
+    @State private var task: Task<Void, Never>? = nil
 
     var body: some View {
         if #available(macOS 14.0, *) {
@@ -66,6 +72,9 @@ struct ChatInputView: View {
             } .scrollContentBackground(.hidden)
             .background(Color.gray.opacity(0.1))
             .cornerRadius(8)
+            .onDisappear(){
+                task?.cancel()
+            }
         } else {
             // hello
             // Fallback on earlier versions
@@ -74,6 +83,8 @@ struct ChatInputView: View {
                 .textFieldStyle(.squareBorder)
                 .padding().onSubmit {
                     submitMessage()
+                }.onDisappear(){
+                    task?.cancel()
                 }
         }
     }
@@ -82,7 +93,7 @@ struct ChatInputView: View {
         let message = newText
         newText = ""
         DispatchQueue.global(qos: .background).async {
-            Task {
+            task = Task {
                 await viewModel.submit(message: message)
             }
         }
