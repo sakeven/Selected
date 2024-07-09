@@ -9,6 +9,12 @@ import Defaults
 import SwiftUI
 import OpenAI
 
+public struct ChatContext {
+    let selectedText: String
+    let webPageURL: String
+    let bundleID: String
+}
+
 func isWord(str: String) -> Bool {
     for c in str {
         if c.isLetter || c == "-" {
@@ -43,14 +49,12 @@ struct Translation {
     private func contentTrans2Chinese(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
-                NSLog("OpenAI")
                 if isWord(str: content) {
                     await OpenAIWordTrans.chatOne(selectedText: content, completion: completion)
                 } else {
                     await OpenAITrans2Chinese.chatOne(selectedText: content, completion: completion)
                 }
             case "Gemini":
-                NSLog("Gemini")
                 if isWord(str: content) {
                     await GeminiWordTrans.chatOne(selectedText: content, completion: completion)
                 } else {
@@ -64,13 +68,10 @@ struct Translation {
     private func contentTrans2English(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
-                NSLog("OpenAI")
                 await OpenAITrans2English.chatOne(selectedText: content, completion: completion)
             case "Gemini":
-                NSLog("Gemini")
                 await GeminiTrans2English.chatOne(selectedText: content, completion: completion)
             default: break
-
 //                completion("no model \(Defaults[.aiService])")
         }
     }
@@ -88,15 +89,14 @@ struct ChatService: AIChatService{
             case "OpenAI":
                 chatService = OpenAIService(prompt: prompt, options: options)
             case "Gemini":
-                NSLog("Gemini")
                 chatService = GeminiPrompt(prompt: prompt, options: options)
             default:
                 return nil
         }
     }
 
-    func chat(content: String, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
-        await chatService.chat(content: content, completion: completion)
+    func chat(ctx: ChatContext, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
+        await chatService.chat(ctx: ctx, completion: completion)
     }
 
     func chatFollow(
@@ -119,9 +119,9 @@ class OpenAIService: AIChatService{
         openAI = OpenAIPrompt(prompt: prompt, tools: fcs,  options: options)
     }
 
-    func chat(content: String, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
+    func chat(ctx: ChatContext, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
         await openAI
-            .chat(selectedText: content, completion: completion)
+            .chat(ctx: ctx, completion: completion)
     }
 
     func chatFollow(
@@ -135,7 +135,7 @@ class OpenAIService: AIChatService{
 
 
 public protocol AIChatService {
-    func chat(content: String, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void
+    func chat(ctx: ChatContext, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void
     func chatFollow(
         index: Int,
         userMessage: String,

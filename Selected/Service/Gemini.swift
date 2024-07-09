@@ -19,11 +19,12 @@ struct GeminiPrompt: AIChatService{
     }
 
     func chat(
-        content selectedText: String,
+        ctx: ChatContext,
         completion: @escaping (_ : Int, _: ResponseMessage) -> Void) async -> Void {
 
             let model = GenerativeModel(name: "gemini-1.5-pro-latest", apiKey: Defaults[.geminiAPIKey], requestOptions: RequestOptions(apiVersion: "v1beta") )
-            let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
+            var message = renderChatContent(content: prompt, chatCtx: ctx, options: options)
+            message = replaceOptions(content: message, selectedText: ctx.selectedText, options: options)
 
             NSLog("prompt is \(message)")
             let contentStream = model.generateContentStream(message)

@@ -19,7 +19,8 @@ class GptAction: Decodable{
         if generic.after == kAfterPaste  {
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
-                    await ChatService(prompt: self.prompt, options: pluginInfo.getOptionsValue())!.chat(content: ctx.Text) { _, ret in
+                    let chatCtx = ChatContext(selectedText: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
+                    await ChatService(prompt: self.prompt, options: pluginInfo.getOptionsValue())!.chat(ctx: chatCtx) { _, ret in
                         pasteText(ret.message)
                     }
                 })
@@ -31,7 +32,8 @@ class GptAction: Decodable{
             
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
-                    WindowManager.shared.createChatWindow(chatService: chatService, withText: ctx.Text)
+                    let chatCtx = ChatContext(selectedText: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
+                    WindowManager.shared.createChatWindow(chatService: chatService, withContext: chatCtx)
                 })
         }
     }

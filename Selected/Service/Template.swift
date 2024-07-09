@@ -41,3 +41,11 @@ func renderTemplate(templateString: String, with context: [String: Any]) -> Stri
         return ""
     }
 }
+
+func renderChatContent(content: String, chatCtx: ChatContext, options: [String:String]? = [String:String]()) -> String {
+    var ctx = [String:Any]()
+    ctx["options"] = options
+    ctx["selected"] = chatCtx
+
+    return renderTemplate(templateString: content, with: ctx)
+}

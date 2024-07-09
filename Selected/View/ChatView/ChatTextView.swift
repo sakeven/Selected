@@ -10,8 +10,9 @@ import SwiftUI
 import MarkdownUI
 
 
+
 struct ChatTextView: View {
-    var text: String
+    let ctx: ChatContext
     @ObservedObject var viewModel: MessageViewModel
     @State private var task: Task<Void, Never>? = nil
 
@@ -24,7 +25,7 @@ struct ChatTextView: View {
                     .listStyle(.inset)
                     .frame(width: 550, height: 400).task {
                         task = Task{
-                            await viewModel.fetchMessages(content: text)
+                            await viewModel.fetchMessages(ctx: ctx)
                         }
                     }.onChange(of: viewModel.messages) { _ in
                         if let lastItemIndex = $viewModel.messages.last?.id {
@@ -76,7 +77,6 @@ struct ChatInputView: View {
                 task?.cancel()
             }
         } else {
-            // hello
             // Fallback on earlier versions
             TextField("new message", text: $newText, axis: .vertical)
                 .lineLimit(3...)

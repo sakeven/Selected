@@ -170,16 +170,27 @@ struct OpenAIPrompt {
     }
 
     mutating func chat(
-        selectedText: String,
+        ctx: ChatContext,
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
-            let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
+            var message = renderChatContent(content: prompt, chatCtx: ctx, options: options)
+            message = replaceOptions(content: message, selectedText: ctx.selectedText, options: options)
             updateQuery(message: .init(role: .user, content: message)!)
 
             var index = -1
             while let last = query.messages.last, last.role != .assistant {
-                await chatOneRound(index: &index, completion: completion)
+                do {
+                    try await chatOneRound(index: &index, completion: completion)
+                } catch {
+                    index += 1
+                    let message = ResponseMessage(message: "exception: \(error)", role: "system", new: true)
+                    completion(index, message)
+                    return
+                }
                 if index >= 10 {
+                    index += 1
                     NSLog("call too much")
+                    let message = ResponseMessage(message: "too much rounds, please start a new chat", role: "system", new: true)
+                    completion(index, message)
                     return
                 }
             }
@@ -192,9 +203,19 @@ struct OpenAIPrompt {
             updateQuery(message: .init(role: .user, content: userMessage)!)
             var newIndex = index
             while let last = query.messages.last, last.role != .assistant {
-                await chatOneRound(index: &newIndex, completion: completion)
+                do {
+                    try await chatOneRound(index: &newIndex, completion: completion)
+                } catch {
+                    newIndex += 1
+                    let message = ResponseMessage(message: "exception: \(error)", role: "system", new: true)
+                    completion(newIndex, message)
+                    return
+                }
                 if newIndex-index >= 10 {
                     NSLog("call too much")
+                    newIndex += 1
+                    let message = ResponseMessage(message: "too much rounds, please start a new chat", role: "system", new: true)
+                    completion(newIndex, message)
                     return
                 }
             }
@@ -202,44 +223,41 @@ struct OpenAIPrompt {
 
     mutating func chatOneRound(
         index: inout Int,
-        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
+        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async throws -> Void {
             NSLog("index is \(index)")
             var hasTools = false
             var toolCallsDict = [Int: ChatCompletionMessageToolCallParam]()
             var hasMessage =  false
             var assistantMessage = ""
-            do {
-                for try await result in openAI.chatsStream(query: query) {
-                    if let toolCalls = result.choices[0].delta.toolCalls {
-                        hasTools = true
-                        for f in toolCalls {
-                            let toolCallID = f.index
-                            if var toolCall = toolCallsDict[toolCallID] {
-                                toolCall.function.arguments = toolCall.function.arguments + f.function!.arguments!
-                                toolCallsDict[toolCallID] = toolCall
-                            } else {
-                                let toolCall = ChatCompletionMessageToolCallParam(id: f.id!, function: .init(arguments: f.function!.arguments!, name: f.function!.name!))
-                                toolCallsDict[toolCallID] = toolCall
-                            }
-                        }
-                    }
 
-                    if result.choices[0].finishReason.isNil && result.choices[0].delta.content != nil {
-                        var newMessage = false
-                        if !hasMessage {
-                            index += 1
-                            hasMessage = true
-                            newMessage = true
+            for try await result in openAI.chatsStream(query: query) {
+                if let toolCalls = result.choices[0].delta.toolCalls {
+                    hasTools = true
+                    for f in toolCalls {
+                        let toolCallID = f.index
+                        if var toolCall = toolCallsDict[toolCallID] {
+                            toolCall.function.arguments = toolCall.function.arguments + f.function!.arguments!
+                            toolCallsDict[toolCallID] = toolCall
+                        } else {
+                            let toolCall = ChatCompletionMessageToolCallParam(id: f.id!, function: .init(arguments: f.function!.arguments!, name: f.function!.name!))
+                            toolCallsDict[toolCallID] = toolCall
                         }
-                        let message = ResponseMessage(message: result.choices[0].delta.content!, role: "assistant", new: newMessage)
-                        assistantMessage += message.message
-                        completion(index, message)
                     }
                 }
-            } catch {
-                NSLog("completion error \(String(describing: error))")
-                return
+
+                if result.choices[0].finishReason.isNil && result.choices[0].delta.content != nil {
+                    var newMessage = false
+                    if !hasMessage {
+                        index += 1
+                        hasMessage = true
+                        newMessage = true
+                    }
+                    let message = ResponseMessage(message: result.choices[0].delta.content!, role: "assistant", new: newMessage)
+                    assistantMessage += message.message
+                    completion(index, message)
+                }
             }
+
 
             if !hasTools {
                 updateQuery(message: .assistant(.init(content:assistantMessage)))
