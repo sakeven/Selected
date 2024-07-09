@@ -35,7 +35,7 @@ struct FunctionDefinition: Codable, Equatable{
         }
         var args = [String](command[1...])
         args.append(arguments)
-        
+
         var env = [String:String]()
         options.forEach{ (key: String, value: String) in
             env["SELECTED_OPTIONS_"+key.uppercased()] = value
@@ -94,7 +94,6 @@ struct OpenAIPrompt {
                 model: Defaults[.openAIModel],
                 tools: query.tools
             )
-
 
             do {
                 for try await result in openAI.chatsStream(query: query) {
@@ -306,7 +305,7 @@ struct OpenAIPrompt {
                         if let ret = f.Run(arguments: tool.function.arguments, options: options) {
                             let message = ResponseMessage(message: ret, role: "tool",  new: true)
                             if let show = f.showResult, !show {
-                                if  f.template != nil {
+                                if f.template != nil {
                                     message.message = ""
                                     message.new = false
                                 } else {

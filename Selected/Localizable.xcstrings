@@ -221,6 +221,26 @@
         }
       }
     },
+    "Custom" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自定义"
+          }
+        }
+      }
+    },
+    "Custom model" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自定义模型"
+          }
+        }
+      }
+    },
     "Date:" : {
       "localizations" : {
         "zh-Hans" : {
@@ -412,7 +432,14 @@
       }
     },
     "new message" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新信息"
+          }
+        }
+      }
     },
     "OpenAI" : {
       "localizations" : {
@@ -477,7 +504,14 @@
       }
     },
     "Press cmd+enter to send new message" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按 cmd+enter 键发送新信息"
+          }
+        }
+      }
     },
     "Quit" : {
       "localizations" : {
