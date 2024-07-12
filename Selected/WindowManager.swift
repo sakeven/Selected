@@ -19,7 +19,7 @@ func createTemporaryURLForData(_ data: Data, fileName: String) -> URL? {
 
     // 创建新临时文件 URL
     let tempFileURL = tempDirectoryURL.appendingPathComponent(fileName)
-    
+
     do {
         // 将数据写入临时文件
         try data.write(to: tempFileURL)
@@ -33,20 +33,20 @@ func createTemporaryURLForData(_ data: Data, fileName: String) -> URL? {
 
 class WindowManager {
     static let shared =  WindowManager()
-    
+
     // TODO: lock
     private var windowCtr: WindowController?
-    
+
     func createPopBarWindow(_ ctx: SelectedTextContext) {
         let contentView = PopBarView(actions: GetActions(ctx: ctx), ctx: ctx)
         createWindow(rootView: AnyView(contentView), windType: .Transparent)
     }
-    
+
     func createTranslationWindow(withText text: String, to: String) {
         let contentView = TranslationView(text: text, to: to)
         createWindow(rootView: AnyView(contentView), windType: .Alpha)
     }
-    
+
     func createAudioPlayerWindow(_ audio: Data) {
         guard let url = createTemporaryURLForData(audio, fileName: "selected-tmptts.mp3") else{
             return
@@ -61,13 +61,13 @@ class WindowManager {
             }
         }
     }
-    
-    
+
+
     func createChatWindow(chatService: AIChatService, withContext ctx: ChatContext) {
         let contentView = ChatTextView(ctx: ctx, viewModel: MessageViewModel(chatService: chatService))
         createWindow(rootView: AnyView(contentView), windType: .Alpha)
     }
-    
+
     func closeOnlyPopbarWindows(_ mode: CloseWindowMode) -> Bool {
         guard let windowCtr = windowCtr else {
             return false
@@ -80,7 +80,7 @@ class WindowManager {
         }
         return false
     }
-    
+
     func closeAllWindows(_ mode: CloseWindowMode) -> Bool {
         guard let windowCtr = windowCtr else {
             return false
@@ -90,20 +90,20 @@ class WindowManager {
         }
         return closeWindow(mode, windowCtr: windowCtr)
     }
-    
+
     private func createWindow(rootView: AnyView, windType: WindowType) {
         // 使用任意视图创建 WindowController
         let windowController = WindowController(rootView: rootView, windType: windType)
         windowCtr?.close()
         windowController.showWindow(nil)
         windowCtr = windowController
-        
+
         // 如果你需要处理窗口关闭事件，你可以添加一个通知观察者
         NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: windowController.window, queue: nil) { _ in
             self.windowCtr = nil
         }
     }
-    
+
     private func createWindow(rootView: AnyView, windType: WindowType, onClose: @escaping ()->Void) {
         // 使用任意视图创建 WindowController
         let windowController = WindowController(rootView: rootView, windType: windType)
@@ -111,26 +111,26 @@ class WindowManager {
         windowCtr?.close()
         windowController.showWindow(nil)
         windowCtr = windowController
-        
+
         // 如果你需要处理窗口关闭事件，你可以添加一个通知观察者
         NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: windowController.window, queue: nil) { _ in
             self.windowCtr = nil
         }
     }
-    
+
     func createTextWindow(_ text: String) {
         // 使用任意视图创建 WindowController
         let windowController = WindowController(text: text)
         windowCtr?.close()
         windowController.showWindow(nil)
         windowCtr = windowController
-        
+
         // 如果你需要处理窗口关闭事件，你可以添加一个通知观察者
         NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: windowController.window, queue: nil) { _ in
             self.windowCtr = nil
         }
     }
-    
+
     private func closeWindow(_ mode: CloseWindowMode, windowCtr: WindowController) -> Bool {
         var closed = false
         switch mode {
@@ -145,7 +145,7 @@ class WindowManager {
                     self.windowCtr = nil
                     closed = true
                 }
-                
+
             case .original:
                 let frame =  windowCtr.window!.frame
                 if !frame.contains(NSEvent.mouseLocation){
@@ -153,7 +153,7 @@ class WindowManager {
                     self.windowCtr = nil
                     closed = true
                 }
-                
+
             case .force:
                 windowCtr.close()
                 self.windowCtr = nil
@@ -161,48 +161,36 @@ class WindowManager {
         }
         return closed
     }
-    
+
 }
 
 enum WindowType {
-case Transparent, Alpha, Opaque
+    case Transparent, Alpha, Opaque
 }
 
 private class WindowController: NSWindowController, NSWindowDelegate {
     var resultWindow: Bool
     var onClose: (()->Void)?
-    
+
     init(text: String) {
         let window = TextResultWindow(text)
         window.alphaValue = 0.9
         window.isOpaque = true
         window.backgroundColor = .clear
         self.resultWindow = true
-        
+
         super.init(window: window)
-        
+
         window.center()
         window.level = .screenSaver
         window.delegate = self // 设置代理为自己来监听窗口事件
-        
-        let windowFrame = window.frame
-        NSLog("windowFrame \(windowFrame.height), \(windowFrame.width)")
-        let screenFrame = NSScreen.main?.visibleFrame ?? .zero // 获取主屏幕的可见区域
-        
-        let mouseLocation = NSEvent.mouseLocation  // 获取鼠标当前位置
-        
-        
-        // 确保窗口不会超出屏幕边缘
-        let x = min(screenFrame.maxX - windowFrame.width,
-                    max(mouseLocation.x - windowFrame.width/2, screenFrame.minX))
-        
-        var y =  mouseLocation.y + 18
-        if y > screenFrame.maxY {
-            y =  mouseLocation.y - 30 - 18
+
+        guard let origin = popupWindowOrigin(windowWidth: window.frame.width) else {
+            return
         }
-        window.setFrameOrigin(NSPoint(x: x, y: y))
+        window.setFrameOrigin(origin)
     }
-    
+
     init(rootView: AnyView, windType: WindowType) {
         var window: NSWindow
         // 必须用 NSPanel 并设置 .nonactivatingPanel 以及 level 为 .screenSaver
@@ -214,68 +202,82 @@ private class WindowController: NSWindowController, NSWindowDelegate {
             defer: false,
             key: key
         )
-        
+
         switch windType {
-        case .Transparent:
-            window.isOpaque = true
-            window.backgroundColor = .clear
-            self.resultWindow = false
-        case .Alpha:
-            window.alphaValue = 0.9
-            self.resultWindow = true
-        case .Opaque:
-            window.isOpaque = true
-            window.backgroundColor = .clear
-            self.resultWindow = true
+            case .Transparent:
+                window.isOpaque = true
+                window.backgroundColor = .clear
+                self.resultWindow = false
+            case .Alpha:
+                window.alphaValue = 0.9
+                self.resultWindow = true
+            case .Opaque:
+                window.isOpaque = true
+                window.backgroundColor = .clear
+                self.resultWindow = true
         }
 
-        
+
         super.init(window: window)
-        
+
         window.center()
         window.level = .screenSaver
         window.contentView = NSHostingView(rootView: rootView)
         window.delegate = self // 设置代理为自己来监听窗口事件
-        
-        let windowFrame = window.frame
-        NSLog("windowFrame \(windowFrame.height), \(windowFrame.width)")
-        let screenFrame = NSScreen.main?.visibleFrame ?? .zero // 获取主屏幕的可见区域
-        
-        let mouseLocation = NSEvent.mouseLocation  // 获取鼠标当前位置
-        
-        if windType  == .Alpha {
+
+
+        if windType == .Alpha {
+            let mouseLocation = NSEvent.mouseLocation  // 获取鼠标当前位置
+            guard let screen = NSScreen.screens.first(where: { NSMouseInRect(mouseLocation, $0.frame, false) }) else {
+                return
+            }
+            let screenFrame = screen.visibleFrame // 获取目标屏幕的可见区域
+            let windowFrame = window.frame
             // 确保窗口不会超出屏幕边缘
-            let x = (screenFrame.maxX - windowFrame.width) / 2
-            let y = (screenFrame.maxY - windowFrame.height)*3 / 4
+            let x = (screenFrame.width - windowFrame.width) / 2  + screenFrame.origin.x
+            let y = (screenFrame.height - windowFrame.height)*3 / 4 + screenFrame.origin.y
             window.setFrameOrigin(NSPoint(x: x, y: y))
         } else{
-            // 确保窗口不会超出屏幕边缘
-            let x = min(screenFrame.maxX - windowFrame.width,
-                        max(mouseLocation.x - windowFrame.width/2, screenFrame.minX))
-            
-            var y =  mouseLocation.y + 18
-            if y > screenFrame.maxY {
-                y =  mouseLocation.y - 30 - 18
+            guard let origin = popupWindowOrigin(windowWidth:  window.frame.width) else {
+                return
             }
-            window.setFrameOrigin(NSPoint(x: x, y: y))
+            window.setFrameOrigin(origin)
         }
     }
-    
+
+    func popupWindowOrigin(windowWidth: CGFloat) -> NSPoint? {
+        let mouseLocation = NSEvent.mouseLocation  // 获取鼠标当前位置
+        guard let screen = NSScreen.screens.first(where: { NSMouseInRect(mouseLocation, $0.frame, false) }) else {
+            return nil
+        }
+        let screenFrame = screen.visibleFrame // 获取目标屏幕的可见区域
+
+        // 确保窗口不会超出屏幕边缘
+        let x = min(screenFrame.maxX - windowWidth,
+                    max(mouseLocation.x - windowWidth/2, screenFrame.minX))
+
+        var y =  mouseLocation.y + 18
+        if y > screenFrame.maxY {
+            y =  mouseLocation.y - 30 - 18
+        }
+        return NSPoint(x: x, y: y)
+    }
+
     deinit{
         stopSpeak()
         if let onClose = onClose {
             onClose()
         }
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func windowDidResignActive(_ notification: Notification) {
         self.close() // 如果需要的话
     }
-    
+
     override func showWindow(_ sender: Any?) {
         super.showWindow(sender)
     }
@@ -288,7 +290,7 @@ func TextResultWindow(_ text: String) -> NSWindow{
         backing: .buffered,
         defer: false
     )
-    
+
     let view = PopResultView(text: text)
     window.contentView = NSHostingView(rootView: view)
     return window

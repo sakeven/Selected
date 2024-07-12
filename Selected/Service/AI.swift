@@ -10,7 +10,7 @@ import SwiftUI
 import OpenAI
 
 public struct ChatContext {
-    let selectedText: String
+    let text: String
     let webPageURL: String
     let bundleID: String
 }

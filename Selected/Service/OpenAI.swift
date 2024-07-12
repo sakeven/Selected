@@ -173,7 +173,8 @@ struct OpenAIPrompt {
         ctx: ChatContext,
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
             var message = renderChatContent(content: prompt, chatCtx: ctx, options: options)
-            message = replaceOptions(content: message, selectedText: ctx.selectedText, options: options)
+            message = replaceOptions(content: message, selectedText: ctx.text, options: options)
+            NSLog("message is \(message)")
             updateQuery(message: .init(role: .user, content: message)!)
 
             var index = -1
