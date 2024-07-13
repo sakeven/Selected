@@ -26,7 +26,7 @@
 		386010662C3AE22C00EB9AE7 /* Stencil in Frameworks */ = {isa = PBXBuildFile; productRef = 386010652C3AE22C00EB9AE7 /* Stencil */; };
 		386010682C3AE24000EB9AE7 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386010672C3AE24000EB9AE7 /* Template.swift */; };
 		3860106B2C4222BB00EB9AE7 /* SwiftAnthropic in Frameworks */ = {isa = PBXBuildFile; productRef = 3860106A2C4222BB00EB9AE7 /* SwiftAnthropic */; };
-		3860106D2C4222DE00EB9AE7 /* Cluade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3860106C2C4222DE00EB9AE7 /* Cluade.swift */; };
+		3860106F2C425CD600EB9AE7 /* Claude.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3860106E2C425CD600EB9AE7 /* Claude.swift */; };
 		386AD7182B8F6BFA008C346D /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386AD7172B8F6BFA008C346D /* App.swift */; };
 		386AD71C2B8F6BFB008C346D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71B2B8F6BFB008C346D /* Assets.xcassets */; };
 		386AD71F2B8F6BFB008C346D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71E2B8F6BFB008C346D /* Preview Assets.xcassets */; };
@@ -126,7 +126,7 @@
 		3860105F2C2FA10200EB9AE7 /* TranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationView.swift; sourceTree = "<group>"; };
 		386010622C35926100EB9AE7 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		386010672C3AE24000EB9AE7 /* Template.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
-		3860106C2C4222DE00EB9AE7 /* Cluade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cluade.swift; sourceTree = "<group>"; };
+		3860106E2C425CD600EB9AE7 /* Claude.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Claude.swift; sourceTree = "<group>"; };
 		386AD7142B8F6BFA008C346D /* Selected.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Selected.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		386AD7172B8F6BFA008C346D /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		386AD71B2B8F6BFB008C346D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -368,7 +368,7 @@
 				388DABBA2BEA5B3C000B2739 /* StarDict.swift */,
 				386010622C35926100EB9AE7 /* LocationManager.swift */,
 				386010672C3AE24000EB9AE7 /* Template.swift */,
-				3860106C2C4222DE00EB9AE7 /* Cluade.swift */,
+				3860106E2C425CD600EB9AE7 /* Claude.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -569,7 +569,7 @@
 				38DF1D4D2BB94DCD0063A879 /* ApplicationSettingView.swift in Sources */,
 				38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */,
 				386010582C2FA00400EB9AE7 /* MessageView.swift in Sources */,
-				3860106D2C4222DE00EB9AE7 /* Cluade.swift in Sources */,
+				3860106F2C425CD600EB9AE7 /* Claude.swift in Sources */,
 				3860105A2C2FA07600EB9AE7 /* MessageViewModel.swift in Sources */,
 				386010682C3AE24000EB9AE7 /* Template.swift in Sources */,
 				38DEBE342B9DD7CA00CD2A35 /* Gemini.swift in Sources */,

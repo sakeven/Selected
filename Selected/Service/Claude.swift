@@ -1,5 +1,5 @@
 //
-//  Cluade.swift
+//  Claude.swift
 //  Selected
 //
 //  Created by sake on 2024/7/13.
@@ -9,6 +9,14 @@ import Foundation
 import SwiftAnthropic
 import Defaults
 
+
+public typealias ClaudeModel = Model
+
+extension ClaudeModel: CaseIterable {
+    public static var allCases: [SwiftAnthropic.Model] {
+        [.claude3Opus, .claude3Haiku, .claude3Sonnet, .claude35Sonnet]
+    }
+}
 
 fileprivate struct ToolUse {
     let id: String
@@ -22,7 +30,6 @@ fileprivate func genTools(functions: [FunctionDefinition]?) -> [MessageParameter
         return []
     }
 
-    //        var _tools: [ChatQuery.ChatCompletionToolParam] = [.init(function: dalle3Def)]
     var _tools = [MessageParameter.Tool]()
     for fc in functions {
         let p = try! JSONDecoder().decode(MessageParameter.Tool.JSONSchema.self, from: fc.parameters.data(using: .utf8)!)
@@ -119,7 +126,7 @@ class ClaudeService: AIChatService{
                     return
                 }
             }
-    }
+        }
 
     func chat(ctx: ChatContext, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
         var userMessage = renderChatContent(content: prompt, chatCtx: ctx, options: options)
@@ -184,8 +191,6 @@ class ClaudeService: AIChatService{
                             var toolUse = toolUseList[toolUseList.count-1]
                             toolUse.input = jsonify(toolParameters)
                             toolUseList[toolUseList.count-1] = toolUse
-//                            index += 1
-//                            completion(index, ResponseMessage(message: toolUse.input, role: "tool"))
                         }
                     default:
                         break

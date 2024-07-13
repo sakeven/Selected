@@ -11,6 +11,8 @@ import OpenAI
 import ShortcutRecorder
 import SwiftUI
 
+
+
 // Service Configuration
 extension Defaults.Keys {
     
@@ -22,7 +24,7 @@ extension Defaults.Keys {
     // OpenAI
     static let openAIAPIKey = Key<String>("OpenAIAPIKey", default: "")
     static let openAIAPIHost = Key<String>("OpenAIAPIHost",default: "api.openai.com")
-    static let openAIModel = Key<Model>("OpenAIModel", default: "gpt-3.5-turbo")
+    static let openAIModel = Key<OpenAIModel>("OpenAIModel", default: .gpt3_5Turbo)
     static let openAIVoice = Key<AudioSpeechQuery.AudioSpeechVoice>("OpenAIVoice", default: .shimmer)
 
     
@@ -34,6 +36,7 @@ extension Defaults.Keys {
     // Claude
     static let claudeAPIKey = Key<String>("ClaudeAPIKey", default: "")
     static let claudeAPIHost = Key<String>("ClaudeAPIHost", default: "")
+    static let claudeModel = Key<String>("ClaudeModel", default: ClaudeModel.claude35Sonnet.value)
 
     // clipboard
     static let enableClipboard = Key<Bool>("EnableClipboard", default: false)
@@ -76,7 +79,6 @@ public struct ShortcutBridge: Defaults.Bridge {
         return Shortcut(dictionary: val)
     }
 }
-
 
 
 // 应用程序支持目录的URL

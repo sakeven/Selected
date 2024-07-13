@@ -16,9 +16,17 @@ struct SettingsView: View {
 
     @Environment(\.colorScheme) var colorScheme
 
+    @Default(.aiService) var aiService
+    let aiServicePickerValues = ["OpenAI", "Gemini", "Claude"]
+
 
     @Default(.openAIAPIKey) var openAIAPIKey
     @Default(.openAIAPIHost) var openAIAPIHost
+    @Default(.openAIModel) var openAIModel
+    @State var selectedOpenAIModel: String
+    @State var customOpenAIMode: String
+    @Default(.openAIVoice) var openAIVoice
+
 
     @Default(.geminiAPIKey) var geminiAPIKey
     @Default(.geminiAPIHost) var geminiAPIHost
@@ -26,17 +34,11 @@ struct SettingsView: View {
 
     @Default(.claudeAPIKey) var claudeAPIKey
     @Default(.claudeAPIHost) var claudeAPIHost
+    @Default(.claudeModel) var claudeModel
 
-    @Default(.aiService) var aiService
-    let pickerValues = ["OpenAI", "Gemini", "Claude"]
-
-    @Default(.openAIModel) var openAIModel
-    @State var selectedOpenAIModel: String
-    @State var customOpenAIMode: String
 
     @Default(.search) var searchURL
 
-    @Default(.openAIVoice) var openAIVoice
 
     @State var launchAtLogin: Bool
 
@@ -75,7 +77,7 @@ struct SettingsView: View {
 
                     Section(header: Text("AIService")) {
                         Picker("AIService", selection: $aiService, content: {
-                            ForEach(pickerValues, id: \.self) {
+                            ForEach(aiServicePickerValues, id: \.self) {
                                 Text($0)
                             }
                         }).pickerStyle(DefaultPickerStyle())
@@ -122,6 +124,11 @@ struct SettingsView: View {
                     Section(header: Text("Claude")) {
                         SecureField("APIKey", text: $claudeAPIKey)
                         TextField("APIHost", text: $claudeAPIHost)
+                        Picker("Model", selection: $claudeModel, content: {
+                            ForEach(ClaudeModel.allCases, id: \.value) {
+                                Text($0.value)
+                            }
+                        }).pickerStyle(DefaultPickerStyle())
                     }
 
                     Section(header: Text("Gemini")) {
