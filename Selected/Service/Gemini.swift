@@ -27,17 +27,21 @@ struct GeminiPrompt: AIChatService{
             message = replaceOptions(content: message, selectedText: ctx.text, options: options)
 
             let contentStream = model.generateContentStream(message)
+            var resp = ""
+            completion(0, ResponseMessage(message: NSLocalizedString("waiting", comment: "system info"), role: .system, new: true, status: .initial))
             do {
                 for try await chunk in contentStream {
                     if let text = chunk.text {
                         NSLog(text)
-                        let message = ResponseMessage(message: text, role: "assistant")
-                        completion(0, message)
+                        completion(0, ResponseMessage(message: text, role: .assistant, new: resp == "" ,status: .updating))
+                        resp += text
                     }
                 }
             } catch {
                 NSLog("Unexpected error: \(error).")
+                return
             }
+            completion(0, ResponseMessage(message: "", role: .assistant, new: false, status: .finished))
         }
 
     func chatOne(

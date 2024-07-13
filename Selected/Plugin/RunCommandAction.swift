@@ -54,18 +54,22 @@ class RunCommandAction: Decodable {
                 env["PATH"] = "/opt/homebrew/bin:/opt/homebrew/sbin:" + path
             }
 
-            if let output = executeCommand(
-                workdir: pluginPath,
-                command: self.command[0],
-                arguments: [String](self.command[1...]),
-                withEnv: env) {
-                if ctx.Editable && generic.after == kAfterPaste {
-                    pasteText(output)
-                } else if generic.after == kAfterCopy {
-                    copyText(output)
-                } else if generic.after == kAfterShow {
-                    WindowManager.shared.createTextWindow(output)
+            do {
+                if let output = try executeCommand(
+                    workdir: pluginPath,
+                    command: self.command[0],
+                    arguments: [String](self.command[1...]),
+                    withEnv: env) {
+                    if ctx.Editable && generic.after == kAfterPaste {
+                        pasteText(output)
+                    } else if generic.after == kAfterCopy {
+                        copyText(output)
+                    } else if generic.after == kAfterShow {
+                        WindowManager.shared.createTextWindow(output)
+                    }
                 }
+            } catch {
+                NSLog("executeCommand: \(error)")
             }
         })
     }
@@ -94,7 +98,7 @@ func copyText(_ text: String) {
 }
 
 public func executeCommand(
-    workdir: String, command: String, arguments: [String] = [], withEnv env: [String:String]) -> String? {
+    workdir: String, command: String, arguments: [String] = [], withEnv env: [String:String]) throws -> String? {
         let process = Process()
         process.qualityOfService = .userInteractive
         let stdOutPipe = Pipe()
@@ -160,18 +164,15 @@ public func executeCommand(
         }
 
         var output: String? = nil
-        do {
-            try process.run()
-            timer.activate()
-            process.waitUntilExit()
 
-            // Ensure all data has been read
-            group.wait()
+        try process.run()
+        timer.activate()
+        process.waitUntilExit()
 
-            output = String(data: stdOutData + stdErrData, encoding: .utf8)
-        } catch {
-            print("Failed to execute command: \(error.localizedDescription)")
-        }
+        // Ensure all data has been read
+        group.wait()
+
+        output = String(data: stdOutData + stdErrData, encoding: .utf8)
         return output
     }
 

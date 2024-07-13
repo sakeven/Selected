@@ -158,16 +158,26 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
         lhs.id == rhs.id
     }
 
+    public enum Status: String {
+        case initial, updating, finished, failure
+    }
+
+    public enum Role: String {
+        case assistant, tool, user, system
+    }
+
     public var id = UUID()
     @Published var message: String
-    @Published var role: String
+    @Published var role: Role
+    @Published var status: Status
     var new: Bool = false // new start of message
 
-    init(id: UUID = UUID(), message: String, role: String, new: Bool = false) {
+    init(id: UUID = UUID(), message: String, role: Role, new: Bool = false, status: Status = .initial) {
         self.id = id
         self.message = message
         self.role = role
         self.new = new
+        self.status = status
     }
 }
 

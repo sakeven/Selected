@@ -16,13 +16,45 @@ struct MessageView: View {
     @Environment(\.colorScheme) private var colorScheme
     var highlighter = CustomCodeSyntaxHighlighter()
 
+
+    @State private var rotation: Double = 0
+    @State private var animationTimer: Timer? = nil
+
     var body: some View {
         VStack(alignment: .leading){
             HStack{
-                Text(LocalizedStringKey(message.role))
+                Text(LocalizedStringKey(message.role.rawValue))
                     .foregroundStyle(.blue.gradient).font(.headline)
+                if message.role == .assistant || message.role == .tool {
+                    switch message.status {
+                        case .initial:
+                            Image(systemName: "arrow.clockwise").foregroundStyle(.gray)
+                        case .updating:
+                            Image(systemName: "arrow.2.circlepath")
+                                .foregroundStyle(.orange)
+                                .rotationEffect(.degrees(rotation))
+                                .animation(.linear(duration: 1).repeatForever(autoreverses: false), value: rotation)
+                                .onAppear(){
+                                    animationTimer?.invalidate() // Invalidate any existing timer
+                                    animationTimer = Timer.scheduledTimer(withTimeInterval: 0.02, repeats: true) { _ in
+                                        rotation += 5
+                                        if rotation >= 360 {
+                                            rotation -= 360
+                                        }
+                                    }
+                                }.onDisappear(){
+                                    animationTimer?.invalidate()
+                                }
+                        case .finished:
+                            Image(systemName: "checkmark.circle").foregroundStyle(.green)
+                        default:
+                            EmptyView()
+                    }
+                } else if message.role == .system && message.status == .failure {
+                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.red)
+                }
                 Spacer()
-                if message.role == "assistant" {
+                if message.role == .assistant {
                     Button(action: {
                         let pasteboard = NSPasteboard.general
                         pasteboard.clearContents()
@@ -47,7 +79,7 @@ struct MessageView: View {
                 .markdownBlockStyle(\.codeBlock) {
                     codeBlock($0)
                 }
-//                .frame(width: 500, alignment: .leading)
+            //                .frame(width: 500, alignment: .leading)
                 .padding(.leading, 20.0)
                 .padding(.trailing, 40.0)
                 .padding(.top, 5)

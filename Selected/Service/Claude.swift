@@ -100,14 +100,14 @@ class ClaudeService: AIChatService{
                     try await chatOneRound(index: &newIndex, completion: completion)
                 } catch {
                     newIndex += 1
-                    let message = ResponseMessage(message: "exception: \(error)", role: "system", new: true)
+                    let message = ResponseMessage(message: "exception: \(error)", role: .system, new: true, status: .finished)
                     completion(newIndex, message)
                     return
                 }
                 if newIndex-index >= 10 {
                     NSLog("call too much")
                     newIndex += 1
-                    let message = ResponseMessage(message: "too much rounds, please start a new chat", role: "system", new: true)
+                    let message = ResponseMessage(message: "too much rounds, please start a new chat", role: .system, status: .finished)
                     completion(newIndex, message)
                     return
                 }
@@ -125,14 +125,14 @@ class ClaudeService: AIChatService{
                 try await chatOneRound(index: &index, completion: completion)
             } catch {
                 index += 1
-                let message = ResponseMessage(message: "exception: \(error)", role: "system", new: true)
+                let message = ResponseMessage(message: "exception: \(error)", role: .system, new: true, status: .finished)
                 completion(index, message)
                 return
             }
             if index >= 10 {
                 index += 1
                 NSLog("call too much")
-                let message = ResponseMessage(message: "too much rounds, please start a new chat", role: "system", new: true)
+                let message = ResponseMessage(message: "too much rounds, please start a new chat", role: .system, new: true, status:.finished)
                 completion(index, message)
                 return
             }
@@ -150,6 +150,7 @@ class ClaudeService: AIChatService{
             var toolUseList = [ToolUse]()
             var lastToolUseBlockIndex = -1
 
+            completion(index+1, ResponseMessage(message: NSLocalizedString("waiting", comment: "system info"), role: .system, new: true, status: .initial))
             let stream = try await service.streamMessage(query)
             for try await result in stream {
                 let content = result.delta?.text ?? ""
@@ -157,7 +158,7 @@ class ClaudeService: AIChatService{
                     if assistantMessage == "" {
                         index += 1
                     }
-                    completion(index, ResponseMessage(message: content, role: "assistant", new: assistantMessage == ""))
+                    completion(index, ResponseMessage(message: content, role: .assistant, new: assistantMessage == "", status: .updating))
                     assistantMessage += content
                 }
                 switch result.streamEvent {
@@ -182,6 +183,10 @@ class ClaudeService: AIChatService{
                 }
             }
 
+            if !assistantMessage.isEmpty {
+                completion(index, ResponseMessage(message: "", role: .assistant, new: false, status: .finished))
+            }
+
             if toolUseList.isEmpty {
                 updateQuery(message: .init(role: .assistant, content: .text(assistantMessage)))
                 return
@@ -191,13 +196,12 @@ class ClaudeService: AIChatService{
             contents.append(.text(assistantMessage))
             for tool in toolUseList {
                 let input =
-                try! JSONDecoder().decode(SwiftAnthropic.MessageResponse.Content.Input.self , from: tool.input.data(using: .utf8)!)
-
+                try JSONDecoder().decode(SwiftAnthropic.MessageResponse.Content.Input.self, from: tool.input.data(using: .utf8)!)
                 contents.append(.toolUse(tool.id, tool.name, input))
             }
             updateQuery(message: .init(role: .assistant, content: .list(contents)))
 
-            let toolMessages = await callTools(index: &index, toolUseList: toolUseList, completion: completion)
+            let toolMessages = try await callTools(index: &index, toolUseList: toolUseList, completion: completion)
             if toolMessages.isEmpty {
                 return
             }
@@ -231,7 +235,7 @@ class ClaudeService: AIChatService{
     private func callTools(
         index: inout Int,
         toolUseList: [ToolUse],
-        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> [MessageParameter.Message] {
+        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async throws -> [MessageParameter.Message] {
             guard let fcs = tools else {
                 return []
             }
@@ -248,34 +252,31 @@ class ClaudeService: AIChatService{
 
             var toolUseResults = [MessageParameter.Message.Content.ContentObject]()
             for tool in toolUseList {
-                let message =  ResponseMessage(message: "Calling \(tool.name)...", role: "tool", new: true)
-
-                if let f = fcSet[tool.name] {
-                    if let template = f.template {
-                        message.message =  renderTemplate(templateString: template, json: tool.input)
-                        NSLog("\(message.message)")
-                    }
+                guard let f = fcSet[tool.name] else {
+                    continue
                 }
-                completion(index, message)
-                NSLog("\(tool.input)")
 
-                if let f = fcSet[tool.name] {
-                    if let ret = f.Run(arguments: tool.input, options: options) {
-                        let message = ResponseMessage(message: ret, role: "tool",  new: true)
-                        if let show = f.showResult, !show {
-                            if f.template != nil {
-                                message.message = ""
-                                message.new = false
-                            } else {
-                                message.message = "\(f.name) called"
-                            }
+                let rawMessage = String(format: NSLocalizedString("calling_tool", comment: "tool message"), tool.name)
+                let message =  ResponseMessage(message: rawMessage, role: .tool, new: true, status: .updating)
+                if let template = f.template {
+                    message.message =  renderTemplate(templateString: template, json: tool.input)
+                    NSLog("\(message.message)")
+                }
+
+                completion(index, message)
+
+                if let ret = try f.Run(arguments: tool.input, options: options) {
+                    let message = ResponseMessage(message: ret, role: .tool, new: true, status: .finished)
+                    if let show = f.showResult, !show {
+                        if f.template != nil {
+                            message.message = ""
+                            message.new = false
+                        } else {
+                            message.message = String(format: NSLocalizedString("called_tool", comment: "tool message"), f.name)
                         }
-                        completion(index, message)
-                        toolUseResults.append(.toolResult(tool.id, ret))
-                    } else {
-                        NSLog("call function not return result")
-                        return []
                     }
+                    completion(index, message)
+                    toolUseResults.append(.toolResult(tool.id, ret))
                 }
             }
             messages.append(.init(role: .user, content: .list(toolUseResults)))

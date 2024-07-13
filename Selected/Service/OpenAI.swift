@@ -32,7 +32,7 @@ struct FunctionDefinition: Codable, Equatable{
     public var showResult: Bool? = true
     public var template: String?
 
-    func Run(arguments: String, options: [String:String] = [String:String]()) -> String? {
+    func Run(arguments: String, options: [String:String] = [String:String]()) throws -> String? {
         guard let command = self.command else {
             return nil
         }
@@ -46,7 +46,7 @@ struct FunctionDefinition: Codable, Equatable{
         if let path = ProcessInfo.processInfo.environment["PATH"] {
             env["PATH"] = "/opt/homebrew/bin:/opt/homebrew/sbin:" + path
         }
-        return executeCommand(workdir: workdir!, command: command[0], arguments: args, withEnv: env)
+        return try executeCommand(workdir: workdir!, command: command[0], arguments: args, withEnv: env)
     }
 
     func getParameters() -> FunctionParameters?{
@@ -173,14 +173,14 @@ struct OpenAIPrompt {
                     try await chatOneRound(index: &index, completion: completion)
                 } catch {
                     index += 1
-                    let message = ResponseMessage(message: "exception: \(error)", role: "system", new: true)
+                    let message = ResponseMessage(message: "exception: \(error)", role: .system, new: true, status: .failure)
                     completion(index, message)
                     return
                 }
                 if index >= 10 {
                     index += 1
                     NSLog("call too much")
-                    let message = ResponseMessage(message: "too much rounds, please start a new chat", role: "system", new: true)
+                    let message = ResponseMessage(message: "too much rounds, please start a new chat", role: .system, new: true, status: .failure)
                     completion(index, message)
                     return
                 }
@@ -198,14 +198,14 @@ struct OpenAIPrompt {
                     try await chatOneRound(index: &newIndex, completion: completion)
                 } catch {
                     newIndex += 1
-                    let message = ResponseMessage(message: "exception: \(error)", role: "system", new: true)
+                    let message = ResponseMessage(message: "exception: \(error)", role: .system, new: true, status: .failure)
                     completion(newIndex, message)
                     return
                 }
                 if newIndex-index >= 10 {
                     NSLog("call too much")
                     newIndex += 1
-                    let message = ResponseMessage(message: "too much rounds, please start a new chat", role: "system", new: true)
+                    let message = ResponseMessage(message: "too much rounds, please start a new chat", role: .system, new: true, status: .failure)
                     completion(newIndex, message)
                     return
                 }
@@ -221,6 +221,7 @@ struct OpenAIPrompt {
             var hasMessage =  false
             var assistantMessage = ""
 
+            completion(index+1, ResponseMessage(message: NSLocalizedString("waiting", comment: "system info"), role: .system, new: true, status: .initial))
             for try await result in openAI.chatsStream(query: query) {
                 if let toolCalls = result.choices[0].delta.toolCalls {
                     hasTools = true
@@ -243,13 +244,15 @@ struct OpenAIPrompt {
                         hasMessage = true
                         newMessage = true
                     }
-                    let message = ResponseMessage(message: result.choices[0].delta.content!, role: "assistant", new: newMessage)
+                    let message = ResponseMessage(message: result.choices[0].delta.content!, role: .assistant, new: newMessage, status: .updating)
                     assistantMessage += message.message
                     completion(index, message)
                 }
             }
 
-
+            if hasMessage {
+                completion(index, ResponseMessage(message: "", role: .assistant, new: false, status: .finished))
+            }
             if !hasTools {
                 updateQuery(message: .assistant(.init(content:assistantMessage)))
                 return
@@ -258,12 +261,12 @@ struct OpenAIPrompt {
             var toolCalls  =  [OpenAIChatCompletionMessageToolCallParam]()
             for (_, tool) in toolCallsDict {
                 let function =
-                try! JSONDecoder().decode(ChatFunctionCall.self, from: JSONEncoder().encode(tool.function))
+                try JSONDecoder().decode(ChatFunctionCall.self, from: JSONEncoder().encode(tool.function))
                 toolCalls.append(.init(id: tool.id, function: function))
             }
             updateQuery(message: .assistant(.init(content:assistantMessage, toolCalls: toolCalls)))
 
-            let toolMessages = await callTools(index: &index, toolCallsDict: toolCallsDict, completion: completion)
+            let toolMessages = try await callTools(index: &index, toolCallsDict: toolCallsDict, completion: completion)
             if toolMessages.isEmpty {
                 return
             }
@@ -273,7 +276,7 @@ struct OpenAIPrompt {
     private func callTools(
         index: inout Int,
         toolCallsDict: [Int: ChatCompletionMessageToolCallParam],
-        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> [ChatQuery.ChatCompletionMessageParam] {
+        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async throws -> [ChatQuery.ChatCompletionMessageParam] {
             guard let fcs = tools else {
                 return []
             }
@@ -288,7 +291,8 @@ struct OpenAIPrompt {
 
             var messages = [ChatQuery.ChatCompletionMessageParam]()
             for (_, tool) in toolCallsDict {
-                let message =  ResponseMessage(message: "Calling \(tool.function.name)...", role: "tool", new: true)
+                let rawMessage = String(format: NSLocalizedString("calling_tool", comment: "tool message"), tool.function.name)
+                let message =  ResponseMessage(message: rawMessage, role: .tool, new: true, status: .updating)
 
                 if let f = fcSet[tool.function.name] {
                     if let template = f.template {
@@ -299,34 +303,26 @@ struct OpenAIPrompt {
                 completion(index, message)
                 NSLog("\(tool.function.arguments)")
                 if tool.function.name == dalle3Def.name {
-                    do {
-                        let url = try await dalle3(openAI: openAI, arguments: tool.function.arguments)
-                        messages.append(.tool(.init(content: url, toolCallId: tool.id)))
-                        let ret = "[![this is picture]("+url+")]("+url+")"
-                        let message = ResponseMessage(message: ret, role: "tool",  new: true)
-                        completion(index, message)
-                    } catch {
-                        NSLog("call function error \(String(describing: error))")
-                        return []
-                    }
+                    let url = try await dalle3(openAI: openAI, arguments: tool.function.arguments)
+                    messages.append(.tool(.init(content: url, toolCallId: tool.id)))
+                    let ret = "[![this is picture]("+url+")]("+url+")"
+                    let message = ResponseMessage(message: ret, role: .tool, new: true, status: .finished)
+                    completion(index, message)
                 } else  {
                     if let f = fcSet[tool.function.name] {
                         NSLog("call: \(tool.function.arguments)")
-                        if let ret = f.Run(arguments: tool.function.arguments, options: options) {
-                            let message = ResponseMessage(message: ret, role: "tool",  new: true)
+                        if let ret = try f.Run(arguments: tool.function.arguments, options: options) {
+                            let message = ResponseMessage(message: ret, role: .tool, new: true, status: .finished)
                             if let show = f.showResult, !show {
                                 if f.template != nil {
                                     message.message = ""
                                     message.new = false
                                 } else {
-                                    message.message = "\(f.name) called"
+                                    message.message = String(format: NSLocalizedString("called_tool", comment: "tool message"), f.name)
                                 }
                             }
                             completion(index, message)
                             messages.append(.tool(.init(content: ret, toolCallId: tool.id)))
-                        } else {
-                            NSLog("call function not return result")
-                            return []
                         }
                     }
                 }

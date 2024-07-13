@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "(f.name) called" : {
+      "comment" : "tool message",
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(f.name) 已调用"
+          }
+        }
+      }
+    },
     "[%@]" : {
 
     },
@@ -177,6 +189,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "助理"
+          }
+        }
+      }
+    },
+    "called_tool" : {
+      "comment" : "tool message",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ called"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已调用 %@"
+          }
+        }
+      }
+    },
+    "calling_tool" : {
+      "comment" : "tool message",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "calling %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在调用 %@"
           }
         }
       }
@@ -605,6 +651,17 @@
         }
       }
     },
+    "system" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系统"
+          }
+        }
+      }
+    },
     "tool" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -626,12 +683,34 @@
         }
       }
     },
+    "user" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用户"
+          }
+        }
+      }
+    },
     "Voice" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "声音"
+          }
+        }
+      }
+    },
+    "waiting" : {
+      "comment" : "system info",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "等待中"
           }
         }
       }

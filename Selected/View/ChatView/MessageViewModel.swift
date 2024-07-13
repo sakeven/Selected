@@ -13,7 +13,7 @@ class MessageViewModel: ObservableObject {
 
     init(chatService: AIChatService) {
         self.chatService = chatService
-        self.messages.append(ResponseMessage(message: "waiting", role: "none"))
+        self.messages.append(ResponseMessage(message: NSLocalizedString("waiting", comment: "system info"), role: .system))
     }
 
 
@@ -21,7 +21,7 @@ class MessageViewModel: ObservableObject {
         await withTaskGroup(of: Void.self) { group in
             group.addTask {
                 await MainActor.run {
-                    self.messages.append(ResponseMessage(message: message, role: "user"))
+                    self.messages.append(ResponseMessage(message: message, role: .user, status: .finished))
                 }
             }
         }
@@ -36,6 +36,7 @@ class MessageViewModel: ObservableObject {
                     self.messages[index].role = message.role
                 }
 
+                self.messages[index].status = message.status
                 if message.new {
                     self.messages[index].message = message.message
                 } else {
@@ -57,6 +58,7 @@ class MessageViewModel: ObservableObject {
                     self.messages[index].role = message.role
                 }
 
+                self.messages[index].status = message.status
                 if message.new {
                     self.messages[index].message = message.message
                 } else {
