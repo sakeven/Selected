@@ -33,7 +33,7 @@ extension Defaults.Keys {
 
     // Claude
     static let claudeAPIKey = Key<String>("ClaudeAPIKey", default: "")
-    static let claudeAPIHost = Key<String>("ClaudeAPIHost", default: "")
+    static let claudeAPIHost = Key<String>("ClaudeAPIHost", default: "https://api.anthropic.com")
     static let claudeModel = Key<String>("ClaudeModel", default: ClaudeModel.claude35Sonnet.value)
 
     // clipboard

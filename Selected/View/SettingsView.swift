@@ -136,7 +136,7 @@ struct SettingsView: View {
                 }
                 .scrollContentBackground(.hidden)
                 .formStyle(.grouped) // 成组
-                .frame(width: 400).padding()
+                .frame(width: 400)
 
             }.tabItem {
                 Label {
@@ -210,7 +210,7 @@ struct ShortcutView: View {
             }
             .scrollContentBackground(.hidden)
             .formStyle(.grouped) // 成组
-            .frame(width: 400).padding()
+            .frame(width: 400)
         }
     }
 }
