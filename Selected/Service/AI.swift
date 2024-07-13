@@ -60,8 +60,14 @@ struct Translation {
                 } else {
                     await GeminiTrans2Chinese.chatOne(selectedText: content, completion: completion)
                 }
-            default: break
-//                completion("no model \(Defaults[.aiService]))
+            case "Claude":
+                if isWord(str: content) {
+                    await ClaudeWordTrans.chatOne(selectedText: content, completion: completion)
+                } else {
+                    await ClaudeTrans2Chinese.chatOne(selectedText: content, completion: completion)
+            }
+            default:
+                completion("no model \(Defaults[.aiService])")
         }
     }
     
@@ -71,8 +77,10 @@ struct Translation {
                 await OpenAITrans2English.chatOne(selectedText: content, completion: completion)
             case "Gemini":
                 await GeminiTrans2English.chatOne(selectedText: content, completion: completion)
-            default: break
-//                completion("no model \(Defaults[.aiService])")
+            case "Claude":
+                await ClaudeTrans2English.chatOne(selectedText: content, completion: completion)
+            default:
+                completion("no model \(Defaults[.aiService])")
         }
     }
 
@@ -90,6 +98,8 @@ struct ChatService: AIChatService{
                 chatService = OpenAIService(prompt: prompt, options: options)
             case "Gemini":
                 chatService = GeminiPrompt(prompt: prompt, options: options)
+            case "Claude":
+                chatService = ClaudeService(prompt: prompt, options: options)
             default:
                 return nil
         }

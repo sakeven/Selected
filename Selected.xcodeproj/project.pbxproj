@@ -25,6 +25,8 @@
 		386010632C35926100EB9AE7 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386010622C35926100EB9AE7 /* LocationManager.swift */; };
 		386010662C3AE22C00EB9AE7 /* Stencil in Frameworks */ = {isa = PBXBuildFile; productRef = 386010652C3AE22C00EB9AE7 /* Stencil */; };
 		386010682C3AE24000EB9AE7 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386010672C3AE24000EB9AE7 /* Template.swift */; };
+		3860106B2C4222BB00EB9AE7 /* SwiftAnthropic in Frameworks */ = {isa = PBXBuildFile; productRef = 3860106A2C4222BB00EB9AE7 /* SwiftAnthropic */; };
+		3860106D2C4222DE00EB9AE7 /* Cluade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3860106C2C4222DE00EB9AE7 /* Cluade.swift */; };
 		386AD7182B8F6BFA008C346D /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386AD7172B8F6BFA008C346D /* App.swift */; };
 		386AD71C2B8F6BFB008C346D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71B2B8F6BFB008C346D /* Assets.xcassets */; };
 		386AD71F2B8F6BFB008C346D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71E2B8F6BFB008C346D /* Preview Assets.xcassets */; };
@@ -124,6 +126,7 @@
 		3860105F2C2FA10200EB9AE7 /* TranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationView.swift; sourceTree = "<group>"; };
 		386010622C35926100EB9AE7 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		386010672C3AE24000EB9AE7 /* Template.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
+		3860106C2C4222DE00EB9AE7 /* Cluade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cluade.swift; sourceTree = "<group>"; };
 		386AD7142B8F6BFA008C346D /* Selected.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Selected.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		386AD7172B8F6BFA008C346D /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		386AD71B2B8F6BFB008C346D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -178,6 +181,7 @@
 				38DF1D552BC269760063A879 /* MathParser in Frameworks */,
 				388DABC02BEA5E73000B2739 /* GRDB in Frameworks */,
 				38AD8D8A2C19D2DB00EAFA5D /* DSWaveformImage in Frameworks */,
+				3860106B2C4222BB00EB9AE7 /* SwiftAnthropic in Frameworks */,
 				386010662C3AE22C00EB9AE7 /* Stencil in Frameworks */,
 				38AD8D8C2C19D2DB00EAFA5D /* DSWaveformImageViews in Frameworks */,
 				386AD7442B8F6E77008C346D /* Defaults in Frameworks */,
@@ -364,6 +368,7 @@
 				388DABBA2BEA5B3C000B2739 /* StarDict.swift */,
 				386010622C35926100EB9AE7 /* LocationManager.swift */,
 				386010672C3AE24000EB9AE7 /* Template.swift */,
+				3860106C2C4222DE00EB9AE7 /* Cluade.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -426,6 +431,7 @@
 				38AD8D892C19D2DB00EAFA5D /* DSWaveformImage */,
 				38AD8D8B2C19D2DB00EAFA5D /* DSWaveformImageViews */,
 				386010652C3AE22C00EB9AE7 /* Stencil */,
+				3860106A2C4222BB00EB9AE7 /* SwiftAnthropic */,
 			);
 			productName = Selected;
 			productReference = 386AD7142B8F6BFA008C346D /* Selected.app */;
@@ -513,6 +519,7 @@
 				388DABBE2BEA5E73000B2739 /* XCRemoteSwiftPackageReference "GRDB" */,
 				38AD8D882C19D2DB00EAFA5D /* XCRemoteSwiftPackageReference "DSWaveformImage" */,
 				386010642C3AE22C00EB9AE7 /* XCRemoteSwiftPackageReference "Stencil" */,
+				386010692C4222BB00EB9AE7 /* XCRemoteSwiftPackageReference "SwiftAnthropic" */,
 			);
 			productRefGroup = 386AD7152B8F6BFA008C346D /* Products */;
 			projectDirPath = "";
@@ -562,6 +569,7 @@
 				38DF1D4D2BB94DCD0063A879 /* ApplicationSettingView.swift in Sources */,
 				38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */,
 				386010582C2FA00400EB9AE7 /* MessageView.swift in Sources */,
+				3860106D2C4222DE00EB9AE7 /* Cluade.swift in Sources */,
 				3860105A2C2FA07600EB9AE7 /* MessageViewModel.swift in Sources */,
 				386010682C3AE24000EB9AE7 /* Template.swift in Sources */,
 				38DEBE342B9DD7CA00CD2A35 /* Gemini.swift in Sources */,
@@ -964,6 +972,14 @@
 				minimumVersion = 0.15.1;
 			};
 		};
+		386010692C4222BB00EB9AE7 /* XCRemoteSwiftPackageReference "SwiftAnthropic" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jamesrochabrun/SwiftAnthropic";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.0;
+			};
+		};
 		386AD7422B8F6E77008C346D /* XCRemoteSwiftPackageReference "Defaults" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/Defaults.git";
@@ -1056,6 +1072,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 386010642C3AE22C00EB9AE7 /* XCRemoteSwiftPackageReference "Stencil" */;
 			productName = Stencil;
+		};
+		3860106A2C4222BB00EB9AE7 /* SwiftAnthropic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 386010692C4222BB00EB9AE7 /* XCRemoteSwiftPackageReference "SwiftAnthropic" */;
+			productName = SwiftAnthropic;
 		};
 		386AD7432B8F6E77008C346D /* Defaults */ = {
 			isa = XCSwiftPackageProductDependency;

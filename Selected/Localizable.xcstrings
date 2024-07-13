@@ -181,6 +181,9 @@
         }
       }
     },
+    "Claude" : {
+
+    },
     "Clipboard" : {
       "localizations" : {
         "zh-Hans" : {

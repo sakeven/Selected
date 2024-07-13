@@ -29,7 +29,12 @@ extension Defaults.Keys {
     // Gemini
     static let geminiAPIKey = Key<String>("GeminiAPIKey", default: "")
     static let geminiAPIHost = Key<String>("GeminiAPIHost", default: "")
-    
+
+
+    // Claude
+    static let claudeAPIKey = Key<String>("ClaudeAPIKey", default: "")
+    static let claudeAPIHost = Key<String>("ClaudeAPIHost", default: "")
+
     // clipboard
     static let enableClipboard = Key<Bool>("EnableClipboard", default: false)
     static let clipboardShortcut = Key<Shortcut>("ClipboardShortcut", default: Shortcut(keyEquivalent: "⌥Space")!)

@@ -23,8 +23,12 @@ struct SettingsView: View {
     @Default(.geminiAPIKey) var geminiAPIKey
     @Default(.geminiAPIHost) var geminiAPIHost
 
+
+    @Default(.claudeAPIKey) var claudeAPIKey
+    @Default(.claudeAPIHost) var claudeAPIHost
+
     @Default(.aiService) var aiService
-    let pickerValues = ["OpenAI", "Gemini"]
+    let pickerValues = ["OpenAI", "Gemini", "Claude"]
 
     @Default(.openAIModel) var openAIModel
     @State var selectedOpenAIModel: String
@@ -113,6 +117,11 @@ struct SettingsView: View {
                                 Text($0.rawValue)
                             }
                         }).pickerStyle(DefaultPickerStyle())
+                    }
+
+                    Section(header: Text("Claude")) {
+                        SecureField("APIKey", text: $claudeAPIKey)
+                        TextField("APIHost", text: $claudeAPIHost)
                     }
 
                     Section(header: Text("Gemini")) {
