@@ -96,6 +96,7 @@ func copyText(_ text: String) {
 public func executeCommand(
     workdir: String, command: String, arguments: [String] = [], withEnv env: [String:String]) -> String? {
         let process = Process()
+        process.qualityOfService = .userInteractive
         let stdOutPipe = Pipe()
         let stdErrPipe = Pipe()
         var path: String?
@@ -147,9 +148,21 @@ public func executeCommand(
             }
         }
 
+        let timeout: TimeInterval = 60 // 1 min
+        let timer = DispatchSource.makeTimerSource()
+        timer.schedule(deadline: .now() + timeout)
+        timer.setEventHandler {
+            if process.isRunning {
+                process.terminate()
+                print("Process terminated due to timeout.")
+            }
+            timer.cancel()
+        }
+
         var output: String? = nil
         do {
             try process.run()
+            timer.activate()
             process.waitUntilExit()
 
             // Ensure all data has been read
