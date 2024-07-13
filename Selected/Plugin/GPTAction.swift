@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Defaults
 
 class GptAction: Decodable{
     var prompt: String
@@ -27,7 +28,12 @@ class GptAction: Decodable{
         } else {
             var chatService: AIChatService = ChatService(prompt: prompt, options: pluginInfo.getOptionsValue())!
             if let tools = tools {
-                chatService = OpenAIService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
+                switch Defaults[.aiService] {
+                    case "Claude":
+                        chatService = ClaudeService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
+                    default:
+                        chatService = OpenAIService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
+                }
             }
             
             return PerformAction(

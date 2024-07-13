@@ -321,6 +321,7 @@ struct OpenAIPrompt {
                     }
                 } else  {
                     if let f = fcSet[tool.function.name] {
+                        NSLog("call: \(tool.function.arguments)")
                         if let ret = f.Run(arguments: tool.function.arguments, options: options) {
                             let message = ResponseMessage(message: ret, role: "tool",  new: true)
                             if let show = f.showResult, !show {
