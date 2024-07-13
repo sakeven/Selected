@@ -182,7 +182,14 @@
       }
     },
     "Claude" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude"
+          }
+        }
+      }
     },
     "Clipboard" : {
       "localizations" : {

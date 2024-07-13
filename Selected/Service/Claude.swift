@@ -40,29 +40,11 @@ fileprivate func genTools(functions: [FunctionDefinition]?) -> [MessageParameter
 }
 
 fileprivate func createQuery(tools: [MessageParameter.Tool]) -> MessageParameter {
-    let dateFormatter = DateFormatter()
-    dateFormatter.locale = Locale.current
-    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-    let localDate = dateFormatter.string(from: Date())
-
-    let language = getCurrentAppLanguage()
-    var currentLocation = ""
-    if let location = LocationManager.shared.place {
-        currentLocation = "I'm at \(location)"
-    }
-    let systemPrompt = """
-                      Current time is \(localDate).
-                      \(currentLocation)
-                      You are a tool running on macOS called Selected. You can help user do anything.
-                      The system language is \(language), you should try to reply in \(language) as much as possible, unless the user specifies to use another language, such as specifying to translate into a certain language.
-                      """
-
-    // 通过 Swift 获取当前应用的语言
     return MessageParameter(
-        model: .claude35Sonnet,
+        model: .other(Defaults[.claudeModel]),
         messages: [],
         maxTokens: 4096,
-        system: systemPrompt,
+        system: systemPrompt(),
         tools: tools
     )
 }
@@ -76,7 +58,11 @@ class ClaudeService: AIChatService{
     var tools: [FunctionDefinition]?
 
     init(prompt: String, tools: [FunctionDefinition]? = nil, options: [String:String] = [String:String]()){
-        service = AnthropicServiceFactory.service(apiKey: Defaults[.claudeAPIKey])
+        var apiHost = "https://api.anthropic.com"
+        if Defaults[.claudeAPIHost] != "" {
+            apiHost = Defaults[.claudeAPIHost]
+        }
+        service = AnthropicServiceFactory.service(apiKey: Defaults[.claudeAPIKey], basePath: apiHost)
         self.prompt = prompt
         self.options = options
         self.toolsParameter = genTools(functions: tools)
@@ -98,7 +84,7 @@ class ClaudeService: AIChatService{
                     }
                 }
             } catch {
-                NSLog("cluade error \(error)")
+                NSLog("claude error \(error)")
                 return
             }
         }
@@ -152,7 +138,6 @@ class ClaudeService: AIChatService{
             }
         }
     }
-
 
 
     func chatOneRound(
@@ -223,7 +208,7 @@ class ClaudeService: AIChatService{
         var messages = query.messages
         messages.append(message)
         query = MessageParameter(
-            model: .claude35Sonnet,
+            model: .other(query.model),
             messages: messages,
             maxTokens: 4096,
             system: query.system,
@@ -235,7 +220,7 @@ class ClaudeService: AIChatService{
         var _messages = query.messages
         _messages.append(contentsOf: messages)
         query = MessageParameter(
-            model: .claude35Sonnet,
+            model: .other(query.model),
             messages: _messages,
             maxTokens: 4096,
             system: query.system,

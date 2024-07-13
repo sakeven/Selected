@@ -27,7 +27,7 @@ func isWord(str: String) -> Bool {
 
 struct Translation {
     let toLanguage: String
-    
+
     func translate(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         if toLanguage == "cn" {
             await contentTrans2Chinese(content: content, completion: completion)
@@ -35,7 +35,7 @@ struct Translation {
             await contentTrans2English(content: content, completion: completion)
         }
     }
-    
+
     private func isWord(str: String) -> Bool {
         for c in str {
             if c.isLetter || c == "-" {
@@ -45,7 +45,7 @@ struct Translation {
         }
         return true
     }
-    
+
     private func contentTrans2Chinese(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
@@ -65,12 +65,12 @@ struct Translation {
                     await ClaudeWordTrans.chatOne(selectedText: content, completion: completion)
                 } else {
                     await ClaudeTrans2Chinese.chatOne(selectedText: content, completion: completion)
-            }
+                }
             default:
                 completion("no model \(Defaults[.aiService])")
         }
     }
-    
+
     private func contentTrans2English(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
@@ -114,7 +114,7 @@ struct ChatService: AIChatService{
         userMessage: String,
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
             await chatService.chatFollow(index: index, userMessage: userMessage, completion: completion)
-    }
+        }
 }
 
 
@@ -138,9 +138,9 @@ class OpenAIService: AIChatService{
         index: Int,
         userMessage: String,
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
-        await openAI
-            .chatFollow(index: index, userMessage: userMessage, completion: completion)
-    }
+            await openAI
+                .chatFollow(index: index, userMessage: userMessage, completion: completion)
+        }
 }
 
 
@@ -169,4 +169,24 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
         self.role = role
         self.new = new
     }
+}
+
+
+func systemPrompt() -> String{
+    let dateFormatter = DateFormatter()
+    dateFormatter.locale = Locale.current
+    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    let localDate = dateFormatter.string(from: Date())
+
+    let language = getCurrentAppLanguage()
+    var currentLocation = ""
+    if let location = LocationManager.shared.place {
+        currentLocation = "I'm at \(location)"
+    }
+    return """
+                      Current time is \(localDate).
+                      \(currentLocation)
+                      You are a tool running on macOS called Selected. You can help user do anything.
+                      The system language is \(language), you should try to reply in \(language) as much as possible, unless the user specifies to use another language, such as specifying to translate into a certain language.
+                      """
 }

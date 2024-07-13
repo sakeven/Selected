@@ -26,7 +26,6 @@ struct GeminiPrompt: AIChatService{
             var message = renderChatContent(content: prompt, chatCtx: ctx, options: options)
             message = replaceOptions(content: message, selectedText: ctx.text, options: options)
 
-            NSLog("prompt is \(message)")
             let contentStream = model.generateContentStream(message)
             do {
                 for try await chunk in contentStream {
@@ -48,7 +47,6 @@ struct GeminiPrompt: AIChatService{
             let model = GenerativeModel(name: "gemini-1.5-pro-latest", apiKey: Defaults[.geminiAPIKey], requestOptions: RequestOptions(apiVersion: "v1beta") )
             let message = replaceOptions(content: prompt, selectedText: selectedText, options: options)
 
-            NSLog("prompt is \(message)")
             let contentStream = model.generateContentStream(message)
             do {
                 for try await chunk in contentStream {

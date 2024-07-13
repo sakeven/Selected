@@ -29,7 +29,6 @@ struct SettingsView: View {
 
 
     @Default(.geminiAPIKey) var geminiAPIKey
-    @Default(.geminiAPIHost) var geminiAPIHost
 
 
     @Default(.claudeAPIKey) var claudeAPIKey
@@ -133,7 +132,6 @@ struct SettingsView: View {
 
                     Section(header: Text("Gemini")) {
                         SecureField("APIKey", text: $geminiAPIKey)
-                        TextField("APIHost", text: $geminiAPIHost)
                     }
                 }
                 .scrollContentBackground(.hidden)

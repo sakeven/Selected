@@ -30,8 +30,6 @@ extension Defaults.Keys {
     
     // Gemini
     static let geminiAPIKey = Key<String>("GeminiAPIKey", default: "")
-    static let geminiAPIHost = Key<String>("GeminiAPIHost", default: "")
-
 
     // Claude
     static let claudeAPIKey = Key<String>("ClaudeAPIKey", default: "")
