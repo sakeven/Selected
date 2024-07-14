@@ -75,23 +75,46 @@ struct MessageView: View {
                 }
             }.frame(height: 20).padding(.trailing, 30.0)
 
-            Markdown(message.message)
-                .markdownBlockStyle(\.codeBlock) {
-                    codeBlock($0)
+
+            if message.role == .system {
+                if message.status == .failure {
+                    Text(message.message).foregroundStyle(.red)
+                        .padding(.leading, 20.0)
+                        .padding(.trailing, 40.0)
+                        .padding(.top, 5)
+                        .padding(.bottom, 20)
+                } else {
+                    Text(message.message)
+                        .padding(.leading, 20.0)
+                        .padding(.trailing, 40.0)
+                        .padding(.top, 5)
+                        .padding(.bottom, 20)
                 }
-            //                .frame(width: 500, alignment: .leading)
-                .padding(.leading, 20.0)
-                .padding(.trailing, 40.0)
-                .padding(.top, 5)
-                .padding(.bottom, 20)
+            } else {
+                Markdown(message.message)
+                    .markdownBlockStyle(\.codeBlock) {
+                        codeBlock($0)
+                    }
+                    .padding(.leading, 20.0)
+                    .padding(.trailing, 40.0)
+                    .padding(.top, 5)
+                    .padding(.bottom, 20)
+            }
         }.frame(width: 750)
+    }
+
+    func getLanguage(_ configuration: CodeBlockConfiguration) -> String {
+        guard let language = configuration.language else {
+            return "plaintext"
+        }
+        return language == "" ? "plaintext": language
     }
 
     @ViewBuilder
     private func codeBlock(_ configuration: CodeBlockConfiguration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text(configuration.language ?? "plain text")
+                Text(getLanguage(configuration))
                     .font(.system(.caption, design: .monospaced))
                     .fontWeight(.semibold)
                 Spacer()

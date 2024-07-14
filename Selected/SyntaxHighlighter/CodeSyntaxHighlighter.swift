@@ -46,8 +46,8 @@ class CustomCodeSyntaxHighlighter {
             return Text(content)
         }
         
-        if language == "sh" {
-            language = "shell"
+        if language == "shell" ||  language == "sh" {
+            language = "bash"
         }
         if !syntaxHighlighter.supportedLanguages().contains(language) {
             language = "plaintext"
