@@ -164,7 +164,6 @@ struct OpenAIPrompt {
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
             var message = renderChatContent(content: prompt, chatCtx: ctx, options: options)
             message = replaceOptions(content: message, selectedText: ctx.text, options: options)
-            NSLog("message is \(message)")
             updateQuery(message: .init(role: .user, content: message)!)
 
             var index = -1
@@ -173,14 +172,15 @@ struct OpenAIPrompt {
                     try await chatOneRound(index: &index, completion: completion)
                 } catch {
                     index += 1
-                    let message = ResponseMessage(message: "exception: \(error)", role: .system, new: true, status: .failure)
+                    let localMsg = String(format: NSLocalizedString("error_exception", comment: "system info"), error as CVarArg)
+                    let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)
                     completion(index, message)
                     return
                 }
                 if index >= 10 {
                     index += 1
-                    NSLog("call too much")
-                    let message = ResponseMessage(message: "too much rounds, please start a new chat", role: .system, new: true, status: .failure)
+                    let localMsg = NSLocalizedString("Too much rounds, please start a new chat", comment: "system info")
+                    let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)
                     completion(index, message)
                     return
                 }
@@ -204,7 +204,6 @@ struct OpenAIPrompt {
                     return
                 }
                 if newIndex-index >= 10 {
-                    NSLog("call too much")
                     newIndex += 1
                     let localMsg = NSLocalizedString("Too much rounds, please start a new chat", comment: "system info")
                     let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)

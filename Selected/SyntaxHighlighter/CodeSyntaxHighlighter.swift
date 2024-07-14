@@ -37,23 +37,26 @@ class CustomCodeSyntaxHighlighter {
         return self
     }
     
-    func highlightCode(_ content: String, language: String?) -> Text {
-        if let v = cacheCode[content] {
-            return v
-        }
-        
+    func getlanguage(_ language: String?) -> String {
         guard var language = language else {
-            return Text(content)
+            return "plaintext"
         }
-        
+
         if language == "shell" ||  language == "sh" {
             language = "bash"
         }
         if !syntaxHighlighter.supportedLanguages().contains(language) {
             language = "plaintext"
         }
-        let highlightedCode = syntaxHighlighter.highlight(content, as: language)!
-        
+        return language
+    }
+
+    func highlightCode(_ content: String, language: String?) -> Text {
+        if let v = cacheCode[content] {
+            return v
+        }
+
+        let highlightedCode = syntaxHighlighter.highlight(content, as: getlanguage(language))!
         let attributedString = NSMutableAttributedString(attributedString: highlightedCode)
         let font = NSFont(name: "UbuntuMonoNFM", size: 14)!
         attributedString.addAttribute(.font, value: font, range: NSRange(location: 0, length: attributedString.length))

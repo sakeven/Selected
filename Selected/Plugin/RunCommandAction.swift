@@ -100,7 +100,7 @@ func copyText(_ text: String) {
 public func executeCommand(
     workdir: String, command: String, arguments: [String] = [], withEnv env: [String:String]) throws -> String? {
         let process = Process()
-        process.qualityOfService = .userInteractive
+        process.qualityOfService = .default
         let stdOutPipe = Pipe()
         let stdErrPipe = Pipe()
         var path: String?
@@ -130,31 +130,28 @@ public func executeCommand(
 
         // Asynchronously read stdout
         group.enter()
-        DispatchQueue.global(qos: .userInteractive).async {
-            stdOutPipe.fileHandleForReading.readabilityHandler = { handle in
-                let data = handle.availableData
-                if data.isEmpty {
-                    stdOutPipe.fileHandleForReading.readabilityHandler = nil
-                    group.leave()
-                } else {
-                    stdOutData.append(data)
-                }
+        stdOutPipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            if data.isEmpty {
+                stdOutPipe.fileHandleForReading.readabilityHandler = nil
+                group.leave()
+            } else {
+                stdOutData.append(data)
             }
         }
 
         // Asynchronously read stderr
         group.enter()
-        DispatchQueue.global(qos: .userInteractive).async {
-            stdErrPipe.fileHandleForReading.readabilityHandler = { handle in
-                let data = handle.availableData
-                if data.isEmpty {
-                    stdErrPipe.fileHandleForReading.readabilityHandler = nil
-                    group.leave()
-                } else {
-                    stdErrData.append(data)
-                }
+        stdErrPipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            if data.isEmpty {
+                stdErrPipe.fileHandleForReading.readabilityHandler = nil
+                group.leave()
+            } else {
+                stdErrData.append(data)
             }
         }
+
 
         let timeout: TimeInterval = 60 // 1 min
         let timer = DispatchSource.makeTimerSource()

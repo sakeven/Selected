@@ -106,7 +106,6 @@ class ClaudeService: AIChatService{
                     return
                 }
                 if newIndex-index >= 10 {
-                    NSLog("call too much")
                     newIndex += 1
                     let localMsg = NSLocalizedString("Too much rounds, please start a new chat", comment: "system info")
                     let message = ResponseMessage(message: localMsg, role: .system, new: true, status:.failure)
