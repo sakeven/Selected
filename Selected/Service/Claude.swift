@@ -100,14 +100,16 @@ class ClaudeService: AIChatService{
                     try await chatOneRound(index: &newIndex, completion: completion)
                 } catch {
                     newIndex += 1
-                    let message = ResponseMessage(message: "exception: \(error)", role: .system, new: true, status: .finished)
+                    let localMsg = String(format: NSLocalizedString("error_exception", comment: "system info"), error as CVarArg)
+                    let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)
                     completion(newIndex, message)
                     return
                 }
                 if newIndex-index >= 10 {
                     NSLog("call too much")
                     newIndex += 1
-                    let message = ResponseMessage(message: "too much rounds, please start a new chat", role: .system, status: .finished)
+                    let localMsg = NSLocalizedString("Too much rounds, please start a new chat", comment: "system info")
+                    let message = ResponseMessage(message: localMsg, role: .system, new: true, status:.failure)
                     completion(newIndex, message)
                     return
                 }
@@ -125,14 +127,15 @@ class ClaudeService: AIChatService{
                 try await chatOneRound(index: &index, completion: completion)
             } catch {
                 index += 1
-                let message = ResponseMessage(message: "exception: \(error)", role: .system, new: true, status: .finished)
+                let localMsg = String(format: NSLocalizedString("error_exception", comment: "system info"), error as CVarArg)
+                let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)
                 completion(index, message)
                 return
             }
             if index >= 10 {
                 index += 1
-                NSLog("call too much")
-                let message = ResponseMessage(message: "too much rounds, please start a new chat", role: .system, new: true, status:.finished)
+                let localMsg = NSLocalizedString("Too much rounds, please start a new chat", comment: "system info")
+                let message = ResponseMessage(message: localMsg, role: .system, new: true, status:.failure)
                 completion(index, message)
                 return
             }

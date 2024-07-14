@@ -198,14 +198,16 @@ struct OpenAIPrompt {
                     try await chatOneRound(index: &newIndex, completion: completion)
                 } catch {
                     newIndex += 1
-                    let message = ResponseMessage(message: "exception: \(error)", role: .system, new: true, status: .failure)
+                    let localMsg = String(format: NSLocalizedString("error_exception", comment: "system info"), error as CVarArg)
+                    let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)
                     completion(newIndex, message)
                     return
                 }
                 if newIndex-index >= 10 {
                     NSLog("call too much")
                     newIndex += 1
-                    let message = ResponseMessage(message: "too much rounds, please start a new chat", role: .system, new: true, status: .failure)
+                    let localMsg = NSLocalizedString("Too much rounds, please start a new chat", comment: "system info")
+                    let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)
                     completion(newIndex, message)
                     return
                 }
@@ -221,7 +223,7 @@ struct OpenAIPrompt {
             var hasMessage =  false
             var assistantMessage = ""
 
-            completion(index+1, ResponseMessage(message: NSLocalizedString("waiting", comment: "system info"), role: .system, new: true, status: .initial))
+            completion(index+1, ResponseMessage(message: NSLocalizedString("Waiting", comment: "system info"), role: .system, new: true, status: .initial))
             for try await result in openAI.chatsStream(query: query) {
                 if let toolCalls = result.choices[0].delta.toolCalls {
                     hasTools = true

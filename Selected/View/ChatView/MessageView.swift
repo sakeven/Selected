@@ -84,7 +84,7 @@ struct MessageView: View {
                 .padding(.trailing, 40.0)
                 .padding(.top, 5)
                 .padding(.bottom, 20)
-        }.frame(width: 550)
+        }.frame(width: 750)
     }
 
     @ViewBuilder

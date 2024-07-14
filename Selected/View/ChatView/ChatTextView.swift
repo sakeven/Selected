@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 import MarkdownUI
-
+import Defaults
 
 
 struct ChatTextView: View {
@@ -23,7 +23,7 @@ struct ChatTextView: View {
                     MessageView(message: message).id(message.id)
                 }.scrollContentBackground(.hidden)
                     .listStyle(.inset)
-                    .frame(width: 550, height: 400).task {
+                    .frame(width: 750, height: 400).task {
                         task = Task{
                             await viewModel.fetchMessages(ctx: ctx)
                         }
@@ -36,13 +36,13 @@ struct ChatTextView: View {
                         }
                     }
 
-            }
+            }.padding(.top, 20)
             ChatInputView(viewModel: viewModel)
                 .frame(minHeight: 50)
                 .padding(.leading, 20.0)
                 .padding(.trailing, 20.0)
                 .padding(.bottom, 10)
-        }.frame(width: 550).onDisappear(){
+        }.frame(width: 750).onDisappear(){
             task?.cancel()
         }
     }
@@ -54,7 +54,7 @@ struct ChatInputView: View {
     @State private var task: Task<Void, Never>? = nil
 
     var body: some View {
-        if #available(macOS 14.0, *) {
+        if #available(macOS 14.0, *), !Defaults[.useTextFieldInChat]  {
             ZStack(alignment: .leading){
                 if newText.isEmpty {
                     Text("Press cmd+enter to send new message")
@@ -62,26 +62,30 @@ struct ChatInputView: View {
                         .padding(4)
                 }
                 TextEditor(text: $newText).onKeyPress(.return, phases: .down) {keyPress in
-                        if !keyPress.modifiers.contains(.command) {
-                            return .ignored
-                        }
-                        submitMessage()
-                        return .handled
+                    if !keyPress.modifiers.contains(.command) {
+                        return .ignored
                     }
-                    .opacity(self.newText.isEmpty ? 0.25 : 1)
-                    .padding(4)
+                    submitMessage()
+                    return .handled
+                }
+                .opacity(self.newText.isEmpty ? 0.25 : 1)
+                .padding(4)
             } .scrollContentBackground(.hidden)
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(8)
-            .onDisappear(){
-                task?.cancel()
-            }
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+                .onDisappear(){
+                    task?.cancel()
+                }
         } else {
             // Fallback on earlier versions
-            TextField("new message", text: $newText, axis: .vertical)
+            TextField("Press enter to send new message", text: $newText, axis: .vertical)
                 .lineLimit(3...)
-                .textFieldStyle(.squareBorder)
-                .padding().onSubmit {
+                .textFieldStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
+                .padding()
+                .onSubmit {
                     submitMessage()
                 }.onDisappear(){
                     task?.cancel()

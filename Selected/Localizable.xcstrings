@@ -1,20 +1,15 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "(f.name) called" : {
-      "comment" : "tool message",
-      "extractionState" : "stale",
+    "[%@]" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "(f.name) 已调用"
+            "value" : "[%@]"
           }
         }
       }
-    },
-    "[%@]" : {
-
     },
     "%@" : {
       "localizations" : {
@@ -338,6 +333,23 @@
         }
       }
     },
+    "error_exception" : {
+      "comment" : "system info",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exception: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "异常：%@"
+          }
+        }
+      }
+    },
     "exchange" : {
       "localizations" : {
         "zh-Hans" : {
@@ -487,16 +499,6 @@
         }
       }
     },
-    "new message" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新信息"
-          }
-        }
-      }
-    },
     "OpenAI" : {
       "localizations" : {
         "zh-Hans" : {
@@ -565,6 +567,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "按 cmd+enter 键发送新信息"
+          }
+        }
+      }
+    },
+    "Press enter to send new message" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按 enter 键发送新信息"
           }
         }
       }
@@ -662,6 +674,17 @@
         }
       }
     },
+    "Too much rounds, please start a new chat" : {
+      "comment" : "system info",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "太多轮对话，请开启新的对话"
+          }
+        }
+      }
+    },
     "tool" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -679,6 +702,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "链接："
+          }
+        }
+      }
+    },
+    "Use TextField in AI Chat" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 AI 对话里使用 TextField"
           }
         }
       }
@@ -705,6 +738,17 @@
       }
     },
     "waiting" : {
+      "comment" : "system info",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "等待中"
+          }
+        }
+      }
+    },
+    "Waiting" : {
       "comment" : "system info",
       "localizations" : {
         "zh-Hans" : {
