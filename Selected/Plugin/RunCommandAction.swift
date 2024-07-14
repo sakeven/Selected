@@ -130,25 +130,29 @@ public func executeCommand(
 
         // Asynchronously read stdout
         group.enter()
-        stdOutPipe.fileHandleForReading.readabilityHandler = { handle in
-            let data = handle.availableData
-            if data.isEmpty {
-                stdOutPipe.fileHandleForReading.readabilityHandler = nil
-                group.leave()
-            } else {
-                stdOutData.append(data)
+        DispatchQueue.global(qos: .userInteractive).async {
+            stdOutPipe.fileHandleForReading.readabilityHandler = { handle in
+                let data = handle.availableData
+                if data.isEmpty {
+                    stdOutPipe.fileHandleForReading.readabilityHandler = nil
+                    group.leave()
+                } else {
+                    stdOutData.append(data)
+                }
             }
         }
 
         // Asynchronously read stderr
         group.enter()
-        stdErrPipe.fileHandleForReading.readabilityHandler = { handle in
-            let data = handle.availableData
-            if data.isEmpty {
-                stdErrPipe.fileHandleForReading.readabilityHandler = nil
-                group.leave()
-            } else {
-                stdErrData.append(data)
+        DispatchQueue.global(qos: .userInteractive).async {
+            stdErrPipe.fileHandleForReading.readabilityHandler = { handle in
+                let data = handle.availableData
+                if data.isEmpty {
+                    stdErrPipe.fileHandleForReading.readabilityHandler = nil
+                    group.leave()
+                } else {
+                    stdErrData.append(data)
+                }
             }
         }
 
