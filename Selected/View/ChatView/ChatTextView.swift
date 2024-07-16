@@ -24,8 +24,10 @@ struct ChatTextView: View {
                 }.scrollContentBackground(.hidden)
                     .listStyle(.inset)
                     .frame(width: 750, height: 400).task {
-                        task = Task{
-                            await viewModel.fetchMessages(ctx: ctx)
+                        if !ctx.askMode {
+                            task = Task{
+                                await viewModel.fetchMessages(ctx: ctx)
+                            }
                         }
                     }.onChange(of: viewModel.messages) { _ in
                         if let lastItemIndex = $viewModel.messages.last?.id {
@@ -98,7 +100,7 @@ struct ChatInputView: View {
         newText = ""
         DispatchQueue.global(qos: .background).async {
             task = Task {
-                await viewModel.submit(message: message)
+                await viewModel.chatFollow(message: message)
             }
         }
     }

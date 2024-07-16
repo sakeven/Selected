@@ -64,7 +64,7 @@ class WindowManager {
 
 
     func createChatWindow(chatService: AIChatService, withContext ctx: ChatContext) {
-        let contentView = ChatTextView(ctx: ctx, viewModel: MessageViewModel(chatService: chatService))
+        let contentView = ChatTextView(ctx: ctx, viewModel: MessageViewModel(chatService: chatService, ctx:  ctx))
         createWindow(rootView: AnyView(contentView), windType: .Alpha)
     }
 

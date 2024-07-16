@@ -13,6 +13,7 @@ public struct ChatContext {
     let text: String
     let webPageURL: String
     let bundleID: String
+    let askMode: Bool
 }
 
 func isWord(str: String) -> Bool {

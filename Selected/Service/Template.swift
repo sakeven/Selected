@@ -48,6 +48,7 @@ func renderChatContent(content: String, chatCtx: ChatContext, options: [String:S
     var ctx = [String:Any]()
     ctx["options"] = options
     ctx["selected"] = chatCtx
+    ctx["system"] =  ["language": getCurrentAppLanguage()]
 
     return renderTemplate(templateString: content, with: ctx)
 }

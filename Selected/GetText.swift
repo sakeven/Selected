@@ -18,6 +18,8 @@ struct SelectedTextContext {
     var Address: String = "" // last address in text
     var Editable: Bool = false // 当前窗口是否可编辑。浏览器里的怎么判断？
     // TODO: IDE 或者 Editor 下，获取当前编辑文件名、行号等
+
+    var AskMode: Bool = false
 }
 
 

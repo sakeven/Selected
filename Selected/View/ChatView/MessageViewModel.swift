@@ -10,14 +10,25 @@ import Foundation
 class MessageViewModel: ObservableObject {
     @Published var messages: [ResponseMessage] = []
     var chatService: AIChatService
+    let ctx: ChatContext
+    var submitedCtx: Bool = false
 
-    init(chatService: AIChatService) {
+    init(chatService: AIChatService, ctx: ChatContext) {
         self.chatService = chatService
+        self.ctx = ctx
         self.messages.append(ResponseMessage(message: NSLocalizedString("waiting", comment: "system info"), role: .system))
     }
 
 
-    func submit(message: String) async -> Void {
+    func chatFollow(message: String) async -> Void {
+        if !submitedCtx {
+            let text = "Current selected text is: " + ctx.text + ". Based on selected text, now I want to ask you: " + message
+            let ctx = ChatContext(text: text, webPageURL: self.ctx.webPageURL, bundleID: self.ctx.bundleID, askMode: ctx.askMode)
+            await fetchMessages(ctx: ctx)
+            return
+        }
+
+
         await withTaskGroup(of: Void.self) { group in
             group.addTask {
                 await MainActor.run {
@@ -47,6 +58,7 @@ class MessageViewModel: ObservableObject {
     }
 
     func fetchMessages(ctx: ChatContext) async -> Void{
+        submitedCtx = true
         await chatService.chat(ctx: ctx) { [weak self]  index, message in
             DispatchQueue.main.async {
                 guard let self = self else { return }

@@ -24,6 +24,10 @@ struct PopBarView: View {
                 BarButton(icon: action.actionMeta.icon, title: action.actionMeta.title , clicked: {
                     $isLoading in
                     isLoading = true
+                    var ctx = self.ctx
+                    if NSEvent.modifierFlags.contains(.command) {
+                        ctx.AskMode = true
+                    }
                     NSLog("ctx: \(ctx)")
                     if let complete =  action.complete {
                         complete(ctx)
