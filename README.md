@@ -16,8 +16,7 @@ When you select text with the mouse or through the keyboard (cmd+A, cmd+shift+ar
 <img src="DocImages/tool.png" alt="image-20240421174659528" width="400" />
 
 1. Allows for the customization of operation lists for different applications. (This can be configured in "Settings - Applications")
-
-2. Supports customizing the addresses and keys for OpenAI and Gemini API. The translation and inquiry GPT functions depend on this. It also supports OpenAI's function calling. You can have GPT perform searches, fetch web content, write emails, or control your macOS, and virtually anything else.
+2. Supports customizing the addresses and keys for OpenAI, Gemini and Claude API. The translation and inquiry GPT functions depend on this. It also supports OpenAI and Claude's function calling. You can have GPT perform searches, fetch web content, write emails, or control your macOS, and virtually anything else.<img src="DocImages/AIChat.png" alt="image-20240716203229690" width="600" />
 3. Supports custom extensions.
 
 # Supported Applications
