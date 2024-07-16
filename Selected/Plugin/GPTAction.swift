@@ -22,7 +22,9 @@ class GptAction: Decodable{
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
                     await ChatService(prompt: self.prompt, options: pluginInfo.getOptionsValue())!.chat(ctx: chatCtx) { _, ret in
-                        pasteText(ret.message)
+                        if ret.role == .assistant {
+                            pasteText(ret.message)
+                        }
                     }
                 })
         } else {
