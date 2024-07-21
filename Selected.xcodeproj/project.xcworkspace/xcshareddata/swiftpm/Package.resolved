@@ -132,8 +132,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jamesrochabrun/SwiftAnthropic",
       "state" : {
-        "revision" : "853c539a58cc20a55d37c050b9384e96dd7826b0",
-        "version" : "1.7.0"
+        "revision" : "0f3e8f411df81168bdae7d2c424268f35de742cb",
+        "version" : "1.8.0"
       }
     },
     {
