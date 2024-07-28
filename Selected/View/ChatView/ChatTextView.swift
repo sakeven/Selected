@@ -18,6 +18,17 @@ struct ChatTextView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
+            VStack(alignment: .leading){
+                if ctx.bundleID != "" {
+                    HStack {
+                        getIcon(ctx.bundleID)
+                        Text(getAppName(ctx.bundleID))
+                    }.padding(.bottom, 10)
+                }
+                Text(ctx.text.trimmingCharacters(in: .whitespacesAndNewlines)).font(.custom( "UbuntuMonoNFM", size: 14)).foregroundColor(.gray).lineLimit(1)
+                    .frame(alignment: .leading).padding(.leading, 10)
+            }.padding()
+
             ScrollViewReader { scrollViewProxy in
                 List($viewModel.messages) { $message in
                     MessageView(message: message).id(message.id)
@@ -35,8 +46,7 @@ struct ChatTextView: View {
                             }
                         }
                     }
-
-            }.padding(.top, 20)
+            }
             ChatInputView(viewModel: viewModel)
                 .frame(minHeight: 50)
                 .padding(.leading, 20.0)
@@ -45,6 +55,18 @@ struct ChatTextView: View {
         }.frame(width: 750).onDisappear(){
             task?.cancel()
         }
+    }
+
+    private func getAppName(_ bundleID: String) -> String {
+        let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)!
+        return FileManager.default.displayName(atPath: bundleURL.path)
+    }
+
+    private func getIcon(_ bundleID: String) -> some View {
+        let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)!
+        return AnyView(
+            Image(nsImage: NSWorkspace.shared.icon(forFile: bundleURL.path)).resizable().aspectRatio(contentMode: .fit).frame(width: 30, height: 30)
+        )
     }
 }
 
