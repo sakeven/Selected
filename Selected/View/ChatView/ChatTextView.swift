@@ -27,6 +27,14 @@ struct ChatTextView: View {
                 }
                 Text(ctx.text.trimmingCharacters(in: .whitespacesAndNewlines)).font(.custom( "UbuntuMonoNFM", size: 14)).foregroundColor(.gray).lineLimit(1)
                     .frame(alignment: .leading).padding(.leading, 10)
+                if ctx.webPageURL != "" {
+                    HStack {
+                        Spacer()
+                        Link(destination: URL(string: ctx.webPageURL)!, label: {
+                            Image(systemName: "globe")
+                        })
+                    }
+                }
             }.padding()
 
             ScrollViewReader { scrollViewProxy in
