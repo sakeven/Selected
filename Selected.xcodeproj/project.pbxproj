@@ -17,6 +17,9 @@
 		3831FD332BA532D400A4262B /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 3831FD322BA532D400A4262B /* Yams */; };
 		3831FD362BA6DE3D00A4262B /* UserConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3831FD352BA6DE3D00A4262B /* UserConfigs.swift */; };
 		384A03732BC4173B00916303 /* ClipHistory.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 384A03712BC4173B00916303 /* ClipHistory.xcdatamodeld */; };
+		385EA9E52C5FBDD8009B8F0E /* SpotlightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 385EA9E42C5FBDD8009B8F0E /* SpotlightView.swift */; };
+		385EA9E72C5FC0D8009B8F0E /* Spotlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 385EA9E62C5FC0D8009B8F0E /* Spotlight.swift */; };
+		385EA9EA2C5FC624009B8F0E /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 385EA9E92C5FC624009B8F0E /* HotKey */; };
 		386010582C2FA00400EB9AE7 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386010572C2FA00400EB9AE7 /* MessageView.swift */; };
 		3860105A2C2FA07600EB9AE7 /* MessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386010592C2FA07600EB9AE7 /* MessageViewModel.swift */; };
 		3860105C2C2FA0A700EB9AE7 /* PopResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3860105B2C2FA0A700EB9AE7 /* PopResultView.swift */; };
@@ -119,6 +122,8 @@
 		3831FD342BA5C88300A4262B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		3831FD352BA6DE3D00A4262B /* UserConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConfigs.swift; sourceTree = "<group>"; };
 		384A03722BC4173B00916303 /* ClipHistory.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ClipHistory.xcdatamodel; sourceTree = "<group>"; };
+		385EA9E42C5FBDD8009B8F0E /* SpotlightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightView.swift; sourceTree = "<group>"; };
+		385EA9E62C5FC0D8009B8F0E /* Spotlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spotlight.swift; sourceTree = "<group>"; };
 		386010572C2FA00400EB9AE7 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		386010592C2FA07600EB9AE7 /* MessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewModel.swift; sourceTree = "<group>"; };
 		3860105B2C2FA0A700EB9AE7 /* PopResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopResultView.swift; sourceTree = "<group>"; };
@@ -178,6 +183,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				385EA9EA2C5FC624009B8F0E /* HotKey in Frameworks */,
 				38DF1D552BC269760063A879 /* MathParser in Frameworks */,
 				388DABC02BEA5E73000B2739 /* GRDB in Frameworks */,
 				38AD8D8A2C19D2DB00EAFA5D /* DSWaveformImage in Frameworks */,
@@ -342,6 +348,7 @@
 				38E20A462BB44D5A0035A3AA /* SharingButton.swift */,
 				38AD8D862C1725C600EAFA5D /* AudioPlayerView.swift */,
 				3860105B2C2FA0A700EB9AE7 /* PopResultView.swift */,
+				385EA9E42C5FBDD8009B8F0E /* SpotlightView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -369,6 +376,7 @@
 				386010622C35926100EB9AE7 /* LocationManager.swift */,
 				386010672C3AE24000EB9AE7 /* Template.swift */,
 				3860106E2C425CD600EB9AE7 /* Claude.swift */,
+				385EA9E62C5FC0D8009B8F0E /* Spotlight.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -432,6 +440,7 @@
 				38AD8D8B2C19D2DB00EAFA5D /* DSWaveformImageViews */,
 				386010652C3AE22C00EB9AE7 /* Stencil */,
 				3860106A2C4222BB00EB9AE7 /* SwiftAnthropic */,
+				385EA9E92C5FC624009B8F0E /* HotKey */,
 			);
 			productName = Selected;
 			productReference = 386AD7142B8F6BFA008C346D /* Selected.app */;
@@ -520,6 +529,7 @@
 				38AD8D882C19D2DB00EAFA5D /* XCRemoteSwiftPackageReference "DSWaveformImage" */,
 				386010642C3AE22C00EB9AE7 /* XCRemoteSwiftPackageReference "Stencil" */,
 				386010692C4222BB00EB9AE7 /* XCRemoteSwiftPackageReference "SwiftAnthropic" */,
+				385EA9E82C5FC58D009B8F0E /* XCRemoteSwiftPackageReference "HotKey" */,
 			);
 			productRefGroup = 386AD7152B8F6BFA008C346D /* Products */;
 			projectDirPath = "";
@@ -583,6 +593,8 @@
 				38E20A472BB44D5A0035A3AA /* SharingButton.swift in Sources */,
 				3860105E2C2FA0C900EB9AE7 /* ChatTextView.swift in Sources */,
 				388DABAA2BC6C683000B2739 /* OCR.swift in Sources */,
+				385EA9E52C5FBDD8009B8F0E /* SpotlightView.swift in Sources */,
+				385EA9E72C5FC0D8009B8F0E /* Spotlight.swift in Sources */,
 				3888D8052BA86A0F00A7B75D /* PluginListView.swift in Sources */,
 				386010632C35926100EB9AE7 /* LocationManager.swift in Sources */,
 				38DF1D572BC2BC120063A879 /* QuickLookView.swift in Sources */,
@@ -779,7 +791,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "Selected/Preview\\ Content";
 				DEVELOPMENT_TEAM = K38MUDUK3K;
@@ -812,7 +824,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 18;
+				CURRENT_PROJECT_VERSION = 19;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "Selected/Preview\\ Content";
 				DEVELOPMENT_TEAM = K38MUDUK3K;
@@ -964,6 +976,14 @@
 				minimumVersion = 5.0.6;
 			};
 		};
+		385EA9E82C5FC58D009B8F0E /* XCRemoteSwiftPackageReference "HotKey" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/soffes/HotKey";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		386010642C3AE22C00EB9AE7 /* XCRemoteSwiftPackageReference "Stencil" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/stencilproject/Stencil.git";
@@ -1067,6 +1087,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3831FD312BA532D400A4262B /* XCRemoteSwiftPackageReference "Yams" */;
 			productName = Yams;
+		};
+		385EA9E92C5FC624009B8F0E /* HotKey */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 385EA9E82C5FC58D009B8F0E /* XCRemoteSwiftPackageReference "HotKey" */;
+			productName = HotKey;
 		};
 		386010652C3AE22C00EB9AE7 /* Stencil */ = {
 			isa = XCSwiftPackageProductDependency;

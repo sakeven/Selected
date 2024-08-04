@@ -13,7 +13,7 @@ import Defaults
 
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         setDefaultAppForCustomFileType()
         // 不需要主窗口，不需要显示在 dock 上
@@ -34,7 +34,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         DispatchQueue.main.async {
             HotKeyManager.shared.registerHotKey()
-//            clip()
+            SpotlightHotKeyManager.shared.registerHotKey()
         }
         
         // 注册空间改变通知
@@ -48,6 +48,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func spaceDidChange() {
         // 当空间改变时触发
         ClipWindowManager.shared.forceCloseWindow()
+        SpotlightWindowManager.shared.forceCloseWindow()
     }
     
     func application(_ application: NSApplication, open urls: [URL]) {

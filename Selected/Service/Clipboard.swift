@@ -437,7 +437,7 @@ private class ClipWindowController: NSWindowController, NSWindowDelegate {
 }
 
 
-class WindowPositionManager {
+private class WindowPositionManager {
     static let shared = WindowPositionManager()
     
     func storePosition(of window: NSWindow) {

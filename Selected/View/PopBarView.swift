@@ -11,7 +11,9 @@ import MathParser
 struct PopBarView: View {
     var actions:  [PerformAction]
     let ctx: SelectedTextContext
-    
+
+    var onClick: (() -> Void)?
+
     @State private var isSharePresented = false
     
     
@@ -23,6 +25,9 @@ struct PopBarView: View {
             ForEach(actions) { action in
                 BarButton(icon: action.actionMeta.icon, title: action.actionMeta.title , clicked: {
                     $isLoading in
+                    if let onClick = onClick {
+                        onClick()
+                    }
                     isLoading = true
                     NSLog("ctx: \(ctx)")
                     if let complete =  action.complete {
