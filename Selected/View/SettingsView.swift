@@ -10,6 +10,7 @@ import SwiftUI
 import Defaults
 import ServiceManagement
 import OpenAI
+import ShortcutRecorder
 
 
 struct SettingsView: View {
@@ -39,10 +40,7 @@ struct SettingsView: View {
 
     @Default(.search) var searchURL
 
-
     @State var launchAtLogin: Bool
-
-    @Default(.spotlightShortcut) var spotlightShortcut
 
     init() {
         self.launchAtLogin = SMAppService.mainApp.status == .enabled
@@ -76,11 +74,7 @@ struct SettingsView: View {
 
                         TextField("Search URL", text: $searchURL)
 
-                        HStack{
-                            Text("Spotlight HotKey")
-                            ShortcutRecorderView(shortcut: $spotlightShortcut)
-                                .frame(height: 25)
-                        }
+                        SpotlightShortcutView()
 
                         if #available(macOS 14.0, *) {
                             Toggle(isOn: $useTextFieldInChat, label: {
@@ -193,7 +187,21 @@ struct SettingsView: View {
     }
 }
 
-import ShortcutRecorder
+
+struct SpotlightShortcutView: View {
+    // 很奇怪把这行直接放在 SettingsView 里会，导致 Spotlight 里无法使用中文输入法
+    // 需要放在一个单独里的 View 里
+    @Default(.spotlightShortcut) var spotlightShortcut
+
+    var body: some View {
+        HStack{
+            Text("Spotlight HotKey")
+            ShortcutRecorderView(shortcut: $spotlightShortcut)
+                .frame(height: 25)
+        }
+        EmptyView()
+    }
+}
 
 struct ShortcutView: View {
     @Default(.clipboardShortcut) var shortcut

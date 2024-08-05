@@ -44,7 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                                                        name: NSWorkspace.activeSpaceDidChangeNotification,
                                                        object: nil)
     }
-    
+
     @objc func spaceDidChange() {
         // 当空间改变时触发
         ClipWindowManager.shared.forceCloseWindow()
@@ -69,8 +69,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if Defaults[.enableClipboard] {
             // 当 app 退到后台时开启全局热键
             HotKeyManager.shared.registerHotKey()
-            SpotlightHotKeyManager.shared.registerHotKey()
         }
+        SpotlightHotKeyManager.shared.registerHotKey()
     }
 }
 
