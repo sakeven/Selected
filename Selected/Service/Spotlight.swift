@@ -10,6 +10,7 @@ import Carbon
 import ShortcutRecorder
 import SwiftUI
 import HotKey
+import Defaults
 
 class SpotlightHotKeyManager {
     static let shared = SpotlightHotKeyManager()
@@ -25,15 +26,16 @@ class SpotlightHotKeyManager {
     }
 
     func registerHotKey() {
-        hotkey = HotKey(key: .z, modifiers: [.option])
+        hotkey = HotKey(key: .init(carbonKeyCode: Defaults[.spotlightShortcut].carbonKeyCode)!, modifiers:  Defaults[.spotlightShortcut].modifierFlags)
         hotkey?.keyDownHandler = {
             SpotlightWindowManager.shared.createWindow()
         }
-        NSLog("registerHotKey")
+        NSLog("registerHotKey of spotlight")
     }
 
     func unregisterHotKey() {
         hotkey?.keyDownHandler = nil
+        hotkey = nil
     }
 }
 

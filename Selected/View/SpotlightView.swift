@@ -16,7 +16,7 @@ struct SpotlightView: View {
     var body: some View {
         VStack {
             HStack {
-                TextField("Search", text: $searchText)
+                TextField("Spotlight", text: $searchText)
                     .textFieldStyle(PlainTextFieldStyle())
                     .padding(10)
                     .background(Color.gray.opacity(0.1))

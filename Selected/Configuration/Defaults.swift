@@ -42,7 +42,11 @@ extension Defaults.Keys {
     static let enableClipboard = Key<Bool>("EnableClipboard", default: false)
     static let clipboardShortcut = Key<Shortcut>("ClipboardShortcut", default: Shortcut(keyEquivalent: "⌥Space")!)
     static let clipboardHistoryTime = Key<ClipboardHistoryTime>("ClipboardHistoryTime", default: ClipboardHistoryTime.SevenDays)
+
+    // spotlight
+    static let spotlightShortcut = Key<Shortcut>("SpotlightShortcut", default: Shortcut(keyEquivalent: "⌥X")!)
 }
+
 
 enum ClipboardHistoryTime: String, Defaults.Serializable, CaseIterable {
     case OneDay = "24 Hours", SevenDays="7 Days", ThirtyDays = "30 Days"

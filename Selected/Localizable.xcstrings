@@ -602,9 +602,6 @@
         }
       }
     },
-    "Search" : {
-
-    },
     "Search URL" : {
       "localizations" : {
         "zh-Hans" : {
@@ -662,6 +659,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分享"
+          }
+        }
+      }
+    },
+    "Spotlight" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聚焦"
+          }
+        }
+      }
+    },
+    "Spotlight HotKey" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "聚焦的快捷键"
           }
         }
       }

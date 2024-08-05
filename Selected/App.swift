@@ -62,12 +62,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillBecomeActive(_ notification: Notification) {
         // 当 app 变为活跃时关闭全局热键
         HotKeyManager.shared.unregisterHotKey()
+        SpotlightHotKeyManager.shared.unregisterHotKey()
     }
 
     func applicationDidResignActive(_ notification: Notification) {
         if Defaults[.enableClipboard] {
             // 当 app 退到后台时开启全局热键
             HotKeyManager.shared.registerHotKey()
+            SpotlightHotKeyManager.shared.registerHotKey()
         }
     }
 }

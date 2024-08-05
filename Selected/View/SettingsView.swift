@@ -42,6 +42,8 @@ struct SettingsView: View {
 
     @State var launchAtLogin: Bool
 
+    @Default(.spotlightShortcut) var spotlightShortcut
+
     init() {
         self.launchAtLogin = SMAppService.mainApp.status == .enabled
         if OpenAIModels.contains(Defaults[.openAIModel]) {
@@ -73,6 +75,12 @@ struct SettingsView: View {
                         }
 
                         TextField("Search URL", text: $searchURL)
+
+                        HStack{
+                            Text("Spotlight HotKey")
+                            ShortcutRecorderView(shortcut: $spotlightShortcut)
+                                .frame(height: 25)
+                        }
 
                         if #available(macOS 14.0, *) {
                             Toggle(isOn: $useTextFieldInChat, label: {
