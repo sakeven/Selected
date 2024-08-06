@@ -99,7 +99,7 @@ struct ChatInputView: View {
                     return .handled
                 }
                 .opacity(self.newText.isEmpty ? 0.25 : 1)
-                .padding(4)
+                .padding(10)
             } .scrollContentBackground(.hidden)
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)

@@ -12,6 +12,13 @@ import SwiftUI
 struct SpotlightView: View {
     @State private var searchText: String = ""
     @State private var isFocused: Bool = false
+    private var actions: [PerformAction]
+    private var bundleIDOfFrontmostWindow: String
+
+    init() {
+        bundleIDOfFrontmostWindow = getBundleID()
+        actions = GetActions(ctx: SelectedTextContext(Text: "", BundleID: bundleIDOfFrontmostWindow, Editable: false))
+    }
 
     var body: some View {
         VStack {
@@ -25,12 +32,11 @@ struct SpotlightView: View {
             .background(Color.gray)
             .cornerRadius(10)
 
-
-            PopBarView(actions: GetActions(ctx: SelectedTextContext(Text: searchText, BundleID: Bundle.main.bundleIdentifier!, Editable: false)), ctx: SelectedTextContext(Text: searchText, BundleID: Bundle.main.bundleIdentifier!, Editable: false),
+            PopBarView(actions: actions, ctx: SelectedTextContext(Text: searchText, BundleID: bundleIDOfFrontmostWindow, Editable: false),
                        onClick: {
                 SpotlightWindowManager.shared.forceCloseWindow()
             })
-
+            
 
         }.frame(width: 500)
             .onAppear {
