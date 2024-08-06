@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleVersion</key>
+	<string>0.2.1</string>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/sakeven/Release/main/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>gyZTNONhuZUnxRNatLw6Lwj9KTHi8DaZXX+m8s6dZ+Y=</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Based on the address, GPT provides better suggestions and responses.</string>
 	<key>ATSApplicationFontsPath</key>

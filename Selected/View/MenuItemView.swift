@@ -8,12 +8,16 @@
 
 import SettingsAccess
 import SwiftUI
+import Sparkle
+
 
 
 struct MenuItemView: View {
     @Environment(\.openURL)
     private var openURL
-    
+
+    let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+
     var body: some View {
         Group {
             settingItem
@@ -22,6 +26,7 @@ struct MenuItemView: View {
             feedbackItem
             docItem
             aboutItem
+            CheckForUpdatesView(updater: updaterController.updater)
             Divider()
             quitItem
                 .keyboardShortcut(.init("q"))

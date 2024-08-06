@@ -222,6 +222,16 @@
         }
       }
     },
+    "Check for Updates" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查更新"
+          }
+        }
+      }
+    },
     "Claude" : {
       "localizations" : {
         "zh-Hans" : {

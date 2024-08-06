@@ -105,7 +105,7 @@ struct SelectedApp: App {
         .menuBarExtraStyle(.menu)
         .commands {
             SelectedMainMenu()
-        }.handlesExternalEvents(matching: []) 
+        }.handlesExternalEvents(matching: [])
         Settings {
             SettingsView()
         }
