@@ -26,11 +26,13 @@ class SpotlightHotKeyManager {
     }
 
     func registerHotKey() {
+        if hotkey != nil {
+            return
+        }
         hotkey = HotKey(key: .init(carbonKeyCode: Defaults[.spotlightShortcut].carbonKeyCode)!, modifiers:  Defaults[.spotlightShortcut].modifierFlags)
         hotkey?.keyDownHandler = {
             SpotlightWindowManager.shared.createWindow()
         }
-        NSLog("registerHotKey of spotlight")
     }
 
     func unregisterHotKey() {
