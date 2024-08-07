@@ -32,11 +32,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         DispatchQueue.main.async {
             ClipService.shared.startMonitoring()
         }
+
         DispatchQueue.main.async {
-            HotKeyManager.shared.registerHotKey()
+            ClipboardHotKeyManager.shared.registerHotKey()
             SpotlightHotKeyManager.shared.registerHotKey()
         }
-        
+
         // 注册空间改变通知
         // 这里不能使用 NotificationCenter.default.
         NSWorkspace.shared.notificationCenter.addObserver(self,
@@ -61,14 +62,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationWillBecomeActive(_ notification: Notification) {
         // 当 app 变为活跃时关闭全局热键
-        HotKeyManager.shared.unregisterHotKey()
+        ClipboardHotKeyManager.shared.unregisterHotKey()
         SpotlightHotKeyManager.shared.unregisterHotKey()
     }
 
     func applicationDidResignActive(_ notification: Notification) {
         if Defaults[.enableClipboard] {
             // 当 app 退到后台时开启全局热键
-            HotKeyManager.shared.registerHotKey()
+            ClipboardHotKeyManager.shared.registerHotKey()
         }
         SpotlightHotKeyManager.shared.registerHotKey()
     }

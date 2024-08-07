@@ -92,7 +92,6 @@ class SpotlightWindowManager {
 
 
 private class WindowController: NSWindowController, NSWindowDelegate {
-    var hotkeyMgr = EnterHotKeyManager()
 
     init(rootView: AnyView) {
         let window = FloatingPanel(
@@ -145,12 +144,10 @@ private class WindowController: NSWindowController, NSWindowDelegate {
     }
 
     override func showWindow(_ sender: Any?) {
-        hotkeyMgr.registerHotKey()
         super.showWindow(sender)
     }
 
     func windowWillClose(_ notification: Notification) {
-        hotkeyMgr.unregisterHotKey()
         ClipViewModel.shared.selectedItem = nil
     }
 }
