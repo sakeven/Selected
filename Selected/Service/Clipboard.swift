@@ -216,7 +216,7 @@ class ClipboardHotKeyManager {
             return
         }
 
-        hotkey = HotKey(key: .init(carbonKeyCode: Defaults[.spotlightShortcut].carbonKeyCode)!, modifiers:  Defaults[.spotlightShortcut].modifierFlags)
+        hotkey = HotKey(key: .init(carbonKeyCode: Defaults[.clipboardShortcut].carbonKeyCode)!, modifiers:  Defaults[.clipboardShortcut].modifierFlags)
         hotkey?.keyDownHandler = {
             ClipWindowManager.shared.createWindow()
         }
