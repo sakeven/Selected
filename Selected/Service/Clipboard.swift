@@ -37,17 +37,23 @@ class ClipService {
             guard let self = self else { return }
             guard Defaults[.enableClipboard] else { return }
 
-            NSLog("clip event \(eventTypeMap[event.type]!)")
+            NSLog("pasteboard event \(eventTypeMap[event.type]!)")
 
-            var shouldSkip = false
             lock.lock()
-            shouldSkip = skip
+            let shouldSkip = skip
             lock.unlock()
 
             if shouldSkip {
                 return
             }
-            checkPasteboard()
+
+            DispatchQueue.global(qos: .background).async {
+                if event.type == .leftMouseUp {
+                    // 如果是鼠标右键菜单栏里左键点击复制的话，需要等半秒才能从 pasteboard 里获取到复制的数据。
+                    usleep(500000)
+                }
+                self.checkPasteboard()
+            }
         }
     }
 
@@ -67,35 +73,38 @@ class ClipService {
     }
 
     private func checkPasteboard() {
-        let currentChangeCount = pasteboard.changeCount
-        if changeCount != currentChangeCount {
-            lock.lock()
-            changeCount = currentChangeCount
+        lock.lock()
+        defer {
             lock.unlock()
-
-            NSLog("pasteboard changeCount \(changeCount)")
-
-            guard pasteboard.types != nil else {
-                return
-            }
-
-            // 剪贴板内容发生变化，处理变化
-            NSLog("pasteboard \(String(describing: pasteboard.types))")
-            guard let clipData = ClipData(pasteboard: pasteboard) else {
-                return
-            }
-
-            if skip {
-                return
-            }
-            if clipData.types.isEmpty {
-                return
-            }
-            if filterClipData(clipData) {
-                return
-            }
-            PersistenceController.shared.store(clipData)
         }
+
+        let currentChangeCount = pasteboard.changeCount
+        if changeCount == currentChangeCount {
+            return
+        }
+        changeCount = currentChangeCount
+        NSLog("pasteboard changeCount \(changeCount)")
+
+        guard pasteboard.types != nil else {
+            return
+        }
+
+        // 剪贴板内容发生变化，处理变化
+        NSLog("pasteboard \(String(describing: pasteboard.types))")
+        guard let clipData = ClipData(pasteboard: pasteboard) else {
+            return
+        }
+
+        if skip {
+            return
+        }
+        if clipData.types.isEmpty {
+            return
+        }
+        if filterClipData(clipData) {
+            return
+        }
+        PersistenceController.shared.store(clipData)
     }
 }
 
@@ -106,7 +115,6 @@ private var excludeApplications = [
     "com.agilebits.onepassword4"]
 
 private func filterClipData(_ clipData: ClipData) -> Bool{
-    NSLog("clipData.appBundleID: \(clipData.appBundleID)")
     if excludeApplications.contains(clipData.appBundleID) {
         return true
     }
