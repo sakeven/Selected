@@ -11,7 +11,6 @@ import SwiftUI
 
 struct SpotlightView: View {
     @State private var searchText: String = ""
-    @State private var isFocused: Bool = false
     private var actions: [PerformAction]
     private var bundleIDOfFrontmostWindow: String
 
@@ -39,12 +38,6 @@ struct SpotlightView: View {
                 })
             }
         }.frame(width: 500)
-            .onAppear {
-                // Try to focus the TextField when the view appears
-                DispatchQueue.main.async {
-                    self.isFocused = true
-                }
-            }
     }
 }
 
