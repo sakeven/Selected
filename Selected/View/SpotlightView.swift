@@ -32,12 +32,12 @@ struct SpotlightView: View {
             .background(Color.gray)
             .cornerRadius(10)
 
-            PopBarView(actions: actions, ctx: SelectedTextContext(Text: searchText, BundleID: bundleIDOfFrontmostWindow, Editable: false),
-                       onClick: {
-                SpotlightWindowManager.shared.forceCloseWindow()
-            })
-            
-
+            if !searchText.isEmpty {
+                PopBarView(actions: actions, ctx: SelectedTextContext(Text: searchText, BundleID: bundleIDOfFrontmostWindow, Editable: false),
+                           onClick: {
+                    SpotlightWindowManager.shared.forceCloseWindow()
+                })
+            }
         }.frame(width: 500)
             .onAppear {
                 // Try to focus the TextField when the view appears

@@ -111,6 +111,7 @@ struct ChatInputView: View {
             TextField("Press enter to send new message", text: $newText, axis: .vertical)
                 .lineLimit(3...)
                 .textFieldStyle(.plain)
+                .padding(10)
                 .scrollContentBackground(.hidden)
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
