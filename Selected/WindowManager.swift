@@ -63,11 +63,6 @@ class WindowManager {
     }
 
 
-    func createChatWindow(chatService: AIChatService, withContext ctx: ChatContext) {
-        let contentView = ChatTextView(ctx: ctx, viewModel: MessageViewModel(chatService: chatService))
-        createWindow(rootView: AnyView(contentView), windType: .Alpha)
-    }
-
     func closeOnlyPopbarWindows(_ mode: CloseWindowMode) -> Bool {
         guard let windowCtr = windowCtr else {
             return false

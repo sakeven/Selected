@@ -17,6 +17,7 @@
 		3831FD332BA532D400A4262B /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 3831FD322BA532D400A4262B /* Yams */; };
 		3831FD362BA6DE3D00A4262B /* UserConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3831FD352BA6DE3D00A4262B /* UserConfigs.swift */; };
 		384A03732BC4173B00916303 /* ClipHistory.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 384A03712BC4173B00916303 /* ClipHistory.xcdatamodeld */; };
+		384EEF312C6CDAA300EF6412 /* ChatWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 384EEF302C6CDAA300EF6412 /* ChatWindow.swift */; };
 		385EA9E52C5FBDD8009B8F0E /* SpotlightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 385EA9E42C5FBDD8009B8F0E /* SpotlightView.swift */; };
 		385EA9E72C5FC0D8009B8F0E /* Spotlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 385EA9E62C5FC0D8009B8F0E /* Spotlight.swift */; };
 		385EA9EA2C5FC624009B8F0E /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 385EA9E92C5FC624009B8F0E /* HotKey */; };
@@ -124,6 +125,7 @@
 		3831FD342BA5C88300A4262B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		3831FD352BA6DE3D00A4262B /* UserConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConfigs.swift; sourceTree = "<group>"; };
 		384A03722BC4173B00916303 /* ClipHistory.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ClipHistory.xcdatamodel; sourceTree = "<group>"; };
+		384EEF302C6CDAA300EF6412 /* ChatWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatWindow.swift; sourceTree = "<group>"; };
 		385EA9E42C5FBDD8009B8F0E /* SpotlightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightView.swift; sourceTree = "<group>"; };
 		385EA9E62C5FC0D8009B8F0E /* Spotlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spotlight.swift; sourceTree = "<group>"; };
 		385EA9EE2C6256E2009B8F0E /* Updater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Updater.swift; sourceTree = "<group>"; };
@@ -247,6 +249,14 @@
 			path = Plugin;
 			sourceTree = "<group>";
 		};
+		384EEF2F2C6CDA8E00EF6412 /* Windows */ = {
+			isa = PBXGroup;
+			children = (
+				384EEF302C6CDAA300EF6412 /* ChatWindow.swift */,
+			);
+			path = Windows;
+			sourceTree = "<group>";
+		};
 		386010562C2F9FEA00EB9AE7 /* ChatView */ = {
 			isa = PBXGroup;
 			children = (
@@ -283,6 +293,7 @@
 		386AD7162B8F6BFA008C346D /* Selected */ = {
 			isa = PBXGroup;
 			children = (
+				384EEF2F2C6CDA8E00EF6412 /* Windows */,
 				388DABB52BD697F9000B2739 /* Fonts */,
 				3888D8082BA884DB00A7B75D /* Info.plist */,
 				38230C9D2B9F3307002A52E9 /* Plugin */,
@@ -627,6 +638,7 @@
 				38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */,
 				38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */,
 				38DF1D522BC2408A0063A879 /* ClipView.swift in Sources */,
+				384EEF312C6CDAA300EF6412 /* ChatWindow.swift in Sources */,
 				3831FD362BA6DE3D00A4262B /* UserConfigs.swift in Sources */,
 				388DABAF2BD147F6000B2739 /* TextView.swift in Sources */,
 				38DF1D4A2BB7A3BC0063A879 /* Option.swift in Sources */,
@@ -799,7 +811,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "Selected/Preview\\ Content";
 				DEVELOPMENT_TEAM = K38MUDUK3K;
@@ -832,7 +844,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 22;
+				CURRENT_PROJECT_VERSION = 23;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "Selected/Preview\\ Content";
 				DEVELOPMENT_TEAM = K38MUDUK3K;

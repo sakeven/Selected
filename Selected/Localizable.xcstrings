@@ -549,6 +549,16 @@
         }
       }
     },
+    "pin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "固定"
+          }
+        }
+      }
+    },
     "plain text" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -722,6 +732,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "工具"
+          }
+        }
+      }
+    },
+    "unpin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消固定"
           }
         }
       }

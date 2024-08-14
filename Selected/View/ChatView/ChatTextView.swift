@@ -13,7 +13,9 @@ import Defaults
 
 struct ChatTextView: View {
     let ctx: ChatContext
+
     @ObservedObject var viewModel: MessageViewModel
+    @EnvironmentObject var pinned: PinnedModel
     @State private var task: Task<Void, Never>? = nil
 
     var body: some View {
@@ -23,6 +25,16 @@ struct ChatTextView: View {
                     HStack {
                         getIcon(ctx.bundleID)
                         Text(getAppName(ctx.bundleID))
+                        Spacer()
+                        Button {
+                            pinned.pinned = !pinned.pinned
+                        } label: {
+                            if pinned.pinned {
+                                Text("unpin")
+                            } else {
+                                Text("pin")
+                            }
+                        }
                     }.padding(.bottom, 10)
                 }
                 Text(ctx.text.trimmingCharacters(in: .whitespacesAndNewlines)).font(.custom( "UbuntuMonoNFM", size: 14)).foregroundColor(.gray).lineLimit(1)

@@ -49,6 +49,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func spaceDidChange() {
         // 当空间改变时触发
         ClipWindowManager.shared.forceCloseWindow()
+        ChatWindowManager.shared.closeAllWindows(.force)
         SpotlightWindowManager.shared.forceCloseWindow()
     }
     
@@ -175,9 +176,10 @@ func monitorMouseMove() {
             }
             
             if !updatedSelectedText &&
-                getBundleID() !=  SelfBundleID {
+                getBundleID() != SelfBundleID {
                 lastSelectedText = ""
                 _ = WindowManager.shared.closeAllWindows(.original)
+                ChatWindowManager.shared.closeAllWindows(.original)
             }
         }
     }

@@ -41,7 +41,7 @@ class GptAction: Decodable{
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
-                    WindowManager.shared.createChatWindow(chatService: chatService, withContext: chatCtx)
+                    ChatWindowManager.shared.createChatWindow(chatService: chatService, withContext: chatCtx)
                 })
         }
     }
