@@ -5,7 +5,7 @@
 	<key>CFBundleVersion</key>
 	<string>0.2.1</string>
 	<key>SUFeedURL</key>
-	<string>https://raw.githubusercontent.com/sakeven/Release/main/appcast.xml</string>
+	<string>https://raw.githubusercontent.com/sakeven/Selected-Release/main/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>gyZTNONhuZUnxRNatLw6Lwj9KTHi8DaZXX+m8s6dZ+Y=</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
