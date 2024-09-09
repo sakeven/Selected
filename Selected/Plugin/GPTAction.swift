@@ -15,7 +15,7 @@ class GptAction: Decodable{
     init(prompt: String) {
         self.prompt = prompt
     }
-    
+
     func generate(pluginInfo: PluginInfo,  generic: GenericAction) -> PerformAction {
         if generic.after == kAfterPaste  {
             return PerformAction(
@@ -37,7 +37,7 @@ class GptAction: Decodable{
                         chatService = OpenAIService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
                 }
             }
-            
+
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)

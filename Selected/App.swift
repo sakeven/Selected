@@ -19,11 +19,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // 不需要主窗口，不需要显示在 dock 上
         NSApp.setActivationPolicy(NSApplication.ActivationPolicy.accessory)
         requestAccessibilityPermissions()
-        
+
         DispatchQueue.main.async {
             PersistenceController.shared.startDailyTimer()
         }
-        
+
         PluginManager.shared.loadPlugins()
         ConfigurationManager.shared.loadConfiguration()
         DispatchQueue.main.async {
@@ -41,9 +41,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // 注册空间改变通知
         // 这里不能使用 NotificationCenter.default.
         NSWorkspace.shared.notificationCenter.addObserver(self,
-                                                       selector: #selector(spaceDidChange),
-                                                       name: NSWorkspace.activeSpaceDidChangeNotification,
-                                                       object: nil)
+                                                          selector: #selector(spaceDidChange),
+                                                          name: NSWorkspace.activeSpaceDidChangeNotification,
+                                                          object: nil)
     }
 
     @objc func spaceDidChange() {
@@ -52,7 +52,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         ChatWindowManager.shared.closeAllWindows(.force)
         SpotlightWindowManager.shared.forceCloseWindow()
     }
-    
+
     func application(_ application: NSApplication, open urls: [URL]) {
         for url in urls {
             // 处理打开的文件
@@ -60,7 +60,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             PluginManager.shared.install(url: url)
         }
     }
-    
+
     func applicationWillBecomeActive(_ notification: Notification) {
         // 当 app 变为活跃时关闭全局热键
         ClipboardHotKeyManager.shared.unregisterHotKey()
@@ -89,7 +89,7 @@ func setDefaultAppForCustomFileType() {
 @main
 struct SelectedApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
+
     var body: some Scene {
         MenuBarExtra() {
             MenuItemView()
@@ -119,9 +119,9 @@ func requestAccessibilityPermissions() {
     // 判断权限
     let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
     let accessEnabled = AXIsProcessTrustedWithOptions(options)
-    
+
     NSLog("accessEnabled: \(accessEnabled)")
-    
+
     if !accessEnabled {
         // 请求权限
         // 注意不能是 sandbox，否则辅助功能里无法看到这个 app
@@ -136,7 +136,7 @@ func monitorMouseMove() {
     var eventState = EventState()
     var hoverWorkItem: DispatchWorkItem?
     var lastSelectedText = ""
-    
+
     NSEvent.addGlobalMonitorForEvents(matching:
                                         [.mouseMoved, .leftMouseUp, .leftMouseDragged, .keyDown, .scrollWheel]
     ) { (event) in
@@ -159,7 +159,7 @@ func monitorMouseMove() {
                         if lastSelectedText != ctx.Text {
                             lastSelectedText = ctx.Text
                             hoverWorkItem?.cancel()
-                            
+
                             let workItem = DispatchWorkItem {
                                 WindowManager.shared.createPopBarWindow(ctx)
                             }
@@ -174,7 +174,7 @@ func monitorMouseMove() {
                     }
                 }
             }
-            
+
             if !updatedSelectedText &&
                 getBundleID() != SelfBundleID {
                 lastSelectedText = ""
@@ -197,9 +197,9 @@ struct EventState {
     // 另外我们还监听了：cmd+A（全选），以及 cmd+shift+arrow(部分选择)。
     var lastLeftMouseUPTime = 0.0
     var lastMouseEventType: NSEvent.EventType = .leftMouseUp
-    
+
     let keyCodeArrows: [UInt16] = [Keycode.leftArrow, Keycode.rightArrow, Keycode.downArrow, Keycode.upArrow]
-    
+
     mutating func isSelected(event: NSEvent ) -> Bool {
         defer {
             if event.type != .keyDown {
