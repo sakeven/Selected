@@ -44,7 +44,7 @@ fileprivate func createQuery(tools: [MessageParameter.Tool]) -> MessageParameter
         model: .other(Defaults[.claudeModel]),
         messages: [],
         maxTokens: 4096,
-        system: systemPrompt(),
+        system: MessageParameter.System.text(systemPrompt()),
         tools: tools
     )
 }
@@ -62,7 +62,7 @@ class ClaudeService: AIChatService{
         if Defaults[.claudeAPIHost] != "" {
             apiHost = Defaults[.claudeAPIHost]
         }
-        service = AnthropicServiceFactory.service(apiKey: Defaults[.claudeAPIKey], basePath: apiHost)
+        service = AnthropicServiceFactory.service(apiKey: Defaults[.claudeAPIKey], basePath: apiHost, betaHeaders: nil)
         self.prompt = prompt
         self.options = options
         self.toolsParameter = genTools(functions: tools)

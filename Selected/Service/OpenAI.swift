@@ -104,7 +104,7 @@ struct OpenAIPrompt {
 
             do {
                 for try await result in openAI.chatsStream(query: query) {
-                    if result.choices[0].finishReason.isNil && result.choices[0].delta.content != nil {
+                    if result.choices[0].finishReason == nil && result.choices[0].delta.content != nil {
                         completion(result.choices[0].delta.content!)
                     }
                 }
@@ -238,7 +238,7 @@ struct OpenAIPrompt {
                     }
                 }
 
-                if result.choices[0].finishReason.isNil && result.choices[0].delta.content != nil {
+                if result.choices[0].finishReason == nil && result.choices[0].delta.content != nil {
                     var newMessage = false
                     if !hasMessage {
                         index += 1

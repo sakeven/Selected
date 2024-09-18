@@ -548,6 +548,8 @@
 				386010692C4222BB00EB9AE7 /* XCRemoteSwiftPackageReference "SwiftAnthropic" */,
 				385EA9E82C5FC58D009B8F0E /* XCRemoteSwiftPackageReference "HotKey" */,
 				385EA9EB2C6256BA009B8F0E /* XCRemoteSwiftPackageReference "Sparkle" */,
+				386789212C9B0A1A00D7DD62 /* XCRemoteSwiftPackageReference "Defaults" */,
+				386789222C9B0A7900D7DD62 /* XCRemoteSwiftPackageReference "SettingsAccess" */,
 			);
 			productRefGroup = 386AD7152B8F6BFA008C346D /* Products */;
 			projectDirPath = "";
@@ -1028,21 +1030,29 @@
 				minimumVersion = 1.4.0;
 			};
 		};
-		386AD7422B8F6E77008C346D /* XCRemoteSwiftPackageReference "Defaults" */ = {
+		386789212C9B0A1A00D7DD62 /* XCRemoteSwiftPackageReference "Defaults" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/Defaults.git";
 			requirement = {
-				kind = exactVersion;
-				version = 7.3.1;
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.2.0;
 			};
+		};
+		386789222C9B0A7900D7DD62 /* XCRemoteSwiftPackageReference "SettingsAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/orchetect/SettingsAccess";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		386AD7422B8F6E77008C346D /* XCRemoteSwiftPackageReference "Defaults" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/Defaults.git";
 		};
 		386AD74F2B8F7AA5008C346D /* XCRemoteSwiftPackageReference "SettingsAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/orchetect/SettingsAccess";
-			requirement = {
-				kind = exactVersion;
-				version = 1.4.0;
-			};
 		};
 		388DABAB2BCC0A1A000B2739 /* XCRemoteSwiftPackageReference "Highlightr" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -1064,7 +1074,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift";
 			requirement = {
-				kind = upToNextMinorVersion;
+				kind = upToNextMajorVersion;
 				minimumVersion = 6.27.0;
 			};
 		};
