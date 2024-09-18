@@ -39,11 +39,7 @@ class ClipService {
 
             NSLog("pasteboard event \(eventTypeMap[event.type]!)")
 
-            lock.lock()
-            let shouldSkip = skip
-            lock.unlock()
-
-            if shouldSkip {
+            if skip {
                 return
             }
 
