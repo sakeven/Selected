@@ -43,8 +43,9 @@ class ClipService {
                 return
             }
 
+            let eventType = event.type
             DispatchQueue.global(qos: .background).async {
-                if event.type == .leftMouseUp {
+                if eventType == .leftMouseUp {
                     // 如果是鼠标右键菜单栏里左键点击复制的话，需要等半秒才能从 pasteboard 里获取到复制的数据。
                     usleep(500000)
                 }
@@ -193,7 +194,10 @@ struct ClipData: Identifiable {
 
         var items = [ClipItem]()
         for type in types {
-            let item = ClipItem(type: type, data: pasteboard.data(forType: type)!)
+            guard let data = pasteboard.data(forType: type) else {
+                continue
+            }
+            let item = ClipItem(type: type, data: data)
             items.append(item)
 
             if type == .string {

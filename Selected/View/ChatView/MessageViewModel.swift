@@ -27,6 +27,7 @@ class MessageViewModel: ObservableObject {
         }
         await chatService.chatFollow(index: messages.count-1, userMessage: message){ [weak self]  index, message in
             DispatchQueue.main.async {
+                [weak self] in
                 guard let self = self else { return }
                 if self.messages.count < index+1 {
                     self.messages.append(ResponseMessage(message: "", role:  message.role))
@@ -49,6 +50,7 @@ class MessageViewModel: ObservableObject {
     func fetchMessages(ctx: ChatContext) async -> Void{
         await chatService.chat(ctx: ctx) { [weak self]  index, message in
             DispatchQueue.main.async {
+                [weak self] in
                 guard let self = self else { return }
                 if self.messages.count < index+1 {
                     self.messages.append(ResponseMessage(message: "", role:  message.role))

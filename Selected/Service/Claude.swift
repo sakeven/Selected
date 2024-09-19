@@ -12,7 +12,7 @@ import Defaults
 
 public typealias ClaudeModel = Model
 
-extension ClaudeModel: CaseIterable {
+extension ClaudeModel: @retroactive CaseIterable {
     public static var allCases: [SwiftAnthropic.Model] {
         [.claude3Opus, .claude3Haiku, .claude3Sonnet, .claude35Sonnet]
     }
