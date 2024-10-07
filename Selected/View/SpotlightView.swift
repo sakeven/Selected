@@ -13,6 +13,7 @@ struct SpotlightView: View {
     @State private var searchText: String = ""
     private var actions: [PerformAction]
     private var bundleIDOfFrontmostWindow: String
+    @FocusState private var isFocused: Bool
 
     init() {
         bundleIDOfFrontmostWindow = getBundleID()
@@ -23,10 +24,16 @@ struct SpotlightView: View {
         VStack {
             HStack {
                 TextField("Spotlight", text: $searchText)
+                    .focused($isFocused)
                     .textFieldStyle(PlainTextFieldStyle())
                     .padding(10)
                     .background(Color.gray.opacity(0.1))
                     .cornerRadius(6)
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            self.isFocused = true
+                        }
+                    }
             }
             .background(Color.gray)
             .cornerRadius(10)

@@ -97,21 +97,31 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
         super.init(window: window)
 
         let view = ChatTextView(ctx: ctx, viewModel: MessageViewModel(chatService: chatService)).environmentObject(pinnedModel)
-
-        window.center()
         window.level = .screenSaver
         window.contentView = NSHostingView(rootView: AnyView(view))
         window.delegate = self // 设置代理为自己来监听窗口事件
 
-        let mouseLocation = NSEvent.mouseLocation  // 获取鼠标当前位置
+        _ = ChatWindowPositionManager.shared.restorePosition(for: window)
+    }
+
+    private func positionWindow() {
+        guard let window = self.window else { return }
+
+        if ChatWindowPositionManager.shared.restorePosition(for: window) {
+            return
+        }
+
+        let mouseLocation = NSEvent.mouseLocation
         guard let screen = NSScreen.screens.first(where: { NSMouseInRect(mouseLocation, $0.frame, false) }) else {
             return
         }
-        let screenFrame = screen.visibleFrame // 获取目标屏幕的可见区域
+
+        let screenFrame = screen.visibleFrame
         let windowFrame = window.frame
-        // 确保窗口不会超出屏幕边缘
-        let x = (screenFrame.width - windowFrame.width) / 2  + screenFrame.origin.x
-        let y = (screenFrame.height - windowFrame.height)*3 / 4 + screenFrame.origin.y
+
+        let x = (screenFrame.width - windowFrame.width) / 2 + screenFrame.origin.x
+        let y = (screenFrame.height - windowFrame.height) * 3 / 4 + screenFrame.origin.y
+
         window.setFrameOrigin(NSPoint(x: x, y: y))
     }
 
@@ -123,11 +133,47 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
         self.close() // 如果需要的话
     }
 
+    func windowDidMove(_ notification: Notification) {
+        if let window = notification.object as? NSWindow {
+            ChatWindowPositionManager.shared.storePosition(of: window)
+        }
+    }
+
+    func windowDidResize(_ notification: Notification) {
+        if let window = notification.object as? NSWindow {
+            ChatWindowPositionManager.shared.storePosition(of: window)
+        }
+    }
+
     override func showWindow(_ sender: Any?) {
         super.showWindow(sender)
+        DispatchQueue.main.async{
+            self.positionWindow()
+        }
     }
 }
 
+private class ChatWindowPositionManager: @unchecked Sendable {
+    static let shared = ChatWindowPositionManager()
+
+    func storePosition(of window: NSWindow) {
+        Task {
+            await MainActor.run {
+                let frameString = NSStringFromRect(window.frame)
+                UserDefaults.standard.set(frameString, forKey: "ChatWindowPosition")
+            }
+        }
+    }
+
+    @MainActor func restorePosition(for window: NSWindow) -> Bool {
+        if let frameString = UserDefaults.standard.string(forKey: "ChatWindowPosition") {
+            let frame = NSRectFromString(frameString)
+            window.setFrame(frame, display: true)
+            return true
+        }
+        return false
+    }
+}
 
 class PinnedModel: ObservableObject {
     @Published var pinned: Bool = false

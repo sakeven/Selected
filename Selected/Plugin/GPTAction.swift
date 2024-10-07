@@ -23,6 +23,9 @@ class GptAction: Decodable{
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
                     await ChatService(prompt: self.prompt, options: pluginInfo.getOptionsValue())!.chat(ctx: chatCtx) { _, ret in
                         if ret.role == .assistant {
+                            DispatchQueue.main.async{
+                                _ = WindowManager.shared.closeOnlyPopbarWindows(.force)
+                            }
                             pasteText(ret.message)
                         }
                     }
@@ -41,6 +44,7 @@ class GptAction: Decodable{
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
+                    _ = WindowManager.shared.closeOnlyPopbarWindows(.force)
                     ChatWindowManager.shared.createChatWindow(chatService: chatService, withContext: chatCtx)
                 })
         }

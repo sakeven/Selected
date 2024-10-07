@@ -220,7 +220,6 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         window.contentView = NSHostingView(rootView: rootView)
         window.delegate = self // 设置代理为自己来监听窗口事件
 
-
         if windType == .Alpha {
             let mouseLocation = NSEvent.mouseLocation  // 获取鼠标当前位置
             guard let screen = NSScreen.screens.first(where: { NSMouseInRect(mouseLocation, $0.frame, false) }) else {
@@ -228,9 +227,11 @@ private class WindowController: NSWindowController, NSWindowDelegate {
             }
             let screenFrame = screen.visibleFrame // 获取目标屏幕的可见区域
             let windowFrame = window.frame
+            let width = windowFrame.width == 0 ? 550: windowFrame.width
+            let  height = windowFrame.height == 0 ? 400: windowFrame.height
             // 确保窗口不会超出屏幕边缘
-            let x = (screenFrame.width - windowFrame.width) / 2  + screenFrame.origin.x
-            let y = (screenFrame.height - windowFrame.height)*3 / 4 + screenFrame.origin.y
+            let x = (screenFrame.width - width) / 2  + screenFrame.origin.x
+            let y = (screenFrame.height - height)*3 / 4 + screenFrame.origin.y
             window.setFrameOrigin(NSPoint(x: x, y: y))
         } else{
             guard let origin = popupWindowOrigin(windowWidth:  window.frame.width) else {

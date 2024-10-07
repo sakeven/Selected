@@ -146,7 +146,9 @@ struct ClipView: View {
     // 默认选择第一条，必须同时设置 List 和 NavigationLink 的 selection
     //    @State var selected : ClipData?
     @ObservedObject var viewModel = ClipViewModel.shared
-    
+
+    @FocusState private var isFocused: Bool
+
     var body: some View {
         NavigationView{
             if clips.isEmpty {
@@ -208,7 +210,10 @@ struct ClipView: View {
                     }
                 }.frame(width: 250).frame(minWidth: 250, maxWidth: 250).onAppear(){
                     ClipViewModel.shared.selectedItem = clips.first
-                }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.isFocused = true
+                    }
+                }.focused($isFocused)
             }
         }.frame(width: 800, height: 400)
     }

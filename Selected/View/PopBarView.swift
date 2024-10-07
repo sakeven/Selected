@@ -33,8 +33,7 @@ struct PopBarView: View {
                     if let complete =  action.complete {
                         complete(ctx)
                         isLoading = false
-                    }
-                    if let complete =  action.completeAsync {
+                    } else if let complete =  action.completeAsync {
                         Task {
                             await complete(ctx)
                             isLoading = false
