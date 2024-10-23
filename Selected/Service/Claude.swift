@@ -14,7 +14,7 @@ public typealias ClaudeModel = Model
 
 extension ClaudeModel: @retroactive CaseIterable {
     public static var allCases: [SwiftAnthropic.Model] {
-        [.claude3Opus, .claude3Haiku, .claude3Sonnet, .claude35Sonnet]
+        [.claude3Opus, .claude3Haiku, .claude3Sonnet, .claude35Sonnet, .other("claude-3-5-sonnet-latest")]
     }
 }
 
