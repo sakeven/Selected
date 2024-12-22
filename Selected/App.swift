@@ -131,6 +131,7 @@ func requestAccessibilityPermissions() {
 
 let kExpandedLength: CGFloat = 100
 
+
 // 监听鼠标移动
 func monitorMouseMove() {
     var eventState = EventState()
@@ -140,6 +141,9 @@ func monitorMouseMove() {
     NSEvent.addGlobalMonitorForEvents(matching:
                                         [.mouseMoved, .leftMouseUp, .leftMouseDragged, .keyDown, .scrollWheel]
     ) { (event) in
+        if PauseModel.shared.pause {
+            return
+        }
         if event.type == .mouseMoved {
             if WindowManager.shared.closeOnlyPopbarWindows(.expanded) {
                 lastSelectedText = ""

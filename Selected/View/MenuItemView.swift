@@ -10,11 +10,17 @@ import SettingsAccess
 import SwiftUI
 import Sparkle
 
-
+class PauseModel: ObservableObject {
+    static let shared = PauseModel()
+    @Published var pause: Bool = false
+}
 
 struct MenuItemView: View {
     @Environment(\.openURL)
     private var openURL
+
+    @ObservedObject var pause = PauseModel.shared
+
 
     let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
 
@@ -22,6 +28,7 @@ struct MenuItemView: View {
         Group {
             settingItem
                 .keyboardShortcut(.init(","))
+            pauseItem.keyboardShortcut(.init("p"))
             Divider()
             feedbackItem
             docItem
@@ -40,7 +47,21 @@ struct MenuItemView: View {
             NSApp.orderFrontStandardAboutPanel(nil)
         }
     }
-    
+
+    @ViewBuilder
+    private var pauseItem: some View {
+        if pause.pause {
+            Button("Resume") {
+                pause.pause = false
+            }
+        } else {
+            Button("Pause") {
+                pause.pause = true
+            }
+        }
+    }
+
+
     @ViewBuilder
     private var feedbackItem: some View {
         Button("Feedback") {
