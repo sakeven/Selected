@@ -12,7 +12,7 @@ import AVFoundation
 
 typealias OpenAIModel = Model
 
-let OpenAIModels: [Model] = [.gpt4_o, .gpt4_o_mini, .o1, .o1_mini, .init(stringLiteral: "o3-mini"), .gpt4_turbo]
+let OpenAIModels: [Model] = [.gpt4_o, .gpt4_o_mini, .o1, .o1_mini, .o3_mini, .gpt4_turbo]
 
 
 struct FunctionDefinition: Codable, Equatable{
