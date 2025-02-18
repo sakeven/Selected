@@ -50,8 +50,10 @@ struct Translation {
         switch Defaults[.aiService] {
             case "OpenAI":
                 if isWord(str: content) {
+                    let OpenAIWordTrans = OpenAIPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}", model: Defaults[.openAITranslationModel])
                     await OpenAIWordTrans.chatOne(selectedText: content, completion: completion)
                 } else {
+                    let OpenAITrans2Chinese = OpenAIPrompt(prompt:"你是一位精通简体中文的专业翻译。翻译指定的内容到中文。规则：请直接回复翻译后的内容。内容为：{selected.text}", model: Defaults[.openAITranslationModel])
                     await OpenAITrans2Chinese.chatOne(selectedText: content, completion: completion)
                 }
             case "Gemini":
@@ -74,6 +76,7 @@ struct Translation {
     private func contentTrans2English(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
+                let OpenAITrans2English = OpenAIPrompt(prompt:"You are a professional translator proficient in English. Translate the following content into English. Rule: reply with the translated content directly. The content is：{selected.text}", model: Defaults[.openAITranslationModel])
                 await OpenAITrans2English.chatOne(selectedText: content, completion: completion)
             case "Gemini":
                 await GeminiTrans2English.chatOne(selectedText: content, completion: completion)

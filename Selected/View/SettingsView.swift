@@ -27,6 +27,7 @@ struct SettingsView: View {
     @State var selectedOpenAIModel: String
     @State var customOpenAIMode: String
     @Default(.openAIVoice) var openAIVoice
+    @Default(.openAITranslationModel) var openAITranslationModel
 
 
     @Default(.geminiAPIKey) var geminiAPIKey
@@ -121,6 +122,12 @@ struct SettingsView: View {
                                     Defaults[.openAIModel] = customOpenAIMode
                                 }
                         }
+
+                        Picker("Translation", selection: $openAITranslationModel, content: {
+                            ForEach(OpenAITranslationModels, id: \.self) {
+                                Text($0)
+                            }
+                        }).pickerStyle(DefaultPickerStyle())
 
                         Picker("Voice", selection: $openAIVoice, content: {
                             ForEach(AudioSpeechQuery.AudioSpeechVoice.allCases, id: \.self) {
