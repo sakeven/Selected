@@ -86,7 +86,20 @@ struct OpenAIPrompt {
         let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: host, timeoutInterval: 60.0)
         self.openAI = OpenAI(configuration: configuration)
         self.options = options
-        self.query = OpenAIPrompt.createQuery(functions: tools)
+        self.query = OpenAIPrompt.createQuery(functions: tools, model: Defaults[.openAIModel])
+    }
+
+    init(prompt: String, model: OpenAIModel) {
+        self.prompt = prompt
+        self.tools = nil
+        var host = "api.openai.com"
+        if Defaults[.openAIAPIHost] != "" {
+            host = Defaults[.openAIAPIHost]
+        }
+        let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: host, timeoutInterval: 60.0)
+        self.openAI = OpenAI(configuration: configuration)
+        self.options = [String:String]()
+        self.query = OpenAIPrompt.createQuery(functions: tools, model: model)
     }
 
 
@@ -98,7 +111,7 @@ struct OpenAIPrompt {
             messages.append(.init(role: .user, content: message)!)
             let query = ChatQuery(
                 messages: messages,
-                model: Defaults[.openAIModel],
+                model: query.model,
                 tools: query.tools
             )
 
@@ -115,7 +128,7 @@ struct OpenAIPrompt {
 
         }
 
-    private static func createQuery(functions: [FunctionDefinition]?) -> ChatQuery {
+    private static func createQuery(functions: [FunctionDefinition]?, model: OpenAIModel) -> ChatQuery {
         var tools: [ChatQuery.ChatCompletionToolParam]? = nil
         if let functions = functions {
             var _tools: [ChatQuery.ChatCompletionToolParam] = [.init(function: dalle3Def)]
@@ -130,10 +143,10 @@ struct OpenAIPrompt {
             tools = _tools
         }
 
-        if Defaults[.openAIModel] == "o1-preview" {
+        if model == "o1-preview"  || model == .o1_mini{
             return ChatQuery(
                 messages: [],
-                model: Defaults[.openAIModel],
+                model: model,
                 tools: nil
             )
         }
@@ -142,7 +155,7 @@ struct OpenAIPrompt {
         return ChatQuery(
             messages: [
                 .init(role: .developer, content: systemPrompt())!],
-            model: Defaults[.openAIModel],
+            model: model,
             tools: tools
         )
     }
@@ -152,7 +165,7 @@ struct OpenAIPrompt {
         messages.append(message)
         query = ChatQuery(
             messages: messages,
-            model: Defaults[.openAIModel],
+            model: query.model,
             tools: query.tools
         )
     }
@@ -162,7 +175,7 @@ struct OpenAIPrompt {
         _messages.append(contentsOf: messages)
         query = ChatQuery(
             messages: _messages,
-            model: Defaults[.openAIModel],
+            model: query.model,
             tools: query.tools
         )
     }
@@ -354,11 +367,11 @@ private func dalle3(openAI: OpenAI, arguments: String) async throws -> String {
     return content
 }
 
-let OpenAIWordTrans = OpenAIPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}")
+let OpenAIWordTrans = OpenAIPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}", model: .gpt4_o)
 
-let OpenAITrans2Chinese = OpenAIPrompt(prompt:"你是一位精通简体中文的专业翻译。翻译指定的内容到中文。规则：请直接回复翻译后的内容。内容为：{selected.text}")
+let OpenAITrans2Chinese = OpenAIPrompt(prompt:"你是一位精通简体中文的专业翻译。翻译指定的内容到中文。规则：请直接回复翻译后的内容。内容为：{selected.text}", model: .gpt4_o)
 
-let OpenAITrans2English = OpenAIPrompt(prompt:"You are a professional translator proficient in English. Translate the following content into English. Rule: reply with the translated content directly. The content is：{selected.text}")
+let OpenAITrans2English = OpenAIPrompt(prompt:"You are a professional translator proficient in English. Translate the following content into English. Rule: reply with the translated content directly. The content is：{selected.text}", model: .gpt4_o)
 
 internal var audioPlayer: AVAudioPlayer?
 
