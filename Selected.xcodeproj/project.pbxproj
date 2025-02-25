@@ -1027,7 +1027,7 @@
 			repositoryURL = "https://github.com/jamesrochabrun/SwiftAnthropic";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.4.0;
+				minimumVersion = 2.1.0;
 			};
 		};
 		386789212C9B0A1A00D7DD62 /* XCRemoteSwiftPackageReference "Defaults" */ = {

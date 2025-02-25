@@ -78,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/MacPaw/OpenAI",
       "state" : {
-        "revision" : "190c35534eb9ea07a7deed641e3ca46d54759271",
-        "version" : "0.3.4"
+        "revision" : "0e8b8b1bc5e101a3c761b6519dc4df6ecddf415c",
+        "version" : "0.3.5"
       }
     },
     {
@@ -114,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sparkle-project/Sparkle",
       "state" : {
-        "revision" : "0ef1ee0220239b3776f433314515fd849025673f",
-        "version" : "2.6.4"
+        "revision" : "0ca3004e98712ea2b39dd881d28448630cce1c99",
+        "version" : "2.7.0"
       }
     },
     {
@@ -159,8 +159,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jamesrochabrun/SwiftAnthropic",
       "state" : {
-        "revision" : "7262ced65e890ea5311193b849786344432d8fa7",
-        "version" : "1.8.6"
+        "revision" : "a297d393f62d1d5341dfbac93b0e2f051297de9f",
+        "version" : "2.1.1"
       }
     },
     {
@@ -168,8 +168,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jpsim/Yams.git",
       "state" : {
-        "revision" : "2688707e563b44d7d87c29ba6c5ca04ce86ae58b",
-        "version" : "5.3.0"
+        "revision" : "b4b8042411dc7bbb696300a34a4bf3ba1b7ad19b",
+        "version" : "5.3.1"
       }
     }
   ],

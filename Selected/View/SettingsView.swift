@@ -18,7 +18,7 @@ struct SettingsView: View {
     @Environment(\.colorScheme) var colorScheme
 
     @Default(.aiService) var aiService
-    let aiServicePickerValues = ["OpenAI", "Gemini", "Claude"]
+    let aiServicePickerValues = ["OpenAI", "Claude", "Gemini"]
 
 
     @Default(.openAIAPIKey) var openAIAPIKey
