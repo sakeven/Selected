@@ -19,27 +19,27 @@ let OpenAITranslationModels: [Model] = [.gpt4_o, .gpt4_o_mini]
 struct FunctionDefinition: Codable, Equatable{
     /// The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64.
     public let name: String
-
+    
     /// The description of what the function does.
     public let description: String
     /// The parameters the functions accepts, described as a JSON Schema object. See the guide for examples, and the JSON Schema reference for documentation about the format.
     /// Omitting parameters defines a function with an empty parameter list.
     public let parameters: String
-
+    
     /// The command to execute
     public var command: [String]?
     /// In which dir to execute command.
     public var workdir: String?
     public var showResult: Bool? = true
     public var template: String?
-
+    
     func Run(arguments: String, options: [String:String] = [String:String]()) throws -> String? {
         guard let command = self.command else {
             return nil
         }
         var args = [String](command[1...])
         args.append(arguments)
-
+        
         var env = [String:String]()
         options.forEach{ (key: String, value: String) in
             env["SELECTED_OPTIONS_"+key.uppercased()] = value
@@ -49,7 +49,7 @@ struct FunctionDefinition: Codable, Equatable{
         }
         return try executeCommand(workdir: workdir!, command: command[0], arguments: args, withEnv: env)
     }
-
+    
     func getParameters() -> FunctionParameters?{
         let p = try! JSONDecoder().decode(FunctionParameters.self, from: self.parameters.data(using: .utf8)!)
         return p
@@ -76,7 +76,7 @@ struct OpenAIPrompt {
     let openAI: OpenAI
     var query: ChatQuery
     var options: [String:String]
-
+    
     init(prompt: String, tools: [FunctionDefinition]? = nil, options: [String:String] = [String:String]()) {
         self.prompt = prompt
         self.tools = tools
@@ -89,7 +89,7 @@ struct OpenAIPrompt {
         self.options = options
         self.query = OpenAIPrompt.createQuery(functions: tools, model: Defaults[.openAIModel])
     }
-
+    
     init(prompt: String, model: OpenAIModel) {
         self.prompt = prompt
         self.tools = nil
@@ -102,8 +102,8 @@ struct OpenAIPrompt {
         self.options = [String:String]()
         self.query = OpenAIPrompt.createQuery(functions: tools, model: model)
     }
-
-
+    
+    
     func chatOne(
         selectedText: String,
         completion: @escaping (_: String) -> Void) async -> Void {
@@ -115,7 +115,7 @@ struct OpenAIPrompt {
                 model: query.model,
                 tools: query.tools
             )
-
+            
             do {
                 for try await result in openAI.chatsStream(query: query) {
                     if result.choices[0].finishReason == nil && result.choices[0].delta.content != nil {
@@ -126,13 +126,13 @@ struct OpenAIPrompt {
                 NSLog("completion error \(String(describing: error))")
                 return
             }
-
+            
         }
-
+    
     private static func createQuery(functions: [FunctionDefinition]?, model: OpenAIModel) -> ChatQuery {
         var tools: [ChatQuery.ChatCompletionToolParam]? = nil
         if let functions = functions {
-            var _tools: [ChatQuery.ChatCompletionToolParam] = [.init(function: dalle3Def)]
+            var _tools: [ChatQuery.ChatCompletionToolParam] = [.init(function: dalle3Def), .init(function: svgToolOpenAIDef)]
             for fc in functions {
                 let fc = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
                     name: fc.name,
@@ -143,7 +143,7 @@ struct OpenAIPrompt {
             }
             tools = _tools
         }
-
+        
         if model == "o1-preview"  || model == .o1_mini{
             return ChatQuery(
                 messages: [],
@@ -151,7 +151,7 @@ struct OpenAIPrompt {
                 tools: nil
             )
         }
-
+        
         // 通过 Swift 获取当前应用的语言
         return ChatQuery(
             messages: [
@@ -160,7 +160,7 @@ struct OpenAIPrompt {
             tools: tools
         )
     }
-
+    
     mutating func updateQuery(message: ChatQuery.ChatCompletionMessageParam) {
         var messages = query.messages
         messages.append(message)
@@ -170,7 +170,7 @@ struct OpenAIPrompt {
             tools: query.tools
         )
     }
-
+    
     mutating func updateQuery(messages: [ChatQuery.ChatCompletionMessageParam]) {
         var _messages = query.messages
         _messages.append(contentsOf: messages)
@@ -180,14 +180,14 @@ struct OpenAIPrompt {
             tools: query.tools
         )
     }
-
+    
     mutating func chat(
         ctx: ChatContext,
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
             var message = renderChatContent(content: prompt, chatCtx: ctx, options: options)
             message = replaceOptions(content: message, selectedText: ctx.text, options: options)
             updateQuery(message: .init(role: .user, content: message)!)
-
+            
             var index = -1
             while let last = query.messages.last, last.role != .assistant {
                 do {
@@ -208,7 +208,7 @@ struct OpenAIPrompt {
                 }
             }
         }
-
+    
     mutating func chatFollow(
         index: Int,
         userMessage: String,
@@ -234,7 +234,7 @@ struct OpenAIPrompt {
                 }
             }
         }
-
+    
     mutating func chatOneRound(
         index: inout Int,
         completion: @escaping (_: Int, _: ResponseMessage) -> Void) async throws -> Void {
@@ -243,7 +243,7 @@ struct OpenAIPrompt {
             var toolCallsDict = [Int: ChatCompletionMessageToolCallParam]()
             var hasMessage =  false
             var assistantMessage = ""
-
+            
             completion(index+1, ResponseMessage(message: NSLocalizedString("Waiting", comment: "system info"), role: .system, new: true, status: .initial))
             for try await result in openAI.chatsStream(query: query) {
                 if let toolCalls = result.choices[0].delta.toolCalls {
@@ -259,7 +259,7 @@ struct OpenAIPrompt {
                         }
                     }
                 }
-
+                
                 if result.choices[0].finishReason == nil && result.choices[0].delta.content != nil {
                     var newMessage = false
                     if !hasMessage {
@@ -272,7 +272,7 @@ struct OpenAIPrompt {
                     completion(index, message)
                 }
             }
-
+            
             if hasMessage {
                 completion(index, ResponseMessage(message: "", role: .assistant, new: false, status: .finished))
             }
@@ -280,7 +280,7 @@ struct OpenAIPrompt {
                 updateQuery(message: .assistant(.init(content:assistantMessage)))
                 return
             }
-
+            
             var toolCalls  =  [OpenAIChatCompletionMessageToolCallParam]()
             for (_, tool) in toolCallsDict {
                 let function =
@@ -288,14 +288,14 @@ struct OpenAIPrompt {
                 toolCalls.append(.init(id: tool.id, function: function))
             }
             updateQuery(message: .assistant(.init(content:assistantMessage, toolCalls: toolCalls)))
-
+            
             let toolMessages = try await callTools(index: &index, toolCallsDict: toolCallsDict, completion: completion)
             if toolMessages.isEmpty {
                 return
             }
             updateQuery(messages: toolMessages)
         }
-
+    
     private func callTools(
         index: inout Int,
         toolCallsDict: [Int: ChatCompletionMessageToolCallParam],
@@ -303,20 +303,20 @@ struct OpenAIPrompt {
             guard let fcs = tools else {
                 return []
             }
-
+            
             index += 1
             NSLog("tool index \(index)")
-
+            
             var fcSet = [String: FunctionDefinition]()
             for fc in fcs {
                 fcSet[fc.name] = fc
             }
-
+            
             var messages = [ChatQuery.ChatCompletionMessageParam]()
             for (_, tool) in toolCallsDict {
                 let rawMessage = String(format: NSLocalizedString("calling_tool", comment: "tool message"), tool.function.name)
                 let message =  ResponseMessage(message: rawMessage, role: .tool, new: true, status: .updating)
-
+                
                 if let f = fcSet[tool.function.name] {
                     if let template = f.template {
                         message.message =  renderTemplate(templateString: template, json: tool.function.arguments)
@@ -331,7 +331,12 @@ struct OpenAIPrompt {
                     let ret = "[![this is picture]("+url+")]("+url+")"
                     let message = ResponseMessage(message: ret, role: .tool, new: true, status: .finished)
                     completion(index, message)
-                } else  {
+                } else if tool.function.name ==  svgToolOpenAIDef.name {
+                    _ = openSVGInBrowser(svgData: tool.function.arguments)
+                    messages.append(.tool(.init(content: "display svg successfully", toolCallId: tool.id)))
+                    let message = ResponseMessage(message: String(format: NSLocalizedString("display_svg", comment: "")), role: .tool, new: true, status: .finished)
+                    completion(index, message)
+                } else {
                     if let f = fcSet[tool.function.name] {
                         NSLog("call: \(tool.function.arguments)")
                         if let ret = try f.Run(arguments: tool.function.arguments, options: options) {
@@ -356,7 +361,7 @@ struct OpenAIPrompt {
 
 private func dalle3(openAI: OpenAI, arguments: String) async throws -> String {
     var content =  ""
-
+    
     let prompt = try JSONDecoder().decode(Dalle3Prompt.self, from: arguments.data(using: .utf8)!)
     let imageQuery = ImagesQuery(
         prompt: prompt.prompt,
@@ -394,11 +399,11 @@ func openAITTS(_ text: String) async {
         audioPlayer!.play()
         return
     }
-
+    
     let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
     let openAI = OpenAI(configuration: configuration)
     let query = AudioSpeechQuery(model: .tts_1, input: text, voice: Defaults[.openAIVoice], responseFormat: .mp3, speed: 1.0)
-
+    
     do {
         let result = try await openAI.audioCreateSpeech(query: query)
         voiceDataCache[text.hash] = VoiceData(data: result.audio , lastAccessTime: Date())
@@ -417,11 +422,11 @@ func openAITTS2(_ text: String) async -> Data? {
         NSLog("cached tts")
         return data.data
     }
-
+    
     let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey] , host: Defaults[.openAIAPIHost] , timeoutInterval: 60.0)
     let openAI = OpenAI(configuration: configuration)
     let query = AudioSpeechQuery(model: .tts_1, input: text, voice: Defaults[.openAIVoice], responseFormat: .mp3, speed: 1.0)
-
+    
     do {
         let result = try await openAI.audioCreateSpeech(query: query)
         voiceDataCache[text.hash] = VoiceData(data: result.audio , lastAccessTime: Date())

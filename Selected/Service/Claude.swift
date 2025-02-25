@@ -65,7 +65,9 @@ class ClaudeService: AIChatService{
         service = AnthropicServiceFactory.service(apiKey: Defaults[.claudeAPIKey], basePath: apiHost, betaHeaders: nil)
         self.prompt = prompt
         self.options = options
-        self.toolsParameter = genTools(functions: tools)
+        var toolsParameter = genTools(functions: tools)
+        toolsParameter.append(svgToolClaudeDef)
+        self.toolsParameter = toolsParameter
         self.tools = tools
         self.query = createQuery(tools: self.toolsParameter)
     }
@@ -254,6 +256,17 @@ class ClaudeService: AIChatService{
 
             var toolUseResults = [MessageParameter.Message.Content.ContentObject]()
             for tool in toolUseList {
+                if tool.name == svgToolClaudeDef.name {
+                    let rawMessage = String(format: NSLocalizedString("calling_tool", comment: "tool message"), tool.name)
+                    var message =  ResponseMessage(message: rawMessage, role: .tool, new: true, status: .updating)
+                    completion(index, message)
+                    _ = openSVGInBrowser(svgData: tool.input)
+                    message = ResponseMessage(message: String(format: NSLocalizedString("display_svg", comment: "")), role: .tool, new: true, status: .finished)
+                    completion(index, message)
+                    toolUseResults.append(.toolResult(tool.id, "display svg successfully"))
+                    continue
+                }
+
                 guard let f = fcSet[tool.name] else {
                     continue
                 }
@@ -291,3 +304,12 @@ let ClaudeWordTrans = ClaudeService(prompt: "翻译以下单词到中文，详�
 let ClaudeTrans2Chinese = ClaudeService(prompt:"你是一位精通简体中文的专业翻译。翻译指定的内容到中文。规则：请直接回复翻译后的内容。内容为：{selected.text}")
 
 let ClaudeTrans2English = ClaudeService(prompt:"You are a professional translator proficient in English. Translate the following content into English. Rule: reply with the translated content directly. The content is：{selected.text}")
+
+
+let svgToolClaudeDef = MessageParameter.Tool(
+    name: "display_svg",
+    description: "When user requests you to create an SVG, you can use this tool to display the SVG.",
+    inputSchema: .init(type: .object, properties:[
+        "raw": .init(type: .string, description: "SVG content")
+    ])
+)

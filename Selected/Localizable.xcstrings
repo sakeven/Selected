@@ -333,6 +333,23 @@
         }
       }
     },
+    "display_svg" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "opened SVG file by default application"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已由默认应用打开 SVG 文件"
+          }
+        }
+      }
+    },
     "Document" : {
       "localizations" : {
         "zh-Hans" : {
