@@ -199,7 +199,7 @@ struct OpenAIPrompt {
                     completion(index, message)
                     return
                 }
-                if index >= 10 {
+                if index >= MAX_CHAT_ROUNDS {
                     index += 1
                     let localMsg = NSLocalizedString("Too much rounds, please start a new chat", comment: "system info")
                     let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)
@@ -225,7 +225,7 @@ struct OpenAIPrompt {
                     completion(newIndex, message)
                     return
                 }
-                if newIndex-index >= 10 {
+                if newIndex-index >= MAX_CHAT_ROUNDS {
                     newIndex += 1
                     let localMsg = NSLocalizedString("Too much rounds, please start a new chat", comment: "system info")
                     let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)

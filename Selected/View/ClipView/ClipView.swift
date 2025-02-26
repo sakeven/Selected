@@ -11,7 +11,7 @@ import PDFKit
 
 struct ClipDataView: View {
     var data: ClipHistoryData
-    
+
     var body: some View {
         VStack(alignment: .leading){
             let item = data.getItems().first!
@@ -31,17 +31,17 @@ struct ClipDataView: View {
             } else if data.plainText != nil {
                 TextView(text: data.plainText!)
             }
-            
+
             Spacer()
             Divider()
-            
+
             HStack {
                 Text("Application:")
                 Spacer()
                 getIcon(data.application!)
                 Text(getAppName(data.application!))
             }.frame(height: 17)
-            
+
             HStack {
                 Text("Content type:")
                 Spacer()
@@ -52,13 +52,13 @@ struct ClipDataView: View {
                     Text(NSLocalizedString(str, comment: ""))
                 }
             }.frame(height: 17)
-            
+
             HStack {
                 Text("Date:")
                 Spacer()
                 Text("\(format(data.firstCopiedAt!))")
             }.frame(height: 17)
-            
+
             if data.numberOfCopies > 1 {
                 HStack {
                     Text("Last copied:")
@@ -71,7 +71,7 @@ struct ClipDataView: View {
                     Text("\(data.numberOfCopies) times")
                 }.frame(height: 17)
             }
-            
+
             if let url = data.url {
                 if type == .fileURL {
                     let url = URL(string: String(decoding: item.data!, as: UTF8.self))!
@@ -92,14 +92,18 @@ struct ClipDataView: View {
             }
         }.padding().frame(width: 550)
     }
-    
+
     private func getAppName(_ bundleID: String) -> String {
-        let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)!
+        guard let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else {
+            return "Unknown"
+        }
         return FileManager.default.displayName(atPath: bundleURL.path)
     }
-    
+
     private func getIcon(_ bundleID: String) -> some View {
-        let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)!
+        guard let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else{
+            return AnyView(EmptyView())
+        }
         return AnyView(
             Image(nsImage: NSWorkspace.shared.icon(forFile: bundleURL.path)).resizable().aspectRatio(contentMode: .fit).frame(width: 15, height: 15)
         )
@@ -117,11 +121,11 @@ func isValidHttpUrl(_ string: String) -> Bool {
     guard let url = URL(string: string) else {
         return false
     }
-    
+
     guard let scheme = url.scheme, scheme == "http" || scheme == "https" else {
         return false
     }
-    
+
     return url.host != nil
 }
 
@@ -135,14 +139,14 @@ class ClipViewModel: ObservableObject {
 
 struct ClipView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    
+
     // 维护一个 FetchRequest 实例
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: false)],
         animation: .default)
     private var clips: FetchedResults<ClipHistoryData>
-    
-    
+
+
     // 默认选择第一条，必须同时设置 List 和 NavigationLink 的 selection
     //    @State var selected : ClipData?
     @ObservedObject var viewModel = ClipViewModel.shared
@@ -217,12 +221,12 @@ struct ClipView: View {
             }
         }.frame(width: 800, height: 400)
     }
-    
+
     func delete(_ clipData: ClipHistoryData) {
         if let selectedItem = viewModel.selectedItem {
             let selectedItemIdx = clips.firstIndex(of: selectedItem)!
             let idx = clips.firstIndex(of: clipData)!
-            
+
             // 计算删除后，需要选中的新条目的索引
             let newIndexAfterDeletion: Int?
             if selectedItem == clipData {
@@ -238,9 +242,9 @@ struct ClipView: View {
             } else {
                 newIndexAfterDeletion = selectedItemIdx
             }
-            
+
             PersistenceController.shared.delete(item: clipData)
-            
+
             // 在删除后更新选中项
             DispatchQueue.main.async {
                 if let newIndex = newIndexAfterDeletion, clips.indices.contains(newIndex) {
