@@ -57,7 +57,7 @@ struct MarkdownWithLateXView: View {
     @Environment(\.colorScheme) private var colorScheme
     var highlighter = CustomCodeSyntaxHighlighter()
 
-    let markdownString: String
+    @Binding var markdownString: String
 
     // 用于标识已处理过的标记
     private let latexBlockPlaceholder = "LATEX_BLOCK_"

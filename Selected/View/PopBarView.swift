@@ -15,10 +15,10 @@ struct PopBarView: View {
     var onClick: (() -> Void)?
 
     @State private var isSharePresented = false
-    
-    
+
+
     @Environment(\.openURL) var openURL
-    
+
     var body: some View {
         // spacing: 0， 让 button 紧邻，不要空隙
         HStack(spacing: 0){
@@ -44,11 +44,41 @@ struct PopBarView: View {
             SharingButton(message: ctx.Text)
             if let res = calculate(ctx.Text) {
                 let v = valueFormatter.string(from: NSNumber(value: res))!
-                Text(v).fontWeight(.bold)
+                NumerberView(value: v)
             }
         }.frame(height: 30)
             .padding(.leading, 10).padding(.trailing, 10)
             .background(.gray).cornerRadius(5).fixedSize()
+    }
+}
+
+
+struct NumerberView: View {
+    @State var value: String
+    @State private var isCopied = false // 用于控制动画效果
+
+    var body: some View {
+        Text(value)
+            .fontWeight(.bold)
+            .foregroundColor(isCopied ? .blue : .primary) // 颜色变化动画
+            .onTapGesture {
+                let pasteboard = NSPasteboard.general
+                pasteboard.clearContents()
+                pasteboard.setString(value, forType: .string)
+
+                // 触发动画
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    isCopied = true
+                }
+
+                // 动画结束后恢复默认状态
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    withAnimation(.easeInOut(duration: 0.1)) {
+                        isCopied = false
+                    }
+                }
+            }
+
     }
 }
 

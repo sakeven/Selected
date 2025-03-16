@@ -90,7 +90,7 @@ struct MessageView: View {
                         .padding(.bottom, 20)
                 }
             } else {
-                MarkdownWithLateXView( markdownString: message.message)
+                MarkdownWithLateXView(markdownString: $message.message)
                     .padding(.leading, 20.0)
                     .padding(.trailing, 40.0)
                     .padding(.top, 5)
