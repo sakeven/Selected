@@ -1,5 +1,5 @@
 {
-  "originHash" : "e67066f70963a94f2cfd643b27378b0e50664446afe08888a48f7e0d010776b6",
+  "originHash" : "9653e7da7685f3ff22928bd7f52e01d644555aa07e1ac5de5fce9a21e8609221",
   "pins" : [
     {
       "identity" : "ddmathparser",
@@ -65,6 +65,24 @@
       }
     },
     {
+      "identity" : "latexswiftui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/colinc86/LaTeXSwiftUI",
+      "state" : {
+        "branch" : "main",
+        "revision" : "442366e4d438b8034868221b41cb74176b7f6bd7"
+      }
+    },
+    {
+      "identity" : "mathjaxswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/colinc86/MathJaxSwift",
+      "state" : {
+        "revision" : "e23d6eab941da699ac4a60fb0e60f3ba5c937459",
+        "version" : "3.4.0"
+      }
+    },
+    {
       "identity" : "networkimage",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/gonzalezreal/NetworkImage",
@@ -78,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/MacPaw/OpenAI",
       "state" : {
-        "revision" : "0e8b8b1bc5e101a3c761b6519dc4df6ecddf415c",
-        "version" : "0.3.5"
+        "revision" : "e59e4923acc924db51d415e99d0a76c7d54037e0",
+        "version" : "0.3.6"
       }
     },
     {
@@ -146,6 +164,15 @@
       }
     },
     {
+      "identity" : "swift-html-entities",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Kitura/swift-html-entities",
+      "state" : {
+        "revision" : "d8ca73197f59ce260c71bd6d7f6eb8bbdccf508b",
+        "version" : "4.0.1"
+      }
+    },
+    {
       "identity" : "swift-markdown-ui",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/gonzalezreal/swift-markdown-ui",
@@ -161,6 +188,15 @@
       "state" : {
         "revision" : "a297d393f62d1d5341dfbac93b0e2f051297de9f",
         "version" : "2.1.1"
+      }
+    },
+    {
+      "identity" : "swiftdraw",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/colinc86/SwiftDraw",
+      "state" : {
+        "branch" : "latexswiftui",
+        "revision" : "8789f44b5d32d75e80af635277ee637d61d5df5c"
       }
     },
     {

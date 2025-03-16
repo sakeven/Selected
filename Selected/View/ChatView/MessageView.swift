@@ -14,7 +14,6 @@ struct MessageView: View {
     @ObservedObject var message: ResponseMessage
 
     @Environment(\.colorScheme) private var colorScheme
-    var highlighter = CustomCodeSyntaxHighlighter()
 
 
     @State private var rotation: Double = 0
@@ -91,62 +90,13 @@ struct MessageView: View {
                         .padding(.bottom, 20)
                 }
             } else {
-                Markdown(message.message)
-                    .markdownBlockStyle(\.codeBlock) {
-                        codeBlock($0)
-                    }
+                MarkdownWithLateXView( markdownString: message.message)
                     .padding(.leading, 20.0)
                     .padding(.trailing, 40.0)
                     .padding(.top, 5)
                     .padding(.bottom, 20)
             }
         }.frame(width: 750)
-    }
-
-    func getLanguage(_ configuration: CodeBlockConfiguration) -> String {
-        guard let language = configuration.language else {
-            return "plaintext"
-        }
-        return language == "" ? "plaintext": language
-    }
-
-    @ViewBuilder
-    private func codeBlock(_ configuration: CodeBlockConfiguration) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Text(getLanguage(configuration))
-                    .font(.system(.caption, design: .monospaced))
-                    .fontWeight(.semibold)
-                Spacer()
-
-                Image(systemName: "clipboard")
-                    .onTapGesture {
-                        copyToClipboard(configuration.content)
-                    }
-            }
-            .padding(.horizontal, 5)
-
-            Divider()
-
-            // wrap long lines
-            highlighter.setTheme(theme: codeTheme).highlightCode(configuration.content, language: configuration.language)
-                .relativeLineSpacing(.em(0.5))
-                .padding(5)
-                .markdownMargin(top: .em(1), bottom: .em(1))
-        }
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.black, lineWidth: 2)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .markdownMargin(top: .zero, bottom: .em(0.8))
-    }
-
-
-    private func copyToClipboard(_ string: String) {
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.setString(string, forType: .string)
     }
 
     private var codeTheme: CodeTheme {
