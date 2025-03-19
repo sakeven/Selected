@@ -526,6 +526,16 @@
         }
       }
     },
+    "No results found" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无结果"
+          }
+        }
+      }
+    },
     "OpenAI" : {
       "localizations" : {
         "zh-Hans" : {
