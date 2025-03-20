@@ -211,7 +211,6 @@ struct MarkdownWithLateXView: View {
     private func processMarkdownWithLatex() -> (String, [String: String]) {
         var result = markdownString
         var latexFormulas = [String: String]()
-        var forumlaIDs = [String: String]()
 
         result = blockLatex(markdown: result, latexFormulas: &latexFormulas, blockLatexPattern: blockLatexPattern)
 

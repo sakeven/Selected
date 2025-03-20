@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -78,7 +78,6 @@
 		38DF1D5B2BC2BFCA0063A879 /* PDFView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D5A2BC2BFCA0063A879 /* PDFView.swift */; };
 		38E20A472BB44D5A0035A3AA /* SharingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A462BB44D5A0035A3AA /* SharingButton.swift */; };
 		38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A482BB5A3D80035A3AA /* SpeakAction.swift */; };
-		38E20A4B2BB5A7E20035A3AA /* TTS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A4A2BB5A7E20035A3AA /* TTS.swift */; };
 		38F5E29C2B98ACB9002FEEFE /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E29B2B98ACB9002FEEFE /* OpenAI */; };
 		38F5E29F2B9AB332002FEEFE /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E29E2B9AB332002FEEFE /* MarkdownUI */; };
 		38F5E2A22B9AB361002FEEFE /* CodeSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F5E2A12B9AB361002FEEFE /* CodeSyntaxHighlighter.swift */; };
@@ -181,10 +180,13 @@
 		38DF1D5A2BC2BFCA0063A879 /* PDFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFView.swift; sourceTree = "<group>"; };
 		38E20A462BB44D5A0035A3AA /* SharingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingButton.swift; sourceTree = "<group>"; };
 		38E20A482BB5A3D80035A3AA /* SpeakAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakAction.swift; sourceTree = "<group>"; };
-		38E20A4A2BB5A7E20035A3AA /* TTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTS.swift; sourceTree = "<group>"; };
 		38F5E2A12B9AB361002FEEFE /* CodeSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		38F93F682D86E45E00D1C208 /* MarkdowLateXView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkdowLateXView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		3817BA842D8C325500A1C50F /* AIUtils */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = AIUtils; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		386AD7112B8F6BFA008C346D /* Frameworks */ = {
@@ -384,10 +386,10 @@
 		38DEBE302B9D67E800CD2A35 /* Service */ = {
 			isa = PBXGroup;
 			children = (
+				3817BA842D8C325500A1C50F /* AIUtils */,
 				38DEBE312B9D67F800CD2A35 /* OpenAI.swift */,
 				38DEBE382B9DDD0500CD2A35 /* AI.swift */,
 				38230CA22BA1DBA8002A52E9 /* Utils.swift */,
-				38E20A4A2BB5A7E20035A3AA /* TTS.swift */,
 				38DF1D4E2BB964EC0063A879 /* Clipboard.swift */,
 				388DABA72BC42798000B2739 /* Persistence.swift */,
 				388DABA92BC6C683000B2739 /* OCR.swift */,
@@ -444,6 +446,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				3817BA842D8C325500A1C50F /* AIUtils */,
 			);
 			name = Selected;
 			packageProductDependencies = (
@@ -513,7 +518,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1520;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					386AD7132B8F6BFA008C346D = {
 						CreatedOnToolsVersion = 15.2;
@@ -643,7 +648,6 @@
 				38F5E2A22B9AB361002FEEFE /* CodeSyntaxHighlighter.swift in Sources */,
 				3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */,
 				3801CA4E2BA522B6007D7868 /* Actions.swift in Sources */,
-				38E20A4B2BB5A7E20035A3AA /* TTS.swift in Sources */,
 				3860105C2C2FA0A700EB9AE7 /* PopResultView.swift in Sources */,
 				38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */,
 				38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */,
@@ -881,7 +885,6 @@
 		386AD73D2B8F6BFC008C346D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -901,7 +904,6 @@
 		386AD73E2B8F6BFC008C346D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -921,7 +923,6 @@
 		386AD7402B8F6BFC008C346D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
@@ -940,7 +941,6 @@
 		386AD7412B8F6BFC008C346D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;

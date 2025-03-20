@@ -50,10 +50,10 @@ struct Translation {
         switch Defaults[.aiService] {
             case "OpenAI":
                 if isWord(str: content) {
-                    let OpenAIWordTrans = OpenAIPrompt(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}", model: Defaults[.openAITranslationModel])
+                    let OpenAIWordTrans = OpenAIService(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}", model: Defaults[.openAITranslationModel])
                     await OpenAIWordTrans.chatOne(selectedText: content, completion: completion)
                 } else {
-                    let OpenAITrans2Chinese = OpenAIPrompt(prompt:"你是一位精通简体中文的专业翻译。翻译指定的内容到中文。规则：请直接回复翻译后的内容。内容为：{selected.text}", model: Defaults[.openAITranslationModel])
+                    let OpenAITrans2Chinese = OpenAIService(prompt:"你是一位精通简体中文的专业翻译。翻译指定的内容到中文。规则：请直接回复翻译后的内容。内容为：{selected.text}", model: Defaults[.openAITranslationModel])
                     await OpenAITrans2Chinese.chatOne(selectedText: content, completion: completion)
                 }
             case "Claude":
@@ -70,7 +70,7 @@ struct Translation {
     private func contentTrans2English(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
-                let OpenAITrans2English = OpenAIPrompt(prompt:"You are a professional translator proficient in English. Translate the following content into English. Rule: reply with the translated content directly. The content is：{selected.text}", model: Defaults[.openAITranslationModel])
+                let OpenAITrans2English = OpenAIService(prompt:"You are a professional translator proficient in English. Translate the following content into English. Rule: reply with the translated content directly. The content is：{selected.text}", model: Defaults[.openAITranslationModel])
                 await OpenAITrans2English.chatOne(selectedText: content, completion: completion)
             case "Claude":
                 await ClaudeTrans2English.chatOne(selectedText: content, completion: completion)
@@ -111,30 +111,7 @@ struct ChatService: AIChatService{
 }
 
 
-class OpenAIService: AIChatService{
-    var openAI: OpenAIPrompt
-    
-    init(prompt: String, tools: [FunctionDefinition]? = nil, options: [String:String]) {
-        var fcs = [FunctionDefinition]()
-        if let tools = tools {
-            fcs.append(contentsOf: tools)
-        }
-        openAI = OpenAIPrompt(prompt: prompt, tools: fcs,  options: options)
-    }
-    
-    func chat(ctx: ChatContext, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
-        await openAI
-            .chat(ctx: ctx, completion: completion)
-    }
-    
-    func chatFollow(
-        index: Int,
-        userMessage: String,
-        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
-            await openAI
-                .chatFollow(index: index, userMessage: userMessage, completion: completion)
-        }
-}
+
 
 
 public protocol AIChatService {

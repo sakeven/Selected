@@ -12,7 +12,7 @@ class SpeackAction: Decodable {
     func generate(generic: GenericAction) -> PerformAction {
         return PerformAction(
             actionMeta: generic, complete: { ctx in
-                    await speak(ctx.Text)
+                await TTSManager.speak(ctx.Text)
             })
     }
 }

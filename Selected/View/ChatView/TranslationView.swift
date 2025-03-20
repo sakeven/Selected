@@ -81,7 +81,7 @@ struct TranslationView: View {
                 .cornerRadius(5)
                 Button {
                     Task{
-                        await speak(MarkdownContent(self.transText).renderPlainText())
+                        await TTSManager.speak(MarkdownContent(self.transText).renderPlainText())
                     }
                 } label: {
                     Image(systemName: "play.circle")

@@ -65,7 +65,7 @@ struct MessageView: View {
                     .cornerRadius(5)
                     Button {
                         Task {
-                            await speak(MarkdownContent(message.message).renderPlainText(), view: false)
+                            await TTSManager.speak(MarkdownContent(message.message).renderPlainText(), view: false)
                         }
                     } label: {
                         Image(systemName: "play.circle")

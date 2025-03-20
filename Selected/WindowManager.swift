@@ -260,7 +260,7 @@ private class WindowController: NSWindowController, NSWindowDelegate {
     }
 
     deinit{
-        stopSpeak()
+        TTSManager.stopSpeak()
         if let onClose = onClose {
             onClose()
         }

@@ -9,6 +9,7 @@ import Foundation
 import SwiftAnthropic
 import Defaults
 
+// MARK: - 模型与扩展
 
 public typealias ClaudeModel = Model
 
@@ -18,46 +19,131 @@ extension ClaudeModel: @retroactive CaseIterable {
     }
 }
 
+// MARK: - 工具使用数据模型
+
 fileprivate struct ToolUse {
     let id: String
     let name: String
     var input: String
 }
 
+// MARK: - 工具管理模块
 
-fileprivate func genTools(functions: [FunctionDefinition]?) -> [MessageParameter.Tool] {
-    guard let functions = functions else {
-        return []
+fileprivate struct ToolsManager {
+
+    /// 根据 FunctionDefinition 列表生成工具描述
+    static func generateTools(from functions: [FunctionDefinition]?) -> [MessageParameter.Tool] {
+        guard let functions = functions else { return [] }
+        var tools = [MessageParameter.Tool]()
+        for fc in functions {
+            let schema = try! JSONDecoder().decode(MessageParameter.Tool.JSONSchema.self, from: fc.parameters.data(using: .utf8)!)
+            let tool = MessageParameter.Tool(name: fc.name, description: fc.description, inputSchema: schema)
+            tools.append(tool)
+        }
+        return tools
     }
 
-    var _tools = [MessageParameter.Tool]()
-    for fc in functions {
-        let p = try! JSONDecoder().decode(MessageParameter.Tool.JSONSchema.self, from: fc.parameters.data(using: .utf8)!)
-        let tool = MessageParameter.Tool(name: fc.name, description: fc.description, inputSchema: p)
-        _tools.append(tool)
+    /// 根据工具使用列表调用相应的工具函数，并返回工具调用结果消息
+    static func callTools(
+        index: inout Int,
+        toolUseList: [ToolUse],
+        with functionDefinitions: [FunctionDefinition],
+        options: [String: String],
+        completion: @escaping (_: Int, _: ResponseMessage) -> Void
+    ) async throws -> [MessageParameter.Message] {
+        index += 1
+        var fcSet = [String: FunctionDefinition]()
+        for fc in functionDefinitions {
+            fcSet[fc.name] = fc
+        }
+        var toolUseResults = [MessageParameter.Message.Content.ContentObject]()
+
+        for tool in toolUseList {
+            if tool.name == svgToolClaudeDef.name {
+                let rawMessage = String(format: NSLocalizedString("calling_tool", comment: "tool message"), tool.name)
+                var message = ResponseMessage(message: rawMessage, role: .tool, new: true, status: .updating)
+                completion(index, message)
+                // 打开 SVG 浏览器预览
+                _ = openSVGInBrowser(svgData: tool.input)
+                message = ResponseMessage(message: String(format: NSLocalizedString("display_svg", comment: "")), role: .tool, new: true, status: .finished)
+                completion(index, message)
+                toolUseResults.append(.toolResult(tool.id, "display svg successfully"))
+                continue
+            }
+
+            guard let fc = fcSet[tool.name] else { continue }
+            let rawMessage = String(format: NSLocalizedString("calling_tool", comment: "tool message"), tool.name)
+            let message = ResponseMessage(message: rawMessage, role: .tool, new: true, status: .updating)
+            if let template = fc.template {
+                message.message = renderTemplate(templateString: template, json: tool.input)
+            }
+            completion(index, message)
+
+            if let ret = try fc.Run(arguments: tool.input, options: options) {
+                let resultMessage = ResponseMessage(message: ret, role: .tool, new: true, status: .finished)
+                if let show = fc.showResult, !show {
+                    resultMessage.message = fc.template != nil ? "" : String(format: NSLocalizedString("called_tool", comment: "tool message"), fc.name)
+                }
+                completion(index, resultMessage)
+                toolUseResults.append(.toolResult(tool.id, ret))
+            }
+        }
+        return [.init(role: .user, content: .list(toolUseResults))]
     }
-    return _tools
 }
 
-fileprivate func createQuery(tools: [MessageParameter.Tool]) -> MessageParameter {
-    return MessageParameter(
-        model: .other(Defaults[.claudeModel]),
-        messages: [],
-        maxTokens: 4096,
-        system: MessageParameter.System.text(systemPrompt()),
-        tools: tools
-    )
+// MARK: - 查询管理模块
+
+struct QueryManager {
+    private(set) var query: MessageParameter
+    private let _tools: [MessageParameter.Tool]
+
+    init(model: Model, systemPrompt: String, tools: [MessageParameter.Tool]) {
+        self.query = MessageParameter(
+            model: .other(model.value),
+            messages: [],
+            maxTokens: 4096,
+            system: MessageParameter.System.text(systemPrompt),
+            tools: tools
+        )
+        self._tools = tools
+    }
+
+    mutating func update(with message: MessageParameter.Message) {
+        var messages = query.messages
+        messages.append(message)
+        query = MessageParameter(
+            model: .other(query.model),
+            messages: messages,
+            maxTokens: 4096,
+            system: query.system,
+            tools: self._tools
+        )
+    }
+
+    mutating func update(with messages: [MessageParameter.Message]) {
+        var _messages = query.messages
+        _messages.append(contentsOf: messages)
+        query = MessageParameter(
+            model: .other(query.model),
+            messages: _messages,
+            maxTokens: 4096,
+            system: query.system,
+            tools: self._tools
+        )
+    }
 }
 
-class ClaudeService: AIChatService{
-    let service: AnthropicService
-    let prompt: String
-    let options: [String:String]
-    var query: MessageParameter
-    var toolsParameter: [MessageParameter.Tool]
-    var tools: [FunctionDefinition]?
+// MARK: - 聊天服务模块
 
-    init(prompt: String, tools: [FunctionDefinition]? = nil, options: [String:String] = [String:String]()){
+class ClaudeService: AIChatService {
+    private let service: AnthropicService
+    private let prompt: String
+    private let options: [String: String]
+    private var queryManager: QueryManager
+    private let tools: [FunctionDefinition]?
+
+    init(prompt: String, tools: [FunctionDefinition]? = nil, options: [String: String] = [:]) {
         var apiHost = "https://api.anthropic.com"
         if Defaults[.claudeAPIHost] != "" {
             apiHost = Defaults[.claudeAPIHost]
@@ -65,65 +151,66 @@ class ClaudeService: AIChatService{
         service = AnthropicServiceFactory.service(apiKey: Defaults[.claudeAPIKey], basePath: apiHost, betaHeaders: nil)
         self.prompt = prompt
         self.options = options
-        var toolsParameter = genTools(functions: tools)
-        toolsParameter.append(svgToolClaudeDef)
-        self.toolsParameter = toolsParameter
+
+        // 生成工具描述并添加 SVG 工具
+        var toolsParam = ToolsManager.generateTools(from: tools)
+        toolsParam.append(svgToolClaudeDef)
         self.tools = tools
-        self.query = createQuery(tools: self.toolsParameter)
+        self.queryManager = QueryManager(model: .other(Defaults[.claudeModel]), systemPrompt: systemPrompt(), tools: toolsParam)
     }
 
-    func chatOne(
-        selectedText: String,
-        completion: @escaping (_: String) -> Void) async -> Void {
-            let userMessage = replaceOptions(content: prompt, selectedText: selectedText, options: options)
-            let parameters = MessageParameter(model: .claude35Sonnet, messages: [.init(role: .user, content: .text(userMessage))], maxTokens: 4096)
-            do {
-                let stream = try await service.streamMessage(parameters)
-                for try await result in stream {
-                    let content = result.delta?.text ?? ""
-                    if content != "" {
-                        completion(content)
-                    }
+    /// 单次聊天：仅发送一条消息，返回流式响应内容
+    func chatOne(selectedText: String, completion: @escaping (_: String) -> Void) async {
+        let userMessage = replaceOptions(content: prompt, selectedText: selectedText, options: options)
+        let parameters = MessageParameter(
+            model: .claude35Sonnet,
+            messages: [.init(role: .user, content: .text(userMessage))],
+            maxTokens: 4096
+        )
+        do {
+            let stream = try await service.streamMessage(parameters)
+            for try await result in stream {
+                let content = result.delta?.text ?? ""
+                if !content.isEmpty {
+                    completion(content)
                 }
+            }
+        } catch {
+            NSLog("claude error \(error)")
+        }
+    }
+
+    /// 聊天跟进：追加用户消息，并循环处理直到得到完整回复
+    func chatFollow(index: Int, userMessage: String, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async {
+        queryManager.update(with: .init(role: .user, content: .text(userMessage)))
+        var newIndex = index
+        while let last = queryManager.query.messages.last, last.role != MessageParameter.Message.Role.assistant.rawValue {
+            do {
+                try await chatOneRound(index: &newIndex, completion: completion)
             } catch {
-                NSLog("claude error \(error)")
+                newIndex += 1
+                let localMsg = String(format: NSLocalizedString("error_exception", comment: "system info"), error as CVarArg)
+                let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)
+                completion(newIndex, message)
+                return
+            }
+            if newIndex - index >= MAX_CHAT_ROUNDS {
+                newIndex += 1
+                let localMsg = NSLocalizedString("Too much rounds, please start a new chat", comment: "system info")
+                let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)
+                completion(newIndex, message)
                 return
             }
         }
+    }
 
-    func chatFollow(
-        index: Int,
-        userMessage: String,
-        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
-            updateQuery(message:.init(role: .user, content: .text(userMessage)) )
-            var newIndex = index
-            while let last = query.messages.last, last.role != MessageParameter.Message.Role.assistant.rawValue {
-                do {
-                    try await chatOneRound(index: &newIndex, completion: completion)
-                } catch {
-                    newIndex += 1
-                    let localMsg = String(format: NSLocalizedString("error_exception", comment: "system info"), error as CVarArg)
-                    let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)
-                    completion(newIndex, message)
-                    return
-                }
-                if newIndex-index >= MAX_CHAT_ROUNDS {
-                    newIndex += 1
-                    let localMsg = NSLocalizedString("Too much rounds, please start a new chat", comment: "system info")
-                    let message = ResponseMessage(message: localMsg, role: .system, new: true, status:.failure)
-                    completion(newIndex, message)
-                    return
-                }
-            }
-        }
-
-    func chat(ctx: ChatContext, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
+    /// 根据聊天上下文进行整体对话
+    func chat(ctx: ChatContext, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async {
         var userMessage = renderChatContent(content: prompt, chatCtx: ctx, options: options)
         userMessage = replaceOptions(content: userMessage, selectedText: ctx.text, options: options)
-        updateQuery(message: .init(role: .user, content: .text(userMessage)))
-
+        queryManager.update(with: .init(role: .user, content: .text(userMessage)))
         var index = -1
-        while let last = query.messages.last, last.role != MessageParameter.Message.Role.assistant.rawValue {
+        while let last = queryManager.query.messages.last, last.role != MessageParameter.Message.Role.assistant.rawValue {
             do {
                 try await chatOneRound(index: &index, completion: completion)
             } catch {
@@ -136,167 +223,81 @@ class ClaudeService: AIChatService{
             if index >= MAX_CHAT_ROUNDS {
                 index += 1
                 let localMsg = NSLocalizedString("Too much rounds, please start a new chat", comment: "system info")
-                let message = ResponseMessage(message: localMsg, role: .system, new: true, status:.failure)
+                let message = ResponseMessage(message: localMsg, role: .system, new: true, status: .failure)
                 completion(index, message)
                 return
             }
         }
     }
 
+    /// 单轮聊天处理：流式接收回复，并处理可能的工具调用
+    private func chatOneRound(index: inout Int, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async throws {
+        NSLog("index is \(index)")
+        var assistantMessage = ""
+        var toolParameters = ""
+        var toolUseList = [ToolUse]()
+        var lastToolUseBlockIndex = -1
 
-    func chatOneRound(
-        index: inout Int,
-        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async throws -> Void {
-            NSLog("index is \(index)")
-            var assistantMessage = ""
-
-            var toolParameters = ""
-            var toolUseList = [ToolUse]()
-            var lastToolUseBlockIndex = -1
-
-            completion(index+1, ResponseMessage(message: NSLocalizedString("waiting", comment: "system info"), role: .system, new: true, status: .initial))
-            let stream = try await service.streamMessage(query)
-            for try await result in stream {
-                let content = result.delta?.text ?? ""
-                if content != "" {
-                    if assistantMessage == "" {
-                        index += 1
+        completion(index + 1, ResponseMessage(message: NSLocalizedString("waiting", comment: "system info"), role: .system, new: true, status: .initial))
+        let stream = try await service.streamMessage(queryManager.query)
+        for try await result in stream {
+            let content = result.delta?.text ?? ""
+            if !content.isEmpty {
+                if assistantMessage.isEmpty {
+                    index += 1
+                }
+                completion(index, ResponseMessage(message: content, role: .assistant, new: assistantMessage.isEmpty, status: .updating))
+                assistantMessage += content
+            }
+            switch result.streamEvent {
+                case .contentBlockStart:
+                    if let toolUse = result.contentBlock?.toolUse {
+                        toolUseList.append(ToolUse(id: toolUse.id, name: toolUse.name, input: ""))
+                        toolParameters = ""
+                        lastToolUseBlockIndex = result.index!
                     }
-                    completion(index, ResponseMessage(message: content, role: .assistant, new: assistantMessage == "", status: .updating))
-                    assistantMessage += content
-                }
-                switch result.streamEvent {
-                    case .contentBlockStart:
-                        if let toolUse = result.contentBlock?.toolUse {
-                            toolUseList.append(ToolUse(id: toolUse.id, name: toolUse.name, input: ""))
-                            toolParameters = ""
-                            lastToolUseBlockIndex = result.index!
-                        }
-                    case .contentBlockDelta:
-                        if lastToolUseBlockIndex == result.index! {
-                            toolParameters += result.delta?.partialJson ?? ""
-                        }
-                    case .contentBlockStop:
-                        if lastToolUseBlockIndex == result.index! {
-                            var toolUse = toolUseList[toolUseList.count-1]
-                            toolUse.input = jsonify(toolParameters)
-                            toolUseList[toolUseList.count-1] = toolUse
-                        }
-                    default:
-                        break
-                }
+                case .contentBlockDelta:
+                    if lastToolUseBlockIndex == result.index! {
+                        toolParameters += result.delta?.partialJson ?? ""
+                    }
+                case .contentBlockStop:
+                    if lastToolUseBlockIndex == result.index! {
+                        var toolUse = toolUseList.last!
+                        toolUse.input = jsonify(toolParameters)
+                        toolUseList[toolUseList.count - 1] = toolUse
+                    }
+                default:
+                    break
             }
-
-            if !assistantMessage.isEmpty {
-                completion(index, ResponseMessage(message: "", role: .assistant, new: false, status: .finished))
-            }
-
-            if toolUseList.isEmpty {
-                updateQuery(message: .init(role: .assistant, content: .text(assistantMessage)))
-                return
-            }
-
-            var contents =  [MessageParameter.Message.Content.ContentObject]()
-            contents.append(.text(assistantMessage))
-            for tool in toolUseList {
-                let input =
-                try JSONDecoder().decode(SwiftAnthropic.MessageResponse.Content.Input.self, from: tool.input.data(using: .utf8)!)
-                contents.append(.toolUse(tool.id, tool.name, input))
-            }
-            updateQuery(message: .init(role: .assistant, content: .list(contents)))
-
-            let toolMessages = try await callTools(index: &index, toolUseList: toolUseList, completion: completion)
-            if toolMessages.isEmpty {
-                return
-            }
-            updateQuery(messages: toolMessages)
         }
 
-    func updateQuery(message: MessageParameter.Message) {
-        var messages = query.messages
-        messages.append(message)
-        query = MessageParameter(
-            model: .other(query.model),
-            messages: messages,
-            maxTokens: 4096,
-            system: query.system,
-            tools: toolsParameter
-        )
-    }
-
-    func updateQuery(messages: [MessageParameter.Message]) {
-        var _messages = query.messages
-        _messages.append(contentsOf: messages)
-        query = MessageParameter(
-            model: .other(query.model),
-            messages: _messages,
-            maxTokens: 4096,
-            system: query.system,
-            tools: toolsParameter
-        )
-    }
-
-    private func callTools(
-        index: inout Int,
-        toolUseList: [ToolUse],
-        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async throws -> [MessageParameter.Message] {
-            guard let fcs = tools else {
-                return []
-            }
-
-            index += 1
-            NSLog("tool index \(index)")
-
-            var fcSet = [String: FunctionDefinition]()
-            for fc in fcs {
-                fcSet[fc.name] = fc
-            }
-
-            var messages = [MessageParameter.Message]()
-
-            var toolUseResults = [MessageParameter.Message.Content.ContentObject]()
-            for tool in toolUseList {
-                if tool.name == svgToolClaudeDef.name {
-                    let rawMessage = String(format: NSLocalizedString("calling_tool", comment: "tool message"), tool.name)
-                    var message =  ResponseMessage(message: rawMessage, role: .tool, new: true, status: .updating)
-                    completion(index, message)
-                    _ = openSVGInBrowser(svgData: tool.input)
-                    message = ResponseMessage(message: String(format: NSLocalizedString("display_svg", comment: "")), role: .tool, new: true, status: .finished)
-                    completion(index, message)
-                    toolUseResults.append(.toolResult(tool.id, "display svg successfully"))
-                    continue
-                }
-
-                guard let f = fcSet[tool.name] else {
-                    continue
-                }
-
-                let rawMessage = String(format: NSLocalizedString("calling_tool", comment: "tool message"), tool.name)
-                let message =  ResponseMessage(message: rawMessage, role: .tool, new: true, status: .updating)
-                if let template = f.template {
-                    message.message =  renderTemplate(templateString: template, json: tool.input)
-                    NSLog("\(message.message)")
-                }
-
-                completion(index, message)
-
-                if let ret = try f.Run(arguments: tool.input, options: options) {
-                    let message = ResponseMessage(message: ret, role: .tool, new: true, status: .finished)
-                    if let show = f.showResult, !show {
-                        if f.template != nil {
-                            message.message = ""
-                            message.new = false
-                        } else {
-                            message.message = String(format: NSLocalizedString("called_tool", comment: "tool message"), f.name)
-                        }
-                    }
-                    completion(index, message)
-                    toolUseResults.append(.toolResult(tool.id, ret))
-                }
-            }
-            messages.append(.init(role: .user, content: .list(toolUseResults)))
-            return messages
+        if !assistantMessage.isEmpty {
+            completion(index, ResponseMessage(message: "", role: .assistant, new: false, status: .finished))
         }
+
+        // 如果没有工具调用，直接更新查询记录
+        if toolUseList.isEmpty {
+            queryManager.update(with: .init(role: .assistant, content: .text(assistantMessage)))
+            return
+        }
+
+        // 将工具调用封装到查询记录中
+        var contents = [MessageParameter.Message.Content.ContentObject]()
+        contents.append(.text(assistantMessage))
+        for tool in toolUseList {
+            let input = try JSONDecoder().decode(SwiftAnthropic.MessageResponse.Content.Input.self, from: tool.input.data(using: .utf8)!)
+            contents.append(.toolUse(tool.id, tool.name, input))
+        }
+        queryManager.update(with: .init(role: .assistant, content: .list(contents)))
+
+        // 调用工具，并将工具结果追加到查询记录
+        if let functions = tools {
+            let toolMessages = try await ToolsManager.callTools(index: &index, toolUseList: toolUseList, with: functions, options: options, completion: completion)
+            if !toolMessages.isEmpty {
+                queryManager.update(with: toolMessages)
+            }
+        }
+    }
 }
 
 let ClaudeWordTrans = ClaudeService(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}")

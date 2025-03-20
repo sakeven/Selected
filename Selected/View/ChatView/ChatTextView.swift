@@ -135,14 +135,12 @@ struct ChatInputView: View {
                 }
         }
     }
-
+    
     func submitMessage(){
         let message = newText
         newText = ""
-        DispatchQueue.global(qos: .background).async {
-            task = Task {
-                await viewModel.submit(message: message)
-            }
+        task = Task {
+            await viewModel.submit(message: message)
         }
     }
 }
