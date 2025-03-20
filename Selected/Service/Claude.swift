@@ -36,8 +36,8 @@ fileprivate struct ToolsManager {
         guard let functions = functions else { return [] }
         var tools = [MessageParameter.Tool]()
         for fc in functions {
-            let schema = try! JSONDecoder().decode(MessageParameter.Tool.JSONSchema.self, from: fc.parameters.data(using: .utf8)!)
-            let tool = MessageParameter.Tool(name: fc.name, description: fc.description, inputSchema: schema)
+            let schema = try! JSONDecoder().decode(JSONSchema.self, from: fc.parameters.data(using: .utf8)!)
+            let tool = MessageParameter.Tool.function(name: fc.name, description: fc.description, inputSchema: schema)
             tools.append(tool)
         }
         return tools
@@ -59,7 +59,7 @@ fileprivate struct ToolsManager {
         var toolUseResults = [MessageParameter.Message.Content.ContentObject]()
 
         for tool in toolUseList {
-            if tool.name == svgToolClaudeDef.name {
+            if tool.name == "display_svg" {
                 let rawMessage = String(format: NSLocalizedString("calling_tool", comment: "tool message"), tool.name)
                 var message = ResponseMessage(message: rawMessage, role: .tool, new: true, status: .updating)
                 completion(index, message)
@@ -307,7 +307,7 @@ let ClaudeTrans2Chinese = ClaudeService(prompt:"你是一位精通简体中文�
 let ClaudeTrans2English = ClaudeService(prompt:"You are a professional translator proficient in English. Translate the following content into English. Rule: reply with the translated content directly. The content is：{selected.text}")
 
 
-let svgToolClaudeDef = MessageParameter.Tool(
+let svgToolClaudeDef = MessageParameter.Tool.function(
     name: "display_svg",
     description: "When user requests you to create an SVG, you can use this tool to display the SVG.",
     inputSchema: .init(type: .object, properties:[

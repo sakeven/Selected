@@ -27,6 +27,8 @@ struct SettingsView: View {
     @State var selectedOpenAIModel: String
     @State var customOpenAIMode: String
     @Default(.openAIVoice) var openAIVoice
+    @Default(.openAITTSModel) var openAITTSModel
+    @Default(.openAITTSInstructions) var openAITTSInstructions
     @Default(.openAITranslationModel) var openAITranslationModel
 
 
@@ -134,6 +136,15 @@ struct SettingsView: View {
                                 Text($0.rawValue)
                             }
                         }).pickerStyle(DefaultPickerStyle())
+
+                        Picker("TTSModel", selection: $openAITTSModel, content: {
+                            ForEach(OpenAITTSModels, id: \.self) {
+                                Text($0)
+                            }
+                        }).pickerStyle(DefaultPickerStyle())
+                        if openAITTSModel == .gpt_4o_mini_tts {
+                            TextField("TTSInstructions", text: $openAITTSInstructions)
+                        }
                     }
 
                     Section(header: Text("Claude")) {

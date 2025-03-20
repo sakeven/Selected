@@ -13,6 +13,7 @@ import AVFoundation
 typealias OpenAIModel = Model
 
 let OpenAIModels: [Model] = [.gpt4_o, .gpt4_o_mini, .o1, .o1_mini, .o3_mini, .gpt4_turbo]
+let OpenAITTSModels: [Model] = [.gpt_4o_mini_tts, .tts_1, .tts_1_hd]
 let OpenAITranslationModels: [Model] = [.gpt4_o, .gpt4_o_mini]
 
 

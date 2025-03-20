@@ -73,9 +73,12 @@ public class TTSManager {
                                                  host: Defaults[.openAIAPIHost],
                                                  timeoutInterval: 60.0)
         let openAI = OpenAI(configuration: configuration)
-        let query = AudioSpeechQuery(model: .tts_1,
+        let model = Defaults[.openAITTSModel]
+        let instructions = model == .gpt_4o_mini_tts ? Defaults[.openAITTSInstructions] : ""
+        let query = AudioSpeechQuery(model: model,
                                      input: text,
                                      voice: Defaults[.openAIVoice],
+                                     instructions: instructions,
                                      responseFormat: .mp3,
                                      speed: 1.0)
 
@@ -103,9 +106,12 @@ public class TTSManager {
                                                  host: Defaults[.openAIAPIHost],
                                                  timeoutInterval: 60.0)
         let openAI = OpenAI(configuration: configuration)
-        let query = AudioSpeechQuery(model: .tts_1,
+        let model = Defaults[.openAITTSModel]
+        let instructions = model == .gpt_4o_mini_tts ? Defaults[.openAITTSInstructions] : ""
+        let query = AudioSpeechQuery(model: model,
                                      input: text,
                                      voice: Defaults[.openAIVoice],
+                                     instructions: instructions,
                                      responseFormat: .mp3,
                                      speed: 1.0)
         do {
