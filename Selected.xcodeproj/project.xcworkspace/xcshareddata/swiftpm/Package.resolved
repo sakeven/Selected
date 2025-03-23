@@ -1,5 +1,5 @@
 {
-  "originHash" : "fb972b440911e579493b6180c1bf72bb20838171c88b266242e1bf15995e8598",
+  "originHash" : "6d28b34e762c72b994715694d3e984fe4f33a4302652f7308cbe5bbc9e9fb18b",
   "pins" : [
     {
       "identity" : "ddmathparser",
@@ -94,10 +94,10 @@
     {
       "identity" : "openai",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/MacPaw/OpenAI",
+      "location" : "https://github.com/sakeven/OpenAI",
       "state" : {
-        "revision" : "1a7a5bae571b5ff096c8b2c1062577248214f52e",
-        "version" : "0.3.7"
+        "branch" : "main",
+        "revision" : "50a7ad1b9a38a87aa9c25c0fefb57f7d5946436f"
       }
     },
     {

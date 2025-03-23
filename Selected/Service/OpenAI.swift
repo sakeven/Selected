@@ -262,6 +262,13 @@ class OpenAIService: AIChatService{
                 messages.append(.tool(.init(content: "display svg successfully", toolCallId: tool.id)))
                 let message = ResponseMessage(message: NSLocalizedString("display_svg", comment: ""), role: .tool, new: true, status: .finished)
                 completion(index, message)
+            } else if tool.function.name == webSearchDef.name {
+                NSLog("web search prompt \(tool.function.arguments)")
+                let searchResult = await WebSearch.search(tool.function.arguments)
+                NSLog("web search result \(searchResult)")
+                messages.append(.tool(.init(content: searchResult, toolCallId: tool.id)))
+                let message = ResponseMessage(message: NSLocalizedString("Web Search", comment: ""), role: .tool, new: true, status: .finished)
+                completion(index, message)
             } else {
                 if let funcDef = functionMap[tool.function.name] {
                     print("call: \(tool.function.arguments)")
@@ -283,7 +290,7 @@ class OpenAIService: AIChatService{
     private static func createQuery(functions: [FunctionDefinition]?, model: OpenAIModel) -> ChatQuery {
         var tools: [ChatQuery.ChatCompletionToolParam]? = nil
         if let functions = functions {
-            var toolList: [ChatQuery.ChatCompletionToolParam] = [.init(function: dalle3Def), .init(function: svgToolOpenAIDef)]
+            var toolList: [ChatQuery.ChatCompletionToolParam] = [.init(function: dalle3Def), .init(function: svgToolOpenAIDef), .init(function: webSearchDef) ]
             for fc in functions {
                 let fcConverted = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
                     name: fc.name,
