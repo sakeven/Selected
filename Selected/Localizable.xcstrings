@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "·" : {
+
+    },
     "[%@]" : {
       "localizations" : {
         "zh-Hans" : {
@@ -41,6 +44,9 @@
           }
         }
       }
+    },
+    "1x" : {
+
     },
     "3 Months" : {
       "extractionState" : "manual",
@@ -476,6 +482,16 @@
         }
       }
     },
+    "Instructions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指令"
+          }
+        }
+      }
+    },
     "Keep History For" : {
       "localizations" : {
         "zh-Hans" : {
@@ -526,6 +542,16 @@
         }
       }
     },
+    "mp3" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mp3"
+          }
+        }
+      }
+    },
     "No results found" : {
       "localizations" : {
         "zh-Hans" : {
@@ -542,6 +568,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OpenAI"
+          }
+        }
+      }
+    },
+    "OpenAITTSInstructions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TTS 指令"
           }
         }
       }
@@ -789,6 +825,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "翻译"
+          }
+        }
+      }
+    },
+    "TTSModel" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TTS模型"
           }
         }
       }

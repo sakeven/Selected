@@ -1,5 +1,5 @@
 {
-  "originHash" : "9653e7da7685f3ff22928bd7f52e01d644555aa07e1ac5de5fce9a21e8609221",
+  "originHash" : "fb972b440911e579493b6180c1bf72bb20838171c88b266242e1bf15995e8598",
   "pins" : [
     {
       "identity" : "ddmathparser",
@@ -96,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/MacPaw/OpenAI",
       "state" : {
-        "revision" : "e59e4923acc924db51d415e99d0a76c7d54037e0",
-        "version" : "0.3.6"
+        "revision" : "1a7a5bae571b5ff096c8b2c1062577248214f52e",
+        "version" : "0.3.7"
       }
     },
     {
@@ -186,8 +186,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jamesrochabrun/SwiftAnthropic",
       "state" : {
-        "revision" : "a297d393f62d1d5341dfbac93b0e2f051297de9f",
-        "version" : "2.1.1"
+        "revision" : "c921b625dcbcc0653343ae63c89d1cbfed0bd539",
+        "version" : "2.1.3"
       }
     },
     {

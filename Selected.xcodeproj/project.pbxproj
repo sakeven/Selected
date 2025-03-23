@@ -65,6 +65,9 @@
 		38CC18B42B9C46CA0023DF18 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B32B9C46CA0023DF18 /* SettingsView.swift */; };
 		38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */; };
 		38CC554C2BA9B6E900069553 /* RunCommandAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC554B2BA9B6E900069553 /* RunCommandAction.swift */; };
+		38D1CA4C2D8E54970091A332 /* FunctionDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CA482D8E54970091A332 /* FunctionDefinition.swift */; };
+		38D1CA4D2D8E54970091A332 /* ImageGeneration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CA492D8E54970091A332 /* ImageGeneration.swift */; };
+		38D1CA4E2D8E54970091A332 /* TTSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CA4A2D8E54970091A332 /* TTSManager.swift */; };
 		38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DEBE312B9D67F800CD2A35 /* OpenAI.swift */; };
 		38DEBE372B9DD80300CD2A35 /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = 38DEBE362B9DD80300CD2A35 /* GoogleGenerativeAI */; };
 		38DEBE392B9DDD0500CD2A35 /* AI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DEBE382B9DDD0500CD2A35 /* AI.swift */; };
@@ -169,6 +172,9 @@
 		38CC18B32B9C46CA0023DF18 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopBarView.swift; sourceTree = "<group>"; };
 		38CC554B2BA9B6E900069553 /* RunCommandAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunCommandAction.swift; sourceTree = "<group>"; };
+		38D1CA482D8E54970091A332 /* FunctionDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionDefinition.swift; sourceTree = "<group>"; };
+		38D1CA492D8E54970091A332 /* ImageGeneration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGeneration.swift; sourceTree = "<group>"; };
+		38D1CA4A2D8E54970091A332 /* TTSManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSManager.swift; sourceTree = "<group>"; };
 		38DEBE312B9D67F800CD2A35 /* OpenAI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAI.swift; sourceTree = "<group>"; };
 		38DEBE382B9DDD0500CD2A35 /* AI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AI.swift; sourceTree = "<group>"; };
 		38DF1D492BB7A3BC0063A879 /* Option.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Option.swift; sourceTree = "<group>"; };
@@ -185,7 +191,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		3817BA842D8C325500A1C50F /* AIUtils */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = AIUtils; sourceTree = "<group>"; };
+		38D1CA682D8EC4300091A332 /* AIUtils */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = AIUtils; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -284,6 +290,7 @@
 				386AD7282B8F6BFC008C346D /* SelectedTests */,
 				386AD7322B8F6BFC008C346D /* SelectedUITests */,
 				386AD7152B8F6BFA008C346D /* Products */,
+				38D1CA572D8EC1EE0091A332 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -383,10 +390,20 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		38D1CA572D8EC1EE0091A332 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				38D1CA482D8E54970091A332 /* FunctionDefinition.swift */,
+				38D1CA492D8E54970091A332 /* ImageGeneration.swift */,
+				38D1CA4A2D8E54970091A332 /* TTSManager.swift */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		38DEBE302B9D67E800CD2A35 /* Service */ = {
 			isa = PBXGroup;
 			children = (
-				3817BA842D8C325500A1C50F /* AIUtils */,
+				38D1CA682D8EC4300091A332 /* AIUtils */,
 				38DEBE312B9D67F800CD2A35 /* OpenAI.swift */,
 				38DEBE382B9DDD0500CD2A35 /* AI.swift */,
 				38230CA22BA1DBA8002A52E9 /* Utils.swift */,
@@ -448,7 +465,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				3817BA842D8C325500A1C50F /* AIUtils */,
+				38D1CA682D8EC4300091A332 /* AIUtils */,
 			);
 			name = Selected;
 			packageProductDependencies = (
@@ -649,6 +666,9 @@
 				3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */,
 				3801CA4E2BA522B6007D7868 /* Actions.swift in Sources */,
 				3860105C2C2FA0A700EB9AE7 /* PopResultView.swift in Sources */,
+				38D1CA4C2D8E54970091A332 /* FunctionDefinition.swift in Sources */,
+				38D1CA4D2D8E54970091A332 /* ImageGeneration.swift in Sources */,
+				38D1CA4E2D8E54970091A332 /* TTSManager.swift in Sources */,
 				38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */,
 				38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */,
 				38DF1D522BC2408A0063A879 /* ClipView.swift in Sources */,

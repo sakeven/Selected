@@ -30,6 +30,8 @@ extension Defaults.Keys {
     static let openAITranslationModel = Key<OpenAIModel>("OpenAITranslationModel", default: .gpt4_o_mini)
 
     static let openAIVoice = Key<AudioSpeechQuery.AudioSpeechVoice>("OpenAIVoice", default: .shimmer)
+    static let openAITTSModel = Key<OpenAIModel>("OpenAITTSModel", default: .gpt_4o_mini_tts)
+    static let openAITTSInstructions = Key<String>("OpenAITTSInstructions", default: "")
 
     
     // Gemini
