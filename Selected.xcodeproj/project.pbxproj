@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -65,9 +65,9 @@
 		38CC18B42B9C46CA0023DF18 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B32B9C46CA0023DF18 /* SettingsView.swift */; };
 		38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */; };
 		38CC554C2BA9B6E900069553 /* RunCommandAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC554B2BA9B6E900069553 /* RunCommandAction.swift */; };
-		38D1CA4C2D8E54970091A332 /* FunctionDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CA482D8E54970091A332 /* FunctionDefinition.swift */; };
-		38D1CA4D2D8E54970091A332 /* ImageGeneration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CA492D8E54970091A332 /* ImageGeneration.swift */; };
-		38D1CA4E2D8E54970091A332 /* TTSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CA4A2D8E54970091A332 /* TTSManager.swift */; };
+		38D1CAC22D9179370091A332 /* TTSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CAC02D9179370091A332 /* TTSManager.swift */; };
+		38D1CAC32D9179370091A332 /* ImageGeneration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CABF2D9179370091A332 /* ImageGeneration.swift */; };
+		38D1CAC42D9179370091A332 /* FunctionDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CABE2D9179370091A332 /* FunctionDefinition.swift */; };
 		38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DEBE312B9D67F800CD2A35 /* OpenAI.swift */; };
 		38DEBE372B9DD80300CD2A35 /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = 38DEBE362B9DD80300CD2A35 /* GoogleGenerativeAI */; };
 		38DEBE392B9DDD0500CD2A35 /* AI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DEBE382B9DDD0500CD2A35 /* AI.swift */; };
@@ -172,9 +172,9 @@
 		38CC18B32B9C46CA0023DF18 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		38CC18B52B9C7B7C0023DF18 /* PopBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopBarView.swift; sourceTree = "<group>"; };
 		38CC554B2BA9B6E900069553 /* RunCommandAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunCommandAction.swift; sourceTree = "<group>"; };
-		38D1CA482D8E54970091A332 /* FunctionDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionDefinition.swift; sourceTree = "<group>"; };
-		38D1CA492D8E54970091A332 /* ImageGeneration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGeneration.swift; sourceTree = "<group>"; };
-		38D1CA4A2D8E54970091A332 /* TTSManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSManager.swift; sourceTree = "<group>"; };
+		38D1CABE2D9179370091A332 /* FunctionDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionDefinition.swift; sourceTree = "<group>"; };
+		38D1CABF2D9179370091A332 /* ImageGeneration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGeneration.swift; sourceTree = "<group>"; };
+		38D1CAC02D9179370091A332 /* TTSManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSManager.swift; sourceTree = "<group>"; };
 		38DEBE312B9D67F800CD2A35 /* OpenAI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAI.swift; sourceTree = "<group>"; };
 		38DEBE382B9DDD0500CD2A35 /* AI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AI.swift; sourceTree = "<group>"; };
 		38DF1D492BB7A3BC0063A879 /* Option.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Option.swift; sourceTree = "<group>"; };
@@ -189,10 +189,6 @@
 		38F5E2A12B9AB361002FEEFE /* CodeSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeSyntaxHighlighter.swift; sourceTree = "<group>"; };
 		38F93F682D86E45E00D1C208 /* MarkdowLateXView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkdowLateXView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		38D1CA682D8EC4300091A332 /* AIUtils */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = AIUtils; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		386AD7112B8F6BFA008C346D /* Frameworks */ = {
@@ -290,7 +286,6 @@
 				386AD7282B8F6BFC008C346D /* SelectedTests */,
 				386AD7322B8F6BFC008C346D /* SelectedUITests */,
 				386AD7152B8F6BFA008C346D /* Products */,
-				38D1CA572D8EC1EE0091A332 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -390,20 +385,20 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
-		38D1CA572D8EC1EE0091A332 /* Recovered References */ = {
+		38D1CAC12D9179370091A332 /* AIUtils */ = {
 			isa = PBXGroup;
 			children = (
-				38D1CA482D8E54970091A332 /* FunctionDefinition.swift */,
-				38D1CA492D8E54970091A332 /* ImageGeneration.swift */,
-				38D1CA4A2D8E54970091A332 /* TTSManager.swift */,
+				38D1CABE2D9179370091A332 /* FunctionDefinition.swift */,
+				38D1CABF2D9179370091A332 /* ImageGeneration.swift */,
+				38D1CAC02D9179370091A332 /* TTSManager.swift */,
 			);
-			name = "Recovered References";
+			path = AIUtils;
 			sourceTree = "<group>";
 		};
 		38DEBE302B9D67E800CD2A35 /* Service */ = {
 			isa = PBXGroup;
 			children = (
-				38D1CA682D8EC4300091A332 /* AIUtils */,
+				38D1CAC12D9179370091A332 /* AIUtils */,
 				38DEBE312B9D67F800CD2A35 /* OpenAI.swift */,
 				38DEBE382B9DDD0500CD2A35 /* AI.swift */,
 				38230CA22BA1DBA8002A52E9 /* Utils.swift */,
@@ -463,9 +458,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				38D1CA682D8EC4300091A332 /* AIUtils */,
 			);
 			name = Selected;
 			packageProductDependencies = (
@@ -662,13 +654,13 @@
 				38230CA12B9F44FC002A52E9 /* BarButton.swift in Sources */,
 				386AD7572B90D867008C346D /* GetText.swift in Sources */,
 				388DABA82BC42798000B2739 /* Persistence.swift in Sources */,
+				38D1CAC22D9179370091A332 /* TTSManager.swift in Sources */,
+				38D1CAC32D9179370091A332 /* ImageGeneration.swift in Sources */,
+				38D1CAC42D9179370091A332 /* FunctionDefinition.swift in Sources */,
 				38F5E2A22B9AB361002FEEFE /* CodeSyntaxHighlighter.swift in Sources */,
 				3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */,
 				3801CA4E2BA522B6007D7868 /* Actions.swift in Sources */,
 				3860105C2C2FA0A700EB9AE7 /* PopResultView.swift in Sources */,
-				38D1CA4C2D8E54970091A332 /* FunctionDefinition.swift in Sources */,
-				38D1CA4D2D8E54970091A332 /* ImageGeneration.swift in Sources */,
-				38D1CA4E2D8E54970091A332 /* TTSManager.swift in Sources */,
 				38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */,
 				38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */,
 				38DF1D522BC2408A0063A879 /* ClipView.swift in Sources */,

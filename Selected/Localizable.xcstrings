@@ -572,16 +572,6 @@
         }
       }
     },
-    "OpenAITTSInstructions" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "TTS 指令"
-          }
-        }
-      }
-    },
     "Options" : {
       "localizations" : {
         "zh-Hans" : {
@@ -829,12 +819,22 @@
         }
       }
     },
+    "TTSInstructions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TTS 指令"
+          }
+        }
+      }
+    },
     "TTSModel" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "TTS模型"
+            "value" : "TTS 模型"
           }
         }
       }
