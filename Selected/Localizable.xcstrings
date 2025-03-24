@@ -674,6 +674,16 @@
         }
       }
     },
+    "ReasoningEffort" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "推理强度"
+          }
+        }
+      }
+    },
     "Resume" : {
       "localizations" : {
         "zh-Hans" : {

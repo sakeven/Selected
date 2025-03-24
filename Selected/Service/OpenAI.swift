@@ -70,13 +70,13 @@ class OpenAIService: AIChatService{
     private func updateQuery(message: ChatQuery.ChatCompletionMessageParam) {
         var messages = query.messages
         messages.append(message)
-        query = ChatQuery(messages: messages, model: query.model, tools: query.tools)
+        query = ChatQuery(messages: messages, model: query.model, reasoningEffort: query.reasoningEffort, tools: query.tools)
     }
 
     private func updateQuery(messages: [ChatQuery.ChatCompletionMessageParam]) {
         var updatedMessages = query.messages
         updatedMessages.append(contentsOf: messages)
-        query = ChatQuery(messages: updatedMessages, model: query.model, tools: query.tools)
+        query = ChatQuery(messages: updatedMessages, model: query.model,  reasoningEffort: query.reasoningEffort, tools: query.tools)
     }
 
     /// 单轮对话，适合简单返回结果（流式返回）
@@ -84,7 +84,7 @@ class OpenAIService: AIChatService{
         var messages = query.messages
         let messageContent = replaceOptions(content: prompt, selectedText: selectedText, options: options)
         messages.append(.init(role: .user, content: messageContent)!)
-        let query = ChatQuery(messages: messages, model: query.model, tools: query.tools)
+        let query = ChatQuery(messages: messages, model: query.model, reasoningEffort: query.reasoningEffort, tools: query.tools)
 
         do {
             for try await result in openAI.chatsStream(query: query) {
@@ -299,9 +299,15 @@ class OpenAIService: AIChatService{
             return ChatQuery(messages: [], model: model, tools: nil)
         }
 
+        var reasoningEffort: ChatQuery.ReasoningEffort? = nil
+        if model == .o3_mini || model == .o1 || model == .o1_mini {
+            reasoningEffort = Defaults[.openAIModelReasoningEffort]
+        }
+
         return ChatQuery(
             messages: [.init(role: .developer, content: systemPrompt())!],
             model: model,
+            reasoningEffort: reasoningEffort,
             tools: tools
         )
     }

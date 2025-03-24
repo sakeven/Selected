@@ -24,6 +24,8 @@ extension Defaults.Keys {
     static let openAIAPIKey = Key<String>("OpenAIAPIKey", default: "")
     static let openAIAPIHost = Key<String>("OpenAIAPIHost",default: "api.openai.com")
     static let openAIModel = Key<OpenAIModel>("OpenAIModel", default: .gpt4_o)
+    static let openAIModelReasoningEffort = Key<ChatQuery.ReasoningEffort>("openAIModelReasoningEffort", default: .medium)
+
     static let openAITranslationModel = Key<OpenAIModel>("OpenAITranslationModel", default: .gpt4_o_mini)
 
     static let openAIVoice = Key<AudioSpeechQuery.AudioSpeechVoice>("OpenAIVoice", default: .shimmer)
@@ -54,6 +56,11 @@ enum ClipboardHistoryTime: String, Defaults.Serializable, CaseIterable {
     case ThreeMonths = "3 Months", SixMonths="6 Months", OneYear = "1 Year"
     
     var localizedName: LocalizedStringKey { LocalizedStringKey(rawValue) }
+}
+
+
+extension ChatQuery.ReasoningEffort: Defaults.Serializable, @retroactive CaseIterable{
+    public static var allCases: [ChatQuery.ReasoningEffort] = [.low, .medium, .high]
 }
 
 

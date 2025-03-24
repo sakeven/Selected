@@ -26,6 +26,7 @@ struct SettingsView: View {
     @Default(.openAIModel) var openAIModel
     @State var selectedOpenAIModel: String
     @State var customOpenAIMode: String
+    @Default(.openAIModelReasoningEffort) var openAIModelReasoningEffort
     @Default(.openAIVoice) var openAIVoice
     @Default(.openAITTSModel) var openAITTSModel
     @Default(.openAITTSInstructions) var openAITTSInstructions
@@ -115,6 +116,14 @@ struct SettingsView: View {
                                     }
                                     Defaults[.openAIModel] = customOpenAIMode
                                 }
+                        }
+
+                        if openAIModel == .o3_mini || openAIModel == .o1 || openAIModel == .o1_mini {
+                            Picker("ReasoningEffort", selection: $openAIModelReasoningEffort, content: {
+                                ForEach(ChatQuery.ReasoningEffort.allCases, id: \.self) {
+                                    Text($0.rawValue)
+                                }
+                            }).pickerStyle(DefaultPickerStyle())
                         }
 
                         Picker("Translation", selection: $openAITranslationModel, content: {
