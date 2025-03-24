@@ -39,8 +39,6 @@ struct SettingsView: View {
     @Default(.claudeAPIHost) var claudeAPIHost
     @Default(.claudeModel) var claudeModel
 
-    @Default(.useTextFieldInChat) var useTextFieldInChat
-
     @Default(.search) var searchURL
 
     @State var launchAtLogin: Bool
@@ -78,12 +76,6 @@ struct SettingsView: View {
                         TextField("Search URL", text: $searchURL)
 
                         SpotlightShortcutView()
-
-                        if #available(macOS 14.0, *) {
-                            Toggle(isOn: $useTextFieldInChat, label: {
-                                Text("Use TextField in AI Chat")
-                            })
-                        }
                     }
 
                     Section(header: Text("AIService")) {

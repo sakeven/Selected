@@ -96,7 +96,7 @@ struct ChatInputView: View {
     @State private var task: Task<Void, Never>? = nil
 
     var body: some View {
-        if #available(macOS 14.0, *), !Defaults[.useTextFieldInChat]  {
+        if #available(macOS 14.0, *) {
             ZStack(alignment: .leading){
                 if newText.isEmpty {
                     Text("Press cmd+enter to send new message")

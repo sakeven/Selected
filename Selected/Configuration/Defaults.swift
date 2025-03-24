@@ -18,9 +18,6 @@ extension Defaults.Keys {
     
     static let search = Key<String>("SearchURL", default: "https://www.google.com/search?q={selected.text}")
     
-
-    static let useTextFieldInChat = Key<Bool>("UseTextFieldInChat", default: false)
-
     static let aiService = Key<String>("AIService", default: "OpenAI")
     
     // OpenAI

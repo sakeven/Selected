@@ -859,16 +859,6 @@
         }
       }
     },
-    "Use TextField in AI Chat" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在 AI 对话里使用 TextField"
-          }
-        }
-      }
-    },
     "user" : {
       "extractionState" : "manual",
       "localizations" : {
