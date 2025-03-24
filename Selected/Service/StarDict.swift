@@ -25,7 +25,7 @@ class StarDict {
     init() {
         let fileManager = FileManager.default
         databaseFileURL = appSupportURL.appendingPathComponent("stardict.sqlite3")
-        NSLog("databaseFileURL: \(databaseFileURL.path)")
+        print("databaseFileURL: \(databaseFileURL.path)")
         if let bundleDatabasePath = Bundle.main.path(forResource: "stardict", ofType: "tar.gz") {
             if !fileManager.fileExists(atPath: databaseFileURL.path) {
                 extractTarGzFile(tarGzPath: bundleDatabasePath , destination: appSupportURL)

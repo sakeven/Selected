@@ -14,7 +14,7 @@ func recognizeTextInImage(_ image: NSImage) {
         return
     }
     
-    NSLog("recognizeTextInImage")
+    print("recognizeTextInImage")
     let request = VNRecognizeTextRequest { request, error in
         guard let observations = request.results as? [VNRecognizedTextObservation],
               error == nil else {
@@ -25,12 +25,12 @@ func recognizeTextInImage(_ image: NSImage) {
             guard let topCandidate = observation.topCandidates(1).first else {
                 continue
             }
-            NSLog(topCandidate.string)
+            print(topCandidate.string)
         }
     }
     request.recognitionLevel = .accurate
     var recognitionLanguages = Set( Locale.preferredLanguages)
-    NSLog("Preferred languages: \(recognitionLanguages)")
+    print("Preferred languages: \(recognitionLanguages)")
     recognitionLanguages.insert("en")
     request.recognitionLanguages = [String](recognitionLanguages)
     
@@ -40,5 +40,5 @@ func recognizeTextInImage(_ image: NSImage) {
     } catch {
         print("Error recognizing text: \(error)")
     }
-    NSLog("recognizeTextInImage end")
+    print("recognizeTextInImage end")
 }

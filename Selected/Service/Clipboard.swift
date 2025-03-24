@@ -37,7 +37,7 @@ class ClipService {
             guard let self = self else { return }
             guard Defaults[.enableClipboard] else { return }
 
-            NSLog("pasteboard event \(eventTypeMap[event.type]!)")
+            print("pasteboard event \(eventTypeMap[event.type]!)")
 
             if skip {
                 return
@@ -56,7 +56,7 @@ class ClipService {
 
     func pauseMonitor(_ id: String) {
         lock.lock()
-        NSLog("pasteboard \(id) pauseMonitor changeCount \(changeCount)")
+        print("pasteboard \(id) pauseMonitor changeCount \(changeCount)")
         skip = true
         lock.unlock()
     }
@@ -65,7 +65,7 @@ class ClipService {
         lock.lock()
         skip = false
         changeCount = pasteboard.changeCount
-        NSLog("pasteboard \(id) resumeMonitor changeCount \(changeCount)")
+        print("pasteboard \(id) resumeMonitor changeCount \(changeCount)")
         lock.unlock()
     }
 
@@ -80,14 +80,14 @@ class ClipService {
             return
         }
         changeCount = currentChangeCount
-        NSLog("pasteboard changeCount \(changeCount)")
+        print("pasteboard changeCount \(changeCount)")
 
         guard pasteboard.types != nil else {
             return
         }
 
         // 剪贴板内容发生变化，处理变化
-        NSLog("pasteboard \(String(describing: pasteboard.types))")
+        print("pasteboard \(String(describing: pasteboard.types))")
         guard let clipData = ClipData(pasteboard: pasteboard) else {
             return
         }

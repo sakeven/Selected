@@ -63,7 +63,7 @@ class ConfigurationManager {
     
     func loadConfiguration() {
         let fileURL = appSupportURL.appendingPathComponent(configurationFileName)
-        NSLog("UserConfiguration \(fileURL.absoluteString)")
+        print("UserConfiguration \(fileURL.absoluteString)")
         do {
             let data = try Data(contentsOf: fileURL)
             userConfiguration = try JSONDecoder().decode(UserConfiguration.self, from: data)

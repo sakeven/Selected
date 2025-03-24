@@ -30,7 +30,7 @@ func getSelectedTextByAX(bundleID: String) -> String {
                                                        kAXFocusedApplicationAttribute as CFString,
                                                        &focusedWindow)
     if error != .success {
-        NSLog("Unable to get focused window: \(error)")
+        print("Unable to get focused window: \(error)")
         return ""
     }
     
@@ -49,7 +49,7 @@ func getSelectedTextByAX(bundleID: String) -> String {
             if error == .success, let selectedText = selectedTextValue as? String {
                 return selectedText
             } else {
-                NSLog("Unable to get selected text: \(error)")
+                print("Unable to get selected text: \(error)")
             }
         }
     }
@@ -77,7 +77,7 @@ func getSelectedText() -> SelectedTextContext? {
     var ctx = SelectedTextContext()
     let bundleID = getBundleID()
     ctx.BundleID = bundleID
-    NSLog("bundleID \(bundleID)")
+    print("bundleID \(bundleID)")
     if bundleID == SelfBundleID {
         return nil
     }
@@ -92,7 +92,7 @@ func getSelectedText() -> SelectedTextContext? {
         // 辅助功能也会拿到网页内容，但是可能不够完整。暂时放弃获取地址栏内容
         // 地址栏的内容，无法通过脚本获取，但是可以通过辅助功能获取。
         //        selectedText = getSelectedTextByAX(bundleID: bundleID)
-        //        NSLog("browser \(selectedText)")
+        //        print("browser \(selectedText)")
         //        if selectedText.isEmpty {
         if let browserCtx = getSelectedTextByAppleScript(bundleID: bundleID) {
             selectedText = browserCtx.text
@@ -104,7 +104,7 @@ func getSelectedText() -> SelectedTextContext? {
     }
     
     if selectedText.isEmpty && SupportedCmdCAppList.contains(bundleID) {
-        NSLog("getSelectedTextBySimulateCommandC")
+        print("getSelectedTextBySimulateCommandC")
         selectedText = getSelectedTextBySimulateCommandC()
         if bundleID == "com.apple.iBooksX" {
             // hack for iBooks
@@ -180,7 +180,7 @@ func getSelectedTextBySimulateCommandC() -> String {
     ClipService.shared.pauseMonitor(id)
     defer {ClipService.shared.resumeMonitor(id)}
     
-    NSLog("changeCount PressCopyKey \(id)")
+    print("changeCount PressCopyKey \(id)")
     
     PressCopyKey()
     
@@ -191,11 +191,11 @@ func getSelectedTextBySimulateCommandC() -> String {
     }
     
     let selectText = pboard.string(forType: .string)
-    NSLog("changeCount a \(pboard.changeCount)")
+    print("changeCount a \(pboard.changeCount)")
     pboard.clearContents()
-    NSLog("last content: \(String(describing: lastCopyText))")
+    print("last content: \(String(describing: lastCopyText))")
     pboard.setString(lastCopyText ?? "", forType: .string)
-    NSLog("changeCount b \(pboard.changeCount)")
+    print("changeCount b \(pboard.changeCount)")
     
     return selectText ?? ""
 }
@@ -232,7 +232,7 @@ func isCurrentFocusedElementEditable() -> Bool? {
     if valueResult == .success, value != nil {
         var isAttributeSettable: DarwinBoolean = false
         AXUIElementIsAttributeSettable(axFocusedElement, kAXValueAttribute as CFString, &isAttributeSettable)
-        NSLog("editable \(isAttributeSettable.boolValue)")
+        print("editable \(isAttributeSettable.boolValue)")
         return isAttributeSettable.boolValue
     }
     return nil
@@ -307,7 +307,7 @@ func getSelectedTextByAppleScript(bundleID: String) -> BroswerSelectedTextContex
         return BroswerSelectedTextContext(url: url, text: selected)
     }
     
-    NSLog("unknown \(bundleID)")
+    print("unknown \(bundleID)")
     return nil
 }
 
@@ -315,7 +315,7 @@ func getSelectedTextByAppleScript(bundleID: String) -> BroswerSelectedTextContex
 func getSelectedTextByAppleScriptFromSafari(bundleID: String) -> String{
     // 在应用到 info 里加入 NSAppleEventsUsageDescription 描述，让用户授权就可以执行 apple script 与其它 app 交互
     // 不需要单独建一个 Info.plist，不生效
-    NSLog("bundleID: \(bundleID)")
+    print("bundleID: \(bundleID)")
     if let scriptObject =  NSAppleScript(source: """
                   with timeout of 5 seconds
                       tell application id "\(bundleID)"
@@ -329,7 +329,7 @@ func getSelectedTextByAppleScriptFromSafari(bundleID: String) -> String{
         var error: NSDictionary?
         let output = scriptObject.executeAndReturnError(&error)
         if (error != nil) {
-            NSLog("error: \(String(describing: error))")
+            print("error: \(String(describing: error))")
             return ""
         } else {
             return output.stringValue!
@@ -355,7 +355,7 @@ func getSelectedTextByAppleScriptFromChrome(bundleID: String) -> String{
         // TODO timeout?
         let output = scriptObject.executeAndReturnError(&error)
         if (error != nil) {
-            NSLog("error: \(String(describing: error))")
+            print("error: \(String(describing: error))")
             return ""
         } else {
             return output.stringValue ?? ""
@@ -377,7 +377,7 @@ end tell
         // TODO timeout?
         let output = scriptObject.executeAndReturnError(&error)
         if (error != nil) {
-            NSLog("error: \(String(describing: error))")
+            print("error: \(String(describing: error))")
             return ""
         } else {
             return output.stringValue ?? ""
@@ -399,7 +399,7 @@ end tell
         // TODO timeout?
         let output = scriptObject.executeAndReturnError(&error)
         if (error != nil) {
-            NSLog("error: \(String(describing: error))")
+            print("error: \(String(describing: error))")
             return ""
         } else {
             return output.stringValue ?? ""

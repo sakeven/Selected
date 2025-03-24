@@ -93,7 +93,7 @@ class OpenAIService: AIChatService{
                 }
             }
         } catch {
-            NSLog("completion error \(error)")
+            print("completion error \(error)")
         }
     }
 
@@ -150,7 +150,7 @@ class OpenAIService: AIChatService{
 
     /// 单轮聊天流程，包括流式处理和工具调用
     private func chatOneRound(index: inout Int, completion: @escaping (Int, ResponseMessage) -> Void) async throws {
-        NSLog("index is \(index)")
+        print("index is \(index)")
         var hasTools = false
         var toolCallsDict = [Int: ChatCompletionMessageToolCallParam]()
         var hasMessage = false
@@ -225,7 +225,7 @@ class OpenAIService: AIChatService{
         guard let functions = tools else { return [] }
 
         index += 1
-        NSLog("tool index \(index)")
+        print("tool index \(index)")
 
         // 构建工具映射
         var functionMap = [String: FunctionDefinition]()
@@ -245,10 +245,10 @@ class OpenAIService: AIChatService{
             if let funcDef = functionMap[tool.function.name],
                let template = funcDef.template {
                 toolMessage.message = renderTemplate(templateString: template, json: tool.function.arguments)
-                NSLog("\(toolMessage.message)")
+                print("\(toolMessage.message)")
             }
             completion(index, toolMessage)
-            NSLog("\(tool.function.arguments)")
+            print("\(tool.function.arguments)")
 
             // 根据工具名称调用不同的逻辑
             if tool.function.name == dalle3Def.name {
@@ -264,7 +264,7 @@ class OpenAIService: AIChatService{
                 completion(index, message)
             } else {
                 if let funcDef = functionMap[tool.function.name] {
-                    NSLog("call: \(tool.function.arguments)")
+                    print("call: \(tool.function.arguments)")
                     if let ret = try funcDef.Run(arguments: tool.function.arguments, options: options) {
                         let statusMessage = (funcDef.showResult ?? true)
                         ? ret

@@ -56,7 +56,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func application(_ application: NSApplication, open urls: [URL]) {
         for url in urls {
             // 处理打开的文件
-            NSLog("\(url.path)")
+            print("\(url.path)")
             PluginManager.shared.install(url: url)
         }
     }
@@ -80,7 +80,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 func setDefaultAppForCustomFileType() {
     let customUTI = "io.kitool.selected.ext"
     let bundleIdentifier = Bundle.main.bundleIdentifier ?? "io.kitool.Selected"
-    NSLog("bundleIdentifier \(bundleIdentifier)")
+    print("bundleIdentifier \(bundleIdentifier)")
 
     LSSetDefaultRoleHandlerForContentType(customUTI as CFString, .editor, bundleIdentifier as CFString)
 }
@@ -120,7 +120,7 @@ func requestAccessibilityPermissions() {
     let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
     let accessEnabled = AXIsProcessTrustedWithOptions(options)
 
-    NSLog("accessEnabled: \(accessEnabled)")
+    print("accessEnabled: \(accessEnabled)")
 
     if !accessEnabled {
         // 请求权限
@@ -153,7 +153,7 @@ func monitorMouseMove() {
             lastSelectedText = ""
             _ = WindowManager.shared.closeAllWindows(.original)
         } else {
-            NSLog("event \(eventTypeMap[event.type]!)  \(eventTypeMap[eventState.lastMouseEventType]!)")
+            print("event \(eventTypeMap[event.type]!)  \(eventTypeMap[eventState.lastMouseEventType]!)")
             var updatedSelectedText = false
             if eventState.isSelected(event: event) {
                 if let ctx = getSelectedText() {
@@ -187,7 +187,7 @@ func monitorMouseMove() {
             }
         }
     }
-    NSLog("monitorMouseMove")
+    print("monitorMouseMove")
 }
 
 struct EventState {

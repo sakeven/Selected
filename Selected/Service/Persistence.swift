@@ -32,7 +32,7 @@ class PersistenceController {
         ctx.performAndWait {
             do {
                 try ctx.save()
-                NSLog("saved")
+                print("saved")
             } catch {
                 fatalError("\(error)")
             }
@@ -71,12 +71,12 @@ class PersistenceController {
                     clipHistoryData.firstCopiedAt = got.firstCopiedAt
                     clipHistoryData.numberOfCopies = got.numberOfCopies + 1
                     ctx.delete(got)
-                    NSLog("saved \(clipHistoryData.firstCopiedAt!) \(got.firstCopiedAt!)")
+                    print("saved \(clipHistoryData.firstCopiedAt!) \(got.firstCopiedAt!)")
                 }
             }
             do {
                 try ctx.save()
-                NSLog("saved \(clipHistoryData.md5!)")
+                print("saved \(clipHistoryData.md5!)")
             } catch {
                 fatalError("\(error)")
             }

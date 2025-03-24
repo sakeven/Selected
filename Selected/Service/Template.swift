@@ -27,7 +27,7 @@ func parseJSONString(jsonString: String) -> [String: Any]? {
 func renderTemplate(templateString: String, json: String) -> String {
     if var dictionary = parseJSONString(jsonString: json) {
         dictionary["system"] =  ["language": getCurrentAppLanguage()]
-        NSLog("language \(getCurrentAppLanguage())")
+        print("language \(getCurrentAppLanguage())")
         return renderTemplate(templateString: templateString, with: dictionary)
     }
     return ""

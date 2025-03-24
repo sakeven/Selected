@@ -176,7 +176,7 @@ class ClaudeService: AIChatService {
                 }
             }
         } catch {
-            NSLog("claude error \(error)")
+            print("claude error \(error)")
         }
     }
 
@@ -232,7 +232,7 @@ class ClaudeService: AIChatService {
 
     /// 单轮聊天处理：流式接收回复，并处理可能的工具调用
     private func chatOneRound(index: inout Int, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async throws {
-        NSLog("index is \(index)")
+        print("index is \(index)")
         var assistantMessage = ""
         var toolParameters = ""
         var toolUseList = [ToolUse]()
