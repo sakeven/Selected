@@ -99,12 +99,17 @@ struct QueryManager {
     private let _tools: [MessageParameter.Tool]
 
     init(model: Model, systemPrompt: String, tools: [MessageParameter.Tool]) {
+        var thinking: MessageParameter.Thinking? = nil
+        if model.value == Model.claude37Sonnet.value {
+            thinking = .init(budgetTokens: 2048)
+        }
         self.query = MessageParameter(
             model: .other(model.value),
             messages: [],
             maxTokens: 4096,
             system: MessageParameter.System.text(systemPrompt),
-            tools: tools
+            tools: tools,
+            thinking: thinking
         )
         self._tools = tools
     }
@@ -117,7 +122,8 @@ struct QueryManager {
             messages: messages,
             maxTokens: 4096,
             system: query.system,
-            tools: self._tools
+            tools: self._tools,
+            thinking: query.thinking
         )
     }
 
@@ -129,7 +135,8 @@ struct QueryManager {
             messages: _messages,
             maxTokens: 4096,
             system: query.system,
-            tools: self._tools
+            tools: self._tools,
+            thinking: query.thinking
         )
     }
 }
@@ -234,21 +241,29 @@ class ClaudeService: AIChatService {
     private func chatOneRound(index: inout Int, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async throws {
         print("index is \(index)")
         var assistantMessage = ""
+        var thinking = ""
         var toolParameters = ""
+        var signature = ""
         var toolUseList = [ToolUse]()
         var lastToolUseBlockIndex = -1
 
         completion(index + 1, ResponseMessage(message: NSLocalizedString("waiting", comment: "system info"), role: .system, new: true, status: .initial))
+        var appendIndex = false
         let stream = try await service.streamMessage(queryManager.query)
         for try await result in stream {
             let content = result.delta?.text ?? ""
             if !content.isEmpty {
-                if assistantMessage.isEmpty {
+                if !appendIndex {
                     index += 1
+                    appendIndex = true
                 }
                 completion(index, ResponseMessage(message: content, role: .assistant, new: assistantMessage.isEmpty, status: .updating))
                 assistantMessage += content
             }
+
+            thinking += result.delta?.thinking ?? ""
+            signature += result.delta?.signature ?? ""
+
             switch result.streamEvent {
                 case .contentBlockStart:
                     if let toolUse = result.contentBlock?.toolUse {
@@ -275,15 +290,13 @@ class ClaudeService: AIChatService {
             completion(index, ResponseMessage(message: "", role: .assistant, new: false, status: .finished))
         }
 
-        // 如果没有工具调用，直接更新查询记录
-        if toolUseList.isEmpty {
-            queryManager.update(with: .init(role: .assistant, content: .text(assistantMessage)))
-            return
+        var contents = [MessageParameter.Message.Content.ContentObject]()
+        contents.append(.text(assistantMessage))
+        if !thinking.isEmpty {
+            contents.append(.thinking(thinking, signature))
         }
 
         // 将工具调用封装到查询记录中
-        var contents = [MessageParameter.Message.Content.ContentObject]()
-        contents.append(.text(assistantMessage))
         for tool in toolUseList {
             let input = try JSONDecoder().decode(SwiftAnthropic.MessageResponse.Content.Input.self, from: tool.input.data(using: .utf8)!)
             contents.append(.toolUse(tool.id, tool.name, input))
@@ -291,7 +304,7 @@ class ClaudeService: AIChatService {
         queryManager.update(with: .init(role: .assistant, content: .list(contents)))
 
         // 调用工具，并将工具结果追加到查询记录
-        if let functions = tools {
+        if let functions = tools, !toolUseList.isEmpty {
             let toolMessages = try await ToolsManager.callTools(index: &index, toolUseList: toolUseList, with: functions, options: options, completion: completion)
             if !toolMessages.isEmpty {
                 queryManager.update(with: toolMessages)
