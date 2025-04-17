@@ -118,7 +118,7 @@ struct SettingsView: View {
                                 }
                         }
 
-                        if openAIModel == .o3_mini || openAIModel == .o1 || openAIModel == .o1_mini {
+                        if isReasoningModel(openAIModel){
                             Picker("ReasoningEffort", selection: $openAIModelReasoningEffort, content: {
                                 ForEach(ChatQuery.ReasoningEffort.allCases, id: \.self) {
                                     Text($0.rawValue)

@@ -12,9 +12,21 @@ import AVFoundation
 
 typealias OpenAIModel = Model
 
-let OpenAIModels: [Model] = [.gpt4_o, .gpt4_o_mini, .o1, .o1_mini, .o3_mini, .gpt4_turbo]
+extension Model {
+    static let gpt4_1 = "gpt-4.1"
+    static let gpt4_1_mini = "gpt-4.1-mini"
+
+    static let o4_mini = "o4-mini"
+    static let o3 = "o3"
+}
+
+let OpenAIModels: [Model] = [.gpt4_1, .gpt4_1_mini, .o4_mini, .o3, .gpt4_o, .gpt4_o_mini, .o1, .o1_mini, .o3_mini]
 let OpenAITTSModels: [Model] = [.gpt_4o_mini_tts, .tts_1, .tts_1_hd]
-let OpenAITranslationModels: [Model] = [.gpt4_o, .gpt4_o_mini]
+let OpenAITranslationModels: [Model] = [.gpt4_1_mini, .gpt4_o, .gpt4_o_mini]
+
+func isReasoningModel(_ model: Model) -> Bool {
+    return [.o4_mini, .o3, .o1, .o3_mini].contains(model)
+}
 
 
 let dalle3Def = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
@@ -300,7 +312,7 @@ class OpenAIService: AIChatService{
         }
 
         var reasoningEffort: ChatQuery.ReasoningEffort? = nil
-        if model == .o3_mini || model == .o1 || model == .o1_mini {
+        if isReasoningModel(model){
             reasoningEffort = Defaults[.openAIModelReasoningEffort]
         }
 
