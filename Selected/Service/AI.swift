@@ -27,7 +27,7 @@ func isWord(str: String) -> Bool {
 
 struct Translation {
     let toLanguage: String
-    
+
     func translate(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         if toLanguage == "cn" {
             await contentTrans2Chinese(content: content, completion: completion)
@@ -35,7 +35,7 @@ struct Translation {
             await contentTrans2English(content: content, completion: completion)
         }
     }
-    
+
     private func isWord(str: String) -> Bool {
         for c in str {
             if c.isLetter || c == "-" {
@@ -45,7 +45,7 @@ struct Translation {
         }
         return true
     }
-    
+
     private func contentTrans2Chinese(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
@@ -66,7 +66,7 @@ struct Translation {
                 completion("no model \(Defaults[.aiService])")
         }
     }
-    
+
     private func contentTrans2English(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         switch Defaults[.aiService] {
             case "OpenAI":
@@ -78,15 +78,15 @@ struct Translation {
                 completion("no model \(Defaults[.aiService])")
         }
     }
-    
+
     private func convert(index: Int, message: ResponseMessage)->Void {
-        
+
     }
 }
 
 struct ChatService: AIChatService{
     var chatService: AIChatService
-    
+
     init?(prompt: String, options: [String:String]){
         switch Defaults[.aiService] {
             case "OpenAI":
@@ -97,11 +97,11 @@ struct ChatService: AIChatService{
                 return nil
         }
     }
-    
+
     func chat(ctx: ChatContext, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
         await chatService.chat(ctx: ctx, completion: completion)
     }
-    
+
     func chatFollow(
         index: Int,
         userMessage: String,
@@ -127,21 +127,21 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
     public static func == (lhs: ResponseMessage, rhs: ResponseMessage) -> Bool {
         lhs.id == rhs.id
     }
-    
+
     public enum Status: String {
         case initial, updating, finished, failure
     }
-    
+
     public enum Role: String {
         case assistant, tool, user, system
     }
-    
+
     public var id = UUID()
     @Published var message: String
     @Published var role: Role
     @Published var status: Status
     var new: Bool = false // new start of message
-    
+
     init(id: UUID = UUID(), message: String, role: Role, new: Bool = false, status: Status = .initial) {
         self.id = id
         self.message = message
@@ -157,7 +157,7 @@ func systemPrompt() -> String{
     dateFormatter.locale = Locale.current
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
     let localDate = dateFormatter.string(from: Date())
-    
+
     let language = getCurrentAppLanguage()
     var currentLocation = ""
     if let location = LocationManager.shared.place {
@@ -175,9 +175,17 @@ func systemPrompt() -> String{
 let svgToolOpenAIDef = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
     name: "svg_dispaly",
     description: "When user requests you to create an SVG, you can use this tool to display the SVG.",
-    parameters: .init(type: .object, properties:[
-        "raw": .init(type: .string, description: "SVG content")
-    ])
+    parameters: .init(
+        fields: [
+            .type( .object),
+            .properties(
+                [
+                    "raw": .init(
+                        fields: [
+                            .type(.string), .description("SVG content")
+                        ])
+                ])
+        ])
 )
 
 
@@ -190,14 +198,14 @@ struct SVGData: Codable, Equatable {
 func openSVGInBrowser(svgData: String) -> Bool {
     do {
         let data = try JSONDecoder().decode(SVGData.self, from: svgData.data(using: .utf8)!)
-        
+
         // 创建临时文件路径
         let tempDir = FileManager.default.temporaryDirectory
         let tempFile = tempDir.appendingPathComponent("temp_svg_\(UUID().uuidString).svg")
-        
+
         // 将 SVG 数据写入临时文件
         try data.raw.write(to: tempFile, atomically: true, encoding: .utf8)
-        
+
         // 使用默认浏览器打开文件
         DispatchQueue.global().async {
             NSWorkspace.shared.open(tempFile)

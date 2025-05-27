@@ -32,15 +32,29 @@ func isReasoningModel(_ model: Model) -> Bool {
 let dalle3Def = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
     name: "Dall-E-3",
     description: "When user asks for a picture, create a prompt that dalle can use to generate the image. The prompt must be in English. Translate to English if needed. The url of the image will be returned.",
-    parameters: .init(type: .object, properties:[
-        "prompt": .init(type: .string, description: "the generated prompt sent to dalle3")
-    ])
+    parameters:
+            .init(
+                fields: [
+                    .type(.object),
+                    .properties(
+                    [
+                        "prompt":
+                                .init(
+                                    fields: [
+                                        .type( .string),
+                                        .description( "the generated prompt sent to dalle3"),
+                                            ]
+                                    )
+                        ]
+                    )
+                    ]
+    )
 )
 
 
 typealias OpenAIChatCompletionMessageToolCallParam = ChatQuery.ChatCompletionMessageParam.AssistantMessageParam.ToolCallParam
 typealias ChatFunctionCall = OpenAIChatCompletionMessageToolCallParam.FunctionCall
-typealias FunctionParameters = ChatQuery.ChatCompletionToolParam.FunctionDefinition.FunctionParameters
+typealias FunctionParameters = ChatQuery.ChatCompletionToolParam.FunctionDefinition
 typealias ChatCompletionMessageToolCallParam = OpenAIChatCompletionMessageToolCallParam
 
 class OpenAIService: AIChatService{
@@ -58,7 +72,7 @@ class OpenAIService: AIChatService{
         if Defaults[.openAIAPIHost] != "" {
             host = Defaults[.openAIAPIHost]
         }
-        let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey], host: host, timeoutInterval: 60.0)
+        let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey], host: host, timeoutInterval: 60.0, parsingOptions: .relaxed)
         self.openAI = OpenAI(configuration: configuration)
         self.options = options
         self.query = OpenAIService.createQuery(functions: tools, model: Defaults[.openAIModel])
@@ -313,7 +327,12 @@ class OpenAIService: AIChatService{
 
         var reasoningEffort: ChatQuery.ReasoningEffort? = nil
         if isReasoningModel(model){
-            reasoningEffort = Defaults[.openAIModelReasoningEffort]
+            reasoningEffort = switch Defaults[.openAIModelReasoningEffort]{
+                case "low": .low
+                case "medium": .medium
+                case "high": .high
+                default: .medium
+            }
         }
 
         return ChatQuery(

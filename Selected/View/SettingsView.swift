@@ -12,6 +12,7 @@ import ServiceManagement
 import OpenAI
 import ShortcutRecorder
 
+let ReasoningEfforts = ["high", "medium", "low"]
 
 struct SettingsView: View {
 
@@ -120,8 +121,8 @@ struct SettingsView: View {
 
                         if isReasoningModel(openAIModel){
                             Picker("ReasoningEffort", selection: $openAIModelReasoningEffort, content: {
-                                ForEach(ChatQuery.ReasoningEffort.allCases, id: \.self) {
-                                    Text($0.rawValue)
+                                ForEach(ReasoningEfforts, id: \.self) {
+                                    Text($0)
                                 }
                             }).pickerStyle(DefaultPickerStyle())
                         }

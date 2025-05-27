@@ -24,7 +24,8 @@ extension Defaults.Keys {
     static let openAIAPIKey = Key<String>("OpenAIAPIKey", default: "")
     static let openAIAPIHost = Key<String>("OpenAIAPIHost",default: "api.openai.com")
     static let openAIModel = Key<OpenAIModel>("OpenAIModel", default: .gpt4_o)
-    static let openAIModelReasoningEffort = Key<ChatQuery.ReasoningEffort>("openAIModelReasoningEffort", default: .medium)
+    static let openAIModelReasoningEffort = Key<String>("openAIModelReasoningEffort", default:
+                                                            "medium")
 
     static let openAITranslationModel = Key<OpenAIModel>("OpenAITranslationModel", default: .gpt4_o_mini)
 

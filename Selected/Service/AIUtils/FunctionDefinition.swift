@@ -7,6 +7,7 @@
 
 
 import Foundation
+import OpenAI
 
 public struct FunctionDefinition: Codable, Equatable {
     /// 函数名称，必须只包含 a-z, A-Z, 0-9，下划线或连字符，最大长度 64。
@@ -46,7 +47,7 @@ public struct FunctionDefinition: Codable, Equatable {
     }
 
     /// 解析 JSON Schema 参数为 FunctionParameters 对象
-    func getParameters() -> FunctionParameters? {
-        return try? JSONDecoder().decode(FunctionParameters.self, from: parameters.data(using: .utf8)!)
+    func getParameters() -> AnyJSONSchema? {
+        return try? JSONDecoder().decode(AnyJSONSchema.self, from: parameters.data(using: .utf8)!)
     }
 }
