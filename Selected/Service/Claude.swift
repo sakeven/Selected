@@ -61,11 +61,11 @@ fileprivate struct ToolsManager {
         for tool in toolUseList {
             if tool.name == "display_svg" {
                 let rawMessage = String(format: NSLocalizedString("calling_tool", comment: "tool message"), tool.name)
-                var message = ResponseMessage(message: rawMessage, role: .tool, new: true, status: .updating)
+                var message = ResponseMessage(message: rawMessage, role: .assistant, new: true, status: .updating)
                 completion(index, message)
                 // 打开 SVG 浏览器预览
                 _ = openSVGInBrowser(svgData: tool.input)
-                message = ResponseMessage(message: String(format: NSLocalizedString("display_svg", comment: "")), role: .tool, new: true, status: .finished)
+                message = ResponseMessage(message: String(format: NSLocalizedString("display_svg", comment: "")), role: .assistant, new: true, status: .finished)
                 completion(index, message)
                 toolUseResults.append(.toolResult(tool.id, "display svg successfully"))
                 continue
@@ -73,14 +73,14 @@ fileprivate struct ToolsManager {
 
             guard let fc = fcSet[tool.name] else { continue }
             let rawMessage = String(format: NSLocalizedString("calling_tool", comment: "tool message"), tool.name)
-            let message = ResponseMessage(message: rawMessage, role: .tool, new: true, status: .updating)
+            let message = ResponseMessage(message: rawMessage, role: .assistant, new: true, status: .updating)
             if let template = fc.template {
                 message.message = renderTemplate(templateString: template, json: tool.input)
             }
             completion(index, message)
 
             if let ret = try fc.Run(arguments: tool.input, options: options) {
-                let resultMessage = ResponseMessage(message: ret, role: .tool, new: true, status: .finished)
+                let resultMessage = ResponseMessage(message: ret, role: .assistant, new: true, status: .finished)
                 if let show = fc.showResult, !show {
                     resultMessage.message = fc.template != nil ? "" : String(format: NSLocalizedString("called_tool", comment: "tool message"), fc.name)
                 }

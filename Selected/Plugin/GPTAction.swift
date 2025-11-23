@@ -31,13 +31,14 @@ class GptAction: Decodable{
                     }
                 })
         } else {
-            var chatService: AIChatService = ChatService(prompt: prompt, options: pluginInfo.getOptionsValue())!
+            var chatService: AIProvider = OpenAIProvider(prompt: prompt, options: pluginInfo.getOptionsValue())
             if let tools = tools {
                 switch Defaults[.aiService] {
                     case "Claude":
-                        chatService = ClaudeService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
+//                        chatService = ClaudeService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
+                        break
                     default:
-                        chatService = OpenAIService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
+                        chatService = OpenAIProvider(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
                 }
             }
 

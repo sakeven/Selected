@@ -15,6 +15,9 @@
 		38230CA12B9F44FC002A52E9 /* BarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38230CA02B9F44FC002A52E9 /* BarButton.swift */; };
 		38230CA32BA1DBA8002A52E9 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38230CA22BA1DBA8002A52E9 /* Utils.swift */; };
 		38230CA42BA33596002A52E9 /* SelectedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386AD7292B8F6BFC008C346D /* SelectedTests.swift */; };
+		382C919D2ED4758800F5A45A /* AIStreamEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 382C919C2ED4758800F5A45A /* AIStreamEvent.swift */; };
+		382C919F2ED475F900F5A45A /* OpenAIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 382C919E2ED475F900F5A45A /* OpenAIProvider.swift */; };
+		382C91A12ED4760800F5A45A /* ClaudeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 382C91A02ED4760800F5A45A /* ClaudeProvider.swift */; };
 		3831FD332BA532D400A4262B /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = 3831FD322BA532D400A4262B /* Yams */; };
 		3831FD362BA6DE3D00A4262B /* UserConfigs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3831FD352BA6DE3D00A4262B /* UserConfigs.swift */; };
 		384A03732BC4173B00916303 /* ClipHistory.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 384A03712BC4173B00916303 /* ClipHistory.xcdatamodeld */; };
@@ -127,6 +130,9 @@
 		38230C9E2B9F332D002A52E9 /* PluginInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginInfo.swift; sourceTree = "<group>"; };
 		38230CA02B9F44FC002A52E9 /* BarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarButton.swift; sourceTree = "<group>"; };
 		38230CA22BA1DBA8002A52E9 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		382C919C2ED4758800F5A45A /* AIStreamEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIStreamEvent.swift; sourceTree = "<group>"; };
+		382C919E2ED475F900F5A45A /* OpenAIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIProvider.swift; sourceTree = "<group>"; };
+		382C91A02ED4760800F5A45A /* ClaudeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeProvider.swift; sourceTree = "<group>"; };
 		3831FD342BA5C88300A4262B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		3831FD352BA6DE3D00A4262B /* UserConfigs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserConfigs.swift; sourceTree = "<group>"; };
 		384A03722BC4173B00916303 /* ClipHistory.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ClipHistory.xcdatamodel; sourceTree = "<group>"; };
@@ -388,6 +394,9 @@
 		38D1CAC12D9179370091A332 /* AIUtils */ = {
 			isa = PBXGroup;
 			children = (
+				382C91A02ED4760800F5A45A /* ClaudeProvider.swift */,
+				382C919E2ED475F900F5A45A /* OpenAIProvider.swift */,
+				382C919C2ED4758800F5A45A /* AIStreamEvent.swift */,
 				38D1CABE2D9179370091A332 /* FunctionDefinition.swift */,
 				38D1CABF2D9179370091A332 /* ImageGeneration.swift */,
 				38D1CAC02D9179370091A332 /* TTSManager.swift */,
@@ -646,8 +655,10 @@
 				388DABBB2BEA5B3C000B2739 /* StarDict.swift in Sources */,
 				386AD7552B90CF97008C346D /* CommandView.swift in Sources */,
 				384A03732BC4173B00916303 /* ClipHistory.xcdatamodeld in Sources */,
+				382C919F2ED475F900F5A45A /* OpenAIProvider.swift in Sources */,
 				385EA9EF2C6256E2009B8F0E /* Updater.swift in Sources */,
 				38230CA32BA1DBA8002A52E9 /* Utils.swift in Sources */,
+				382C91A12ED4760800F5A45A /* ClaudeProvider.swift in Sources */,
 				386AD7182B8F6BFA008C346D /* App.swift in Sources */,
 				38CC18B42B9C46CA0023DF18 /* SettingsView.swift in Sources */,
 				38AD8D872C1725C600EAFA5D /* AudioPlayerView.swift in Sources */,
@@ -665,6 +676,7 @@
 				38DEBE322B9D67F800CD2A35 /* OpenAI.swift in Sources */,
 				38DF1D522BC2408A0063A879 /* ClipView.swift in Sources */,
 				384EEF312C6CDAA300EF6412 /* ChatWindow.swift in Sources */,
+				382C919D2ED4758800F5A45A /* AIStreamEvent.swift in Sources */,
 				3831FD362BA6DE3D00A4262B /* UserConfigs.swift in Sources */,
 				388DABAF2BD147F6000B2739 /* TextView.swift in Sources */,
 				38DF1D4A2BB7A3BC0063A879 /* Option.swift in Sources */,
