@@ -47,7 +47,7 @@ public struct FunctionDefinition: Codable, Equatable {
     }
 
     /// 解析 JSON Schema 参数为 FunctionParameters 对象
-    func getParameters() -> AnyJSONSchema? {
-        return try? JSONDecoder().decode(AnyJSONSchema.self, from: parameters.data(using: .utf8)!)
+    func getParameters() -> JSONSchema? {
+        return try? JSONDecoder().decode(JSONSchema.self, from: parameters.data(using: .utf8)!)
     }
 }

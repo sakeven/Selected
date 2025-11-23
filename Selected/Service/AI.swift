@@ -137,6 +137,7 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
     }
 
     public var id = UUID()
+    @Published var summary: String
     @Published var message: String
     @Published var role: Role
     @Published var status: Status
@@ -148,6 +149,7 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
         self.role = role
         self.new = new
         self.status = status
+        self.summary = ""
     }
 }
 

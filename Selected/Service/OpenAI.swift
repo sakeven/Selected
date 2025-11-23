@@ -13,19 +13,18 @@ import AVFoundation
 typealias OpenAIModel = Model
 
 extension Model {
-    static let gpt4_1 = "gpt-4.1"
-    static let gpt4_1_mini = "gpt-4.1-mini"
-
-    static let o4_mini = "o4-mini"
-    static let o3 = "o3"
+    static let gpt5_1 = "gpt-5.1"
 }
 
-let OpenAIModels: [Model] = [.gpt4_1, .gpt4_1_mini, .o4_mini, .o3, .gpt4_o, .gpt4_o_mini, .o1, .o1_mini, .o3_mini]
+let OpenAIModels: [Model] = [
+    .gpt5_mini, .gpt5,
+    .gpt4_1, .gpt4_1_mini, .o4_mini,
+    .o3, .gpt4_o, .gpt4_o_mini, .o1, .o3_mini]
 let OpenAITTSModels: [Model] = [.gpt_4o_mini_tts, .tts_1, .tts_1_hd]
 let OpenAITranslationModels: [Model] = [.gpt4_1_mini, .gpt4_o, .gpt4_o_mini]
 
 func isReasoningModel(_ model: Model) -> Bool {
-    return [.o4_mini, .o3, .o1, .o3_mini].contains(model)
+    return [.gpt5_mini, .gpt5, .gpt5_1, .o4_mini, .o3, .o1, .o3_mini].contains(model)
 }
 
 
@@ -188,7 +187,7 @@ class OpenAIService: AIChatService{
             if let toolCalls = result.choices[0].delta.toolCalls {
                 hasTools = true
                 for f in toolCalls {
-                    let toolCallID = f.index
+                    let toolCallID = f.index!
                     if let existing = toolCallsDict[toolCallID] {
                         let newToolCall = ChatCompletionMessageToolCallParam(
                             id: existing.id,
@@ -229,7 +228,7 @@ class OpenAIService: AIChatService{
             completion(index, ResponseMessage(message: "", role: .assistant, new: false, status: .finished))
         }
         if !hasTools {
-            updateQuery(message: .assistant(.init(content: assistantMessage)))
+            updateQuery(message: .assistant(.init(content: .textContent(assistantMessage))))
             return
         }
 
@@ -238,7 +237,7 @@ class OpenAIService: AIChatService{
             let function = try JSONDecoder().decode(ChatFunctionCall.self, from: JSONEncoder().encode(tool.function))
             toolCalls.append(.init(id: tool.id, function: function))
         }
-        updateQuery(message: .assistant(.init(content: assistantMessage, toolCalls: toolCalls)))
+        updateQuery(message: .assistant(.init(content: .textContent(assistantMessage), toolCalls: toolCalls)))
 
         let toolMessages = try await callTools(index: &index, toolCallsDict: toolCallsDict, completion: completion)
         if !toolMessages.isEmpty {
@@ -279,13 +278,13 @@ class OpenAIService: AIChatService{
             // 根据工具名称调用不同的逻辑
             if tool.function.name == dalle3Def.name {
                 let url = try await ImageGeneration.generateDalle3Image(openAI: openAI, arguments: tool.function.arguments)
-                messages.append(.tool(.init(content: url, toolCallId: tool.id)))
+                messages.append(.tool(.init(content: .textContent(url), toolCallId: tool.id)))
                 let ret = "[![this is picture](" + url + ")](" + url + ")"
                 let message = ResponseMessage(message: ret, role: .tool, new: true, status: .finished)
                 completion(index, message)
             } else if tool.function.name == svgToolOpenAIDef.name {
                 _ = openSVGInBrowser(svgData: tool.function.arguments)
-                messages.append(.tool(.init(content: "display svg successfully", toolCallId: tool.id)))
+                messages.append(.tool(.init(content: .textContent("display svg successfully"), toolCallId: tool.id)))
                 let message = ResponseMessage(message: NSLocalizedString("display_svg", comment: ""), role: .tool, new: true, status: .finished)
                 completion(index, message)
             } else {
@@ -297,7 +296,7 @@ class OpenAIService: AIChatService{
                         : String(format: NSLocalizedString("called_tool", comment: "tool message"), funcDef.name)
                         let message = ResponseMessage(message: statusMessage, role: .tool, new: true, status: .finished)
                         completion(index, message)
-                        messages.append(.tool(.init(content: ret, toolCallId: tool.id)))
+                        messages.append(.tool(.init(content: .textContent(ret), toolCallId: tool.id)))
                     }
                 }
             }
@@ -319,10 +318,6 @@ class OpenAIService: AIChatService{
                 toolList.append(.init(function: fcConverted))
             }
             tools = toolList
-        }
-
-        if model == "o1-preview" || model == .o1_mini {
-            return ChatQuery(messages: [], model: model, tools: nil)
         }
 
         var reasoningEffort: ChatQuery.ReasoningEffort? = nil
