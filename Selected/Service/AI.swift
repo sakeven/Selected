@@ -28,7 +28,7 @@ func isWord(str: String) -> Bool {
 struct Translation {
     let toLanguage: String
 
-    func translate(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
+    func translate(content: String, completion: @escaping (_: String) -> Void) async -> Void {
         if toLanguage == "cn" {
             await contentTrans2Chinese(content: content, completion: completion)
         } else if toLanguage == "en" {
@@ -46,80 +46,104 @@ struct Translation {
         return true
     }
 
-    private func contentTrans2Chinese(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
-        switch Defaults[.aiService] {
-            case "OpenAI":
-                if isWord(str: content) {
-                    let OpenAIWordTrans = OpenAIService(prompt: "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}", model: Defaults[.openAITranslationModel])
-                    await OpenAIWordTrans.chatOne(selectedText: content, completion: completion)
-                } else {
-                    let OpenAITrans2Chinese = OpenAIService(prompt:"你是一位精通简体中文的专业翻译。翻译指定的内容到中文。规则：请直接回复翻译后的内容。内容为：{selected.text}", model: Defaults[.openAITranslationModel])
-                    await OpenAITrans2Chinese.chatOne(selectedText: content, completion: completion)
+    private func contentTrans2Chinese(content: String, completion: @escaping (_: String) -> Void) async -> Void{
+        var prompt = "你是一位精通简体中文的专业翻译。翻译指定的内容到中文。规则：请直接回复翻译后的内容。内容为：{selected.text}"
+        if isWord(str: content) {
+            prompt = "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}"
+        }
+        guard let translator = TranslateService(prompt: prompt) else {
+            completion("no model \(Defaults[.aiService])")
+            return
+        }
+        do {
+            let stream = translator.chatOnce(selectedText: content)
+            for try await event in stream {
+                switch event {
+                    case .textDelta(let txt):
+                        completion(txt)
+                    default:
+                        break
                 }
-            case "Claude":
-                if isWord(str: content) {
-                    await ClaudeWordTrans.chatOne(selectedText: content, completion: completion)
-                } else {
-                    await ClaudeTrans2Chinese.chatOne(selectedText: content, completion: completion)
-                }
-            default:
-                completion("no model \(Defaults[.aiService])")
+            }
+        } catch {
         }
     }
+
 
     private func contentTrans2English(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
-        switch Defaults[.aiService] {
-            case "OpenAI":
-                let OpenAITrans2English = OpenAIService(prompt:"You are a professional translator proficient in English. Translate the following content into English. Rule: reply with the translated content directly. The content is：{selected.text}", model: Defaults[.openAITranslationModel])
-                await OpenAITrans2English.chatOne(selectedText: content, completion: completion)
-            case "Claude":
-                await ClaudeTrans2English.chatOne(selectedText: content, completion: completion)
-            default:
-                completion("no model \(Defaults[.aiService])")
+        let prompt = "You are a professional translator proficient in English. Translate the following content into English. Rule: reply with the translated content directly. The content is：{selected.text}"
+        guard let translator = TranslateService(prompt: prompt) else {
+            completion("no model \(Defaults[.aiService])")
+            return
+        }
+        do {
+            let stream = translator.chatOnce(selectedText: content)
+            for try await event in stream {
+                switch event {
+                    case .textDelta(let txt):
+                        completion(txt)
+                    default:
+                        break
+                }
+            }
+        } catch {
         }
     }
 
-    private func convert(index: Int, message: ResponseMessage)->Void {
 
+    struct TranslateService{
+        var chatService: AIProvider
+
+        init?(prompt: String){
+            switch Defaults[.aiService] {
+                case "OpenAI":
+                    chatService = OpenAIProvider(prompt: prompt, model: Defaults[.openAITranslationModel])
+                case "Claude":
+                    chatService = ClaudeAIProvider(prompt: prompt, model: .claude_haiku_4_5)
+                default:
+                    return nil
+            }
+        }
+
+        func chatOnce(selectedText: String) -> AsyncThrowingStream<AIStreamEvent, Error> {
+            chatService.chatOnce(selectedText: selectedText)
+        }
     }
 }
 
-struct ChatService: AIChatService{
-    var chatService: AIChatService
+protocol AIProvider {
+    func chatOnce(selectedText: String) -> AsyncThrowingStream<AIStreamEvent, Error>
+    func chat(ctx: ChatContext) -> AsyncThrowingStream<AIStreamEvent, Error>
+    func chatFollow(userMessage: String) -> AsyncThrowingStream<AIStreamEvent, Error>
+}
 
-    init?(prompt: String, options: [String:String]){
+
+struct ChatService: AIProvider{
+    var chatService: AIProvider
+
+    init?(prompt: String, tools: [FunctionDefinition]? = nil, options: [String:String]){
         switch Defaults[.aiService] {
             case "OpenAI":
-                chatService = OpenAIService(prompt: prompt, options: options)
+                chatService = OpenAIProvider(prompt: prompt, tools: tools, options: options)
             case "Claude":
-                chatService = ClaudeService(prompt: prompt, options: options)
+                chatService = ClaudeAIProvider(prompt: prompt, tools: tools, options: options)
             default:
                 return nil
         }
     }
 
-    func chat(ctx: ChatContext, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void{
-        await chatService.chat(ctx: ctx, completion: completion)
+
+    func chat(ctx: ChatContext) -> AsyncThrowingStream<AIStreamEvent, any Error> {
+        chatService.chat(ctx: ctx)
     }
 
-    func chatFollow(
-        index: Int,
-        userMessage: String,
-        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void {
-            await chatService.chatFollow(index: index, userMessage: userMessage, completion: completion)
-        }
-}
+    func chatFollow(userMessage: String) -> AsyncThrowingStream<AIStreamEvent, any Error> {
+        chatService.chatFollow(userMessage: userMessage)
+    }
 
-
-
-
-
-public protocol AIChatService {
-    func chat(ctx: ChatContext, completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void
-    func chatFollow(
-        index: Int,
-        userMessage: String,
-        completion: @escaping (_: Int, _: ResponseMessage) -> Void) async -> Void
+    func chatOnce(selectedText: String) -> AsyncThrowingStream<AIStreamEvent, Error> {
+        chatService.chatOnce(selectedText: selectedText)
+    }
 }
 
 
@@ -133,14 +157,22 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
     }
 
     public enum Role: String {
-        case assistant, tool, user, system
+        case assistant, user, system
     }
 
     public var id = UUID()
+
     @Published var summary: String
     @Published var message: String
     @Published var role: Role
     @Published var status: Status
+    @Published var tools: [String: AIToolCall]
+
+    // 给 View 用的、有序的数组视图
+    var items: [(key: String, value: AIToolCall)] {
+        tools.sorted { $0.key < $1.key }   // 按 key 排序
+    }
+
     var new: Bool = false // new start of message
 
     init(id: UUID = UUID(), message: String, role: Role, new: Bool = false, status: Status = .initial) {
@@ -150,6 +182,7 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
         self.new = new
         self.status = status
         self.summary = ""
+        self.tools = [String: AIToolCall]()
     }
 }
 

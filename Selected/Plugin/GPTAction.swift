@@ -21,26 +21,24 @@ class GptAction: Decodable{
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
-                    await ChatService(prompt: self.prompt, options: pluginInfo.getOptionsValue())!.chat(ctx: chatCtx) { _, ret in
-                        if ret.role == .assistant {
-                            DispatchQueue.main.async{
-                                _ = WindowManager.shared.closeOnlyPopbarWindows(.force)
+                    do {
+                        let stream = ChatService(prompt: self.prompt, options: pluginInfo.getOptionsValue())?.chat(ctx: chatCtx)
+                        for try await event in stream! {
+                            switch event {
+                                case .textDelta(let text):
+                                    DispatchQueue.main.async{
+                                        _ = WindowManager.shared.closeOnlyPopbarWindows(.force)
+                                    }
+                                    pasteText((text))
+                                default:
+                                    break
                             }
-                            pasteText(ret.message)
                         }
+                    }catch {
                     }
                 })
         } else {
-            var chatService: AIChatService = ChatService(prompt: prompt, options: pluginInfo.getOptionsValue())!
-            if let tools = tools {
-                switch Defaults[.aiService] {
-                    case "Claude":
-                        chatService = ClaudeService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
-                    default:
-                        chatService = OpenAIService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
-                }
-            }
-
+            let chatService: AIProvider = ChatService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())!
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)

@@ -10,9 +10,9 @@ import Foundation
 @MainActor
 class MessageViewModel: ObservableObject {
     @Published var messages: [ResponseMessage] = []
-    var chatService: AIChatService
+    var chatService: AIProvider
 
-    init(chatService: AIChatService) {
+    init(chatService: AIProvider) {
         self.chatService = chatService
         self.messages.append(ResponseMessage(message: NSLocalizedString("waiting", comment: "system info"), role: .system))
     }
@@ -25,46 +25,80 @@ class MessageViewModel: ObservableObject {
                 }
             }
         }
-        await chatService.chatFollow(index: messages.count-1, userMessage: message){ [weak self]  index, message in
-            DispatchQueue.main.async {
-                [weak self] in
-                guard let self = self else { return }
-                if self.messages.count < index+1 {
-                    self.messages.append(ResponseMessage(message: "", role:  message.role))
-                }
-                if message.role != self.messages[index].role {
-                    self.messages[index].role = message.role
-                }
-                self.messages[index].status = message.status
-                if message.new {
-                    self.messages[index].message = message.message
-                } else {
-                    self.messages[index].message += message.message
+        let stream = chatService.chatFollow(userMessage: message)
+
+        self.messages.append(ResponseMessage(message: "", role: .assistant, status: .initial))
+        let idx = self.messages.count-1
+        do {
+            for try await event in stream {
+                switch event {
+                    case .begin(let lastOpenAIResponseId):
+                        self.messages[idx].status = .updating
+                        break
+                    case .textDelta(let txt):
+                        self.messages[idx].message += txt
+                    case .textDone(let txt):
+                        self.messages[idx].message = txt
+                        self.messages[idx].status = .finished
+                    case .toolCallStarted(let toolStartStatus):
+                        self.messages[idx].tools[toolStartStatus.name] = AIToolCall(name: toolStartStatus.name, ret: toolStartStatus.message, status: .calling)
+                    case .toolCallFinished(let result):
+                        self.messages[idx].tools[result.name] = AIToolCall(name: result.name, ret: result.ret, status: .success)
+                    case .reasoningDelta(let reasoningDelta):
+                        self.messages[idx].summary += reasoningDelta
+                    case .reasoningDone(_):
+                        // only part of reasoning context done.
+                        self.messages[idx].summary +=  "\n\n"
+                    case .error(let err):
+                        self.messages[idx].role = .system
+                        self.messages[idx].status = .failure
+                        self.messages[idx].message = err
+                    default:
+                        break
                 }
             }
+        } catch {
+            self.messages[idx].role = .system
+            self.messages[idx].status = .failure
+            self.messages[idx].message = error.localizedDescription
         }
     }
 
+    // 开启第一条对话
     func fetchMessages(ctx: ChatContext) async -> Void{
-        await chatService.chat(ctx: ctx) { [weak self]  index, message in
-            DispatchQueue.main.async {
-                [weak self] in
-                guard let self = self else { return }
-                if self.messages.count < index+1 {
-                    self.messages.append(ResponseMessage(message: "", role:  message.role))
-                }
+        let stream = chatService.chat(ctx: ctx)
 
-                if message.role != self.messages[index].role {
-                    self.messages[index].role = message.role
-                }
-
-                self.messages[index].status = message.status
-                if message.new {
-                    self.messages[index].message = message.message
-                } else {
-                    self.messages[index].message += message.message
+        let idx = self.messages.count-1
+        do {
+            for try await event in stream {
+                switch event {
+                    case .begin(let lastResponseId):
+                        self.messages[idx].role = .assistant
+                        self.messages[idx].message = ""
+                        self.messages[idx].status = .updating
+                        break
+                    case .textDelta(let txt):
+                        self.messages[idx].message += txt
+                    case .textDone(let txt):
+                        self.messages[idx].message = txt
+                        self.messages[idx].status = .finished
+                    case .toolCallStarted(let toolStartStatus):
+                        self.messages[idx].tools[toolStartStatus.name] = AIToolCall(name: toolStartStatus.name, ret: toolStartStatus.message, status: .calling)
+                    case .toolCallFinished(let result):
+                        self.messages[idx].tools[result.name] = AIToolCall(name: result.name, ret: result.ret, status: .success)
+                    case .error(let err):
+                        self.messages[idx].role = .system
+                        self.messages[idx].message = err
+                    case .reasoningDelta(let reasoningDelta):
+                        self.messages[idx].summary += reasoningDelta
+                    case .reasoningDone(_):
+                        // only part of reasoning context done.
+                        self.messages[idx].summary +=  "\n\n"
+                    default:
+                        break
                 }
             }
+        } catch {
         }
     }
 }

@@ -153,8 +153,8 @@ struct SettingsView: View {
                         SecureField("APIKey", text: $claudeAPIKey)
                         TextField("APIHost", text: $claudeAPIHost)
                         Picker("Model", selection: $claudeModel, content: {
-                            ForEach(ClaudeModel.allCases, id: \.value) {
-                                Text($0.value)
+                            ForEach(ClaudeModel.allCases, id: \.self) {
+                                Text($0)
                             }
                         }).pickerStyle(DefaultPickerStyle())
                     }

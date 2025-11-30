@@ -26,7 +26,7 @@ class ChatWindowManager {
         }
     }
 
-    func createChatWindow(chatService: AIChatService, withContext ctx: ChatContext) {
+    func createChatWindow(chatService: AIProvider, withContext ctx: ChatContext) {
         let windowController = ChatWindowController(chatService: chatService, withContext: ctx)
         closeAllWindows(.force)
 
@@ -79,7 +79,7 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
 
     var pinnedModel: PinnedModel
 
-    init(chatService: AIChatService, withContext ctx: ChatContext) {
+    init(chatService: AIProvider, withContext ctx: ChatContext) {
         var window: NSWindow
         // 必须用 NSPanel 并设置 .nonactivatingPanel 以及 level 为 .screenSaver
         // 保证悬浮在全屏应用之上
