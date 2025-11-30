@@ -11,6 +11,56 @@ import SwiftUI
 import AVFoundation
 
 
+typealias OpenAIModel = Model
+
+extension Model {
+    static let gpt5_1 = "gpt-5.1"
+}
+
+let OpenAIModels: [Model] = [
+    .gpt5_mini, .gpt5,
+    .gpt4_1, .gpt4_1_mini, .o4_mini,
+    .o3, .gpt4_o, .gpt4_o_mini, .o1, .o3_mini]
+let OpenAITTSModels: [Model] = [.gpt_4o_mini_tts, .tts_1, .tts_1_hd]
+let OpenAITranslationModels: [Model] = [.gpt4_1_mini, .gpt4_o, .gpt4_o_mini]
+
+func isReasoningModel(_ model: Model) -> Bool {
+    return [.gpt5_mini, .gpt5, .gpt5_1, .o4_mini, .o3, .o1, .o3_mini].contains(model)
+}
+
+let dalle3Def = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
+    name: "Dall-E-3",
+    description: "When user asks for a picture, create a prompt that dalle can use to generate the image. The prompt must be in English. Translate to English if needed. The url of the image will be returned.",
+    parameters:
+            .init(
+                fields: [
+                    .type(.object),
+                    .properties(
+                        [
+                            "prompt":
+                                    .init(
+                                        fields: [
+                                            .type( .string),
+                                            .description( "the generated prompt sent to dalle3"),
+                                        ]
+                                    )
+                        ]
+                    )
+                ]
+            )
+)
+
+final class MiddleWare: OpenAIMiddleware {
+    func intercept(response: URLResponse?, request: URLRequest, data: Data?) -> (response: URLResponse?, data: Data?) {
+                if let data = data {
+                    print(String(data: data, encoding: .utf8) ?? "no data")
+                } else {
+                    print("no data2")
+                }
+        return (response, data)
+    }
+}
+
 class OpenAIProvider: AIProvider{
     private let prompt: String
     private var tools: [FunctionDefinition]?
@@ -48,9 +98,9 @@ class OpenAIProvider: AIProvider{
     }
 
     // 更新对话查询
-    private func updateQuery(message: UserMessage) {
+    private func updateQuery(message: String) {
         responseQuery = CreateModelResponseQuery(
-            input: .textInput(message.message),
+            input: .textInput(message),
             model: responseQuery.model,
             previousResponseId: responseQuery.previousResponseId,
             reasoning: responseQuery.reasoning,
@@ -84,7 +134,7 @@ class OpenAIProvider: AIProvider{
     /// 单轮对话，适合简单返回结果（流式返回）
     func chatOnce(selectedText: String) -> AsyncThrowingStream<AIStreamEvent, Error> {
         let messageContent = replaceOptions(content: prompt, selectedText: selectedText, options: options)
-        updateQuery(message: .init(message: messageContent))
+        updateQuery(message: messageContent)
         let stream: AsyncThrowingStream<ResponseStreamEvent, Error> =  openAI.responses.createResponseStreaming(query: responseQuery)
         let response = ResponseStatus2()
         return AsyncThrowingStream {
@@ -107,47 +157,46 @@ class OpenAIProvider: AIProvider{
     private let maxToolLoops = 8
 
     /// 处理用户后续的消息
-    func chatFollow(userMessage: String, lastResponseId: String? = nil) -> AsyncThrowingStream<AIStreamEvent, Error>  {
-        updateQuery(message: .init(message: userMessage, lastResponseId: lastResponseId))
+    func chatFollow(userMessage: String) -> AsyncThrowingStream<AIStreamEvent, Error>  {
+        updateQuery(message: userMessage)
         return AsyncThrowingStream { continuation in
             Task {
                 var hasToolCall = false
-                for _ in 0..<maxToolLoops {
-                    hasToolCall = await chatOneRound(continuation: continuation)
-                    if !hasToolCall {
-                        continuation.yield(.done)
-                        continuation.finish()
-                        return
+                do {
+                    for _ in 0..<maxToolLoops {
+                        hasToolCall = try await chatOneRound(continuation: continuation)
+                        if !hasToolCall {
+                            continuation.yield(.done)
+                            continuation.finish()
+                            return
+                        }
                     }
+                    continuation.yield(.error("tooManyToolLoops"))
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
                 }
-                continuation.yield(.error("tooManyToolLoops"))
-                continuation.finish()
             }
         }
     }
 
     /// 单轮聊天流程，包括流式处理和工具调用
-    private func chatOneRound( continuation: AsyncThrowingStream<AIStreamEvent, Error>.Continuation) async -> Bool  {
+    private func chatOneRound(continuation: AsyncThrowingStream<AIStreamEvent, Error>.Continuation) async throws -> Bool  {
         do {
             let openAIStream: AsyncThrowingStream<ResponseStreamEvent, Error> =  openAI.responses.createResponseStreaming(query: responseQuery)
 
             let response = ResponseStatus2()
-            do {
-                for try await event in openAIStream {
-                    // ResponseStreamEvent 是一个 enum，把不同事件转成统一 AIStreamEvent
-                    try response.handleResponseStreamEvent(event, continuation: continuation)
-                }
+            for try await event in openAIStream {
+                try response.handleResponseStreamEvent(event, continuation: continuation)
+            }
 
-                if response.hasToolsCalled {
-                    if  let input = try await callTools(toolCallsDict: response.toolCallsDict, continuation: continuation) {
-                        updateQueryWithToolOutput(lastResponseId: response.lastOpenAIResponseId!, input: input)
-                        return true
-                    }
-                } else {
-                    updateQuery(lastResponseId: response.lastOpenAIResponseId!)
+            if response.hasToolsCalled {
+                if let input = try await callTools(toolCallsDict: response.toolCallsDict, continuation: continuation) {
+                    updateQueryWithToolOutput(lastResponseId: response.lastOpenAIResponseId!, input: input)
+                    return true
                 }
-            } catch {
-                continuation.finish(throwing: error)
+            } else {
+                updateQuery(lastResponseId: response.lastOpenAIResponseId!)
             }
         }
         return false
@@ -173,7 +222,7 @@ class OpenAIProvider: AIProvider{
                 toolMessage = renderTemplate(templateString: template, json: tool.arguments)
                 print("\(toolMessage)")
             }
-            continuation.yield(.toolCallStarted(tool.name))
+            continuation.yield(.toolCallStarted(.init(name: tool.name, message: toolMessage)))
 
             // 根据工具名称调用不同的逻辑
             if tool.name == dalle3Def.name {
@@ -362,7 +411,7 @@ fileprivate class ResponseStatus2 : ObservableObject {
                 switch reasoningSummaryPartEvent {
                     case .added(let delta):
                         print("Reasoning summary part delta event received \(delta.itemId) \(delta.part.text)")
-//                        continuation.yield(.reasoningDelta(delta.part.text))
+                        //                        continuation.yield(.reasoningDelta(delta.part.text))
                     case .done(let done):
                         print("Reasoning summary part done event received \(done.itemId) \(done.part.text)")
                         break
@@ -426,10 +475,10 @@ fileprivate class ResponseStatus2 : ObservableObject {
                     switch content {
                         case .OutputTextContent(let outputText):
                             continuation.yield(.textDone(outputText.text))
-                            //                          message.annotations = outputText.annotations
+                            // message.annotations = outputText.annotations
                         case .RefusalContent(_):
                             break
-                            //                            message.refusalText = refusal.refusal
+                            // message.refusalText = refusal.refusal
                     }
                 }
             case .webSearchToolCall(_ /* let webSearchToolCall */):
@@ -460,4 +509,9 @@ fileprivate class ResponseStatus2 : ObservableObject {
                 continuation.yield(.textDone(responseTextDoneEvent.text))
         }
     }
+}
+
+ struct FunctionCallParam {
+    public var name: String
+    public var arguments: String
 }

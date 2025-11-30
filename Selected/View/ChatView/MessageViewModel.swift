@@ -18,8 +18,6 @@ class MessageViewModel: ObservableObject {
     }
 
     func submit(message: String) async {
-        var idx = self.messages.count-1
-        let lastOpenAIResponseId = self.messages[idx].lastResponseId
         await withTaskGroup(of: Void.self) { group in
             group.addTask {
                 await MainActor.run {
@@ -27,16 +25,14 @@ class MessageViewModel: ObservableObject {
                 }
             }
         }
-        let stream = chatService.chatFollow(userMessage: message, lastResponseId: lastOpenAIResponseId)
+        let stream = chatService.chatFollow(userMessage: message)
 
         self.messages.append(ResponseMessage(message: "", role: .assistant, status: .initial))
-        idx = self.messages.count-1
-
+        let idx = self.messages.count-1
         do {
             for try await event in stream {
                 switch event {
                     case .begin(let lastOpenAIResponseId):
-                        self.messages[idx].lastResponseId = lastOpenAIResponseId
                         self.messages[idx].status = .updating
                         break
                     case .textDelta(let txt):
@@ -44,8 +40,8 @@ class MessageViewModel: ObservableObject {
                     case .textDone(let txt):
                         self.messages[idx].message = txt
                         self.messages[idx].status = .finished
-                    case .toolCallStarted(let toolName):
-                        self.messages[idx].tools[toolName] = AIToolCall(name: toolName, ret: "", status: .calling)
+                    case .toolCallStarted(let toolStartStatus):
+                        self.messages[idx].tools[toolStartStatus.name] = AIToolCall(name: toolStartStatus.name, ret: toolStartStatus.message, status: .calling)
                     case .toolCallFinished(let result):
                         self.messages[idx].tools[result.name] = AIToolCall(name: result.name, ret: result.ret, status: .success)
                     case .reasoningDelta(let reasoningDelta):
@@ -62,6 +58,9 @@ class MessageViewModel: ObservableObject {
                 }
             }
         } catch {
+            self.messages[idx].role = .system
+            self.messages[idx].status = .failure
+            self.messages[idx].message = error.localizedDescription
         }
     }
 
@@ -77,15 +76,14 @@ class MessageViewModel: ObservableObject {
                         self.messages[idx].role = .assistant
                         self.messages[idx].message = ""
                         self.messages[idx].status = .updating
-                        self.messages[idx].lastResponseId = lastResponseId
                         break
                     case .textDelta(let txt):
                         self.messages[idx].message += txt
                     case .textDone(let txt):
                         self.messages[idx].message = txt
                         self.messages[idx].status = .finished
-                    case .toolCallStarted(let toolName):
-                        self.messages[idx].tools[toolName] = AIToolCall(name: toolName, ret: "", status: .calling)
+                    case .toolCallStarted(let toolStartStatus):
+                        self.messages[idx].tools[toolStartStatus.name] = AIToolCall(name: toolStartStatus.name, ret: toolStartStatus.message, status: .calling)
                     case .toolCallFinished(let result):
                         self.messages[idx].tools[result.name] = AIToolCall(name: result.name, ret: result.ret, status: .success)
                     case .error(let err):

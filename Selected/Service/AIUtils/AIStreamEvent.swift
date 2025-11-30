@@ -48,7 +48,7 @@ enum AIStreamEvent {
     case reasoningDelta(String)           // 推理模型的「推理内容」增量（展示用）
     case reasoningDone(String)              // 推理模型的「推理内容」全量
 
-    case toolCallStarted(String)      // 第一次出现这个 tool_call
+    case toolCallStarted(ToolCallStart)      // 第一次出现这个 tool_call
     case toolCallFinished(ToolCallResult)     // 结束（可选）
 
     case error(String)
@@ -81,6 +81,11 @@ struct ToolCallResult {
     let ret: String
 }
 
+struct ToolCallStart {
+    let name: String
+    let message: String
+}
+
 struct AIToolCallDelta {
     let id: String
     let argumentsDelta: String
@@ -97,6 +102,7 @@ enum AIProviderKind: String, Sendable {
 }
 
 protocol AIProvider {
+    func chatOnce(selectedText: String) -> AsyncThrowingStream<AIStreamEvent, Error>
     func chat(ctx: ChatContext) -> AsyncThrowingStream<AIStreamEvent, Error>
-    func chatFollow(userMessage: String,  lastResponseId: String?) -> AsyncThrowingStream<AIStreamEvent, Error>
+    func chatFollow(userMessage: String) -> AsyncThrowingStream<AIStreamEvent, Error>
 }

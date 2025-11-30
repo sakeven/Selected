@@ -21,9 +21,9 @@ class GptAction: Decodable{
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
-                    let stream = OpenAIProvider(prompt: self.prompt, options: pluginInfo.getOptionsValue()).chat(ctx: chatCtx)
                     do {
-                        for try await event in stream {
+                        let stream = ChatService(prompt: self.prompt, options: pluginInfo.getOptionsValue())?.chat(ctx: chatCtx)
+                        for try await event in stream! {
                             switch event {
                                 case .textDelta(let text):
                                     DispatchQueue.main.async{
@@ -38,17 +38,7 @@ class GptAction: Decodable{
                     }
                 })
         } else {
-            var chatService: AIProvider = OpenAIProvider(prompt: prompt, options: pluginInfo.getOptionsValue())
-            if let tools = tools {
-                switch Defaults[.aiService] {
-                    case "Claude":
-                        //                        chatService = ClaudeService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
-                        break
-                    default:
-                        chatService = OpenAIProvider(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
-                }
-            }
-
+            let chatService: AIProvider = ChatService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())!
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)

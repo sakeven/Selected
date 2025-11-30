@@ -368,6 +368,7 @@
     },
     "error_exception" : {
       "comment" : "system info",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -799,6 +800,7 @@
     },
     "Too much rounds, please start a new chat" : {
       "comment" : "system info",
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -903,6 +905,7 @@
     },
     "Waiting" : {
       "comment" : "system info",
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
