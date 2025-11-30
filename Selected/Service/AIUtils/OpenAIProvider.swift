@@ -263,7 +263,7 @@ class OpenAIProvider: AIProvider{
     }
 }
 
-public class ResponseStatus2 : ObservableObject {
+fileprivate class ResponseStatus2 : ObservableObject {
     public var lastOpenAIResponseId: String?
     public var toolCallsDict: [String: FunctionCallParam]
     public var hasToolsCalled: Bool {

@@ -191,3 +191,10 @@ struct ToolRowView: View {
         }
     }
 }
+
+
+
+#Preview {
+    ToolRowView(tool: AIToolCall(name: "local_crawler", ret: "", status: .success))
+}
+

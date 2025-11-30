@@ -21,13 +21,20 @@ class GptAction: Decodable{
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
-                    await ChatService(prompt: self.prompt, options: pluginInfo.getOptionsValue())!.chat(ctx: chatCtx) { _, ret in
-                        if ret.role == .assistant {
-                            DispatchQueue.main.async{
-                                _ = WindowManager.shared.closeOnlyPopbarWindows(.force)
+                    let stream = OpenAIProvider(prompt: self.prompt, options: pluginInfo.getOptionsValue()).chat(ctx: chatCtx)
+                    do {
+                        for try await event in stream {
+                            switch event {
+                                case .textDelta(let text):
+                                    DispatchQueue.main.async{
+                                        _ = WindowManager.shared.closeOnlyPopbarWindows(.force)
+                                    }
+                                    pasteText((text))
+                                default:
+                                    break
                             }
-                            pasteText(ret.message)
                         }
+                    }catch {
                     }
                 })
         } else {
@@ -35,7 +42,7 @@ class GptAction: Decodable{
             if let tools = tools {
                 switch Defaults[.aiService] {
                     case "Claude":
-//                        chatService = ClaudeService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
+                        //                        chatService = ClaudeService(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
                         break
                     default:
                         chatService = OpenAIProvider(prompt: prompt, tools: tools, options: pluginInfo.getOptionsValue())
