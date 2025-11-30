@@ -228,6 +228,16 @@
         }
       }
     },
+    "calling…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在调用"
+          }
+        }
+      }
+    },
     "Check for Updates" : {
       "localizations" : {
         "zh-Hans" : {
@@ -366,24 +376,6 @@
         }
       }
     },
-    "error_exception" : {
-      "comment" : "system info",
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exception: %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "异常：%@"
-          }
-        }
-      }
-    },
     "exchange" : {
       "localizations" : {
         "zh-Hans" : {
@@ -400,6 +392,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "扩展"
+          }
+        }
+      }
+    },
+    "failure" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "失败"
           }
         }
       }
@@ -787,6 +789,16 @@
         }
       }
     },
+    "success" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "成功"
+          }
+        }
+      }
+    },
     "system" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -794,18 +806,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "系统"
-          }
-        }
-      }
-    },
-    "Too much rounds, please start a new chat" : {
-      "comment" : "system info",
-      "extractionState" : "stale",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "太多轮对话，请开启新的对话"
           }
         }
       }
@@ -894,18 +894,6 @@
     },
     "waiting" : {
       "comment" : "system info",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "等待中"
-          }
-        }
-      }
-    },
-    "Waiting" : {
-      "comment" : "system info",
-      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {

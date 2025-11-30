@@ -177,9 +177,9 @@ struct ToolRowView: View {
 
     private var statusText: String {
         switch tool.status {
-            case .calling: return "调用中…"
-            case .success: return "成功"
-            case .failure: return "失败"
+            case .calling: return String(format: NSLocalizedString("calling…", comment: ""))
+            case .success: return String(format: NSLocalizedString("success", comment: ""))
+            case .failure: return String(format: NSLocalizedString("failure", comment: ""))
         }
     }
 

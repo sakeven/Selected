@@ -111,6 +111,12 @@ struct Translation {
     }
 }
 
+protocol AIProvider {
+    func chatOnce(selectedText: String) -> AsyncThrowingStream<AIStreamEvent, Error>
+    func chat(ctx: ChatContext) -> AsyncThrowingStream<AIStreamEvent, Error>
+    func chatFollow(userMessage: String) -> AsyncThrowingStream<AIStreamEvent, Error>
+}
+
 
 struct ChatService: AIProvider{
     var chatService: AIProvider
