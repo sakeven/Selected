@@ -16,7 +16,7 @@ struct PopResultView: View {
             Text(text)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.top, 10).padding(.leading, 10).padding(.trailing, 10)
-                .background(.gray).cornerRadius(5).fixedSize()
+                .background(.ultraThinMaterial).cornerRadius(5).fixedSize()
         }
     }
 }

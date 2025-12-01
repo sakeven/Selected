@@ -228,8 +228,6 @@ struct ShortcutView: View {
     @Default(.enableClipboard) var enableClipboard
     @Default(.clipboardHistoryTime) var keepTime: ClipboardHistoryTime
 
-    @Environment(\.colorScheme) var colorScheme
-
     var body: some View {
         VStack {
             Form{

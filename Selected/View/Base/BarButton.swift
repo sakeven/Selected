@@ -18,13 +18,13 @@ struct BarButton: View {
     var icon: String
     var title: String
     var clicked: ((_: Binding<Bool>) -> Void) /// use closure for callback
-    
+
     @State private var shouldPopover: Bool = false
     @State private var hoverWorkItem: DispatchWorkItem?
-    
+
     @State private var isLoading = false
-    
-    
+
+
     var body: some View {
         Button {
             DispatchQueue.main.async {
@@ -71,20 +71,21 @@ struct BarButton: View {
 // BarButtonStyle: click、onHover 显示不同的颜色
 struct BarButtonStyle: ButtonStyle {
     @State var isHover = false
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .background(getColor(isPressed: configuration.isPressed))
-            .foregroundColor(.white)
-            .onHover(perform: { hovering in
+            .foregroundColor(colorScheme == .dark ? .white: .black )
+            .onHover { hovering in
                 isHover = hovering
-            })
+            }
     }
-    
-    func getColor(isPressed: Bool) -> Color{
+
+    func getColor(isPressed: Bool) -> Color {
         if isPressed {
             return .blue.opacity(0.4)
         }
-        return isHover ? .blue : .gray
+        return isHover ? .blue.opacity(0.25) : .clear
     }
 }

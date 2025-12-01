@@ -189,7 +189,7 @@ class TTSWindowController: BaseWindowController {
 class TextWindowController: BaseWindowController {
     init(text: String) {
         let view = PopResultView(text: text)
-        super.init(rootView: AnyView(view), windowType: .text, positionStrategy: .nearMouse, size: .zero, alpha: 0.9)
+        super.init(rootView: AnyView(view), windowType: .text, positionStrategy: .nearMouse, size: .zero)
     }
 
     required init?(coder: NSCoder) {

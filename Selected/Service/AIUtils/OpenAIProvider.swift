@@ -144,7 +144,6 @@ class OpenAIProvider: AIProvider{
             continuation in
             Task {
                 for try await event in stream {
-                    print("event xxxx")
                     try response.handleResponseStreamEvent(event, continuation: continuation)
                 }
             }

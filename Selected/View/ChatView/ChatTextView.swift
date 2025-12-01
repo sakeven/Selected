@@ -72,7 +72,10 @@ struct ChatTextView: View {
                 .padding(.leading, 20.0)
                 .padding(.trailing, 20.0)
                 .padding(.bottom, 10)
-        }.frame(width: 750).onDisappear(){
+        }.frame(width: 750)
+            .background(.ultraThinMaterial)
+            .cornerRadius(12)
+            .onDisappear(){
             task?.cancel()
         }
     }

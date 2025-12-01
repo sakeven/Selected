@@ -111,7 +111,7 @@ struct MessageView: View {
                     .padding(.top, 5)
                     .padding(.bottom, 20)
             }
-        }.frame(width: 750)
+        }.frame(width: 750).textSelection(.enabled)
     }
 
     private var codeTheme: CodeTheme {

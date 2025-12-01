@@ -60,7 +60,6 @@ struct Translation {
             for try await event in stream {
                 switch event {
                     case .textDelta(let txt):
-                        print("\(txt)")
                         completion(txt)
                     default:
                         break

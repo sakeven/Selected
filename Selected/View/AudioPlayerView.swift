@@ -110,7 +110,7 @@ struct AudioPlayerView: View {
         VStack {
             ZStack {
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
+                    .fill(.ultraThinMaterial)
                     .shadow(radius: 8)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
 

@@ -27,7 +27,6 @@ struct SpotlightView: View {
                     .focused($isFocused)
                     .textFieldStyle(PlainTextFieldStyle())
                     .padding(10)
-                    .background(Color.gray.opacity(0.1))
                     .cornerRadius(6)
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -35,7 +34,7 @@ struct SpotlightView: View {
                         }
                     }
             }
-            .background(Color.gray)
+            .background(.ultraThinMaterial)
             .cornerRadius(10)
 
             if !searchText.isEmpty {

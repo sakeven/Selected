@@ -48,7 +48,8 @@ struct PopBarView: View {
             }
         }.frame(height: 30)
             .padding(.leading, 10).padding(.trailing, 10)
-            .background(.gray).cornerRadius(5).fixedSize()
+            .background(.ultraThinMaterial)
+            .cornerRadius(5).fixedSize()
     }
 }
 
