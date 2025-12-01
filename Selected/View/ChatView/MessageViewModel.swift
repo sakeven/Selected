@@ -32,7 +32,7 @@ class MessageViewModel: ObservableObject {
         do {
             for try await event in stream {
                 switch event {
-                    case .begin(let lastOpenAIResponseId):
+                    case .begin(_):
                         self.messages[idx].status = .updating
                         break
                     case .textDelta(let txt):

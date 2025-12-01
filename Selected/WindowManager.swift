@@ -164,7 +164,7 @@ class PopBarWindowController: BaseWindowController {
 
 class TranslationWindowController: BaseWindowController {
     init(rootView: AnyView) {
-        super.init(rootView: rootView, windowType: .translation, positionStrategy: .centerScreenOffset(0.75), size: .init(width: 550, height: 450), isKey: true, alpha: 0.9)
+        super.init(rootView: rootView, windowType: .translation, positionStrategy: .centerScreenOffset(0.75), size: .init(width: 550, height: 450), isKey: true)
     }
 
     required init?(coder: NSCoder) {

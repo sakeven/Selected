@@ -60,12 +60,14 @@ struct Translation {
             for try await event in stream {
                 switch event {
                     case .textDelta(let txt):
+                        print("\(txt)")
                         completion(txt)
                     default:
                         break
                 }
             }
         } catch {
+            print("contentTrans2Chinese error \(error)")
         }
     }
 
@@ -97,7 +99,7 @@ struct Translation {
         init?(prompt: String){
             switch Defaults[.aiService] {
                 case "OpenAI":
-                    chatService = OpenAIProvider(prompt: prompt, model: Defaults[.openAITranslationModel])
+                    chatService = OpenAIProvider(prompt: prompt, model: Defaults[.openAITranslationModel], reasoning: false)
                 case "Claude":
                     chatService = ClaudeAIProvider(prompt: prompt, model: .claude_haiku_4_5)
                 default:
@@ -121,12 +123,12 @@ protocol AIProvider {
 struct ChatService: AIProvider{
     var chatService: AIProvider
 
-    init?(prompt: String, tools: [FunctionDefinition]? = nil, options: [String:String]){
+    init?(prompt: String, tools: [FunctionDefinition]? = nil, options: [String:String], reasoning: Bool = true){
         switch Defaults[.aiService] {
             case "OpenAI":
-                chatService = OpenAIProvider(prompt: prompt, tools: tools, options: options)
+                chatService = OpenAIProvider(prompt: prompt, tools: tools, options: options, reasoning: reasoning)
             case "Claude":
-                chatService = ClaudeAIProvider(prompt: prompt, tools: tools, options: options)
+                chatService = ClaudeAIProvider(prompt: prompt, tools: tools, options: options, reasoning: reasoning)
             default:
                 return nil
         }

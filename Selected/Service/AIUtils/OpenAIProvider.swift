@@ -15,17 +15,20 @@ typealias OpenAIModel = Model
 
 extension Model {
     static let gpt5_1 = "gpt-5.1"
+    static let gpt5_pro = "gpt-5-pro"
 }
 
 let OpenAIModels: [Model] = [
+    .gpt5_1,
     .gpt5_mini, .gpt5,
+    .gpt5_pro,
     .gpt4_1, .gpt4_1_mini, .o4_mini,
-    .o3, .gpt4_o, .gpt4_o_mini, .o1, .o3_mini]
+    .o3, .gpt4_o, .gpt4_o_mini, .o3_mini]
 let OpenAITTSModels: [Model] = [.gpt_4o_mini_tts, .tts_1, .tts_1_hd]
-let OpenAITranslationModels: [Model] = [.gpt4_1_mini, .gpt4_o, .gpt4_o_mini]
+let OpenAITranslationModels: [Model] = [.gpt5_1, .gpt4_1_mini, .gpt4_o, .gpt4_o_mini]
 
 func isReasoningModel(_ model: Model) -> Bool {
-    return [.gpt5_mini, .gpt5, .gpt5_1, .o4_mini, .o3, .o1, .o3_mini].contains(model)
+    return [.gpt5_mini, .gpt5, .gpt5_1, .gpt5_pro, .o4_mini, .o3, .o1, .o3_mini].contains(model)
 }
 
 let dalle3Def = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
@@ -69,7 +72,7 @@ class OpenAIProvider: AIProvider{
     private var options: [String: String]
 
     // 初始化时传入 prompt、工具列表和其他选项
-    init(prompt: String, tools: [FunctionDefinition]? = nil, options: [String: String] = [:]) {
+    init(prompt: String, tools: [FunctionDefinition]? = nil, options: [String: String] = [:], reasoning: Bool = true) {
         self.prompt = prompt
         self.tools = tools
         var host = "api.openai.com"
@@ -79,11 +82,11 @@ class OpenAIProvider: AIProvider{
         let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey], host: host, timeoutInterval: 60.0, parsingOptions: .relaxed)
         self.openAI = OpenAI(configuration: configuration, middlewares: [MiddleWare()])
         self.options = options
-        self.responseQuery = OpenAIProvider.createResponseQuery(functions: tools, model: Defaults[.openAIModel])
+        self.responseQuery = OpenAIProvider.createResponseQuery(functions: tools, model: Defaults[.openAIModel], thinking: reasoning)
     }
 
     // 初始化时直接传入 prompt 和模型
-    init(prompt: String, model: OpenAIModel) {
+    init(prompt: String, model: OpenAIModel, reasoning: Bool = true) {
         self.prompt = prompt
         self.tools = nil
         var host = "api.openai.com"
@@ -93,7 +96,7 @@ class OpenAIProvider: AIProvider{
         let configuration = OpenAI.Configuration(token: Defaults[.openAIAPIKey], host: host, timeoutInterval: 60.0)
         self.openAI = OpenAI(configuration: configuration)
         self.options = [:]
-        self.responseQuery = OpenAIProvider.createResponseQuery(functions: tools, model: model)
+        self.responseQuery = OpenAIProvider.createResponseQuery(functions: tools, model: model, thinking: reasoning)
 
     }
 
@@ -135,12 +138,13 @@ class OpenAIProvider: AIProvider{
     func chatOnce(selectedText: String) -> AsyncThrowingStream<AIStreamEvent, Error> {
         let messageContent = replaceOptions(content: prompt, selectedText: selectedText, options: options)
         updateQuery(message: messageContent)
-        let stream: AsyncThrowingStream<ResponseStreamEvent, Error> =  openAI.responses.createResponseStreaming(query: responseQuery)
+        let stream: AsyncThrowingStream<ResponseStreamEvent, Error> = openAI.responses.createResponseStreaming(query: responseQuery)
         let response = ResponseStatus2()
         return AsyncThrowingStream {
             continuation in
             Task {
                 for try await event in stream {
+                    print("event xxxx")
                     try response.handleResponseStreamEvent(event, continuation: continuation)
                 }
             }
@@ -260,8 +264,7 @@ class OpenAIProvider: AIProvider{
         return CreateModelResponseQuery.Input.inputItemList(input)
     }
 
-    private static func createResponseQuery(functions: [FunctionDefinition]?, model: OpenAIModel) -> CreateModelResponseQuery {
-
+    private static func createResponseQuery(functions: [FunctionDefinition]?, model: OpenAIModel, thinking: Bool) -> CreateModelResponseQuery {
         var tools: [Tool]? = nil
         if let functions = functions {
             var toolList: [Tool] = [
@@ -289,17 +292,25 @@ class OpenAIProvider: AIProvider{
 
         typealias ReasoningEffort = Components.Schemas.ReasoningEffort
         var reasoning: Components.Schemas.Reasoning? = nil
-        if isReasoningModel(model){
-            let reasoningEffort: ReasoningEffort = switch Defaults[.openAIModelReasoningEffort]{
+        if isReasoningModel(model) {
+            var reasoningEffort: ReasoningEffort = switch Defaults[.openAIModelReasoningEffort] {
                 case "low": .low
                 case "medium": .medium
                 case "high": .high
                 default: .medium
             }
+            if model == .gpt5_pro {
+                reasoningEffort = .high
+            }
             reasoning =  .init(
                 effort: reasoningEffort,
                 summary: .auto)
         }
+
+//        if !thinking {
+//            // only support for gpt_5.1 which default reasoningEffort is none.
+//            reasoning = nil
+//        }
 
         return CreateModelResponseQuery(
             input: .textInput(""),

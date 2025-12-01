@@ -103,11 +103,11 @@ fileprivate struct QueryManager {
     private(set) var query: MessageParameter
     private let _tools: [MessageParameter.Tool]
 
-    init(model: Model, systemPrompt: String, tools: [MessageParameter.Tool]) {
+    init(model: Model, systemPrompt: String, tools: [MessageParameter.Tool], reasoning: Bool) {
         var thinking: MessageParameter.Thinking? = nil
-//        if model.value == Model.claude37Sonnet.value {
+        if reasoning {
             thinking = .init(budgetTokens: 2048)
-//        }
+        }
         self.query = MessageParameter(
             model: .other(model.value),
             messages: [],
@@ -155,7 +155,7 @@ class ClaudeAIProvider: AIProvider {
     private var queryManager: QueryManager
     private let tools: [FunctionDefinition]?
 
-    init(prompt: String, tools: [FunctionDefinition]? = nil, options: [String: String] = [:]) {
+    init(prompt: String, tools: [FunctionDefinition]? = nil, options: [String: String] = [:], reasoning: Bool = true) {
         var apiHost = "https://api.anthropic.com"
         if Defaults[.claudeAPIHost] != "" {
             apiHost = Defaults[.claudeAPIHost]
@@ -168,9 +168,11 @@ class ClaudeAIProvider: AIProvider {
         var toolsParam = ToolsManager.generateTools(from: tools)
         toolsParam.append(svgToolClaudeDef)
         self.tools = tools
-        self.queryManager = QueryManager(model: .other(Defaults[.claudeModel]), systemPrompt: systemPrompt(), tools: toolsParam)
+        self.queryManager = QueryManager(model: .other(Defaults[.claudeModel]), systemPrompt: systemPrompt(), tools: toolsParam, reasoning: reasoning)
     }
 
+
+    // init claude service without tools and thinking
     init(prompt: String, model: ClaudeModel) {
         var apiHost = "https://api.anthropic.com"
         if Defaults[.claudeAPIHost] != "" {
@@ -180,7 +182,7 @@ class ClaudeAIProvider: AIProvider {
         self.prompt = prompt
         self.options = [String: String]()
         self.tools = []
-        self.queryManager = QueryManager(model: .other(model), systemPrompt: systemPrompt(), tools: [])
+        self.queryManager = QueryManager(model: .other(model), systemPrompt: systemPrompt(), tools: [], reasoning: false)
     }
 
     /// 单次聊天：仅发送一条消息，返回流式响应内容

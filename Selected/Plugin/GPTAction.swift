@@ -10,6 +10,7 @@ import Defaults
 
 class GptAction: Decodable{
     var prompt: String
+    var reasoning: Bool?
     var tools: [FunctionDefinition]?
 
     init(prompt: String) {

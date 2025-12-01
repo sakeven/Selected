@@ -22,73 +22,111 @@ struct TranslationView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            if let w = word {
-                Label {
-                    Text("[\(w.phonetic)]")
-                } icon: {
-                    Text("phonetic")
-                }.padding(.top, 20).padding(.leading, 20)
-                if w.exchange != "" {
-                    Label {
-                        Text(w.exchange)
-                    } icon: {
-                        Text("exchange")
-                    }.padding(.leading, 20)
-                }
+            header
+            Divider()
+            if word != nil {
+                wordView
                 Divider()
             }
-            ScrollView(.vertical){
-                Markdown(self.transText)
-                    .markdownBlockStyle(\.codeBlock, body: {label in
-                        // wrap long lines
-                        highlighter.setTheme(theme: codeTheme).highlightCode(label.content, language: label.language)
-                            .padding()
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .markdownMargin(top: .em(1), bottom: .em(1))
-                    })
-                    .padding(.leading, 20.0)
-                    .padding(.trailing, 20.0)
-                    .padding(.top, 20)
-                    .frame(width: 550, alignment: .leading)
-                    .task {
-                        if isPreview {
-                            return
-                        }
-                        if isWord(str: text) {
-                            word = try! StarDict.shared.query(word: text)
-                        }
-                        await Translation(toLanguage: to).translate(content: text) { content in
-                            if !hasRep {
-                                transText = content
-                                hasRep = true
-                            } else {
-                                transText = transText + content
-                            }
-                        }
+            if !hasRep {
+                loadingView
+            } else {
+                tranlationView
+            }
+            Spacer()
+        }.frame(width: 320, height: 400)
+            .background(.ultraThinMaterial)
+            .cornerRadius(12)
+            .task {
+                if isPreview {
+                    return
+                }
+                print("here")
+                if isWord(str: text) {
+                    word = try! StarDict.shared.query(word: text)
+                }
+                await Translation(toLanguage: to).translate(content: text) { content in
+                    if !hasRep {
+                        transText = content
+                        hasRep = true
+                    } else {
+                        transText = transText + content
                     }
-            }.frame(width: 550, height: 300)
-            Divider()
-            HStack{
-                Button(action: {
-                    let pasteboard = NSPasteboard.general
-                    pasteboard.clearContents()
-                    let painText  = MarkdownContent(self.transText).renderPlainText()
-                    pasteboard.setString(painText, forType: .string)
-                }, label: {
-                    Image(systemName: "doc.on.clipboard.fill")
-                })
-                .foregroundColor(Color.white)
+                }
+            }
+    }
+
+    @State private var isCopied = false
+    private var header: some View{
+        HStack{
+            Text("Translation")
+            Spacer()
+            Button(action: {
+                let pasteboard = NSPasteboard.general
+                pasteboard.clearContents()
+                let painText  = MarkdownContent(self.transText).renderPlainText()
+                pasteboard.setString(painText, forType: .string)
+                isCopied = true
+                DispatchQueue.main.asyncAfter(deadline: .now()+0.2){
+                    isCopied = false
+                }
+            }, label: {
+                Image(systemName: "doc.on.clipboard.fill").foregroundColor(isCopied ? .green: .primary)
+            })
+            .foregroundColor(Color.white)
+            .cornerRadius(5)
+            Button {
+                Task{
+                    await TTSManager.speak(self.text, view: false)
+                }
+            } label: {
+                Image(systemName: "play.circle")
+            }.foregroundColor(Color.white)
                 .cornerRadius(5)
-                Button {
-                    Task{
-                        await TTSManager.speak(MarkdownContent(self.transText).renderPlainText())
-                    }
-                } label: {
-                    Image(systemName: "play.circle")
-                }.foregroundColor(Color.white)
-                    .cornerRadius(5)
-            }.frame(width: 550, height: 30).padding(.bottom, 10)
         }
+        .padding([.horizontal, .top], 12)
+        .padding(.bottom, 8)
+    }
+
+    private var wordView: some View{
+        VStack(alignment: .leading) {
+            Label {
+                Text("[\(word!.phonetic)]")
+            } icon: {
+                Text("phonetic")
+            }
+            if word!.exchange != "" {
+                Label {
+                    Text(word!.exchange)
+                } icon: {
+                    Text("exchange")
+                }
+            }
+        }.padding(.leading, 20)
+    }
+
+    private var tranlationView: some View{
+        ScrollView(.vertical){
+            Markdown(self.transText)
+                .markdownBlockStyle(\.codeBlock, body: {label in
+                    // wrap long lines
+                    highlighter.setTheme(theme: codeTheme).highlightCode(label.content, language: label.language)
+                        .padding()
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .markdownMargin(top: .em(1), bottom: .em(1))
+                })
+                .textSelection(.enabled)
+                .padding(20.0)
+                .frame(alignment: .leading)
+        }
+    }
+
+    private var loadingView: some View{
+        HStack(spacing: 0) {
+            ProgressView().scaleEffect(0.8)
+            Text("in translating")
+                .font(.system(size: 14))
+        }.padding(.leading, 20)
     }
 
     private var codeTheme: CodeTheme {

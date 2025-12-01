@@ -485,6 +485,16 @@
         }
       }
     },
+    "in translating" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻译中"
+          }
+        }
+      }
+    },
     "Instructions" : {
       "localizations" : {
         "zh-Hans" : {
