@@ -14,6 +14,7 @@ struct TranslationView: View {
     @State var transText: String = "..."
 
     @State private var hasRep = false
+    @State private var showText = false
     var to: String = "cn"
 
     @EnvironmentObject var pinned: PinnedModel
@@ -30,6 +31,7 @@ struct TranslationView: View {
                 wordView
                 Divider()
             }
+
             if !hasRep {
                 loadingView
             } else {
@@ -57,11 +59,28 @@ struct TranslationView: View {
             }
     }
 
+    private var orinialText: some View{
+            Text(text)
+            .textSelection(.enabled)
+            .fontWeight(.light)
+            .padding(.horizontal, 20.0)
+    }
+
     @State private var isCopied = false
     private var header: some View{
         HStack{
             Text("Translation").font(.title).bold()
             Spacer()
+
+            if !isWord(str: text){
+                Button {
+                    showText = !showText
+                } label: {
+                    Image(systemName: showText ? "text.page.slash" : "text.page")
+                }.foregroundColor(Color.white)
+                    .cornerRadius(5)
+            }
+
             Button(action: {
                 let pasteboard = NSPasteboard.general
                 pasteboard.clearContents()
@@ -76,6 +95,7 @@ struct TranslationView: View {
             })
             .foregroundColor(Color.white)
             .cornerRadius(5)
+
             Button {
                 Task{
                     await TTSManager.speak(self.text, view: false)
@@ -117,6 +137,11 @@ struct TranslationView: View {
 
     private var tranlationView: some View{
         ScrollView(.vertical){
+            if !isWord(str: text) && showText {
+                orinialText
+                Divider()
+            }
+
             Markdown(self.transText)
                 .markdownBlockStyle(\.codeBlock, body: {label in
                     // wrap long lines
@@ -126,6 +151,7 @@ struct TranslationView: View {
                         .markdownMargin(top: .em(1), bottom: .em(1))
                 })
                 .textSelection(.enabled)
+                .padding(.top, 0)
                 .padding([.horizontal, .bottom], 20.0)
                 .frame(alignment: .leading)
         }
