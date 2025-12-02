@@ -430,10 +430,10 @@ fileprivate class ResponseStatus2 : ObservableObject {
             case .reasoningSummaryText(let reasoningSummaryTextEvent):
                 switch reasoningSummaryTextEvent {
                     case .delta(let delta):
-                        print("Reasoning summary text delta event received \(delta.itemId) \(delta.delta)")
+//                        print("Reasoning summary text delta event received \(delta.itemId) \(delta.delta)")
                         continuation.yield(.reasoningDelta(delta.delta))
                     case .done(let done):
-                        print("Reasoning summary text done event received \(done.itemId) \(done.text)")
+//                        print("Reasoning summary text done event received \(done.itemId) \(done.text)")
                         continuation.yield(.reasoningDone(done.text))
                 }
                 break

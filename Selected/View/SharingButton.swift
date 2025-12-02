@@ -44,22 +44,29 @@ struct SharingsPicker: NSViewRepresentable {
         
         func sharingServicePicker(_ sharingServicePicker: NSSharingServicePicker, didChoose service: NSSharingService?) {
             sharingServicePicker.delegate = nil   // << cleanup
-            self.owner.isPresented = false        // << dismiss
-            WindowManager.shared.showingSharingPicker = false
+            DispatchQueue.main.async {
+                print("close picker")
+                self.owner.isPresented = false        // << dismiss
+            }
         }
     }
 }
 
 
 struct SharingButton: View {
-    @State private var showPicker = false
+    @EnvironmentObject var model: ShowingSharingPickerModel
+
     var message: String
     var body: some View {
         BarButton(icon: "symbol:square.and.arrow.up", title: "share", clicked: {
             _ in
-            WindowManager.shared.showingSharingPicker = true
-            self.showPicker = true
+            model.showing = !model.showing
         })
-        .background(SharingsPicker(isPresented: $showPicker, sharingItems: [message]))
+        .background(SharingsPicker(isPresented: $model.showing, sharingItems: [message]))
     }
+}
+
+
+class ShowingSharingPickerModel: ObservableObject {
+    @Published var showing: Bool = false
 }

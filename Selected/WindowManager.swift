@@ -32,6 +32,7 @@ enum CloseWindowMode {
 
 // MARK: - 窗口控制器协议
 protocol WindowCtr: NSObjectProtocol {
+    func canClose() -> Bool
     func close()
     func frame() -> NSRect
     func showWindow(_ sender: Any?)
@@ -42,8 +43,15 @@ protocol WindowCtr: NSObjectProtocol {
 
 // MARK: - 基础窗口控制器
 class BaseWindowController: NSWindowController, NSWindowDelegate, WindowCtr {
+
     var onClose: (()->Void)?
+    var pinnedModel: PinnedModel
+    // When in showing SharingPicker, we should avoid close popbar window by accident.
+    var showingSharingPicker = ShowingSharingPickerModel()
+
+
     private var windowType: WindowType
+
 
     func frame() -> NSRect {
         return window?.frame ?? .zero
@@ -72,11 +80,13 @@ class BaseWindowController: NSWindowController, NSWindowDelegate, WindowCtr {
             window.isOpaque = true
             window.backgroundColor = .clear
         }
+        pinnedModel = PinnedModel()
 
         super.init(window: window)
 
         window.level = .screenSaver
-        window.contentView = NSHostingView(rootView: rootView)
+        let view = rootView.environmentObject(pinnedModel).environmentObject(showingSharingPicker)
+        window.contentView = NSHostingView(rootView: view)
         window.delegate = self
         // 根据策略定位窗口
         positionWindow(using: positionStrategy, windowSize: size)
@@ -141,8 +151,14 @@ class BaseWindowController: NSWindowController, NSWindowDelegate, WindowCtr {
         window.setFrameOrigin(NSPoint(x: x, y: y))
     }
 
+    func canClose() -> Bool {
+        return !pinnedModel.pinned && !showingSharingPicker.showing
+    }
+
     func windowDidResignActive(_ notification: Notification) {
-        self.close()
+        if canClose() {
+            self.close()
+        }
     }
 
     override func close() {
@@ -201,11 +217,10 @@ class TextWindowController: BaseWindowController {
 class WindowManager {
     static let shared = WindowManager()
 
-    // TODO: 考虑使用锁保护此变量
-    private var windowCtr: WindowCtr?
+    //
+    private var lock = NSLock()
+    private var windowCtrs = [WindowCtr]()
 
-    // When in showing SharingPicker, we should avoid close popbar window by accident.
-    var showingSharingPicker = false
 
     // MARK: - Public API
 
@@ -245,42 +260,47 @@ class WindowManager {
     }
 
     func closeOnlyPopbarWindows(_ mode: CloseWindowMode) -> Bool {
-        guard let windowCtr = windowCtr, !showingSharingPicker else {
-            return false
-        }
+        lock.lock()
+        defer {lock.unlock()}
 
-        if windowCtr.isPopbar() {
-            return closeWindow(mode, windowCtr: windowCtr)
+        for index in (0..<windowCtrs.count).reversed() {
+            if windowCtrs[index].isPopbar() && closeWindow(mode, windowCtr: windowCtrs[index]) {
+                windowCtrs.remove(at: index)
+            }
         }
         return false
     }
 
-    func closeAllWindows(_ mode: CloseWindowMode) -> Bool {
-        guard let windowCtr = windowCtr, !showingSharingPicker else {
-            return false
-        }
+    func closeAllWindows(_ mode: CloseWindowMode) {
+        lock.lock()
+        defer {lock.unlock()}
 
-        return closeWindow(mode, windowCtr: windowCtr)
+        for index in (0..<windowCtrs.count).reversed() {
+            if closeWindow(mode, windowCtr: windowCtrs[index]) {
+                windowCtrs.remove(at: index)
+            }
+        }
     }
 
     // MARK: - Private methods
-
+    
     private func createWindow(_ windowController: WindowCtr) {
-        windowCtr?.close()
+        closeAllWindows(.force)
         windowController.showWindow(nil)
-        windowCtr = windowController
+        lock.lock()
+        windowCtrs.append(windowController)
+        lock.unlock()
 
         // 添加窗口关闭通知观察者
         NotificationCenter.default.addObserver(
             forName: NSWindow.willCloseNotification,
             object: windowController.window,
             queue: nil
-        ) { [weak self] _ in
-            self?.windowCtr = nil
-        }
+        ) {  _ in }
     }
 
     private func closeWindow(_ mode: CloseWindowMode, windowCtr: WindowCtr) -> Bool {
+
         let frame = windowCtr.frame()
         let mouseLocation = NSEvent.mouseLocation
 
@@ -294,21 +314,28 @@ class WindowManager {
                 )
 
                 if !expandedFrame.contains(mouseLocation) {
+                    if !windowCtr.canClose() {
+                        return false
+                    }
+
                     windowCtr.close()
-                    self.windowCtr = nil
                     return true
                 }
 
             case .original:
                 if !frame.contains(mouseLocation) {
+                    if !windowCtr.canClose() {
+                        return false
+                    }
                     windowCtr.close()
-                    self.windowCtr = nil
                     return true
                 }
 
             case .force:
+                if !windowCtr.canClose() {
+                    return false
+                }
                 windowCtr.close()
-                self.windowCtr = nil
                 return true
         }
 

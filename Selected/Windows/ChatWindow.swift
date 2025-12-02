@@ -90,7 +90,6 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
             key: true
         )
 
-//        window.alphaValue = 0.9
         window.isOpaque = true
         window.backgroundColor = .clear
         self.resultWindow = true

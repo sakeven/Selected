@@ -151,7 +151,7 @@ func monitorMouseMove() {
             eventState.lastMouseEventType = .mouseMoved
         } else if event.type == .scrollWheel {
             lastSelectedText = ""
-            _ = WindowManager.shared.closeAllWindows(.original)
+            WindowManager.shared.closeAllWindows(.original)
         } else {
             print("event \(eventTypeMap[event.type]!)  \(eventTypeMap[eventState.lastMouseEventType]!)")
             var updatedSelectedText = false
@@ -182,7 +182,7 @@ func monitorMouseMove() {
             if !updatedSelectedText &&
                 getBundleID() != SelfBundleID {
                 lastSelectedText = ""
-                _ = WindowManager.shared.closeAllWindows(.original)
+                WindowManager.shared.closeAllWindows(.original)
                 ChatWindowManager.shared.closeAllWindows(.original)
             }
         }

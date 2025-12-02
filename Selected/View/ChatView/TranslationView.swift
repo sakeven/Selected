@@ -12,9 +12,11 @@ import MarkdownUI
 struct TranslationView: View {
     var text: String
     @State var transText: String = "..."
+
     @State private var hasRep = false
     var to: String = "cn"
 
+    @EnvironmentObject var pinned: PinnedModel
     @Environment(\.colorScheme) private var colorScheme
     var highlighter = CustomCodeSyntaxHighlighter()
 
@@ -41,7 +43,6 @@ struct TranslationView: View {
                 if isPreview {
                     return
                 }
-                print("here")
                 if isWord(str: text) {
                     word = try! StarDict.shared.query(word: text)
                 }
@@ -59,7 +60,7 @@ struct TranslationView: View {
     @State private var isCopied = false
     private var header: some View{
         HStack{
-            Text("Translation")
+            Text("Translation").font(.title).bold()
             Spacer()
             Button(action: {
                 let pasteboard = NSPasteboard.general
@@ -83,6 +84,15 @@ struct TranslationView: View {
                 Image(systemName: "play.circle")
             }.foregroundColor(Color.white)
                 .cornerRadius(5)
+            Button {
+                pinned.pinned = !pinned.pinned
+            } label: {
+                if pinned.pinned {
+                    Text("unpin")
+                } else {
+                    Text("pin")
+                }
+            }
         }
         .padding([.horizontal, .top], 12)
         .padding(.bottom, 8)
@@ -116,7 +126,7 @@ struct TranslationView: View {
                         .markdownMargin(top: .em(1), bottom: .em(1))
                 })
                 .textSelection(.enabled)
-                .padding(20.0)
+                .padding([.horizontal, .bottom], 20.0)
                 .frame(alignment: .leading)
         }
     }
