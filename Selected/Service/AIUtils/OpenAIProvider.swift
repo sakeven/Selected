@@ -143,8 +143,13 @@ class OpenAIProvider: AIProvider{
         return AsyncThrowingStream {
             continuation in
             Task {
-                for try await event in stream {
-                    try response.handleResponseStreamEvent(event, continuation: continuation)
+                do {
+                    for try await event in stream {
+                        try response.handleResponseStreamEvent(event, continuation: continuation)
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
                 }
             }
         }

@@ -238,6 +238,16 @@
         }
       }
     },
+    "cancel" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消"
+          }
+        }
+      }
+    },
     "Check for Updates" : {
       "localizations" : {
         "zh-Hans" : {
@@ -831,6 +841,16 @@
         }
       }
     },
+    "Tool Call List" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工具调用列表"
+          }
+        }
+      }
+    },
     "Translation" : {
       "localizations" : {
         "zh-Hans" : {
@@ -912,9 +932,6 @@
           }
         }
       }
-    },
-    "工具调用列表" : {
-
     }
   },
   "version" : "1.0"

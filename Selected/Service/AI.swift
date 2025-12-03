@@ -58,11 +58,8 @@ struct Translation {
         do {
             let stream = translator.chatOnce(selectedText: content)
             for try await event in stream {
-                switch event {
-                    case .textDelta(let txt):
-                        completion(txt)
-                    default:
-                        break
+                if case let .textDelta(txt) = event{
+                    completion(txt)
                 }
             }
         } catch {
@@ -80,14 +77,12 @@ struct Translation {
         do {
             let stream = translator.chatOnce(selectedText: content)
             for try await event in stream {
-                switch event {
-                    case .textDelta(let txt):
-                        completion(txt)
-                    default:
-                        break
+                if case let .textDelta(txt) = event{
+                    completion(txt)
                 }
             }
         } catch {
+            print("catch \(error)")
         }
     }
 

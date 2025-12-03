@@ -12,10 +12,8 @@ struct PopBarView: View {
     var actions:  [PerformAction]
     let ctx: SelectedTextContext
 
+    var showSharingButton = true
     var onClick: (() -> Void)?
-
-    @State private var isSharePresented = false
-
 
     @Environment(\.openURL) var openURL
 
@@ -41,7 +39,9 @@ struct PopBarView: View {
                     }
                 })
             }
-            SharingButton(message: ctx.Text)
+            if showSharingButton{
+                SharingButton(message: ctx.Text)
+            }
             if let res = calculate(ctx.Text) {
                 let v = valueFormatter.string(from: NSNumber(value: res))!
                 NumerberView(value: v)

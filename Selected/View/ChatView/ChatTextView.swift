@@ -54,7 +54,7 @@ struct ChatTextView: View {
                     MessageView(message: message).id(message.id)
                 }.scrollContentBackground(.hidden)
                     .listStyle(.inset)
-                    .frame(width: 750, height: 400).task {
+                    .frame(width: 750, height: 400).onAppear {
                         task = Task{
                             await viewModel.fetchMessages(ctx: ctx)
                         }
@@ -67,7 +67,10 @@ struct ChatTextView: View {
                         }
                     }
             }
-            ChatInputView(viewModel: viewModel)
+            ChatInputView(viewModel: viewModel, onCancel: {
+                task?.cancel()
+                print("cancel")
+            })
                 .frame(minHeight: 50)
                 .padding(.leading, 20.0)
                 .padding(.trailing, 20.0)
@@ -98,7 +101,14 @@ struct ChatInputView: View {
     @State private var newText: String = ""
     @State private var task: Task<Void, Never>? = nil
 
+    var onCancel: (() -> Void)?
+
     var body: some View {
+        Button {
+            cancel()
+        } label: {
+            Text("cancel")
+        }
         if #available(macOS 14.0, *) {
             ZStack(alignment: .leading){
                 if newText.isEmpty {
@@ -138,7 +148,14 @@ struct ChatInputView: View {
                 }
         }
     }
-    
+
+    func cancel() {
+        task?.cancel()
+        if let onCancel = onCancel {
+            onCancel()
+        }
+    }
+
     func submitMessage(){
         let message = newText
         newText = ""

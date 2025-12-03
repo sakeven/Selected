@@ -31,6 +31,8 @@ class MessageViewModel: ObservableObject {
         let idx = self.messages.count-1
         do {
             for try await event in stream {
+                guard !Task.isCancelled else { break }
+
                 switch event {
                     case .begin(_):
                         self.messages[idx].status = .updating
@@ -71,8 +73,10 @@ class MessageViewModel: ObservableObject {
         let idx = self.messages.count-1
         do {
             for try await event in stream {
+                guard !Task.isCancelled else { break }
+
                 switch event {
-                    case .begin(let lastResponseId):
+                    case .begin(_):
                         self.messages[idx].role = .assistant
                         self.messages[idx].message = ""
                         self.messages[idx].status = .updating
@@ -98,7 +102,13 @@ class MessageViewModel: ObservableObject {
                         break
                 }
             }
+            if self.messages[idx].role == .assistant {
+                self.messages[idx].status = .finished
+            }
         } catch {
+            self.messages[idx].role = .system
+            self.messages[idx].status = .failure
+            self.messages[idx].message = error.localizedDescription
         }
     }
 }

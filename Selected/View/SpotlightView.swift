@@ -39,6 +39,7 @@ struct SpotlightView: View {
 
             if !searchText.isEmpty {
                 PopBarView(actions: actions, ctx: SelectedTextContext(Text: searchText, BundleID: bundleIDOfFrontmostWindow, Editable: false),
+                           showSharingButton: false,
                            onClick: {
                     SpotlightWindowManager.shared.forceCloseWindow()
                 })

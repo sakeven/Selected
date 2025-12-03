@@ -47,10 +47,14 @@ class SpotlightHotKeyManager {
 class SpotlightWindowManager {
     static let shared =  SpotlightWindowManager()
 
-
+    private var lock = NSLock()
     private var windowCtr: WindowController?
 
     fileprivate func createWindow() {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
         windowCtr?.close()
         let view = SpotlightView()
         let window = WindowController(rootView: AnyView(view))
@@ -64,6 +68,11 @@ class SpotlightWindowManager {
     }
 
     fileprivate func closeWindow() -> Bool {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
+
         guard let windowCtr = windowCtr else {
             return true
         }
@@ -78,10 +87,19 @@ class SpotlightWindowManager {
     }
 
     func resignKey(){
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
         windowCtr?.window?.resignKey()
     }
 
     func forceCloseWindow() {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
+
         guard let windowCtr = windowCtr else {
             return
         }
@@ -92,6 +110,7 @@ class SpotlightWindowManager {
 
 
 private class WindowController: NSWindowController, NSWindowDelegate {
+    var showingSharingPicker = ShowingSharingPickerModel()
 
     init(rootView: AnyView) {
         let window = FloatingPanel(
@@ -105,7 +124,7 @@ private class WindowController: NSWindowController, NSWindowDelegate {
 
         window.center()
         window.level = .screenSaver
-        window.contentView = NSHostingView(rootView: rootView)
+        window.contentView = NSHostingView(rootView: rootView.environmentObject(showingSharingPicker))
         window.delegate = self // 设置代理为自己来监听窗口事件
         window.makeKeyAndOrderFront(nil)
         window.backgroundColor = .clear

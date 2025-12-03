@@ -93,7 +93,7 @@ struct MessageView: View {
                 }
                 if !message.tools.isEmpty {
                     Label {
-                        Text("工具调用列表")
+                        Text("Tool Call List")
                             .font(.headline)
                     } icon: {
                         Image(systemName: "hammer.fill")

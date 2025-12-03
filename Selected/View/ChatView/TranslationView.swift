@@ -49,6 +49,7 @@ struct TranslationView: View {
                     word = try! StarDict.shared.query(word: text)
                 }
                 await Translation(toLanguage: to).translate(content: text) { content in
+                    guard !Task.isCancelled else { print("cancelled 33"); return }
                     if !hasRep {
                         transText = content
                         hasRep = true
@@ -56,6 +57,9 @@ struct TranslationView: View {
                         transText = transText + content
                     }
                 }
+            }
+            .onDisappear(){
+                print("disappear")
             }
     }
 
@@ -108,9 +112,9 @@ struct TranslationView: View {
                 pinned.pinned = !pinned.pinned
             } label: {
                 if pinned.pinned {
-                    Text("unpin")
+                    Image(systemName: "pin.slash")
                 } else {
-                    Text("pin")
+                    Image(systemName: "pin")
                 }
             }
         }

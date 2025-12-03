@@ -208,6 +208,8 @@ class ClaudeAIProvider: AIProvider {
                         }
                     }
                     continuation.yield(.textDone(fullText))
+                    continuation.yield(.done)
+                    continuation.finish()
                 } catch {
                     print("claude error \(error)")
                     continuation.finish(throwing:  error)
@@ -245,7 +247,7 @@ class ClaudeAIProvider: AIProvider {
                     }
                     continuation.yield(.error("tooManyToolLoops"))
                     continuation.finish()
-                }catch {
+                } catch {
                     continuation.finish(throwing: error)
                 }
             }

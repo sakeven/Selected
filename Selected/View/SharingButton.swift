@@ -61,6 +61,7 @@ struct SharingButton: View {
         BarButton(icon: "symbol:square.and.arrow.up", title: "share", clicked: {
             _ in
             model.showing = !model.showing
+            print("show \(model.showing)")
         })
         .background(SharingsPicker(isPresented: $model.showing, sharingItems: [message]))
     }
