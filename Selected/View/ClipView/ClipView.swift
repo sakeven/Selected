@@ -10,14 +10,92 @@ import SwiftUI
 import PDFKit
 
 struct ClipDataView: View {
-    var data: ClipHistoryData
+    @ObservedObject var data: ClipHistoryData
 
     var body: some View {
         VStack(alignment: .leading){
             let item = data.getItems().first!
             let type = NSPasteboard.PasteboardType(item.type!)
+            previewView.id(data.objectID)
+            Spacer()
+            Divider()
+
+            HStack {
+                Text("Application:")
+                Spacer()
+                getIcon(data.application!)
+                Text(getAppName(data.application!))
+            }
+            .frame(height: 17)
+
+            HStack {
+                Text("Content type:")
+                Spacer()
+                if let text = data.plainText, isValidHttpUrl(text) {
+                    Text("Link")
+                } else {
+                    let str = "\(type)"
+                    Text(NSLocalizedString(str, comment: ""))
+                }
+            }
+            .frame(height: 17)
+
+            HStack {
+                Text("Date:")
+                Spacer()
+                Text("\(format(data.firstCopiedAt!))")
+            }
+            .frame(height: 17)
+
+            if data.numberOfCopies > 1 {
+                HStack {
+                    Text("Last copied:")
+                    Spacer()
+                    Text("\(format(data.lastCopiedAt!))")
+                }
+                .frame(height: 17)
+
+                HStack {
+                    Text("Copied:")
+                    Spacer()
+                    Text("\(data.numberOfCopies) times")
+                }
+                .frame(height: 17)
+            }
+
+            if let url = data.url {
+                if type == .fileURL {
+                    let url = URL(string: String(decoding: item.data!, as: UTF8.self))!
+                    HStack {
+                        Text("Path:")
+                        Spacer()
+                        Text(url.path().removingPercentEncoding!).lineLimit(1)
+                    }
+                    .frame(height: 17)
+                } else {
+                    HStack {
+                        Text("URL:")
+                        Spacer()
+                        Link(destination: URL(string: url)!, label: {
+                            Text(url).lineLimit(1)
+                        })
+                    }
+                    .frame(height: 17)
+                }
+            }
+        }
+        .padding()
+        .frame(width: 550)
+    }
+
+    private var previewView: some View {
+        VStack{
+            let item = data.getItems().first!
+            let type = NSPasteboard.PasteboardType(item.type!)
             if type == .png {
-                Image(nsImage: NSImage(data: item.data!)!).resizable().aspectRatio(contentMode: .fit)
+                Image(nsImage: NSImage(data: item.data!)!)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
             } else if type == .rtf {
                 RTFView(rtfData: item.data!)
             } else if type == .fileURL {
@@ -31,66 +109,7 @@ struct ClipDataView: View {
             } else if data.plainText != nil {
                 TextView(text: data.plainText!)
             }
-
-            Spacer()
-            Divider()
-
-            HStack {
-                Text("Application:")
-                Spacer()
-                getIcon(data.application!)
-                Text(getAppName(data.application!))
-            }.frame(height: 17)
-
-            HStack {
-                Text("Content type:")
-                Spacer()
-                if let text = data.plainText, isValidHttpUrl(text) {
-                    Text("Link")
-                } else {
-                    let str = "\(type)"
-                    Text(NSLocalizedString(str, comment: ""))
-                }
-            }.frame(height: 17)
-
-            HStack {
-                Text("Date:")
-                Spacer()
-                Text("\(format(data.firstCopiedAt!))")
-            }.frame(height: 17)
-
-            if data.numberOfCopies > 1 {
-                HStack {
-                    Text("Last copied:")
-                    Spacer()
-                    Text("\(format(data.lastCopiedAt!))")
-                }.frame(height: 17)
-                HStack {
-                    Text("Copied:")
-                    Spacer()
-                    Text("\(data.numberOfCopies) times")
-                }.frame(height: 17)
-            }
-
-            if let url = data.url {
-                if type == .fileURL {
-                    let url = URL(string: String(decoding: item.data!, as: UTF8.self))!
-                    HStack {
-                        Text("Path:")
-                        Spacer()
-                        Text(url.path().removingPercentEncoding!).lineLimit(1)
-                    }.frame(height: 17)
-                } else {
-                    HStack {
-                        Text("URL:")
-                        Spacer()
-                        Link(destination: URL(string: url)!, label: {
-                            Text(url).lineLimit(1)
-                        })
-                    }.frame(height: 17)
-                }
-            }
-        }.padding().frame(width: 550)
+        }
     }
 
     private func getAppName(_ bundleID: String) -> String {
@@ -105,7 +124,10 @@ struct ClipDataView: View {
             return AnyView(EmptyView())
         }
         return AnyView(
-            Image(nsImage: NSWorkspace.shared.icon(forFile: bundleURL.path)).resizable().aspectRatio(contentMode: .fit).frame(width: 15, height: 15)
+            Image(nsImage: NSWorkspace.shared.icon(forFile: bundleURL.path))
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 15, height: 15)
         )
     }
 }
@@ -129,12 +151,10 @@ func isValidHttpUrl(_ string: String) -> Bool {
     return url.host != nil
 }
 
-
 class ClipViewModel: ObservableObject {
     static let shared = ClipViewModel()
     @Published var selectedItem: ClipHistoryData?
 }
-
 
 // MARK: - 剪贴板项行（根据剪贴板数据类型展示不同内容）
 struct ClipRowView: View {
@@ -151,43 +171,88 @@ struct ClipRowView: View {
                         let heightStr = valueFormatter.string(from: NSNumber(value: Double(image.size.height))) ?? ""
                         return AnyView(Label(
                             title: { Text("Image \(widthStr) * \(heightStr)").padding(.leading, 10) },
-                            icon: { Image(nsImage: image).resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
+                            icon: {
+                                Image(nsImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 20, height: 20)
+                            }
                         ))
                     }
                 case .fileURL:
                     if let data = item.data,
                        let url = URL(string: String(decoding: data, as: UTF8.self)) {
                         return AnyView(Label(
-                            title: { Text(url.lastPathComponent.removingPercentEncoding ?? "").lineLimit(1).padding(.leading, 10) },
-                            icon: { Image(systemName: "doc.on.doc").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
+                            title: { Text(url.lastPathComponent.removingPercentEncoding ?? "")
+                                    .lineLimit(1)
+                                    .padding(.leading, 10)
+                            },
+                            icon: {
+                                Image(systemName: "doc.on.doc")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 20, height: 20)
+                            }
                         ))
                     }
                 case .rtf:
                     if let plainText = clip.plainText {
                         return AnyView(Label(
-                            title: { Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).padding(.leading, 10) },
-                            icon: { Image(systemName: "doc.richtext").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
+                            title: { Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines))
+                                    .lineLimit(1)
+                                    .padding(.leading, 10)
+                            },
+                            icon: {
+                                Image(systemName: "doc.richtext")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 20, height: 20)
+                            }
                         ))
                     }
                 case .string:
                     if let plainText = clip.plainText {
                         return AnyView(Label(
-                            title: { Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).padding(.leading, 10) },
-                            icon: { Image(systemName: "doc.plaintext").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
+                            title: { Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines))
+                                    .lineLimit(1)
+                                    .padding(.leading, 10)
+                            },
+                            icon: {
+                                Image(systemName: "doc.plaintext")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 20, height: 20)
+                            }
                         ))
                     }
                 case .html:
                     if let plainText = clip.plainText {
                         return AnyView(Label(
-                            title: { Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).padding(.leading, 10) },
-                            icon: { Image(systemName: "circle.dashed.rectangle").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
+                            title: { Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines))
+                                    .lineLimit(1)
+                                    .padding(.leading, 10)
+                            },
+                            icon: {
+                                Image(systemName: "circle.dashed.rectangle")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 20, height: 20)
+                            }
                         ))
                     }
                 case .URL:
                     if let urlString = clip.url {
                         return AnyView(Label(
-                            title: { Text(urlString.trimmingCharacters(in: .whitespacesAndNewlines)).lineLimit(1).padding(.leading, 10) },
-                            icon: { Image(systemName: "link").resizable().aspectRatio(contentMode: .fit).frame(width: 20, height: 20) }
+                            title: { Text(urlString.trimmingCharacters(in: .whitespacesAndNewlines))
+                                    .lineLimit(1)
+                                    .padding(.leading, 10)
+                            },
+                            icon: {
+                                Image(systemName: "link")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 20, height: 20)
+                            }
                         ))
                     }
                 default:
@@ -209,26 +274,23 @@ struct ClipView: View {
     @ObservedObject var viewModel = ClipViewModel.shared
     @FocusState private var isFocused: Bool
 
-    // 添加搜索状态
     @State private var searchText = ""
+    @State private var localSelection: ClipHistoryData?
 
-    // 添加过滤后的结果计算属性
+    // 过滤后的结果
     private var filteredClips: [ClipHistoryData] {
         if searchText.isEmpty {
             return Array(clips)
         } else {
             return clips.filter { clip in
-                // 搜索纯文本内容
-                if let plainText = clip.plainText, plainText.localizedCaseInsensitiveContains(searchText) {
+                if let plainText = clip.plainText,
+                   plainText.localizedCaseInsensitiveContains(searchText) {
                     return true
                 }
-
-                // 搜索 URL
-                if let url = clip.url, url.localizedCaseInsensitiveContains(searchText) {
+                if let url = clip.url,
+                   url.localizedCaseInsensitiveContains(searchText) {
                     return true
                 }
-
-                // 如果是文件，搜索文件名
                 if let item = clip.getItems().first,
                    let type = item.type,
                    NSPasteboard.PasteboardType(type) == .fileURL,
@@ -238,115 +300,141 @@ struct ClipView: View {
                    url.lastPathComponent.localizedCaseInsensitiveContains(searchText) {
                     return true
                 }
-
                 return false
             }
         }
     }
 
     var body: some View {
-        NavigationView {
-            VStack {
-                SearchBarView(searchText: $searchText, onArrowKey: handleArrowKey)
+        ZStack {
+            HStack(spacing: 0) {
+                // 左侧列表
+                VStack {
+                    SearchBarView(searchText: $searchText, onArrowKey: handleArrowKey)
 
-                if filteredClips.isEmpty {
-                    Text(searchText.isEmpty ? "Clipboard History" : "No results found")
-                        .frame(width: 250)
-                        .padding(.top)
-                    Spacer()
-                } else {
-                    ScrollViewReader { proxy in
-                        List(filteredClips, id: \.self, selection: $viewModel.selectedItem) { clipData in
-                            NavigationLink(destination: ClipDataView(data: clipData), tag: clipData, selection: $viewModel.selectedItem) {
+                    if filteredClips.isEmpty {
+                        Text(searchText.isEmpty ? "Clipboard History" : "No results found")
+                            .frame(width: 250)
+                            .padding(.top)
+                        Spacer()
+                    } else {
+                        ScrollViewReader { proxy in
+                            List(filteredClips,
+                                 id: \.self,
+                                 selection: $localSelection) { clipData in
                                 ClipRowView(clip: clipData)
+                                    .frame(height: 30)
+                                    .tag(clipData)
+                                    .contextMenu {
+                                        Button(action: {
+                                            delete(clipData)
+                                        }) {
+                                            Text("Delete")
+                                        }
+                                    }.background(.clear)
                             }
-                            .frame(height: 30)
-                            .contextMenu {
-                                Button(action: {
-                                    delete(clipData)
-                                }){
-                                    Text("Delete")
-                                }
-                            }
-                        }
-                        .frame(width: 250)
-                        .frame(minWidth: 250, maxWidth: 250)
-                        // 当搜索文本变化时，默认选择第一条并滚动到最上面
-                        .onChange(of: searchText) { _ in
-                            if !filteredClips.isEmpty {
-                                viewModel.selectedItem = filteredClips.first
-                                withAnimation {
-                                    proxy.scrollTo(filteredClips.first, anchor: .top)
-                                }
-                            }
+                                 .listStyle(.plain)
+                                 .scrollContentBackground(.hidden)
+                                 .listRowBackground(clear)
+                                 .background(.clear)
+                                 .frame(width: 250)
+                                 .frame(minWidth: 250, maxWidth: 250)
+                                 .onChange(of: searchText) { _ in
+                                     if !filteredClips.isEmpty {
+                                         localSelection = filteredClips.first
+                                         withAnimation {
+                                             proxy.scrollTo(filteredClips.first, anchor: .top)
+                                         }
+                                     } else {
+                                         localSelection = nil
+                                     }
+                                 }
                         }
                     }
                 }
-            }
-            .onAppear {
-                ClipViewModel.shared.selectedItem = clips.first
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.isFocused = true
+
+                // 右侧详情
+                Group {
+                    if let selected = localSelection {
+                        ClipDataView(data: selected)
+                    } else {
+                        Text("Clipboard History")
+                            .foregroundColor(.secondary)
+                    }
                 }
+
             }
-            .focused($isFocused)
         }
         .frame(width: 800, height: 400)
+        .background(.ultraThinMaterial)
+        .cornerRadius(12)
+        .onAppear {
+            localSelection = clips.first
+            viewModel.selectedItem = localSelection
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.isFocused = true
+            }
+        }
+        .onChange(of: localSelection) { newValue in
+            viewModel.selectedItem = newValue
+        }
+        .focused($isFocused)
     }
 
-    // MARK: - 处理方向键事件更新选中项
+    // MARK: - 方向键处理：现在改操作 localSelection，而不是直接改 viewModel
     private func handleArrowKey(_ direction: CustomSearchField.ArrowDirection) {
         guard !filteredClips.isEmpty else { return }
+
         if direction == .down {
-            if let current = viewModel.selectedItem,
+            if let current = localSelection,
                let index = filteredClips.firstIndex(of: current),
                index < filteredClips.count - 1 {
-                viewModel.selectedItem = filteredClips[index + 1]
+                localSelection = filteredClips[index + 1]
             } else {
-                viewModel.selectedItem = filteredClips.first
+                localSelection = filteredClips.first
             }
         } else if direction == .up {
-            if let current = viewModel.selectedItem,
+            if let current = localSelection,
                let index = filteredClips.firstIndex(of: current),
                index > 0 {
-                viewModel.selectedItem = filteredClips[index - 1]
+                localSelection = filteredClips[index - 1]
             }
         }
     }
 
-    // MARK: - 删除剪贴板项并更新选中状态
+    // MARK: - 删除逻辑，也改用 localSelection 作为参考
     func delete(_ clipData: ClipHistoryData) {
-        if let selectedItem = viewModel.selectedItem {
-            let selectedItemIdx = filteredClips.firstIndex(of: selectedItem) ?? 0
-            let idx = filteredClips.firstIndex(of: clipData) ?? 0
+        let currentSelection = localSelection
+        let selectedItemIdx = currentSelection.flatMap { filteredClips.firstIndex(of: $0) } ?? 0
+        let idx = filteredClips.firstIndex(of: clipData) ?? 0
 
-            // 计算删除后，需要选中的新条目的索引
-            let newIndexAfterDeletion: Int?
-            if selectedItem == clipData {
-                if filteredClips.count > idx + 1 {
-                    newIndexAfterDeletion = idx // 选择下一个
-                } else if idx > 0 {
-                    newIndexAfterDeletion = idx - 1 // 选择前一个
-                } else {
-                    newIndexAfterDeletion = nil // 没有其他条目可选择
-                }
-            } else if idx < selectedItemIdx {
-                newIndexAfterDeletion = selectedItemIdx > 0 ? selectedItemIdx - 1 : 0
+        // 先算好删除后的选中索引
+        let newIndexAfterDeletion: Int?
+        if currentSelection == clipData {
+            if filteredClips.count > idx + 1 {
+                newIndexAfterDeletion = idx
+            } else if idx > 0 {
+                newIndexAfterDeletion = idx - 1
             } else {
-                newIndexAfterDeletion = selectedItemIdx
+                newIndexAfterDeletion = nil
             }
+        } else if idx < selectedItemIdx {
+            newIndexAfterDeletion = selectedItemIdx > 0 ? selectedItemIdx - 1 : 0
+        } else {
+            newIndexAfterDeletion = selectedItemIdx
+        }
 
-            PersistenceController.shared.delete(item: clipData)
+        PersistenceController.shared.delete(item: clipData)
 
-            // 在删除后更新选中项
-            DispatchQueue.main.async {
-                if let newIndex = newIndexAfterDeletion, filteredClips.indices.contains(newIndex) {
-                    viewModel.selectedItem = filteredClips[newIndex]
-                } else if !filteredClips.isEmpty {
-                    viewModel.selectedItem = filteredClips.first
-                } else {
-                    viewModel.selectedItem = nil
-                }
+        DispatchQueue.main.async {
+            let newFiltered = self.filteredClips  // 删除后重新计算
+            if let newIndex = newIndexAfterDeletion,
+               newFiltered.indices.contains(newIndex) {
+                self.localSelection = newFiltered[newIndex]
+            } else if !newFiltered.isEmpty {
+                self.localSelection = newFiltered.first
+            } else {
+                self.localSelection = nil
             }
         }
     }

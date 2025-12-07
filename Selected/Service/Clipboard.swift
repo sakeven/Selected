@@ -413,6 +413,9 @@ private class ClipWindowController: NSWindowController, NSWindowDelegate {
             key: true // 成为 key 和 main window 就可以用一些快捷键，比如方向键，以及可以文本编辑。
         )
 
+        window.isOpaque = true
+        window.backgroundColor = .clear
+
         super.init(window: window)
 
         window.center()
