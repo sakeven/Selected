@@ -30,9 +30,9 @@ struct ChatTextView: View {
                             pinned.pinned = !pinned.pinned
                         } label: {
                             if pinned.pinned {
-                                Text("unpin")
+                                Text(String(localized: "chat.unpin"))
                             } else {
-                                Text("pin")
+                                Text(String(localized: "chat.pin"))
                             }
                         }
                     }.padding(.bottom, 10)

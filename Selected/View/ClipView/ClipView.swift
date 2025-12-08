@@ -158,108 +158,132 @@ class ClipViewModel: ObservableObject {
 
 // MARK: - 剪贴板项行（根据剪贴板数据类型展示不同内容）
 struct ClipRowView: View {
-    let clip: ClipHistoryData
+    @ObservedObject var clip: ClipHistoryData
 
     var body: some View {
-        // 获取 clip 中的第一个 item
-        if let item = clip.getItems().first, let typeString = item.type{
+        HStack(spacing: 4) {
+            if clip.isPinned {
+                Image(systemName: "pin.fill")
+                    .imageScale(.small)
+                    .padding(.leading, 4)
+            }
+
+            rowContent
+        }
+    }
+
+    @ViewBuilder
+    private var rowContent: some View {
+        if let item = clip.getItems().first,
+           let typeString = item.type {
             let type = NSPasteboard.PasteboardType(rawValue: typeString)
+
             switch type {
                 case .png:
-                    if let data = item.data, let image = NSImage(data: data) {
+                    if let data = item.data,
+                       let image = NSImage(data: data) {
                         let widthStr = valueFormatter.string(from: NSNumber(value: Double(image.size.width))) ?? ""
                         let heightStr = valueFormatter.string(from: NSNumber(value: Double(image.size.height))) ?? ""
-                        return AnyView(Label(
-                            title: { Text("Image \(widthStr) * \(heightStr)").padding(.leading, 10) },
-                            icon: {
-                                Image(nsImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                            }
-                        ))
+                        Label {
+                            Text("Image \(widthStr) * \(heightStr)")
+                                .padding(.leading, 10)
+                        } icon: {
+                            Image(nsImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 20, height: 20)
+                        }
+                    } else {
+                        EmptyView()
                     }
+
                 case .fileURL:
                     if let data = item.data,
                        let url = URL(string: String(decoding: data, as: UTF8.self)) {
-                        return AnyView(Label(
-                            title: { Text(url.lastPathComponent.removingPercentEncoding ?? "")
-                                    .lineLimit(1)
-                                    .padding(.leading, 10)
-                            },
-                            icon: {
-                                Image(systemName: "doc.on.doc")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                            }
-                        ))
+                        Label {
+                            Text(url.lastPathComponent.removingPercentEncoding ?? "")
+                                .lineLimit(1)
+                                .padding(.leading, 10)
+                        } icon: {
+                            Image(systemName: "doc.on.doc")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 20, height: 20)
+                        }
+                    } else {
+                        EmptyView()
                     }
+
                 case .rtf:
                     if let plainText = clip.plainText {
-                        return AnyView(Label(
-                            title: { Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines))
-                                    .lineLimit(1)
-                                    .padding(.leading, 10)
-                            },
-                            icon: {
-                                Image(systemName: "doc.richtext")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                            }
-                        ))
+                        Label {
+                            Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines))
+                                .lineLimit(1)
+                                .padding(.leading, 10)
+                        } icon: {
+                            Image(systemName: "doc.richtext")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 20, height: 20)
+                        }
+                    } else {
+                        EmptyView()
                     }
+
                 case .string:
                     if let plainText = clip.plainText {
-                        return AnyView(Label(
-                            title: { Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines))
-                                    .lineLimit(1)
-                                    .padding(.leading, 10)
-                            },
-                            icon: {
-                                Image(systemName: "doc.plaintext")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                            }
-                        ))
+                        Label {
+                            Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines))
+                                .lineLimit(1)
+                                .padding(.leading, 10)
+                        } icon: {
+                            Image(systemName: "doc.plaintext")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 20, height: 20)
+                        }
+                    } else {
+                        EmptyView()
                     }
+
                 case .html:
                     if let plainText = clip.plainText {
-                        return AnyView(Label(
-                            title: { Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines))
-                                    .lineLimit(1)
-                                    .padding(.leading, 10)
-                            },
-                            icon: {
-                                Image(systemName: "circle.dashed.rectangle")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                            }
-                        ))
+                        Label {
+                            Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines))
+                                .lineLimit(1)
+                                .padding(.leading, 10)
+                        } icon: {
+                            Image(systemName: "circle.dashed.rectangle")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 20, height: 20)
+                        }
+                    } else {
+                        EmptyView()
                     }
+
                 case .URL:
                     if let urlString = clip.url {
-                        return AnyView(Label(
-                            title: { Text(urlString.trimmingCharacters(in: .whitespacesAndNewlines))
-                                    .lineLimit(1)
-                                    .padding(.leading, 10)
-                            },
-                            icon: {
-                                Image(systemName: "link")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                            }
-                        ))
+                        Label {
+                            Text(urlString.trimmingCharacters(in: .whitespacesAndNewlines))
+                                .lineLimit(1)
+                                .padding(.leading, 10)
+                        } icon: {
+                            Image(systemName: "link")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 20, height: 20)
+                        }
+                    } else {
+                        EmptyView()
                     }
+
                 default:
-                    break
+                    EmptyView()
             }
+        } else {
+            EmptyView()
         }
-        return AnyView(EmptyView())
     }
 }
 
@@ -267,7 +291,10 @@ struct ClipView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: false)],
+        sortDescriptors: [
+            NSSortDescriptor(keyPath: \ClipHistoryData.isPinned, ascending: false),
+            NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: false)
+        ],
         animation: .default)
     private var clips: FetchedResults<ClipHistoryData>
 
@@ -327,15 +354,22 @@ struct ClipView: View {
                                     .tag(clipData)
                                     .contextMenu {
                                         Button(action: {
+                                            togglePin(clipData)
+                                        }) {
+                                            Label(clipData.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"), systemImage: "pin").labelStyle(.titleAndIcon)
+                                        }
+                                        Divider()
+                                        Button(action: {
                                             delete(clipData)
                                         }) {
-                                            Text("Delete")
+                                            Label("Delete", systemImage: "trash").labelStyle(.titleAndIcon)
                                         }
-                                    }.background(.clear)
+                                    }
+                                    .background(.clear)
                             }
                                  .listStyle(.plain)
                                  .scrollContentBackground(.hidden)
-                                 .listRowBackground(clear)
+                                 .listRowBackground(Color.clear)
                                  .background(.clear)
                                  .frame(width: 250)
                                  .frame(minWidth: 250, maxWidth: 250)
@@ -403,7 +437,7 @@ struct ClipView: View {
     }
 
     // MARK: - 删除逻辑，也改用 localSelection 作为参考
-    func delete(_ clipData: ClipHistoryData) {
+    private func delete(_ clipData: ClipHistoryData) {
         let currentSelection = localSelection
         let selectedItemIdx = currentSelection.flatMap { filteredClips.firstIndex(of: $0) } ?? 0
         let idx = filteredClips.firstIndex(of: clipData) ?? 0
@@ -437,6 +471,19 @@ struct ClipView: View {
                 self.localSelection = nil
             }
         }
+    }
+
+    // MARK: - 置顶 / 取消置顶
+    private func togglePin(_ clipData: ClipHistoryData) {
+        clipData.isPinned.toggle()
+        do {
+            try viewContext.save()
+        } catch {
+            print("Failed to toggle pin: \(error)")
+        }
+
+        // 如果刚操作的是当前选中项，保证选中引用不变（指向最新的托管对象状态）
+        viewModel.selectedItem = clipData
     }
 }
 

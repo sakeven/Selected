@@ -32,7 +32,6 @@ class PersistenceController {
         ctx.performAndWait {
             do {
                 try ctx.save()
-                print("saved")
             } catch {
                 fatalError("\(error)")
             }
@@ -52,6 +51,7 @@ class PersistenceController {
         clipHistoryData.numberOfCopies = 1
         clipHistoryData.plainText = clipData.plainText
         clipHistoryData.url = clipData.url
+        clipHistoryData.isPinned = false
         for item in clipData.items {
             let clipHistoryItem =
             NSEntityDescription.insertNewObject(
@@ -70,6 +70,7 @@ class PersistenceController {
                 if got != clipHistoryData {
                     clipHistoryData.firstCopiedAt = got.firstCopiedAt
                     clipHistoryData.numberOfCopies = got.numberOfCopies + 1
+                    clipHistoryData.isPinned = got.isPinned
                     ctx.delete(got)
                     print("saved \(clipHistoryData.firstCopiedAt!) \(got.firstCopiedAt!)")
                 }
@@ -118,6 +119,9 @@ class PersistenceController {
             do{
                 let res = try ctx.fetch(fetchRequest)
                 for data in res {
+                    if data.isPinned {
+                        continue
+                    }
                     ctx.delete(data)
                 }
                 try ctx.save()
