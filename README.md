@@ -7,6 +7,11 @@ macOS Ventura 13.0 or above
 2. Unzip it, and move it to the Applications directory.
 3. For the first installation, you need to set up Accessibility features to allow this app to capture selected text.
 
+# Settings for web browers
+1. Safari: you must enable 'Allow JavaScript from Apple Events' in the Developer section of Safari Settings to use 'do JavaScript'. https://developer.apple.com/documentation/safari-developer-tools/enabling-developer-features
+
+2. Chrome: you need to click on the menu bar: View - Developer - Allow JavaScript from Apple Events.
+
 
 # Features
 A Mac tool that allows various operations on selected text.
