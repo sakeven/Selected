@@ -14,74 +14,77 @@ struct ClipDataView: View {
 
     var body: some View {
         VStack(alignment: .leading){
-            let item = data.getItems().first!
-            let type = NSPasteboard.PasteboardType(item.type!)
-            previewView.id(data.objectID)
-            Spacer()
-            Divider()
-
-            HStack {
-                Text("Application:")
+            if let item = data.getItems().first {
+                let type = NSPasteboard.PasteboardType(item.type!)
+                previewView.id(data.objectID)
                 Spacer()
-                getIcon(data.application!)
-                Text(getAppName(data.application!))
-            }
-            .frame(height: 17)
+                Divider()
 
-            HStack {
-                Text("Content type:")
-                Spacer()
-                if let text = data.plainText, isValidHttpUrl(text) {
-                    Text("Link")
-                } else {
-                    let str = "\(type)"
-                    Text(NSLocalizedString(str, comment: ""))
-                }
-            }
-            .frame(height: 17)
-
-            HStack {
-                Text("Date:")
-                Spacer()
-                Text("\(format(data.firstCopiedAt!))")
-            }
-            .frame(height: 17)
-
-            if data.numberOfCopies > 1 {
                 HStack {
-                    Text("Last copied:")
+                    Text("Application:")
                     Spacer()
-                    Text("\(format(data.lastCopiedAt!))")
+                    getIcon(data.application!)
+                    Text(getAppName(data.application!))
                 }
                 .frame(height: 17)
 
                 HStack {
-                    Text("Copied:")
+                    Text("Content type:")
                     Spacer()
-                    Text("\(data.numberOfCopies) times")
+                    if let text = data.plainText, isValidHttpUrl(text) {
+                        Text("Link")
+                    } else {
+                        let str = "\(type)"
+                        Text(NSLocalizedString(str, comment: ""))
+                    }
                 }
                 .frame(height: 17)
-            }
 
-            if let url = data.url {
-                if type == .fileURL {
-                    let url = URL(string: String(decoding: item.data!, as: UTF8.self))!
+                HStack {
+                    Text("Date:")
+                    Spacer()
+                    Text("\(format(data.firstCopiedAt!))")
+                }
+                .frame(height: 17)
+
+                if data.numberOfCopies > 1 {
                     HStack {
-                        Text("Path:")
+                        Text("Last copied:")
                         Spacer()
-                        Text(url.path().removingPercentEncoding!).lineLimit(1)
+                        Text("\(format(data.lastCopiedAt!))")
                     }
                     .frame(height: 17)
-                } else {
+
                     HStack {
-                        Text("URL:")
+                        Text("Copied:")
                         Spacer()
-                        Link(destination: URL(string: url)!, label: {
-                            Text(url).lineLimit(1)
-                        })
+                        Text("\(data.numberOfCopies) times")
                     }
                     .frame(height: 17)
                 }
+
+                if let url = data.url {
+                    if type == .fileURL {
+                        let url = URL(string: String(decoding: item.data!, as: UTF8.self))!
+                        HStack {
+                            Text("Path:")
+                            Spacer()
+                            Text(url.path().removingPercentEncoding!).lineLimit(1)
+                        }
+                        .frame(height: 17)
+                    } else {
+                        HStack {
+                            Text("URL:")
+                            Spacer()
+                            Link(destination: URL(string: url)!, label: {
+                                Text(url).lineLimit(1)
+                            })
+                        }
+                        .frame(height: 17)
+                    }
+                }
+            } else {
+                EmptyView()
             }
         }
         .padding()
