@@ -69,7 +69,6 @@ struct ChatTextView: View {
             }
             ChatInputView(viewModel: viewModel, onCancel: {
                 task?.cancel()
-                print("cancel")
             })
                 .frame(minHeight: 50)
                 .padding(.leading, 20.0)

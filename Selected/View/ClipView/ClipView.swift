@@ -340,7 +340,7 @@ struct ClipView: View {
             HStack(spacing: 0) {
                 // 左侧列表
                 VStack {
-                    SearchBarView(searchText: $searchText, onArrowKey: handleArrowKey)
+                    SearchBarView(searchText: $searchText, onArrowKey: handleArrowKey).padding([.leading, .top], 10)
 
                     if filteredClips.isEmpty {
                         Text(searchText.isEmpty ? "Clipboard History" : "No results found")
@@ -369,7 +369,7 @@ struct ClipView: View {
                                         }
                                     }
                                     .background(.clear)
-                            }
+                            }.padding(.leading, 10)
                                  .listStyle(.plain)
                                  .scrollContentBackground(.hidden)
                                  .listRowBackground(Color.clear)
@@ -402,7 +402,7 @@ struct ClipView: View {
 
             }
         }
-        .frame(width: 800, height: 400)
+        .frame(width: 800, height: 450)
         .background(.ultraThinMaterial)
         .cornerRadius(12)
         .onAppear {
