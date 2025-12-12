@@ -15,10 +15,13 @@ typealias OpenAIModel = Model
 
 extension Model {
     static let gpt5_1 = "gpt-5.1"
+    static let gpt5_2 = "gpt-5.2"
+    static let gpt5_2_pro = "gpt-5.2-pro"
     static let gpt5_pro = "gpt-5-pro"
 }
 
 let OpenAIModels: [Model] = [
+    .gpt5_2,
     .gpt5_1,
     .gpt5_mini, .gpt5,
     .gpt5_pro,
@@ -28,7 +31,7 @@ let OpenAITTSModels: [Model] = [.gpt_4o_mini_tts, .tts_1, .tts_1_hd]
 let OpenAITranslationModels: [Model] = [.gpt5_1, .gpt4_1_mini, .gpt4_o, .gpt4_o_mini]
 
 func isReasoningModel(_ model: Model) -> Bool {
-    return [.gpt5_mini, .gpt5, .gpt5_1, .gpt5_pro, .o4_mini, .o3, .o1, .o3_mini].contains(model)
+    return [.gpt5_2, .gpt5_2_pro, .gpt5_mini, .gpt5, .gpt5_1, .gpt5_pro, .o4_mini, .o3, .o1, .o3_mini].contains(model)
 }
 
 let dalle3Def = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
@@ -195,7 +198,12 @@ class OpenAIProvider: AIProvider{
 
             let response = ResponseStatus2()
             for try await event in openAIStream {
-                try response.handleResponseStreamEvent(event, continuation: continuation)
+               do {
+                    try response.handleResponseStreamEvent(event, continuation: continuation)
+                } catch {
+                    print("handleResponseStreamEvent \(error)")
+                    throw error
+                }
             }
 
             if response.hasToolsCalled {
