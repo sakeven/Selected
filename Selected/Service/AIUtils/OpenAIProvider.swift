@@ -317,7 +317,15 @@ class OpenAIProvider: AIProvider{
             reasoning =  .init(
                 effort: reasoningEffort,
                 summary: .auto)
+
+            if !(model == .gpt5 && reasoningEffort == .minimal) {
+                if var toolList = tools {
+                    toolList.append(.webSearchTool(.init(_type: .webSearchPreview)))
+                    tools = toolList
+                }
+            }
         }
+
 
 //        if !thinking {
 //            // only support for gpt_5.1 which default reasoningEffort is none.
@@ -434,7 +442,6 @@ fileprivate class ResponseStatus2 : ObservableObject {
                 switch reasoningSummaryPartEvent {
                     case .added(let delta):
                         print("Reasoning summary part delta event received \(delta.itemId) \(delta.part.text)")
-                        //                        continuation.yield(.reasoningDelta(delta.part.text))
                     case .done(let done):
                         print("Reasoning summary part done event received \(done.itemId) \(done.part.text)")
                         break
@@ -450,7 +457,15 @@ fileprivate class ResponseStatus2 : ObservableObject {
                         continuation.yield(.reasoningDone(done.text))
                 }
                 break
-            case .webSearchCall(_):
+            case .webSearchCall(let webSearchCall):
+                switch webSearchCall {
+                    case .inProgress(_):
+                        continuation.yield(.toolCallStarted(.init(name: "web_search", message: "in progress")))
+                    case .searching(_):
+                        break
+                    case .completed(_):
+                        continuation.yield(.toolCallFinished(.init(name: "web_search", ret: "completed")))
+                }
                 break
             case .mcpCall(_):
                 break

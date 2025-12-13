@@ -153,7 +153,7 @@ func monitorMouseMove() {
             lastSelectedText = ""
             WindowManager.shared.closeAllWindows(.original)
         } else {
-            print("event \(eventTypeMap[event.type]!)  \(eventTypeMap[eventState.lastMouseEventType]!)")
+//            print("event \(eventTypeMap[event.type]!)  \(eventTypeMap[eventState.lastMouseEventType]!)")
             var updatedSelectedText = false
             if eventState.isSelected(event: event) {
                 if let ctx = getSelectedText() {
@@ -187,7 +187,6 @@ func monitorMouseMove() {
             }
         }
     }
-    print("monitorMouseMove")
 }
 
 struct EventState {
