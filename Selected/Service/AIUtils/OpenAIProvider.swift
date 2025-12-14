@@ -14,14 +14,13 @@ import AVFoundation
 typealias OpenAIModel = Model
 
 extension Model {
-    static let gpt5_1 = "gpt-5.1"
     static let gpt5_2 = "gpt-5.2"
     static let gpt5_2_pro = "gpt-5.2-pro"
     static let gpt5_pro = "gpt-5-pro"
 }
 
 let OpenAIModels: [Model] = [
-    .gpt5_2,
+    .gpt5_2, .gpt5_2_pro,
     .gpt5_1,
     .gpt5_mini, .gpt5,
     .gpt5_pro,
@@ -30,8 +29,36 @@ let OpenAIModels: [Model] = [
 let OpenAITTSModels: [Model] = [.gpt_4o_mini_tts, .tts_1, .tts_1_hd]
 let OpenAITranslationModels: [Model] = [.gpt5_1, .gpt4_1_mini, .gpt4_o, .gpt4_o_mini]
 
+typealias OpenAIModelReasoningEffort = Components.Schemas.ReasoningEffort
+let OpenAIReasoningEfforts = Components.Schemas.ReasoningEffort.allCases
+
 func isReasoningModel(_ model: Model) -> Bool {
     return [.gpt5_2, .gpt5_2_pro, .gpt5_mini, .gpt5, .gpt5_1, .gpt5_pro, .o4_mini, .o3, .o1, .o3_mini].contains(model)
+}
+
+
+extension OpenAIModel {
+    var supportedReasoningEfforts: [OpenAIModelReasoningEffort] {
+        if !isReasoningModel(self){
+            return []
+        }
+        switch self {
+            case .gpt5_pro:
+                return [.high]
+            case .gpt5:
+                return [.low, .medium, .high]
+            case .gpt5_1:
+                return [.none, .low, .medium, .high]
+            case .gpt5_2, .gpt5_2_pro:
+                return [.none, .low, .medium, .high, .xhigh]
+            default:
+                return [.low, .medium, .high]
+        }
+    }
+
+    var supportsReasoningEffort: Bool {
+        !supportedReasoningEfforts.isEmpty
+    }
 }
 
 let dalle3Def = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
@@ -58,11 +85,11 @@ let dalle3Def = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
 
 final class MiddleWare: OpenAIMiddleware {
     func intercept(response: URLResponse?, request: URLRequest, data: Data?) -> (response: URLResponse?, data: Data?) {
-                if let data = data {
-                    print(String(data: data, encoding: .utf8) ?? "no data")
-                } else {
-                    print("no data2")
-                }
+        if let data = data {
+            print(String(data: data, encoding: .utf8) ?? "no data")
+        } else {
+            print("no data2")
+        }
         return (response, data)
     }
 }
@@ -142,7 +169,7 @@ class OpenAIProvider: AIProvider{
         let messageContent = replaceOptions(content: prompt, selectedText: selectedText, options: options)
         updateQuery(message: messageContent)
         let stream: AsyncThrowingStream<ResponseStreamEvent, Error> = openAI.responses.createResponseStreaming(query: responseQuery)
-        let response = ResponseStatus2()
+        let response = ResponseStatus()
         return AsyncThrowingStream {
             continuation in
             Task {
@@ -196,9 +223,9 @@ class OpenAIProvider: AIProvider{
         do {
             let openAIStream: AsyncThrowingStream<ResponseStreamEvent, Error> =  openAI.responses.createResponseStreaming(query: responseQuery)
 
-            let response = ResponseStatus2()
+            let response = ResponseStatus()
             for try await event in openAIStream {
-               do {
+                do {
                     try response.handleResponseStreamEvent(event, continuation: continuation)
                 } catch {
                     print("handleResponseStreamEvent \(error)")
@@ -238,24 +265,24 @@ class OpenAIProvider: AIProvider{
                 toolMessage = renderTemplate(templateString: template, json: tool.arguments)
                 print("\(toolMessage)")
             }
-            continuation.yield(.toolCallStarted(.init(name: tool.name, message: toolMessage)))
+            continuation.yield(.toolCallStarted(.init(id: tool.id, name: tool.name, message: toolMessage)))
 
             // 根据工具名称调用不同的逻辑
             if tool.name == dalle3Def.name {
                 let url = try await ImageGeneration.generateDalle3Image(openAI: openAI, arguments: tool.arguments)
 
-                let item = Components.Schemas.Item.functionCallOutputItemParam(.init(callId: callId, _type: .functionCallOutput, output: url))
+                let item = Components.Schemas.Item.FunctionCallOutputItemParam(.init(callId: callId, _type: .functionCallOutput, output: .case1(url)))
                 input.append(.item(item))
                 let ret = "[![this is picture](" + url + ")](" + url + ")"
-                let message = ToolCallResult(name: tool.name, ret: ret)
+                let message = ToolCallResult(id: tool.id, name: tool.name, ret: ret)
                 continuation.yield(.toolCallFinished(message))
             } else if tool.name == svgToolOpenAIDef.name {
                 _ = openSVGInBrowser(svgData: tool.arguments)
 
-                let item = Components.Schemas.Item.functionCallOutputItemParam(.init(callId: callId, _type: .functionCallOutput, output: ("display svg successfully")))
+                let item = Components.Schemas.Item.FunctionCallOutputItemParam(.init(callId: callId, _type: .functionCallOutput, output:  .case1("display svg successfully")))
                 input.append(.item(item))
 
-                let message = ToolCallResult(name: tool.name, ret: NSLocalizedString("display_svg", comment: ""))
+                let message = ToolCallResult(id: tool.id, name: tool.name, ret: NSLocalizedString("display_svg", comment: ""))
                 continuation.yield(.toolCallFinished(message))
 
             } else {
@@ -265,9 +292,9 @@ class OpenAIProvider: AIProvider{
                         let statusMessage = (funcDef.showResult ?? true)
                         ? ret
                         : String(format: NSLocalizedString("called_tool", comment: "tool message"), funcDef.name)
-                        let message = ToolCallResult(name: tool.name, ret: statusMessage)
+                        let message = ToolCallResult(id: tool.id, name: tool.name, ret: statusMessage)
                         continuation.yield(.toolCallFinished(message))
-                        let item = Components.Schemas.Item.functionCallOutputItemParam(.init(callId: callId, _type: .functionCallOutput, output: ret))
+                        let item = Components.Schemas.Item.FunctionCallOutputItemParam(.init(callId: callId, _type: .functionCallOutput, output: .case1(ret)))
                         input.append(.item(item))
                     }
                 }
@@ -302,15 +329,9 @@ class OpenAIProvider: AIProvider{
             tools = toolList
         }
 
-        typealias ReasoningEffort = Components.Schemas.ReasoningEffort
         var reasoning: Components.Schemas.Reasoning? = nil
         if isReasoningModel(model) {
-            var reasoningEffort: ReasoningEffort = switch Defaults[.openAIModelReasoningEffort] {
-                case "low": .low
-                case "medium": .medium
-                case "high": .high
-                default: .medium
-            }
+            var reasoningEffort = Defaults[.openAIModelReasoningEffort]
             if model == .gpt5_pro {
                 reasoningEffort = .high
             }
@@ -320,17 +341,17 @@ class OpenAIProvider: AIProvider{
 
             if !(model == .gpt5 && reasoningEffort == .minimal) {
                 if var toolList = tools {
-                    toolList.append(.webSearchTool(.init(_type: .webSearchPreview)))
+                    toolList.append(.webSearchTool(.init(_type: .webSearch)))
                     tools = toolList
                 }
             }
         }
 
 
-//        if !thinking {
-//            // only support for gpt_5.1 which default reasoningEffort is none.
-//            reasoning = nil
-//        }
+        if !thinking && ( model == .gpt5_1 || model == .gpt5_2)  {
+            // only support for gpt_5.1 which default reasoningEffort is none.
+            reasoning = nil
+        }
 
         return CreateModelResponseQuery(
             input: .textInput(""),
@@ -338,12 +359,13 @@ class OpenAIProvider: AIProvider{
             instructions: systemPrompt(),
             reasoning:  reasoning,
             stream: true,
+            text: .text,
             tools: tools,
         )
     }
 }
 
-fileprivate class ResponseStatus2 : ObservableObject {
+fileprivate class ResponseStatus : ObservableObject {
     public var lastOpenAIResponseId: String?
     public var toolCallsDict: [String: FunctionCallParam]
     public var hasToolsCalled: Bool {
@@ -450,21 +472,21 @@ fileprivate class ResponseStatus2 : ObservableObject {
             case .reasoningSummaryText(let reasoningSummaryTextEvent):
                 switch reasoningSummaryTextEvent {
                     case .delta(let delta):
-//                        print("Reasoning summary text delta event received \(delta.itemId) \(delta.delta)")
+                        //                        print("Reasoning summary text delta event received \(delta.itemId) \(delta.delta)")
                         continuation.yield(.reasoningDelta(delta.delta))
                     case .done(let done):
-//                        print("Reasoning summary text done event received \(done.itemId) \(done.text)")
+                        //                        print("Reasoning summary text done event received \(done.itemId) \(done.text)")
                         continuation.yield(.reasoningDone(done.text))
                 }
                 break
             case .webSearchCall(let webSearchCall):
                 switch webSearchCall {
-                    case .inProgress(_):
-                        continuation.yield(.toolCallStarted(.init(name: "web_search", message: "in progress")))
+                    case .inProgress(let webSearch):
+                        continuation.yield(.toolCallStarted(.init(id: webSearch.itemId, name: String(localized:  "Web search"), message: String(localized: "in progress"))))
                     case .searching(_):
                         break
-                    case .completed(_):
-                        continuation.yield(.toolCallFinished(.init(name: "web_search", ret: "completed")))
+                    case .completed(let webSearch):
+                        continuation.yield(.toolCallFinished(.init(id: webSearch.itemId, name: String(localized:  "Web search"), ret: String(localized: "completed"))))
                 }
                 break
             case .mcpCall(_):
@@ -472,6 +494,8 @@ fileprivate class ResponseStatus2 : ObservableObject {
             case .mcpCallArguments(_):
                 break
             case .mcpListTools(_):
+                break
+            case .customToolCall(_):
                 break
         }
     }
@@ -487,18 +511,18 @@ fileprivate class ResponseStatus2 : ObservableObject {
 
     private func handleOutputItemAdded(_ outputItem: OutputItem, continuation: AsyncThrowingStream<AIStreamEvent, Error>.Continuation ) throws {
         switch outputItem {
-            case .outputMessage(_):
+            case .OutputMessage(_):
                 continuation.yield(.textDelta(""))
-            case .webSearchToolCall(_ /* let webSearchToolCall */):
+            case .WebSearchToolCall(_ /* let webSearchToolCall */):
                 break
-            case .functionToolCall(_):
+            case .FunctionToolCall(_):
                 break
-            case .mcpApprovalRequest(_ /*let approvalRequest*/):
+            case .MCPApprovalRequest(_ /*let approvalRequest*/):
                 break
-            case .mcpListTools(_ /* let mcpListTools */):
+            case .MCPListTools(_ /* let mcpListTools */):
                 // MCP tools listed - no UI action needed
                 break
-            case .mcpToolCall(_ /* let mcpCall */):
+            case .MCPToolCall(_ /* let mcpCall */):
                 // MCP tool call in progress - no UI action needed
                 break
             default:
@@ -508,7 +532,7 @@ fileprivate class ResponseStatus2 : ObservableObject {
 
     private func handleOutputItemDone(_ outputItem: OutputItem, continuation: AsyncThrowingStream<AIStreamEvent, Error>.Continuation) throws {
         switch outputItem {
-            case .outputMessage(let outputMessage):
+            case .OutputMessage(let outputMessage):
                 for content in outputMessage.content {
                     switch content {
                         case .OutputTextContent(let outputText):
@@ -519,18 +543,18 @@ fileprivate class ResponseStatus2 : ObservableObject {
                             // message.refusalText = refusal.refusal
                     }
                 }
-            case .webSearchToolCall(_ /* let webSearchToolCall */):
+            case .WebSearchToolCall(_ /* let webSearchToolCall */):
                 break
-            case .functionToolCall(let functionToolCall):
-                toolCallsDict[functionToolCall.callId] = FunctionCallParam(name: functionToolCall.name, arguments: functionToolCall.arguments)
+            case .FunctionToolCall(let functionToolCall):
+                toolCallsDict[functionToolCall.callId] = FunctionCallParam(id: functionToolCall.callId, name: functionToolCall.name, arguments: functionToolCall.arguments)
                 break
-            case .mcpApprovalRequest(_ /* let approvalRequest */):
+            case .MCPApprovalRequest(_ /* let approvalRequest */):
                 // MCP approval request completed - no additional action needed
                 break
-            case .mcpListTools(_ /* let mcpListTools */):
+            case .MCPListTools(_ /* let mcpListTools */):
                 // MCP tools listing completed - no additional action needed
                 break
-            case .mcpToolCall(_):
+            case .MCPToolCall(_):
                 break
             default:
                 break
@@ -549,7 +573,8 @@ fileprivate class ResponseStatus2 : ObservableObject {
     }
 }
 
- struct FunctionCallParam {
+struct FunctionCallParam {
+    public var id: String
     public var name: String
     public var arguments: String
 }

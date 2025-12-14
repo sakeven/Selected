@@ -43,9 +43,9 @@ class MessageViewModel: ObservableObject {
                         self.messages[idx].message = txt
                         self.messages[idx].status = .finished
                     case .toolCallStarted(let toolStartStatus):
-                        self.messages[idx].tools[toolStartStatus.name] = AIToolCall(name: toolStartStatus.name, ret: toolStartStatus.message, status: .calling)
+                        self.messages[idx].tools[toolStartStatus.id] = AIToolCall(name: toolStartStatus.name, ret: toolStartStatus.message, status: .calling)
                     case .toolCallFinished(let result):
-                        self.messages[idx].tools[result.name] = AIToolCall(name: result.name, ret: result.ret, status: .success)
+                        self.messages[idx].tools[result.id] = AIToolCall(name: result.name, ret: result.ret, status: .success)
                     case .reasoningDelta(let reasoningDelta):
                         self.messages[idx].summary += reasoningDelta
                     case .reasoningDone(_):
@@ -87,9 +87,9 @@ class MessageViewModel: ObservableObject {
                         self.messages[idx].message = txt
                         self.messages[idx].status = .finished
                     case .toolCallStarted(let toolStartStatus):
-                        self.messages[idx].tools[toolStartStatus.name] = AIToolCall(name: toolStartStatus.name, ret: toolStartStatus.message, status: .calling)
+                        self.messages[idx].tools[toolStartStatus.id] = AIToolCall(name: toolStartStatus.name, ret: toolStartStatus.message, status: .calling)
                     case .toolCallFinished(let result):
-                        self.messages[idx].tools[result.name] = AIToolCall(name: result.name, ret: result.ret, status: .success)
+                        self.messages[idx].tools[result.id] = AIToolCall(name: result.name, ret: result.ret, status: .success)
                     case .error(let err):
                         self.messages[idx].role = .system
                         self.messages[idx].message = err

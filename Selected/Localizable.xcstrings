@@ -352,6 +352,16 @@
         }
       }
     },
+    "completed" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已完成"
+          }
+        }
+      }
+    },
     "Content type:" : {
       "localizations" : {
         "zh-Hans" : {
@@ -501,16 +511,6 @@
         }
       }
     },
-    "Gemini" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gemini"
-          }
-        }
-      }
-    },
     "General" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -555,6 +555,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "图像 %1$@ * %2$@"
+          }
+        }
+      }
+    },
+    "in progress" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "进行中"
           }
         }
       }
@@ -973,6 +983,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "等待中"
+          }
+        }
+      }
+    },
+    "Web search" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "网络搜索"
           }
         }
       }

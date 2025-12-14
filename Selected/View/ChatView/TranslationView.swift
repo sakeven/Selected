@@ -64,7 +64,7 @@ struct TranslationView: View {
     }
 
     private var orinialText: some View{
-            Text(text)
+        Text(text.trimmingCharacters(in: .whitespacesAndNewlines.union(.controlCharacters)))
             .textSelection(.enabled)
             .fontWeight(.light)
             .padding(.horizontal, 20.0)

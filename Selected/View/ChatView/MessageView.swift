@@ -101,7 +101,8 @@ struct MessageView: View {
                     .padding(.bottom, 4)
                     ForEach(message.items, id: \.key) { key, tool in
                         ToolRowView(tool: tool)
-                            .padding(.vertical, 4)
+                            .padding(.top, 4)
+                            .padding(.leading, 10)
                     }
                     Divider().padding(.trailing, 40.0)
                 }

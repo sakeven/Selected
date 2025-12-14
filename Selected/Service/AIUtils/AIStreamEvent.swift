@@ -77,11 +77,13 @@ enum AIToolCallStatus {
 }
 
 struct ToolCallResult {
+    let id: String
     let name: String
     let ret: String
 }
 
 struct ToolCallStart {
+    let id: String
     let name: String
     let message: String
 }

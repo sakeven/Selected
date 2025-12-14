@@ -71,11 +71,11 @@ fileprivate struct ToolsManager {
         for tool in toolUseList {
 
             if tool.name == "display_svg" {
-                continuation.yield(.toolCallStarted(.init(name: tool.name, message: NSLocalizedString("calling_tool", comment: "tool message"))))
+                continuation.yield(.toolCallStarted(.init(id: tool.id, name: tool.name, message: NSLocalizedString("calling_tool", comment: "tool message"))))
                 // 打开 SVG 浏览器预览
                 _ = openSVGInBrowser(svgData: tool.input)
                 let msg = String(format: NSLocalizedString("display_svg", comment: ""))
-                continuation.yield(.toolCallFinished(.init(name: tool.name, ret: msg)))
+                continuation.yield(.toolCallFinished(.init(id: tool.id, name: tool.name, ret: msg)))
                 toolUseResults.append(.toolResult(tool.id, "display svg successfully"))
                 continue
             }
@@ -86,10 +86,10 @@ fileprivate struct ToolsManager {
             if let template = fc.template {
                 message = renderTemplate(templateString: template, json: tool.input)
             }
-            continuation.yield(.toolCallStarted(.init(name: tool.name, message: message)))
+            continuation.yield(.toolCallStarted(.init(id: tool.id, name: tool.name, message: message)))
 
             if let ret = try fc.Run(arguments: tool.input, options: options) {
-                continuation.yield(.toolCallFinished(.init(name: tool.name, ret: ret)))
+                continuation.yield(.toolCallFinished(.init(id: tool.id, name: tool.name, ret: ret)))
                 toolUseResults.append(.toolResult(tool.id, ret))
             }
         }

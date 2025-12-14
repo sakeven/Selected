@@ -12,8 +12,6 @@ import ServiceManagement
 import OpenAI
 import ShortcutRecorder
 
-let ReasoningEfforts = ["high", "medium", "low"]
-
 struct SettingsView: View {
 
     @Environment(\.colorScheme) var colorScheme
@@ -97,13 +95,18 @@ struct SettingsView: View {
                             }
                             Text("Custom").tag("Custom")
                         }).pickerStyle(DefaultPickerStyle())
-                            .onChange(of: selectedOpenAIModel) { newValue in
-                                if newValue == "Custom" {
+                            .onChange(of: selectedOpenAIModel) { newModel in
+                                if newModel == "Custom" {
                                     customOpenAIMode = ""
                                     Defaults[.openAIModel] = ""
                                 } else {
-                                    Defaults[.openAIModel] = newValue
+                                    Defaults[.openAIModel] = newModel
                                     customOpenAIMode = ""
+                                    let supported = newModel.supportedReasoningEfforts
+                                    guard !supported.isEmpty else { return }
+                                    if !supported.contains(openAIModelReasoningEffort) {
+                                        openAIModelReasoningEffort = supported[0]
+                                    }
                                 }
                             }
 
@@ -111,18 +114,25 @@ struct SettingsView: View {
                             TextField("Custom model", text: $customOpenAIMode)
                                 .textFieldStyle(.roundedBorder)
                                 .padding()
-                                .onChange(of: customOpenAIMode){ newValue in
+                                .onChange(of: customOpenAIMode){ newModel in
                                     if OpenAIModels.contains(customOpenAIMode) {
                                         selectedOpenAIModel = customOpenAIMode
                                     }
+
                                     Defaults[.openAIModel] = customOpenAIMode
+
+                                    let supported = newModel.supportedReasoningEfforts
+                                    guard !supported.isEmpty else { return }
+                                    if !supported.contains(openAIModelReasoningEffort) {
+                                        openAIModelReasoningEffort = supported[0]
+                                    }
                                 }
                         }
 
                         if isReasoningModel(openAIModel){
                             Picker("ReasoningEffort", selection: $openAIModelReasoningEffort, content: {
-                                ForEach(ReasoningEfforts, id: \.self) {
-                                    Text($0)
+                                ForEach(openAIModel.supportedReasoningEfforts, id: \.self) { effort in
+                                    Text(effort.rawValue)
                                 }
                             }).pickerStyle(DefaultPickerStyle())
                         }
@@ -159,9 +169,9 @@ struct SettingsView: View {
                         }).pickerStyle(DefaultPickerStyle())
                     }
 
-                    Section(header: Text("Gemini")) {
-                        SecureField("APIKey", text: $geminiAPIKey)
-                    }
+//                    Section(header: Text("Gemini")) {
+//                        SecureField("APIKey", text: $geminiAPIKey)
+//                    }
                 }
                 .scrollContentBackground(.hidden)
                 .formStyle(.grouped) // 成组
