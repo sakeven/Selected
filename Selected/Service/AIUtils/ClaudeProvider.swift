@@ -226,12 +226,13 @@ class ClaudeAIProvider: AIProvider {
         var userMessage = renderChatContent(content: prompt, chatCtx: ctx, options: options)
         userMessage = replaceOptions(content: userMessage, selectedText: ctx.text, options: options)
         queryManager.update(with: .init(role: .user, content: .text(userMessage)))
-        return chatFollow(userMessage: userMessage)
+        return chatFollow(userMessage: UserMessage(text: userMessage))
     }
 
     /// 聊天跟进：追加用户消息，并循环处理直到得到完整回复
-    func chatFollow(userMessage: String) -> AsyncThrowingStream<AIStreamEvent, Error>  {
-        queryManager.update(with: .init(role: .user, content: .text(userMessage)))
+    func chatFollow(userMessage: UserMessage) -> AsyncThrowingStream<AIStreamEvent, Error>  {
+        // TODO: support images
+        queryManager.update(with: .init(role: .user, content: .text(userMessage.text)))
 
         return AsyncThrowingStream { continuation in
             Task {

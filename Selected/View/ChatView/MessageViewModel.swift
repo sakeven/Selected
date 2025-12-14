@@ -10,18 +10,21 @@ import Foundation
 @MainActor
 class MessageViewModel: ObservableObject {
     @Published var messages: [ResponseMessage] = []
+    @Published var inProgress: Bool
     var chatService: AIProvider
 
     init(chatService: AIProvider) {
         self.chatService = chatService
+        self.inProgress = false
         self.messages.append(ResponseMessage(message: NSLocalizedString("waiting", comment: "system info"), role: .system))
     }
 
-    func submit(message: String) async {
+    func submit(message: UserMessage) async {
+        self.inProgress = true
         await withTaskGroup(of: Void.self) { group in
             group.addTask {
                 await MainActor.run {
-                    self.messages.append(ResponseMessage(message: message, role: .user, status: .finished))
+                    self.messages.append(ResponseMessage(message: message.text, images: message.images, role: .user, status: .finished))
                 }
             }
         }
@@ -64,10 +67,12 @@ class MessageViewModel: ObservableObject {
             self.messages[idx].status = .failure
             self.messages[idx].message = error.localizedDescription
         }
+        self.inProgress = false
     }
 
     // 开启第一条对话
     func fetchMessages(ctx: ChatContext) async -> Void{
+        self.inProgress = true
         let stream = chatService.chat(ctx: ctx)
 
         let idx = self.messages.count-1
@@ -110,5 +115,6 @@ class MessageViewModel: ObservableObject {
             self.messages[idx].status = .failure
             self.messages[idx].message = error.localizedDescription
         }
+        self.inProgress = false
     }
 }

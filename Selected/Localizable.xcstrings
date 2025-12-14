@@ -46,7 +46,14 @@
       }
     },
     "1x" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1x"
+          }
+        }
+      }
     },
     "3 Months" : {
       "extractionState" : "manual",
@@ -238,16 +245,6 @@
         }
       }
     },
-    "cancel" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "取消"
-          }
-        }
-      }
-    },
     "chat.pin" : {
       "localizations" : {
         "en" : {
@@ -286,6 +283,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "检查更新"
+          }
+        }
+      }
+    },
+    "Choose local photos" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择本地图片"
+          }
+        }
+      }
+    },
+    "Choose photos" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择相册"
           }
         }
       }
@@ -873,6 +890,16 @@
         }
       }
     },
+    "Stop" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
+          }
+        }
+      }
+    },
     "success" : {
       "localizations" : {
         "zh-Hans" : {
@@ -890,6 +917,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "系统"
+          }
+        }
+      }
+    },
+    "Text content needs to be entered." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要输入文本信息。"
           }
         }
       }

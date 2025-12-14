@@ -36,6 +36,7 @@
 		386010662C3AE22C00EB9AE7 /* Stencil in Frameworks */ = {isa = PBXBuildFile; productRef = 386010652C3AE22C00EB9AE7 /* Stencil */; };
 		386010682C3AE24000EB9AE7 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386010672C3AE24000EB9AE7 /* Template.swift */; };
 		3860106B2C4222BB00EB9AE7 /* SwiftAnthropic in Frameworks */ = {isa = PBXBuildFile; productRef = 3860106A2C4222BB00EB9AE7 /* SwiftAnthropic */; };
+		3868D6042EEEC2D500B41E3A /* ChatInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3868D6032EEEC2D500B41E3A /* ChatInputView.swift */; };
 		386AD7182B8F6BFA008C346D /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386AD7172B8F6BFA008C346D /* App.swift */; };
 		386AD71C2B8F6BFB008C346D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71B2B8F6BFB008C346D /* Assets.xcassets */; };
 		386AD71F2B8F6BFB008C346D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71E2B8F6BFB008C346D /* Preview Assets.xcassets */; };
@@ -145,6 +146,7 @@
 		3860105F2C2FA10200EB9AE7 /* TranslationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationView.swift; sourceTree = "<group>"; };
 		386010622C35926100EB9AE7 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		386010672C3AE24000EB9AE7 /* Template.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
+		3868D6032EEEC2D500B41E3A /* ChatInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputView.swift; sourceTree = "<group>"; };
 		386AD7142B8F6BFA008C346D /* Selected.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Selected.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		386AD7172B8F6BFA008C346D /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		386AD71B2B8F6BFB008C346D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -270,6 +272,7 @@
 		386010562C2F9FEA00EB9AE7 /* ChatView */ = {
 			isa = PBXGroup;
 			children = (
+				3868D6032EEEC2D500B41E3A /* ChatInputView.swift */,
 				38F93F682D86E45E00D1C208 /* MarkdowLateXView.swift */,
 				386010572C2FA00400EB9AE7 /* MessageView.swift */,
 				386010592C2FA07600EB9AE7 /* MessageViewModel.swift */,
@@ -660,6 +663,7 @@
 				388DABA82BC42798000B2739 /* Persistence.swift in Sources */,
 				38D1CAC22D9179370091A332 /* TTSManager.swift in Sources */,
 				38D1CAC32D9179370091A332 /* ImageGeneration.swift in Sources */,
+				3868D6042EEEC2D500B41E3A /* ChatInputView.swift in Sources */,
 				38D1CAC42D9179370091A332 /* FunctionDefinition.swift in Sources */,
 				38F5E2A22B9AB361002FEEFE /* CodeSyntaxHighlighter.swift in Sources */,
 				3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */,
@@ -1126,8 +1130,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sakeven/OpenAI";
 			requirement = {
-				kind = branch;
 				branch = main;
+				kind = branch;
 			};
 		};
 		38F5E29D2B9AB332002FEEFE /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {

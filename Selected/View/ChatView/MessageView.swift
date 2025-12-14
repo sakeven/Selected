@@ -27,9 +27,7 @@ struct MessageView: View {
                     .foregroundStyle(.blue.gradient).font(.headline)
                 if message.role == .assistant {
                     switch message.status {
-                        case .initial:
-                            Image(systemName: "arrow.clockwise").foregroundStyle(.gray)
-                        case .updating:
+                        case .initial, .updating:
                             Image(systemName: "arrow.2.circlepath")
                                 .foregroundStyle(.orange)
                                 .rotationEffect(.degrees(spinning ? 360 : 0))
@@ -106,6 +104,9 @@ struct MessageView: View {
                     }
                     Divider().padding(.trailing, 40.0)
                 }
+                if !message.images.isEmpty {
+                    previewHeader.padding(.leading, 20.0)
+                }
                 MarkdownWithLateXView(markdownString: $message.message)
                     .padding(.leading, 20.0)
                     .padding(.trailing, 40.0)
@@ -113,6 +114,40 @@ struct MessageView: View {
                     .padding(.bottom, 20)
             }
         }.frame(width: 750).textSelection(.enabled)
+    }
+
+    private var previewHeader: some View {
+        if message.images.count < 5 {
+            AnyView(HStack(spacing: 8) {
+                ForEach(message.images.indices, id: \.self ) { id in
+                    if let nsImage = NSImage(data: message.images[id]) {
+                        Image(nsImage: nsImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 64, height: 64)
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                    } else {
+                        Color.gray.frame(width: 64, height: 64)
+                    }
+                }
+            })
+        } else {
+            AnyView(ScrollView(.horizontal) {
+                HStack(spacing: 8) {
+                    ForEach(message.images.indices, id: \.self ) { id in
+                        if let nsImage = NSImage(data: message.images[id]) {
+                            Image(nsImage: nsImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 64, height: 64)
+                                .clipShape(RoundedRectangle(cornerRadius: 6))
+                        } else {
+                            Color.gray.frame(width: 64, height: 64)
+                        }
+                    }
+                }
+            })
+        }
     }
 
     private var codeTheme: CodeTheme {

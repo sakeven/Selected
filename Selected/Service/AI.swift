@@ -110,7 +110,7 @@ struct Translation {
 protocol AIProvider {
     func chatOnce(selectedText: String) -> AsyncThrowingStream<AIStreamEvent, Error>
     func chat(ctx: ChatContext) -> AsyncThrowingStream<AIStreamEvent, Error>
-    func chatFollow(userMessage: String) -> AsyncThrowingStream<AIStreamEvent, Error>
+    func chatFollow(userMessage: UserMessage) -> AsyncThrowingStream<AIStreamEvent, Error>
 }
 
 
@@ -133,7 +133,7 @@ struct ChatService: AIProvider{
         chatService.chat(ctx: ctx)
     }
 
-    func chatFollow(userMessage: String) -> AsyncThrowingStream<AIStreamEvent, any Error> {
+    func chatFollow(userMessage: UserMessage) -> AsyncThrowingStream<AIStreamEvent, any Error> {
         chatService.chatFollow(userMessage: userMessage)
     }
 
@@ -142,6 +142,15 @@ struct ChatService: AIProvider{
     }
 }
 
+public class UserMessage{
+    let text: String
+    let images: [Data]
+
+    init(text: String, images: [Data]=[]) {
+        self.text = text
+        self.images = images
+    }
+}
 
 public class ResponseMessage: ObservableObject, Identifiable, Equatable{
     public static func == (lhs: ResponseMessage, rhs: ResponseMessage) -> Bool {
@@ -160,6 +169,8 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
 
     @Published var summary: String
     @Published var message: String
+    @Published var images: [Data]
+
     @Published var role: Role
     @Published var status: Status
     @Published var tools: [String: AIToolCall]
@@ -171,13 +182,14 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
 
     var new: Bool = false // new start of message
 
-    init(id: UUID = UUID(), message: String, role: Role, new: Bool = false, status: Status = .initial) {
+    init(id: UUID = UUID(), message: String, images: [Data] = [], role: Role, new: Bool = false, status: Status = .initial) {
         self.id = id
         self.message = message
         self.role = role
         self.new = new
         self.status = status
         self.summary = ""
+        self.images = images
         self.tools = [String: AIToolCall]()
     }
 }

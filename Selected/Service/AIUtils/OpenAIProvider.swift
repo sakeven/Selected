@@ -142,6 +142,25 @@ class OpenAIProvider: AIProvider{
         )
     }
 
+    private func updateQuery(message: UserMessage) {
+        var inputItems = [InputContent]()
+        inputItems.append(.inputText(.init(_type: .inputText, text: message.text)))
+        for image in message.images {
+            inputItems.append(.inputImage(.init(imageData: image, detail: .auto)))
+        }
+        let input = CreateModelResponseQuery.Input.inputItemList([
+            .inputMessage(.init(role: .user, content: .inputItemContentList(inputItems)))
+        ])
+        responseQuery = CreateModelResponseQuery(
+            input: input,
+            model: responseQuery.model,
+            previousResponseId: responseQuery.previousResponseId,
+            reasoning: responseQuery.reasoning,
+            stream: true,
+            tools: responseQuery.tools,
+        )
+    }
+
     private func updateQuery(lastResponseId: String) {
         responseQuery = CreateModelResponseQuery(
             input: responseQuery.input,
@@ -189,13 +208,13 @@ class OpenAIProvider: AIProvider{
     func chat(ctx: ChatContext) -> AsyncThrowingStream<AIStreamEvent, Error> {
         var messageContent = renderChatContent(content: prompt, chatCtx: ctx, options: options)
         messageContent = replaceOptions(content: messageContent, selectedText: ctx.text, options: options)
-        return chatFollow(userMessage: messageContent)
+        return chatFollow(userMessage: UserMessage(text: messageContent))
     }
 
     private let maxToolLoops = 8
 
     /// 处理用户后续的消息
-    func chatFollow(userMessage: String) -> AsyncThrowingStream<AIStreamEvent, Error>  {
+    func chatFollow(userMessage: UserMessage) -> AsyncThrowingStream<AIStreamEvent, Error>  {
         updateQuery(message: userMessage)
         return AsyncThrowingStream { continuation in
             Task {
