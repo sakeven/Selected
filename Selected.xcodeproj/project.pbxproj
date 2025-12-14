@@ -37,6 +37,7 @@
 		386010682C3AE24000EB9AE7 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386010672C3AE24000EB9AE7 /* Template.swift */; };
 		3860106B2C4222BB00EB9AE7 /* SwiftAnthropic in Frameworks */ = {isa = PBXBuildFile; productRef = 3860106A2C4222BB00EB9AE7 /* SwiftAnthropic */; };
 		3868D6042EEEC2D500B41E3A /* ChatInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3868D6032EEEC2D500B41E3A /* ChatInputView.swift */; };
+		3868D6DA2EEEF9A600B41E3A /* WindowPositionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3868D6D92EEEF9A600B41E3A /* WindowPositionManager.swift */; };
 		386AD7182B8F6BFA008C346D /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 386AD7172B8F6BFA008C346D /* App.swift */; };
 		386AD71C2B8F6BFB008C346D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71B2B8F6BFB008C346D /* Assets.xcassets */; };
 		386AD71F2B8F6BFB008C346D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 386AD71E2B8F6BFB008C346D /* Preview Assets.xcassets */; };
@@ -147,6 +148,7 @@
 		386010622C35926100EB9AE7 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		386010672C3AE24000EB9AE7 /* Template.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
 		3868D6032EEEC2D500B41E3A /* ChatInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputView.swift; sourceTree = "<group>"; };
+		3868D6D92EEEF9A600B41E3A /* WindowPositionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPositionManager.swift; sourceTree = "<group>"; };
 		386AD7142B8F6BFA008C346D /* Selected.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Selected.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		386AD7172B8F6BFA008C346D /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		386AD71B2B8F6BFB008C346D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -264,6 +266,7 @@
 		384EEF2F2C6CDA8E00EF6412 /* Windows */ = {
 			isa = PBXGroup;
 			children = (
+				3868D6D92EEEF9A600B41E3A /* WindowPositionManager.swift */,
 				384EEF302C6CDAA300EF6412 /* ChatWindow.swift */,
 			);
 			path = Windows;
@@ -661,6 +664,7 @@
 				38230CA12B9F44FC002A52E9 /* BarButton.swift in Sources */,
 				386AD7572B90D867008C346D /* GetText.swift in Sources */,
 				388DABA82BC42798000B2739 /* Persistence.swift in Sources */,
+				3868D6DA2EEEF9A600B41E3A /* WindowPositionManager.swift in Sources */,
 				38D1CAC22D9179370091A332 /* TTSManager.swift in Sources */,
 				38D1CAC32D9179370091A332 /* ImageGeneration.swift in Sources */,
 				3868D6042EEEC2D500B41E3A /* ChatInputView.swift in Sources */,

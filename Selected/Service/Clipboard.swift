@@ -423,7 +423,7 @@ private class ClipWindowController: NSWindowController, NSWindowDelegate {
         window.contentView = NSHostingView(rootView: rootView)
         window.delegate = self // 设置代理为自己来监听窗口事件
         window.makeKeyAndOrderFront(nil)
-        if WindowPositionManager.shared.restorePosition(for: window) {
+        if clipWindowPositionManager.restorePosition(for: window) {
             return
         }
 
@@ -438,13 +438,13 @@ private class ClipWindowController: NSWindowController, NSWindowDelegate {
 
     func windowDidMove(_ notification: Notification) {
         if let window = notification.object as? NSWindow {
-            WindowPositionManager.shared.storePosition(of: window)
+            clipWindowPositionManager.storePosition(of: window)
         }
     }
 
     func windowDidResize(_ notification: Notification) {
         if let window = notification.object as? NSWindow {
-            WindowPositionManager.shared.storePosition(of: window)
+            clipWindowPositionManager.storePosition(of: window)
         }
     }
 
@@ -467,21 +467,4 @@ private class ClipWindowController: NSWindowController, NSWindowDelegate {
     }
 }
 
-
-private class WindowPositionManager {
-    static let shared = WindowPositionManager()
-
-    func storePosition(of window: NSWindow) {
-        let frameString = NSStringFromRect(window.frame)
-        UserDefaults.standard.set(frameString, forKey: "ClipboardWindowPosition")
-    }
-
-    func restorePosition(for window: NSWindow) -> Bool {
-        if let frameString = UserDefaults.standard.string(forKey: "ClipboardWindowPosition") {
-            let frame = NSRectFromString(frameString)
-            window.setFrame(frame, display: true)
-            return true
-        }
-        return false
-    }
-}
+private let clipWindowPositionManager = WindowPositionManager(key: "ClipboardWindowPosition")

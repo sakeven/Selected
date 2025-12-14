@@ -129,28 +129,23 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         window.makeKeyAndOrderFront(nil)
         window.backgroundColor = .clear
         window.isOpaque = false
-        if WindowPositionManager.shared.restorePosition(for: window) {
+        if windowPositionManager.restorePosition(for: window) {
+            print("restorePosition")
             return
         }
 
+        let screenFrame = NSScreen.main?.visibleFrame ?? .zero
         let windowFrame = window.frame
-        let screenFrame = NSScreen.main?.visibleFrame ?? .zero // 获取主屏幕的可见区域
 
-        // 确保窗口不会超出屏幕边缘
-        let x = (screenFrame.maxX - windowFrame.width) / 2
-        let y = (screenFrame.maxY - windowFrame.height)*3 / 4
+        let x = screenFrame.midX - windowFrame.width / 2
+        let y = screenFrame.minY + screenFrame.height * 0.75 - windowFrame.height / 2
         window.setFrameOrigin(NSPoint(x: x, y: y))
     }
 
     func windowDidMove(_ notification: Notification) {
         if let window = notification.object as? NSWindow {
-            WindowPositionManager.shared.storePosition(of: window)
-        }
-    }
-
-    func windowDidResize(_ notification: Notification) {
-        if let window = notification.object as? NSWindow {
-            WindowPositionManager.shared.storePosition(of: window)
+            print("windowDidMove")
+            windowPositionManager.storePosition(of: window)
         }
     }
 
@@ -171,22 +166,4 @@ private class WindowController: NSWindowController, NSWindowDelegate {
     }
 }
 
-
-private class WindowPositionManager {
-    static let shared = WindowPositionManager()
-    let key = "SpotlightWindowPosition"
-
-    func storePosition(of window: NSWindow) {
-        let frameString = NSStringFromRect(window.frame)
-        UserDefaults.standard.set(frameString, forKey: key)
-    }
-
-    func restorePosition(for window: NSWindow) -> Bool {
-        if let frameString = UserDefaults.standard.string(forKey: key) {
-            let frame = NSRectFromString(frameString)
-            window.setFrame(frame, display: true)
-            return true
-        }
-        return false
-    }
-}
+private let windowPositionManager = WindowPositionManager(key: "SpotlightWindowPosition")

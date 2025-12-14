@@ -102,13 +102,13 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
         window.contentView = NSHostingView(rootView: AnyView(view))
         window.delegate = self // 设置代理为自己来监听窗口事件
 
-        _ = ChatWindowPositionManager.shared.restorePosition(for: window)
+        _ = chatWindowPositionManager.restorePosition(for: window)
     }
 
     private func positionWindow() {
         guard let window = self.window else { return }
 
-        if ChatWindowPositionManager.shared.restorePosition(for: window) {
+        if chatWindowPositionManager.restorePosition(for: window) {
             return
         }
 
@@ -136,13 +136,13 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
 
     func windowDidMove(_ notification: Notification) {
         if let window = notification.object as? NSWindow {
-            ChatWindowPositionManager.shared.storePosition(of: window)
+            chatWindowPositionManager.storePosition(of: window)
         }
     }
 
     func windowDidResize(_ notification: Notification) {
         if let window = notification.object as? NSWindow {
-            ChatWindowPositionManager.shared.storePosition(of: window)
+            chatWindowPositionManager.storePosition(of: window)
         }
     }
 
@@ -154,27 +154,7 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
     }
 }
 
-private class ChatWindowPositionManager: @unchecked Sendable {
-    static let shared = ChatWindowPositionManager()
-
-    func storePosition(of window: NSWindow) {
-        Task {
-            await MainActor.run {
-                let frameString = NSStringFromRect(window.frame)
-                UserDefaults.standard.set(frameString, forKey: "ChatWindowPosition")
-            }
-        }
-    }
-
-    @MainActor func restorePosition(for window: NSWindow) -> Bool {
-        if let frameString = UserDefaults.standard.string(forKey: "ChatWindowPosition") {
-            let frame = NSRectFromString(frameString)
-            window.setFrame(frame, display: true)
-            return true
-        }
-        return false
-    }
-}
+private let chatWindowPositionManager = WindowPositionManager(key: "ChatWindowPosition")
 
 class PinnedModel: ObservableObject {
     @Published var pinned: Bool = false
