@@ -25,10 +25,12 @@ class PersistenceController {
         }
     }
 
-    func updateClipHistoryData(_ clipData: ClipHistoryData) {
+    func updateClipHistoryData(_ clipData: ClipHistoryData, updateCount: Bool = true) {
         let ctx = container.viewContext
-        clipData.lastCopiedAt = Date()
-        clipData.numberOfCopies += 1
+        if updateCount {
+            clipData.lastCopiedAt = Date()
+            clipData.numberOfCopies += 1
+        }
         ctx.performAndWait {
             do {
                 try ctx.save()
@@ -79,7 +81,7 @@ class PersistenceController {
                 try ctx.save()
                 print("saved \(clipHistoryData.md5!)")
             } catch {
-                fatalError("\(error)")
+                print("saved: \(error)")
             }
         }
     }

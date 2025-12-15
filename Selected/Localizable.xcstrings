@@ -130,6 +130,16 @@
         }
       }
     },
+    "Actions:" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "操作："
+          }
+        }
+      }
+    },
     "Add" : {
       "localizations" : {
         "zh-Hans" : {
@@ -767,6 +777,9 @@
           }
         }
       }
+    },
+    "Prettify JSON" : {
+
     },
     "Quit" : {
       "localizations" : {

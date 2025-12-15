@@ -16,7 +16,7 @@ struct ClipDataView: View {
         VStack(alignment: .leading){
             if let item = data.getItems().first {
                 let type = NSPasteboard.PasteboardType(item.type!)
-                previewView.id(data.objectID)
+                previewView.id(data.MD5())
                 Spacer()
                 Divider()
 
@@ -83,6 +83,11 @@ struct ClipDataView: View {
                         .frame(height: 17)
                     }
                 }
+                HStack {
+                    Text("Actions:")
+                    Spacer()
+                    ClipActionBar(data: data)
+                }
             } else {
                 EmptyView()
             }
@@ -93,24 +98,25 @@ struct ClipDataView: View {
 
     private var previewView: some View {
         VStack{
-            let item = data.getItems().first!
-            let type = NSPasteboard.PasteboardType(item.type!)
-            if type == .png {
-                Image(nsImage: NSImage(data: item.data!)!)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-            } else if type == .rtf {
-                RTFView(rtfData: item.data!)
-            } else if type == .fileURL {
-                let url = URL(string: String(decoding: item.data!, as: UTF8.self))!
-                let name = url.lastPathComponent.removingPercentEncoding!
-                if name.hasSuffix(".pdf") {
-                    PDFKitRepresentedView(url: url)
-                } else {
-                    QuickLookPreview(url: url)
+            if let item = data.getItems().first {
+                let type = NSPasteboard.PasteboardType(item.type!)
+                if type == .png {
+                    Image(nsImage: NSImage(data: item.data!)!)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } else if type == .rtf {
+                    RTFView(rtfData: item.data!)
+                } else if type == .fileURL {
+                    let url = URL(string: String(decoding: item.data!, as: UTF8.self))!
+                    let name = url.lastPathComponent.removingPercentEncoding!
+                    if name.hasSuffix(".pdf") {
+                        PDFKitRepresentedView(url: url)
+                    } else {
+                        QuickLookPreview(url: url)
+                    }
+                } else if let plainText = data.plainText {
+                    TextView(text: plainText)
                 }
-            } else if data.plainText != nil {
-                TextView(text: data.plainText!)
             }
         }
     }
@@ -220,7 +226,7 @@ struct ClipRowView: View {
                 case .rtf:
                     if let plainText = clip.plainText {
                         Label {
-                            Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines))
+                            Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines).removingAllNewlines())
                                 .lineLimit(1)
                                 .padding(.leading, 10)
                         } icon: {
@@ -236,7 +242,7 @@ struct ClipRowView: View {
                 case .string:
                     if let plainText = clip.plainText {
                         Label {
-                            Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines))
+                            Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines).removingAllNewlines())
                                 .lineLimit(1)
                                 .padding(.leading, 10)
                         } icon: {
@@ -492,4 +498,49 @@ struct ClipView: View {
 
 #Preview {
     ClipView()
+}
+
+extension ClipHistoryData {
+    var isJSON: Bool {
+        guard let text = plainText else { return false }
+        return JSONFormatter.isValidJSON(text)
+    }
+}
+
+struct ClipActionBar: View {
+    @ObservedObject var data: ClipHistoryData
+
+    var body: some View {
+        HStack{
+            if data.isJSON {
+                Button("Prettify JSON") {
+                    prettifyJSON()
+                }
+            }
+        }
+    }
+
+    private func prettifyJSON() {
+        guard let text = data.plainText else { return }
+        do {
+            let pretty = try JSONFormatter.prettify(text)
+            data.plainText = pretty
+            let item = data.getItems().first
+            item?.type = NSPasteboard.PasteboardType.string.rawValue
+            item?.data = pretty.data(using: .utf8)
+            PersistenceController.shared.updateClipHistoryData(data, updateCount: false)
+        } catch {
+//            onShowMessage("不是合法 JSON，无法美化")
+        }
+    }
+}
+
+extension String {
+    /// 移除所有换行（\n、\r\n、\r）
+    func removingAllNewlines() -> String {
+        self
+            .replacingOccurrences(of: "\r\n", with: "")
+            .replacingOccurrences(of: "\n", with: "")
+            .replacingOccurrences(of: "\r", with: "")
+    }
 }
