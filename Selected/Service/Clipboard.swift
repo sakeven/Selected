@@ -137,6 +137,7 @@ private let SupportedPasteboardTypes: Set<NSPasteboard.PasteboardType> = [
     .string,
     .fileURL,
     NSPasteboard.PasteboardType("org.chromium.source-url"),
+    .tiff
 ]
 
 struct ClipItem {
@@ -350,7 +351,8 @@ let descriptionOfPasteboardType: [NSPasteboard.PasteboardType: String]  = [
     .pdf: "PDF",
     .rtf: "rich text format",
     .string: "plain text",
-    .fileURL: "file"
+    .fileURL: "file",
+    .tiff: "tagged image file format"
 ]
 
 // MARK: - window

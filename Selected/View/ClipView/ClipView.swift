@@ -100,7 +100,7 @@ struct ClipDataView: View {
         VStack{
             if let item = data.getItems().first {
                 let type = NSPasteboard.PasteboardType(item.type!)
-                if type == .png {
+                if type == .png || type == .tiff {
                     Image(nsImage: NSImage(data: item.data!)!)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -188,7 +188,7 @@ struct ClipRowView: View {
             let type = NSPasteboard.PasteboardType(rawValue: typeString)
 
             switch type {
-                case .png:
+                case .png, .tiff:
                     if let data = item.data,
                        let image = NSImage(data: data) {
                         let widthStr = valueFormatter.string(from: NSNumber(value: Double(image.size.width))) ?? ""
@@ -530,7 +530,6 @@ struct ClipActionBar: View {
             item?.data = pretty.data(using: .utf8)
             PersistenceController.shared.updateClipHistoryData(data, updateCount: false)
         } catch {
-//            onShowMessage("不是合法 JSON，无法美化")
         }
     }
 }

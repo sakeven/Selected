@@ -941,6 +941,17 @@
         }
       }
     },
+    "tagged image file format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标签图像文件格式"
+          }
+        }
+      }
+    },
     "Text content needs to be entered." : {
       "localizations" : {
         "zh-Hans" : {
