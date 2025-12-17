@@ -232,7 +232,16 @@ class ClaudeAIProvider: AIProvider {
     /// 聊天跟进：追加用户消息，并循环处理直到得到完整回复
     func chatFollow(userMessage: UserMessage) -> AsyncThrowingStream<AIStreamEvent, Error>  {
         // TODO: support images
-        queryManager.update(with: .init(role: .user, content: .text(userMessage.text)))
+        if userMessage.images.isEmpty {
+            queryManager.update(with: .init(role: .user, content:  .text(userMessage.text)))
+        } else {
+            var content = [MessageParameter.Message.Content.ContentObject]()
+            for image in userMessage.images {
+                content.append(.image(.init(type: .base64, mediaType: .jpeg, data: image.base64EncodedString())))
+            }
+            content.append(.text( userMessage.text))
+            queryManager.update(with: .init(role: .user, content: .list(content)))
+        }
 
         return AsyncThrowingStream { continuation in
             Task {
