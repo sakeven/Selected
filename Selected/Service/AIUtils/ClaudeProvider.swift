@@ -231,9 +231,8 @@ class ClaudeAIProvider: AIProvider {
 
     /// 聊天跟进：追加用户消息，并循环处理直到得到完整回复
     func chatFollow(userMessage: UserMessage) -> AsyncThrowingStream<AIStreamEvent, Error>  {
-        // TODO: support images
         if userMessage.images.isEmpty {
-            queryManager.update(with: .init(role: .user, content:  .text(userMessage.text)))
+            queryManager.update(with: .init(role: .user, content: .text(userMessage.text)))
         } else {
             var content = [MessageParameter.Message.Content.ContentObject]()
             for image in userMessage.images {

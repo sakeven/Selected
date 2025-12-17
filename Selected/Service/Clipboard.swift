@@ -152,7 +152,7 @@ struct ClipData: Identifiable {
     var appBundleID: String
     var items: [ClipItem]
 
-    var plainText: String?
+    var plainText: String? // maybe image ocr text
     var url: String?
 
     static private func filterPasteboardTypes(_ types: [NSPasteboard.PasteboardType]?) -> [NSPasteboard.PasteboardType] {
@@ -218,9 +218,9 @@ struct ClipData: Identifiable {
                     url = content
                 }
             } else if type == .png {
-                //                TODO: OCR
-                //                let image = NSImage(data: item.data)!
-                //                recognizeTextInImage(image)
+                if let image = NSImage(data: item.data) {
+                    self.plainText = recognizeTextInImage(image)
+                }
             }
         }
         if (types.first == .html || types.first == .rtf ) && self.plainText == nil {
