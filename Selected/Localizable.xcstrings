@@ -779,7 +779,14 @@
       }
     },
     "Prettify JSON" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "JSON 格式化"
+          }
+        }
+      }
     },
     "Quit" : {
       "localizations" : {

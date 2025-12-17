@@ -22,7 +22,7 @@ struct JSONFormatter {
         }
 
         guard let data = trimmed.data(using: .utf8) else { return false }
-        return JSONSerialization.isValidJSONObject(data)
+        return (try? JSONSerialization.jsonObject(with: data)) != nil
     }
 
     /// JSON prettify
