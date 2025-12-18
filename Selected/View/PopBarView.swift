@@ -55,7 +55,7 @@ struct PopBarView: View {
 
 
 struct NumerberView: View {
-    @State var value: String
+    let value: String
     @State private var isCopied = false // 用于控制动画效果
 
     var body: some View {
