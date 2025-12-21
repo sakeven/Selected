@@ -517,6 +517,11 @@ struct ClipActionBar: View {
                     prettifyJSON()
                 }
             }
+            if data.plainText != nil {
+                Button("Paste plain text") {
+                    pastePlainText()
+                }
+            }
         }
     }
 
@@ -531,6 +536,12 @@ struct ClipActionBar: View {
             PersistenceController.shared.updateClipHistoryData(data, updateCount: false)
         } catch {
         }
+    }
+
+    private func pastePlainText() {
+        ClipWindowManager.shared.forceCloseWindow()
+        guard let text = data.plainText else { return }
+        pasteText(text)
     }
 }
 

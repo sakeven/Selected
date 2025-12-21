@@ -706,6 +706,16 @@
         }
       }
     },
+    "Paste plain text" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴纯文本"
+          }
+        }
+      }
+    },
     "Path:" : {
       "localizations" : {
         "zh-Hans" : {
