@@ -379,6 +379,16 @@
         }
       }
     },
+    "Color" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "颜色"
+          }
+        }
+      }
+    },
     "completed" : {
       "localizations" : {
         "zh-Hans" : {

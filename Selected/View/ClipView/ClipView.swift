@@ -114,6 +114,19 @@ struct ClipDataView: View {
                     } else {
                         QuickLookPreview(url: url)
                     }
+                } else if type == .color {
+                    if let data = item.data,
+                       let color = decodeNSColor(from: data){
+                        HStack{
+                            Spacer()
+                            Circle()
+                                .fill(Color(nsColor:color))// swiftUIColor(from: color)))
+                                .overlay(
+                                    Circle().stroke(.primary.opacity(0.15), lineWidth: 1)
+                                )
+                            Spacer()
+                        }
+                    }
                 } else if let plainText = data.plainText {
                     TextView(text: plainText)
                 }
@@ -186,8 +199,21 @@ struct ClipRowView: View {
         if let item = clip.getItems().first,
            let typeString = item.type {
             let type = NSPasteboard.PasteboardType(rawValue: typeString)
-
             switch type {
+                case .color:
+                    if let data = item.data,
+                       let color = decodeNSColor(from: data) {
+                        Label {
+                            Text("Color")
+                                .padding(.leading, 10)
+                        } icon: {
+                            Image(systemName: "circle.circle.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 20, height: 20)
+                                .foregroundStyle(Color(nsColor: color))
+                        }
+                    }
                 case .png, .tiff:
                     if let data = item.data,
                        let image = NSImage(data: data) {
@@ -376,22 +402,22 @@ struct ClipView: View {
                                     }
                                     .background(.clear)
                             }.padding(.leading, 10)
-                                 .listStyle(.plain)
-                                 .scrollContentBackground(.hidden)
-                                 .listRowBackground(Color.clear)
-                                 .background(.clear)
-                                 .frame(width: 250)
-                                 .frame(minWidth: 250, maxWidth: 250)
-                                 .onChange(of: searchText) { _ in
-                                     if !filteredClips.isEmpty {
-                                         localSelection = filteredClips.first
-                                         withAnimation {
-                                             proxy.scrollTo(filteredClips.first, anchor: .top)
-                                         }
-                                     } else {
-                                         localSelection = nil
-                                     }
-                                 }
+                                .listStyle(.plain)
+                                .scrollContentBackground(.hidden)
+                                .listRowBackground(Color.clear)
+                                .background(.clear)
+                                .frame(width: 250)
+                                .frame(minWidth: 250, maxWidth: 250)
+                                .onChange(of: searchText) { _ in
+                                    if !filteredClips.isEmpty {
+                                        localSelection = filteredClips.first
+                                        withAnimation {
+                                            proxy.scrollTo(filteredClips.first, anchor: .top)
+                                        }
+                                    } else {
+                                        localSelection = nil
+                                    }
+                                }
                         }
                     }
                 }
@@ -553,4 +579,42 @@ extension String {
             .replacingOccurrences(of: "\n", with: "")
             .replacingOccurrences(of: "\r", with: "")
     }
+}
+
+func decodeNSColor(from data: Data) -> NSColor? {
+    return NSColor(pasteboardPropertyList: data, ofType: .color)
+}
+
+func colorToData(color: NSColor) -> Data? {
+    do {
+        let data = try NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: true)
+        return data
+    } catch {
+        print("convert color to Data: \(error)")
+        return nil
+    }
+}
+
+
+func swiftUIColor(from c1: NSColor) -> NSColor {
+    // 1. 获取原始分量
+    let count = c1.numberOfComponents
+    var rawComponents = Array<CGFloat>(repeating: 0, count: count)
+
+    // 2. 直接从 NSColor 提取原始数值，不经过 cgColor
+    c1.getComponents(&rawComponents)
+
+    // 2. 归一化：将数值除以 255
+    let normalizedComponents = rawComponents.map { $0 > 1.0 ? $0 / 255.0 : $0 }
+
+    // 3. 用正确的数值和【原始色彩空间】重新构造 NSColor
+    let correctedColor = NSColor(colorSpace: c1.colorSpace,
+                                 components: normalizedComponents,
+                                 count: normalizedComponents.count)
+
+    // 4. 现在再转换到 sRGB
+    if let sRGBColor = correctedColor.usingColorSpace(.sRGB) {
+        return sRGBColor
+    }
+    return c1
 }

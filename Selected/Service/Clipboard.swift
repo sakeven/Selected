@@ -137,6 +137,7 @@ private let SupportedPasteboardTypes: Set<NSPasteboard.PasteboardType> = [
     .string,
     .fileURL,
     NSPasteboard.PasteboardType("org.chromium.source-url"),
+    NSPasteboard.PasteboardType("NSColor pasteboard type"),
     .tiff
 ]
 
@@ -195,9 +196,20 @@ struct ClipData: Identifiable {
 
         var items = [ClipItem]()
         for type in types {
-            guard let data = pasteboard.data(forType: type) else {
+            guard var data = pasteboard.data(forType: type) else {
                 continue
             }
+            if type == .color || type.rawValue == "NSColor pasteboard type" {
+                guard let color = decodeNSColor(from: data) else {
+                    continue
+                }
+                if let tmpdata = colorToData(color: swiftUIColor(from: color)){
+                    data = tmpdata
+                } else {
+                    continue
+                }
+            }
+
             let item = ClipItem(type: type, data: data)
             items.append(item)
 
@@ -348,6 +360,7 @@ extension String.StringInterpolation {
 }
 
 let descriptionOfPasteboardType: [NSPasteboard.PasteboardType: String]  = [
+    .color: "Color",
     .URL: "URL",
     .png: "PNG image",
     .html: "HTML",
