@@ -201,26 +201,29 @@ struct ClipData: Identifiable {
             let item = ClipItem(type: type, data: data)
             items.append(item)
 
-            if type == .string {
-                if let content = pasteboard.string(forType: type) {
-                    plainText = content
-                }
-            } else if type.rawValue == "org.chromium.source-url" {
-                if let content = pasteboard.string(forType: type) {
-                    url = content
-                }
-            } else if type == .fileURL {
-                if let content = pasteboard.string(forType: type) {
-                    url = content
-                }
-            } else if type == .URL {
-                if let content = pasteboard.string(forType: type) {
-                    url = content
-                }
-            } else if type == .png {
-                if let image = NSImage(data: item.data) {
-                    self.plainText = recognizeTextInImage(image)
-                }
+            switch type {
+                case .string:
+                    if let content = pasteboard.string(forType: type) {
+                        plainText = content
+                    }
+                case .init("org.chromium.source-url"):
+                    if let content = pasteboard.string(forType: type) {
+                        url = content
+                    }
+                case .fileURL:
+                    if let content = pasteboard.string(forType: type) {
+                        url = content
+                    }
+                case .URL:
+                    if let content = pasteboard.string(forType: type) {
+                        url = content
+                    }
+                case .png, .tiff:
+                    if let image = NSImage(data: item.data) {
+                        self.plainText = recognizeTextInImage(image)
+                    }
+                default:
+                    continue
             }
         }
         if (types.first == .html || types.first == .rtf ) && self.plainText == nil {
