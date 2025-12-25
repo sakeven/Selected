@@ -49,7 +49,7 @@ struct TranslationView: View {
                     word = try! StarDict.shared.query(word: text)
                 }
                 await Translation(toLanguage: to).translate(content: text) { content in
-                    guard !Task.isCancelled else { print("cancelled 33"); return }
+                    guard !Task.isCancelled else { return }
                     if !hasRep {
                         transText = content
                         hasRep = true
@@ -59,7 +59,7 @@ struct TranslationView: View {
                 }
             }
             .onDisappear(){
-                print("disappear")
+                logger.debug("disappear")
             }
     }
 

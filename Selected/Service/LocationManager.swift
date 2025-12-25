@@ -38,7 +38,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         geocoder.reverseGeocodeLocation(location) {
             placemarks, error in
             if let err = error {
-                print("reverseGeocodeLocation \(err)")
+                logger.error("reverseGeocodeLocation \(err)")
                 return
             } else if let placemarks = placemarks {
                 if let placemark = placemarks.first {
@@ -52,6 +52,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Failed to find user's location: \(error.localizedDescription)")
+        logger.error("Failed to find user's location: \(error.localizedDescription)")
     }
 }

@@ -18,7 +18,7 @@ public struct ImageGeneration {
         guard let url = res.data.first?.url else {
             throw NSError(domain: "ImageGeneration", code: -1, userInfo: [NSLocalizedDescriptionKey: "No image URL returned"])
         }
-        print("image URL: %@", url)
+        logger.debug("image URL: \(url)")
         return url
     }
 }

@@ -88,7 +88,7 @@ struct ChatInputView: View {
                 case .success(let urls):
                     loadImagesFromFileImporter(urls)
                 case .failure(let error):
-                    print("Import failed: \(error)")
+                    logger.error("Import failed: \(error)")
             }
         }
         .alert("Text content needs to be entered.", isPresented: $showMissingTextAlert) {}
@@ -146,7 +146,7 @@ struct ChatInputView: View {
         selectedPickerItems.removeAll()
 
         task = Task {
-            print("attachments: \(attachments.count)")
+            logger.debug("attachments: \(attachments.count)")
             await viewModel.submit(message: .init(text: text, images: attachments))
         }
     }

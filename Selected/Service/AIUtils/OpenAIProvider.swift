@@ -88,7 +88,7 @@ final class MiddleWare: OpenAIMiddleware {
         if let data = data {
             print(String(data: data, encoding: .utf8) ?? "no data")
         } else {
-            print("no data2")
+            logger.debug("no data")
         }
         return (response, data)
     }
@@ -247,7 +247,7 @@ class OpenAIProvider: AIProvider{
                 do {
                     try response.handleResponseStreamEvent(event, continuation: continuation)
                 } catch {
-                    print("handleResponseStreamEvent \(error)")
+                    logger.debug("handleResponseStreamEvent \(error)")
                     throw error
                 }
             }
@@ -282,7 +282,7 @@ class OpenAIProvider: AIProvider{
             if let funcDef = functionMap[tool.name],
                let template = funcDef.template {
                 toolMessage = renderTemplate(templateString: template, json: tool.arguments)
-                print("\(toolMessage)")
+                logger.debug("\(toolMessage)")
             }
             continuation.yield(.toolCallStarted(.init(id: tool.id, name: tool.name, message: toolMessage)))
 
@@ -306,7 +306,7 @@ class OpenAIProvider: AIProvider{
 
             } else {
                 if let funcDef = functionMap[tool.name] {
-                    print("call: \(tool.arguments)")
+                    logger.debug("call: \(tool.arguments)")
                     if let ret = try funcDef.Run(arguments: tool.arguments, options: options) {
                         let statusMessage = (funcDef.showResult ?? true)
                         ? ret
@@ -422,69 +422,69 @@ fileprivate class ResponseStatus : ObservableObject {
                 break
             case .failed(_ /* let responseEvent */):
                 // Response failed - could show error in UI
-                print("Response failed")
+                logger.debug("Response failed")
                 break
             case .incomplete(_ /* let responseEvent */):
                 // Response incomplete - could show warning in UI
-                print("Response incomplete")
+                logger.debug("Response incomplete")
                 break
             case .error(let errorEvent):
                 // Error event - log the error
-                print("Response error: \(errorEvent)")
+                logger.debug("Response error: \(String(describing:errorEvent))")
                 break
             case .refusal(let refusalEvent):
                 // Refusal event - handle refusal
-                print("Response refusal: \(refusalEvent)")
+                logger.debug("Response refusal: \(String(describing:refusalEvent))")
                 break
             case .outputTextAnnotation(let annotationEvent):
                 // Handle text annotations
                 switch annotationEvent {
                     case .added(let event):
                         // TODO: Implement proper annotation handling when type conversion is resolved
-                        print("Text annotation added: itemId=\(event.itemId), annotationIndex=\(event.annotationIndex)")
+                        logger.debug("Text annotation added: itemId=\(event.itemId), annotationIndex=\(event.annotationIndex)")
                 }
             case .reasoning(let reasoningEvent):
                 // Handle reasoning events - could show reasoning in UI
                 switch reasoningEvent {
                     case .delta(let event):
-                        print("Reasoning delta event received \(event.itemId) \(event.delta)")
+                        logger.debug("Reasoning delta event received \(event.itemId) \(event.delta)")
                     case .done(let event):
-                        print("Reasoning done event received \(event.itemId) \(event.text)")
+                        logger.debug("Reasoning done event received \(event.itemId) \(event.text)")
                 }
             case .reasoningSummary(let reasoningSummaryEvent):
                 // Handle reasoning summary events
                 switch reasoningSummaryEvent {
                     case .delta(let event):
-                        print("Reasoning summary delta event received \(event.itemId) \(event.delta)")
+                        logger.debug("Reasoning summary delta event received \(event.itemId) \(event.delta)")
                     case .done(let event):
-                        print("Reasoning summary done event received \(event.itemId) \(event.text)")
+                        logger.debug("Reasoning summary done event received \(event.itemId) \(event.text)")
                 }
             case .audio(_ /* let audioEvent */):
                 // Audio events - not implemented yet
-                print("Audio event received (not implemented)")
+                logger.debug("Audio event received (not implemented)")
                 break
             case .audioTranscript(_ /* let audioTranscriptEvent */):
                 // Audio transcript events - not implemented yet
-                print("Audio transcript event received (not implemented)")
+                logger.debug("Audio transcript event received (not implemented)")
                 break
             case .codeInterpreterCall(_ /* let codeInterpreterCallEvent */):
                 // Code interpreter events - not implemented yet
-                print("Code interpreter call event received (not implemented)")
+                logger.debug("Code interpreter call event received (not implemented)")
                 break
             case .fileSearchCall(_ /* let fileSearchCallEvent */):
                 // File search events - not implemented yet
-                print("File search call event received (not implemented)")
+                logger.debug("File search call event received (not implemented)")
                 break
             case .imageGenerationCall(_ /* let imageGenerationCallEvent */):
                 // Image generation events - not implemented yet
-                print("Image generation call event received (not implemented)")
+                logger.debug("Image generation call event received (not implemented)")
                 break
             case .reasoningSummaryPart( let reasoningSummaryPartEvent):
                 switch reasoningSummaryPartEvent {
                     case .added(let delta):
-                        print("Reasoning summary part delta event received \(delta.itemId) \(delta.part.text)")
+                        logger.debug("Reasoning summary part delta event received \(delta.itemId) \(delta.part.text)")
                     case .done(let done):
-                        print("Reasoning summary part done event received \(done.itemId) \(done.part.text)")
+                        logger.debug("Reasoning summary part done event received \(done.itemId) \(done.part.text)")
                         break
                 }
                 break

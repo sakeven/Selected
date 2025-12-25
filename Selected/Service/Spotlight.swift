@@ -130,7 +130,7 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         window.backgroundColor = .clear
         window.isOpaque = false
         if windowPositionManager.restorePosition(for: window) {
-            print("restorePosition")
+            logger.debug("restorePosition")
             return
         }
 
@@ -144,7 +144,7 @@ private class WindowController: NSWindowController, NSWindowDelegate {
 
     func windowDidMove(_ notification: Notification) {
         if let window = notification.object as? NSWindow {
-            print("windowDidMove")
+            logger.debug("windowDidMove")
             windowPositionManager.storePosition(of: window)
         }
     }

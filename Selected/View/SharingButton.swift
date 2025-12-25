@@ -45,7 +45,6 @@ struct SharingsPicker: NSViewRepresentable {
         func sharingServicePicker(_ sharingServicePicker: NSSharingServicePicker, didChoose service: NSSharingService?) {
             sharingServicePicker.delegate = nil   // << cleanup
             DispatchQueue.main.async {
-                print("close picker")
                 self.owner.isPresented = false        // << dismiss
             }
         }
@@ -61,7 +60,6 @@ struct SharingButton: View {
         BarButton(icon: "symbol:square.and.arrow.up", title: "share", clicked: {
             _ in
             model.showing = !model.showing
-            print("show \(model.showing)")
         })
         .background(SharingsPicker(isPresented: $model.showing, sharingItems: [message]))
     }

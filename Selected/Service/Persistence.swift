@@ -74,14 +74,14 @@ class PersistenceController {
                     clipHistoryData.numberOfCopies = got.numberOfCopies + 1
                     clipHistoryData.isPinned = got.isPinned
                     ctx.delete(got)
-                    print("saved \(clipHistoryData.firstCopiedAt!) \(got.firstCopiedAt!)")
+                    logger.debug("saved \(clipHistoryData.firstCopiedAt!) \(got.firstCopiedAt!)")
                 }
             }
             do {
                 try ctx.save()
-                print("saved \(clipHistoryData.md5!)")
+                logger.debug("saved \(clipHistoryData.md5!)")
             } catch {
-                print("saved: \(error)")
+                logger.error("saved: \(error)")
             }
         }
     }

@@ -38,7 +38,7 @@ func recognizeTextInImage(_ image: NSImage) -> String {
         try handler.perform([request])
         return str
     } catch {
-        print("Error recognizing text: \(error)")
+        logger.error("Error recognizing text: \(error)")
     }
     return ""
 }

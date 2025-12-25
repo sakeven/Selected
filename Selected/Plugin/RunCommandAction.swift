@@ -159,7 +159,7 @@ public func executeCommand(
         timer.setEventHandler {
             if process.isRunning {
                 process.terminate()
-                print("Process terminated due to timeout.")
+                logger.warning("Process terminated due to timeout.")
             }
             timer.cancel()
         }

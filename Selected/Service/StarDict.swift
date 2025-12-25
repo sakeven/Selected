@@ -61,11 +61,11 @@ private func extractTarGzFile(tarGzPath: String, destination: URL) {
         try process.run()
         process.waitUntilExit()  // 等待解压完成
         if process.terminationStatus == 0 {
-            print("File successfully extracted.")
+            logger.debug("File successfully extracted.")
         } else {
-            print("Error occurred during extraction. Status code: \(process.terminationStatus)")
+            logger.error("Error occurred during extraction. Status code: \(process.terminationStatus)")
         }
     } catch {
-        print("Failed to start process: \(error)")
+        logger.error("Failed to start process: \(error)")
     }
 }

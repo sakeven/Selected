@@ -42,7 +42,7 @@ class AudioPlayer: ObservableObject {
             player = try AVAudioPlayer(contentsOf: url)
             duration = player?.duration ?? 0.0
         } catch {
-            print("Error loading audio file: \(error)")
+            logger.error("Error loading audio file: \(error)")
         }
     }
 
@@ -92,7 +92,7 @@ class AudioPlayer: ObservableObject {
             try FileManager.default.moveItem(at: audioURL, to: tts)
             NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: tts.deletingLastPathComponent().path)
         } catch {
-            NSLog("move failed \(error)")
+            logger.error("move failed \(error)")
         }
     }
 }

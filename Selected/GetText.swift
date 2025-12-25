@@ -20,6 +20,12 @@ struct SelectedTextContext {
     // TODO: IDE 或者 Editor 下，获取当前编辑文件名、行号等
 }
 
+extension SelectedTextContext: CustomStringConvertible {
+    var description: String {
+        return "SelectedTextContext(Text: \(Text), BundleID: \(BundleID))"
+    }
+}
+
 
 let SelfBundleID = Bundle.main.bundleIdentifier ?? "io.kitool.Selected"
 
@@ -30,7 +36,7 @@ func getSelectedTextByAX(bundleID: String) -> String {
                                                        kAXFocusedApplicationAttribute as CFString,
                                                        &focusedWindow)
     if error != .success {
-        print("Unable to get focused window: \(error)")
+        logger.error("Unable to get focused window: \(String(describing: error))")
         return ""
     }
     
@@ -49,7 +55,7 @@ func getSelectedTextByAX(bundleID: String) -> String {
             if error == .success, let selectedText = selectedTextValue as? String {
                 return selectedText
             } else {
-                print("Unable to get selected text: \(error)")
+                logger.error("Unable to get selected text: \(String(describing: error))")
             }
         }
     }
@@ -64,10 +70,10 @@ func getUIElementProperties(_ element: AXUIElement) -> String? {
     AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &roleValue)
     
     if let title = titleValue as? String {
-        print("UI element title: \(title)")
+        logger.debug("UI element title: \(title)")
     }
     if let role = roleValue as? String {
-        print("UI element role: \(role)")
+        logger.debug("UI element role: \(role)")
         return role
     }
     return nil
@@ -77,7 +83,7 @@ func getSelectedText() -> SelectedTextContext? {
     var ctx = SelectedTextContext()
     let bundleID = getBundleID()
     ctx.BundleID = bundleID
-    print("bundleID \(bundleID)")
+    logger.debug("bundleID \(bundleID)")
     if bundleID == SelfBundleID {
         return nil
     }
@@ -104,7 +110,7 @@ func getSelectedText() -> SelectedTextContext? {
     }
     
     if selectedText.isEmpty && SupportedCmdCAppList.contains(bundleID) {
-        print("getSelectedTextBySimulateCommandC")
+        logger.debug("getSelectedTextBySimulateCommandC")
         selectedText = getSelectedTextBySimulateCommandC()
         if bundleID == "com.apple.iBooksX" {
             // hack for iBooks
@@ -181,8 +187,8 @@ func getSelectedTextBySimulateCommandC() -> String {
     ClipService.shared.pauseMonitor(id)
     defer {ClipService.shared.resumeMonitor(id)}
     
-    print("changeCount PressCopyKey \(id)")
-    
+    logger.debug("changeCount PressCopyKey \(id)")
+
     PressCopyKey()
     
     usleep(100000) // sleep 0.1s to wait NSPasteboard get copy string.
@@ -192,12 +198,12 @@ func getSelectedTextBySimulateCommandC() -> String {
     }
     
     let selectText = pboard.string(forType: .string)
-    print("changeCount a \(pboard.changeCount)")
+    logger.debug("changeCount a \(pboard.changeCount)")
     pboard.clearContents()
-    print("last content: \(String(describing: lastCopyText))")
+    logger.debug("last content: \(String(describing: lastCopyText))")
     pboard.setString(lastCopyText ?? "", forType: .string)
-    print("changeCount b \(pboard.changeCount)")
-    
+    logger.debug("changeCount b \(pboard.changeCount)")
+
     return selectText ?? ""
 }
 
@@ -233,7 +239,7 @@ func isCurrentFocusedElementEditable() -> Bool? {
     if valueResult == .success, value != nil {
         var isAttributeSettable: DarwinBoolean = false
         AXUIElementIsAttributeSettable(axFocusedElement, kAXValueAttribute as CFString, &isAttributeSettable)
-        print("editable \(isAttributeSettable.boolValue)")
+        logger.debug("editable \(isAttributeSettable.boolValue)")
         return isAttributeSettable.boolValue
     }
     return nil
@@ -308,7 +314,7 @@ func getSelectedTextByAppleScript(bundleID: String) -> BroswerSelectedTextContex
         return BroswerSelectedTextContext(url: url, text: selected)
     }
     
-    print("unknown \(bundleID)")
+    logger.debug("unknown \(bundleID)")
     return nil
 }
 
@@ -316,7 +322,7 @@ func getSelectedTextByAppleScript(bundleID: String) -> BroswerSelectedTextContex
 func getSelectedTextByAppleScriptFromSafari(bundleID: String) -> String{
     // 在应用到 info 里加入 NSAppleEventsUsageDescription 描述，让用户授权就可以执行 apple script 与其它 app 交互
     // 不需要单独建一个 Info.plist，不生效
-    print("bundleID: \(bundleID)")
+    logger.debug("bundleID: \(bundleID)")
     if let scriptObject =  NSAppleScript(source: """
                   with timeout of 5 seconds
                       tell application id "\(bundleID)"
@@ -330,7 +336,7 @@ func getSelectedTextByAppleScriptFromSafari(bundleID: String) -> String{
         var error: NSDictionary?
         let output = scriptObject.executeAndReturnError(&error)
         if (error != nil) {
-            print("error: \(String(describing: error))")
+            logger.debug("error: \(String(describing: error))")
             return ""
         } else {
             return output.stringValue!
@@ -356,7 +362,7 @@ func getSelectedTextByAppleScriptFromChrome(bundleID: String) -> String{
         // TODO timeout?
         let output = scriptObject.executeAndReturnError(&error)
         if (error != nil) {
-            print("error: \(String(describing: error))")
+            logger.debug("error: \(String(describing: error))")
             return ""
         } else {
             return output.stringValue ?? ""
@@ -378,7 +384,7 @@ end tell
         // TODO timeout?
         let output = scriptObject.executeAndReturnError(&error)
         if (error != nil) {
-            print("error: \(String(describing: error))")
+            logger.debug("error: \(String(describing: error))")
             return ""
         } else {
             return output.stringValue ?? ""
@@ -400,7 +406,7 @@ end tell
         // TODO timeout?
         let output = scriptObject.executeAndReturnError(&error)
         if (error != nil) {
-            print("error: \(String(describing: error))")
+            logger.debug("error: \(String(describing: error))")
             return ""
         } else {
             return output.stringValue ?? ""

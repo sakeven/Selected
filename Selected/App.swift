@@ -10,6 +10,9 @@ import Accessibility
 import AppKit
 import Foundation
 import Defaults
+import os
+
+let logger = Logger()
 
 
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -56,7 +59,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func application(_ application: NSApplication, open urls: [URL]) {
         for url in urls {
             // 处理打开的文件
-            print("\(url.path)")
+            logger.debug("\(url.path)")
             PluginManager.shared.install(url: url)
         }
     }
@@ -80,7 +83,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 func setDefaultAppForCustomFileType() {
     let customUTI = "io.kitool.selected.ext"
     let bundleIdentifier = Bundle.main.bundleIdentifier ?? "io.kitool.Selected"
-    print("bundleIdentifier \(bundleIdentifier)")
+    logger.info("bundleIdentifier \(bundleIdentifier)")
 
     LSSetDefaultRoleHandlerForContentType(customUTI as CFString, .editor, bundleIdentifier as CFString)
 }
@@ -120,7 +123,7 @@ func requestAccessibilityPermissions() {
     let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true]
     let accessEnabled = AXIsProcessTrustedWithOptions(options)
 
-    print("accessEnabled: \(accessEnabled)")
+    logger.info("accessEnabled: \(accessEnabled)")
 
     if !accessEnabled {
         // 请求权限
@@ -153,11 +156,11 @@ func monitorMouseMove() {
             lastSelectedText = ""
             WindowManager.shared.closeAllWindows(.original)
         } else {
-//            print("event \(eventTypeMap[event.type]!)  \(eventTypeMap[eventState.lastMouseEventType]!)")
+//            logger.debug("event \(eventTypeMap[event.type]!)  \(eventTypeMap[eventState.lastMouseEventType]!)")
             var updatedSelectedText = false
             if eventState.isSelected(event: event) {
                 if let ctx = getSelectedText() {
-                    print("SelectedContext %@", ctx)
+                    logger.info("SelectedContext \(ctx)")
                     if !ctx.Text.isEmpty {
                         updatedSelectedText = true
                         if lastSelectedText != ctx.Text {

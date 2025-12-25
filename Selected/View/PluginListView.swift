@@ -69,7 +69,8 @@ struct OptionView: View {
         
         if self.option.type == .boolean {
             self._toggle = State(initialValue: getBoolOption(pluginName: pluginName, identifier: self.option.identifier))
-            NSLog("value \(getBoolOption(pluginName: pluginName, identifier: self.option.identifier))")
+            let identifier = self.option.identifier
+            logger.debug("value \(getBoolOption(pluginName: pluginName, identifier: identifier))")
         } else {
             if let text = getStringOption(pluginName: pluginName, identifier: self.option.identifier) {
                 self._text = State(initialValue: text)
@@ -81,7 +82,7 @@ struct OptionView: View {
         switch option.type {
             case .boolean:
                 Toggle(option.identifier, isOn: $toggle).onChange(of: toggle) { newValue in
-                    NSLog("value changed \(newValue)")
+                    logger.debug("value changed \(newValue)")
                     setOption(pluginName: pluginName, identifier: option.identifier, val: newValue)
                 }
             case .multiple:

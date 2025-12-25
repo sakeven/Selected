@@ -590,7 +590,7 @@ func colorToData(color: NSColor) -> Data? {
         let data = try NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: true)
         return data
     } catch {
-        print("convert color to Data: \(error)")
+        logger.error("convert color to Data: \(error)")
         return nil
     }
 }

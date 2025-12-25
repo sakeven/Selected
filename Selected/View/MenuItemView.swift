@@ -91,7 +91,6 @@ struct MenuItemView: View {
     @ViewBuilder
     private var quitItem: some View {
         Button("Quit") {
-            print("退出应用")
             NSApplication.shared.terminate(nil)
         }
     }
