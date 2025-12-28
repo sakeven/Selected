@@ -12,7 +12,10 @@ import Foundation
 import Defaults
 import os
 
-let logger = Logger()
+
+let SelfBundleID = Bundle.main.bundleIdentifier ?? "io.kitool.Selected"
+
+let logger = Logger(subsystem: SelfBundleID, category: "")
 
 
 class AppDelegate: NSObject, NSApplicationDelegate {

@@ -138,16 +138,16 @@ class PluginManager: ObservableObject {
         if !fileManager.fileExists(atPath: extensionsDir.path) {
             try! fileManager.createDirectory(at: extensionsDir, withIntermediateDirectories: true, attributes: nil)
         }
-        logger.info("Application Extensions Directory: \(self.extensionsDir.path)")
+        AppLogger.plugin.info("Application Extensions Directory: \(self.extensionsDir.path)")
     }
     
     private func copyFile(fpath: String, tpath: String) -> Bool{
-        logger.debug("install from \(fpath) to \(tpath)")
+        AppLogger.plugin.debug("install from \(fpath) to \(tpath)")
         if filemgr.contentsEqual(atPath: fpath, andPath: tpath) {
             return false
         }
         do{
-            logger.debug("install to \(tpath)")
+            AppLogger.plugin.debug("install to \(tpath)")
             let fileManager = FileManager.default
             if fileManager.fileExists(atPath: tpath){
                 try fileManager.removeItem(atPath: tpath)
@@ -156,14 +156,14 @@ class PluginManager: ObservableObject {
             try fileManager.copyItem(atPath: fpath, toPath: tpath)
             return true
         } catch {
-            logger.error("install: an unexpected error: \(error)")
+            AppLogger.plugin.error("install: an unexpected error: \(error)")
         }
         return false
     }
     
     func install(url: URL) {
         if url.hasDirectoryPath {
-            logger.info("install \(url.lastPathComponent)")
+            AppLogger.plugin.info("install \(url.lastPathComponent)")
             if copyFile(fpath: url.path(percentEncoded: false), tpath: extensionsDir.appending(component: url.lastPathComponent).path(percentEncoded: false)) {
                 loadPlugins()
             }
@@ -175,7 +175,7 @@ class PluginManager: ObservableObject {
             try filemgr.removeItem(at: extensionsDir.appendingPathComponent(pluginDir, isDirectory: true))
             removeOptionsOf(pluginName: pluginName)
         } catch{
-            logger.error("remove plugin \(pluginDir): \(error)")
+            AppLogger.plugin.error("remove plugin \(pluginDir): \(error)")
         }
         loadPlugins()
     }
@@ -187,14 +187,14 @@ class PluginManager: ObservableObject {
     func loadPlugins(){
         var list = [Plugin]()
         let pluginDirs = try! filemgr.contentsOfDirectory(atPath: extensionsDir.path)
-        logger.info("plugins \(pluginDirs)")
+        AppLogger.plugin.info("plugins \(pluginDirs)")
         for pluginDir in pluginDirs {
             let cfgPath = extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).appendingPathComponent("config.yaml", isDirectory: false)
             if filemgr.fileExists(atPath: cfgPath.path) {
                 let readFile = try! String(contentsOfFile: cfgPath.path, encoding: String.Encoding.utf8)
                 let decoder = YAMLDecoder()
                 var plugin: Plugin = try! decoder.decode(Plugin.self, from: readFile.data(using: .utf8)!)
-                logger.info("plugin \(plugin.info.name)")
+                AppLogger.plugin.info("plugin \(plugin.info.name)")
 
                 plugin.info.pluginDir = pluginDir
                 if plugin.info.icon.hasPrefix("file://./"){
@@ -227,7 +227,7 @@ class PluginManager: ObservableObject {
                             _ = try Regex(regex)
                         }
                     } catch {
-                        logger.error("validate action error \(error)")
+                        AppLogger.plugin.error("validate action error \(error)")
                     }
                     plugin.actions[i] = action
                 }
@@ -245,7 +245,7 @@ class PluginManager: ObservableObject {
         ))
         
         let pluginList = plugins
-        logger.debug("get all")
+        AppLogger.plugin.debug("get all")
         pluginList.forEach { Plugin in
             if !Plugin.info.enabled {
                 return

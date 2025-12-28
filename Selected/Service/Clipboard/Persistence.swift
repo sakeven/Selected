@@ -63,37 +63,54 @@ class PersistenceController {
             }
             clipHistoryData.md5 = clipHistoryData.MD5()
 
+            let shouldScheduleOcr = clipData.plainText == nil && clipData.ocrImage != nil
+            let ocrImage = clipData.ocrImage
+            let md5 = clipHistoryData.md5
+
             if let got = self.get(byMD5: clipHistoryData.md5!, context: backgroundContext) {
                 if got != clipHistoryData {
                     clipHistoryData.firstCopiedAt = got.firstCopiedAt
                     clipHistoryData.numberOfCopies = got.numberOfCopies + 1
                     clipHistoryData.isPinned = got.isPinned
                     backgroundContext.delete(got)
-                    logger.debug("saved \(clipHistoryData.firstCopiedAt!) \(String(describing: got.firstCopiedAt))")
+                    AppLogger.clipboard.debug("saved \(clipHistoryData.firstCopiedAt!) \(String(describing: got.firstCopiedAt))")
                 }
             }
 
             do {
                 try backgroundContext.save()
-                logger.debug("saved \(clipHistoryData.md5!)")
+                AppLogger.clipboard.debug("saved \(clipHistoryData.md5!)")
+                if let md5 = md5, let ocrImage = ocrImage, shouldScheduleOcr {
+                    self.scheduleImageOcr(for: md5, image: ocrImage)
+                }
             } catch {
-                logger.error("saved: \(error)")
+                AppLogger.clipboard.error("saved: \(error)")
             }
         }
     }
 
-//    func get(byMD5 md5: String) -> ClipHistoryData? {
-//        let fetchRequest = NSFetchRequest<ClipHistoryData>(entityName: "ClipHistoryData")
-//        fetchRequest.predicate = NSPredicate(format: "md5 = %@",md5 )
-//        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: true)]
-//        let ctx = PersistenceController.shared.container.viewContext
-//        do{
-//            let res = try ctx.fetch(fetchRequest)
-//            return res.first
-//        } catch {
-//            fatalError("\(error)")
-//        }
-//    }
+    private func scheduleImageOcr(for md5: String, image: NSImage) {
+        DispatchQueue.global(qos: .utility).async {
+            let recognizedText = recognizeTextInImage(image)
+            guard !recognizedText.isEmpty else { return }
+
+            let context = self.container.newBackgroundContext()
+            context.perform {
+                let fetchRequest = NSFetchRequest<ClipHistoryData>(entityName: "ClipHistoryData")
+                fetchRequest.predicate = NSPredicate(format: "md5 = %@", md5)
+                fetchRequest.fetchLimit = 1
+                do {
+                    if let clip = try context.fetch(fetchRequest).first {
+                        clip.plainText = recognizedText
+                        try context.save()
+                        AppLogger.clipboard.debug("saved ocr text for \(md5)")
+                    }
+                } catch {
+                    AppLogger.clipboard.error("save ocr text: \(error)")
+                }
+            }
+        }
+    }
 
     private func get(byMD5 md5: String, context: NSManagedObjectContext) -> ClipHistoryData? {
         let fetchRequest = NSFetchRequest<ClipHistoryData>(entityName: "ClipHistoryData")

@@ -27,7 +27,6 @@ extension SelectedTextContext: CustomStringConvertible {
 }
 
 
-let SelfBundleID = Bundle.main.bundleIdentifier ?? "io.kitool.Selected"
 
 func getSelectedTextByAX(bundleID: String) -> String {
     let systemWideElement: AXUIElement = AXUIElementCreateSystemWide()

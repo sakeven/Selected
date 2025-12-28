@@ -88,7 +88,7 @@ final class MiddleWare: OpenAIMiddleware {
         if let data = data {
             print(String(data: data, encoding: .utf8) ?? "no data")
         } else {
-            logger.debug("no data")
+            AppLogger.ai.debug("no data")
         }
         return (response, data)
     }
@@ -247,7 +247,7 @@ class OpenAIProvider: AIProvider{
                 do {
                     try response.handleResponseStreamEvent(event, continuation: continuation)
                 } catch {
-                    logger.debug("handleResponseStreamEvent \(error)")
+                    AppLogger.ai.debug("handleResponseStreamEvent \(error)")
                     throw error
                 }
             }
@@ -282,7 +282,7 @@ class OpenAIProvider: AIProvider{
             if let funcDef = functionMap[tool.name],
                let template = funcDef.template {
                 toolMessage = renderTemplate(templateString: template, json: tool.arguments)
-                logger.debug("\(toolMessage)")
+                AppLogger.ai.debug("\(toolMessage)")
             }
             continuation.yield(.toolCallStarted(.init(id: tool.id, name: tool.name, message: toolMessage)))
 
@@ -306,7 +306,7 @@ class OpenAIProvider: AIProvider{
 
             } else {
                 if let funcDef = functionMap[tool.name] {
-                    logger.debug("call: \(tool.arguments)")
+                    AppLogger.ai.debug("call: \(tool.arguments)")
                     if let ret = try funcDef.Run(arguments: tool.arguments, options: options) {
                         let statusMessage = (funcDef.showResult ?? true)
                         ? ret
@@ -422,69 +422,69 @@ fileprivate class ResponseStatus : ObservableObject {
                 break
             case .failed(_ /* let responseEvent */):
                 // Response failed - could show error in UI
-                logger.debug("Response failed")
+                AppLogger.ai.debug("Response failed")
                 break
             case .incomplete(_ /* let responseEvent */):
                 // Response incomplete - could show warning in UI
-                logger.debug("Response incomplete")
+                AppLogger.ai.debug("Response incomplete")
                 break
             case .error(let errorEvent):
                 // Error event - log the error
-                logger.debug("Response error: \(String(describing:errorEvent))")
+                AppLogger.ai.debug("Response error: \(String(describing:errorEvent))")
                 break
             case .refusal(let refusalEvent):
                 // Refusal event - handle refusal
-                logger.debug("Response refusal: \(String(describing:refusalEvent))")
+                AppLogger.ai.debug("Response refusal: \(String(describing:refusalEvent))")
                 break
             case .outputTextAnnotation(let annotationEvent):
                 // Handle text annotations
                 switch annotationEvent {
                     case .added(let event):
                         // TODO: Implement proper annotation handling when type conversion is resolved
-                        logger.debug("Text annotation added: itemId=\(event.itemId), annotationIndex=\(event.annotationIndex)")
+                        AppLogger.ai.debug("Text annotation added: itemId=\(event.itemId), annotationIndex=\(event.annotationIndex)")
                 }
             case .reasoning(let reasoningEvent):
                 // Handle reasoning events - could show reasoning in UI
                 switch reasoningEvent {
                     case .delta(let event):
-                        logger.debug("Reasoning delta event received \(event.itemId) \(event.delta)")
+                        AppLogger.ai.debug("Reasoning delta event received \(event.itemId) \(event.delta)")
                     case .done(let event):
-                        logger.debug("Reasoning done event received \(event.itemId) \(event.text)")
+                        AppLogger.ai.debug("Reasoning done event received \(event.itemId) \(event.text)")
                 }
             case .reasoningSummary(let reasoningSummaryEvent):
                 // Handle reasoning summary events
                 switch reasoningSummaryEvent {
                     case .delta(let event):
-                        logger.debug("Reasoning summary delta event received \(event.itemId) \(event.delta)")
+                        AppLogger.ai.debug("Reasoning summary delta event received \(event.itemId) \(event.delta)")
                     case .done(let event):
-                        logger.debug("Reasoning summary done event received \(event.itemId) \(event.text)")
+                        AppLogger.ai.debug("Reasoning summary done event received \(event.itemId) \(event.text)")
                 }
             case .audio(_ /* let audioEvent */):
                 // Audio events - not implemented yet
-                logger.debug("Audio event received (not implemented)")
+                AppLogger.ai.debug("Audio event received (not implemented)")
                 break
             case .audioTranscript(_ /* let audioTranscriptEvent */):
                 // Audio transcript events - not implemented yet
-                logger.debug("Audio transcript event received (not implemented)")
+                AppLogger.ai.debug("Audio transcript event received (not implemented)")
                 break
             case .codeInterpreterCall(_ /* let codeInterpreterCallEvent */):
                 // Code interpreter events - not implemented yet
-                logger.debug("Code interpreter call event received (not implemented)")
+                AppLogger.ai.debug("Code interpreter call event received (not implemented)")
                 break
             case .fileSearchCall(_ /* let fileSearchCallEvent */):
                 // File search events - not implemented yet
-                logger.debug("File search call event received (not implemented)")
+                AppLogger.ai.debug("File search call event received (not implemented)")
                 break
             case .imageGenerationCall(_ /* let imageGenerationCallEvent */):
                 // Image generation events - not implemented yet
-                logger.debug("Image generation call event received (not implemented)")
+                AppLogger.ai.debug("Image generation call event received (not implemented)")
                 break
             case .reasoningSummaryPart( let reasoningSummaryPartEvent):
                 switch reasoningSummaryPartEvent {
                     case .added(let delta):
-                        logger.debug("Reasoning summary part delta event received \(delta.itemId) \(delta.part.text)")
+                        AppLogger.ai.debug("Reasoning summary part delta event received \(delta.itemId) \(delta.part.text)")
                     case .done(let done):
-                        logger.debug("Reasoning summary part done event received \(done.itemId) \(done.part.text)")
+                        AppLogger.ai.debug("Reasoning summary part done event received \(done.itemId) \(done.part.text)")
                         break
                 }
                 break

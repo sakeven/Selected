@@ -37,7 +37,7 @@ class ClipService {
             guard let self = self else { return }
             guard Defaults[.enableClipboard] else { return }
 
-            //            logger.debug("pasteboard event \(eventTypeMap[event.type]!)")
+            //            AppLogger.clipboard.debug("pasteboard event \(eventTypeMap[event.type]!)")
 
             if skip {
                 return
@@ -56,7 +56,7 @@ class ClipService {
 
     func pauseMonitor(_ id: String) {
         lock.lock()
-        logger.debug("pasteboard \(id) pauseMonitor changeCount \(self.changeCount)")
+        AppLogger.clipboard.debug("pasteboard \(id) pauseMonitor changeCount \(self.changeCount)")
         skip = true
         lock.unlock()
     }
@@ -65,7 +65,7 @@ class ClipService {
         lock.lock()
         skip = false
         changeCount = pasteboard.changeCount
-        logger.debug("pasteboard \(id) resumeMonitor changeCount \(self.changeCount)")
+        AppLogger.clipboard.debug("pasteboard \(id) resumeMonitor changeCount \(self.changeCount)")
         lock.unlock()
     }
 
@@ -80,14 +80,14 @@ class ClipService {
             return
         }
         changeCount = currentChangeCount
-        logger.debug("pasteboard changeCount \(self.changeCount)")
+        AppLogger.clipboard.debug("pasteboard changeCount \(self.changeCount)")
 
         guard pasteboard.types != nil else {
             return
         }
 
         // 剪贴板内容发生变化，处理变化
-        logger.debug("pasteboard \(String(describing: self.pasteboard.types))")
+        AppLogger.clipboard.debug("pasteboard \(String(describing: self.pasteboard.types))")
         guard let clipData = ClipData(pasteboard: pasteboard) else {
             return
         }
@@ -152,6 +152,7 @@ struct ClipData: Identifiable {
     var types: [NSPasteboard.PasteboardType]
     var appBundleID: String
     var items: [ClipItem]
+    var ocrImage: NSImage? // if have any image
 
     var plainText: String? // maybe image ocr text
     var url: String?
@@ -232,7 +233,8 @@ struct ClipData: Identifiable {
                     }
                 case .png, .tiff:
                     if let image = NSImage(data: item.data) {
-                        self.plainText = recognizeTextInImage(image)
+                        self.ocrImage = image
+//                        self.plainText = recognizeTextInImage(image)
                     }
                 default:
                     continue

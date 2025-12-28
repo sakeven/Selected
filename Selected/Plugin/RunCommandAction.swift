@@ -69,7 +69,7 @@ class RunCommandAction: Decodable {
                     }
                 }
             } catch {
-                NSLog("executeCommand: \(error)")
+                AppLogger.plugin.error("executeCommand: \(error)")
             }
         })
     }

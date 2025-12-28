@@ -211,7 +211,7 @@ class ClaudeAIProvider: AIProvider {
                     continuation.yield(.done)
                     continuation.finish()
                 } catch {
-                    logger.error("claude error \(error)")
+                    AppLogger.ai.error("claude error \(error)")
                     continuation.finish(throwing:  error)
                 }
             }
