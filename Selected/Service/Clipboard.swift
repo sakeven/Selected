@@ -37,7 +37,7 @@ class ClipService {
             guard let self = self else { return }
             guard Defaults[.enableClipboard] else { return }
 
-//            logger.debug("pasteboard event \(eventTypeMap[event.type]!)")
+            //            logger.debug("pasteboard event \(eventTypeMap[event.type]!)")
 
             if skip {
                 return
@@ -376,10 +376,14 @@ let descriptionOfPasteboardType: [NSPasteboard.PasteboardType: String]  = [
 class ClipWindowManager {
     static let shared =  ClipWindowManager()
 
-
+    private var lock = NSLock()
     private var windowCtr: ClipWindowController?
 
     fileprivate func createWindow() {
+        lock.lock()
+        defer{
+            lock.unlock()
+        }
         windowCtr?.close()
         let view = ClipView().environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
         let window = ClipWindowController(rootView: AnyView(view))
@@ -393,6 +397,11 @@ class ClipWindowManager {
     }
 
     fileprivate func closeWindow() -> Bool {
+        lock.lock()
+        defer{
+            lock.unlock()
+        }
+
         guard let windowCtr = windowCtr else {
             return true
         }
@@ -407,10 +416,18 @@ class ClipWindowManager {
     }
 
     func resignKey(){
+        lock.lock()
+        defer{
+            lock.unlock()
+        }
         windowCtr?.window?.resignKey()
     }
 
     func forceCloseWindow() {
+        lock.lock()
+        defer{
+            lock.unlock()
+        }
         guard let windowCtr = windowCtr else {
             return
         }

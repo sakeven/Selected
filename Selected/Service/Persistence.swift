@@ -23,6 +23,7 @@ class PersistenceController {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         }
+        container.viewContext.automaticallyMergesChangesFromParent = true
     }
 
     func updateClipHistoryData(_ clipData: ClipHistoryData, updateCount: Bool = true) {
@@ -41,44 +42,39 @@ class PersistenceController {
     }
 
     func store(_ clipData: ClipData) {
-        let ctx = PersistenceController.shared.container.viewContext
-        let clipHistoryData =
-        NSEntityDescription.insertNewObject(
-            forEntityName: "ClipHistoryData", into: ctx)
-        as! ClipHistoryData
+        let backgroundContext = PersistenceController.shared.container.newBackgroundContext()
+        backgroundContext.perform {
+            let clipHistoryData = ClipHistoryData(context: backgroundContext)
 
-        clipHistoryData.application = clipData.appBundleID
-        clipHistoryData.firstCopiedAt = Date(timeIntervalSince1970: Double(clipData.timeStamp)/1000)
-        clipHistoryData.lastCopiedAt = clipHistoryData.firstCopiedAt
-        clipHistoryData.numberOfCopies = 1
-        clipHistoryData.plainText = clipData.plainText
-        clipHistoryData.url = clipData.url
-        clipHistoryData.isPinned = false
-        for item in clipData.items {
-            let clipHistoryItem =
-            NSEntityDescription.insertNewObject(
-                forEntityName: "ClipHistoryItem", into: ctx)
-            as! ClipHistoryItem
+            clipHistoryData.application = clipData.appBundleID
+            clipHistoryData.firstCopiedAt = Date(timeIntervalSince1970: Double(clipData.timeStamp)/1000)
+            clipHistoryData.lastCopiedAt = clipHistoryData.firstCopiedAt
+            clipHistoryData.numberOfCopies = 1
+            clipHistoryData.plainText = clipData.plainText
+            clipHistoryData.url = clipData.url
+            clipHistoryData.isPinned = false
+            for item in clipData.items {
+                let clipHistoryItem = ClipHistoryItem(context: backgroundContext)
 
-            clipHistoryItem.data = item.data
-            clipHistoryItem.type = item.type.rawValue
-            clipHistoryItem.refer = clipHistoryData
-            clipHistoryData.addToItems(clipHistoryItem)
-        }
-        clipHistoryData.md5 = clipHistoryData.MD5()
+                clipHistoryItem.data = item.data
+                clipHistoryItem.type = item.type.rawValue
+                clipHistoryItem.refer = clipHistoryData
+                clipHistoryData.addToItems(clipHistoryItem)
+            }
+            clipHistoryData.md5 = clipHistoryData.MD5()
 
-        ctx.performAndWait {
-            if let got = get(byMD5: clipHistoryData.md5!) {
+            if let got = self.get(byMD5: clipHistoryData.md5!, context: backgroundContext) {
                 if got != clipHistoryData {
                     clipHistoryData.firstCopiedAt = got.firstCopiedAt
                     clipHistoryData.numberOfCopies = got.numberOfCopies + 1
                     clipHistoryData.isPinned = got.isPinned
-                    ctx.delete(got)
-                    logger.debug("saved \(clipHistoryData.firstCopiedAt!) \(got.firstCopiedAt!)")
+                    backgroundContext.delete(got)
+                    logger.debug("saved \(clipHistoryData.firstCopiedAt!) \(String(describing: got.firstCopiedAt))")
                 }
             }
+
             do {
-                try ctx.save()
+                try backgroundContext.save()
                 logger.debug("saved \(clipHistoryData.md5!)")
             } catch {
                 logger.error("saved: \(error)")
@@ -86,13 +82,25 @@ class PersistenceController {
         }
     }
 
-    func get(byMD5 md5: String) -> ClipHistoryData? {
+//    func get(byMD5 md5: String) -> ClipHistoryData? {
+//        let fetchRequest = NSFetchRequest<ClipHistoryData>(entityName: "ClipHistoryData")
+//        fetchRequest.predicate = NSPredicate(format: "md5 = %@",md5 )
+//        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: true)]
+//        let ctx = PersistenceController.shared.container.viewContext
+//        do{
+//            let res = try ctx.fetch(fetchRequest)
+//            return res.first
+//        } catch {
+//            fatalError("\(error)")
+//        }
+//    }
+
+    private func get(byMD5 md5: String, context: NSManagedObjectContext) -> ClipHistoryData? {
         let fetchRequest = NSFetchRequest<ClipHistoryData>(entityName: "ClipHistoryData")
         fetchRequest.predicate = NSPredicate(format: "md5 = %@",md5 )
         fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: true)]
-        let ctx = PersistenceController.shared.container.viewContext
         do{
-            let res = try ctx.fetch(fetchRequest)
+            let res = try context.fetch(fetchRequest)
             return res.first
         } catch {
             fatalError("\(error)")
