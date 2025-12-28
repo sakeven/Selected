@@ -293,8 +293,8 @@
 				38F93F682D86E45E00D1C208 /* MarkdowLateXView.swift */,
 				386010572C2FA00400EB9AE7 /* MessageView.swift */,
 				386010592C2FA07600EB9AE7 /* MessageViewModel.swift */,
-				3860105D2C2FA0C900EB9AE7 /* ChatTextView.swift */,
 				3860105F2C2FA10200EB9AE7 /* TranslationView.swift */,
+				3860105D2C2FA0C900EB9AE7 /* ChatTextView.swift */,
 			);
 			path = ChatView;
 			sourceTree = "<group>";

@@ -84,10 +84,9 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
     var pinnedModel: PinnedModel
 
     init(chatService: AIProvider, withContext ctx: ChatContext) {
-        var window: NSWindow
         // 必须用 NSPanel 并设置 .nonactivatingPanel 以及 level 为 .screenSaver
         // 保证悬浮在全屏应用之上
-        window = FloatingPanel(
+        let window = FloatingPanel(
             contentRect: .zero,
             backing: .buffered,
             defer: false,

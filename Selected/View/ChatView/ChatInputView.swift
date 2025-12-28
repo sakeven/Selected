@@ -46,7 +46,7 @@ struct ChatInputView: View {
                 .scrollContentBackground(.hidden)
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
-                .onDisappear { task?.cancel() }
+//                .onDisappear { task?.cancel() }
             } else {
                 TextField("Press enter to send new message", text: $newText, axis: .vertical)
                     .lineLimit(3...)
@@ -56,7 +56,7 @@ struct ChatInputView: View {
                     .background(Color.gray.opacity(0.1))
                     .cornerRadius(8)
                     .onSubmit { submitMessage() }
-                    .onDisappear { task?.cancel() }
+//                    .onDisappear { task?.cancel() }
             }
 
             HStack {
