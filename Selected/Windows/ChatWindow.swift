@@ -47,7 +47,10 @@ class ChatWindowManager {
 
         switch mode {
             case .expanded:
-                let frame =  windowCtr.window!.frame
+                guard let window = windowCtr.window else {
+                    return false
+                }
+                let frame =  window.frame
                 let expandedFrame = NSRect(x: frame.origin.x - kExpandedLength,
                                            y: frame.origin.y - kExpandedLength,
                                            width: frame.size.width + kExpandedLength * 2,
@@ -58,10 +61,11 @@ class ChatWindowManager {
                 }
 
             case .original:
-                let frame =  windowCtr.window!.frame
-                if !frame.contains(NSEvent.mouseLocation){
-                    windowCtr.close()
-                    return true
+                if let window =  windowCtr.window{
+                    if !window.frame.contains(NSEvent.mouseLocation){
+                        windowCtr.close()
+                        return true
+                    }
                 }
 
             case .force:
@@ -129,7 +133,7 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func windowDidResignActive(_ notification: Notification) {
         self.close() // 如果需要的话
     }

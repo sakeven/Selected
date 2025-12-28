@@ -234,7 +234,7 @@ struct ClipData: Identifiable {
                 case .png, .tiff:
                     if let image = NSImage(data: item.data) {
                         self.ocrImage = image
-//                        self.plainText = recognizeTextInImage(image)
+                        //                        self.plainText = recognizeTextInImage(image)
                     }
                 default:
                     continue
@@ -407,9 +407,11 @@ class ClipWindowManager {
         guard let windowCtr = windowCtr else {
             return true
         }
+        guard let window = windowCtr.window else {
+            return true
+        }
         var closed = false
-        let frame =  windowCtr.window!.frame
-        if !frame.contains(NSEvent.mouseLocation){
+        if !window.frame.contains(NSEvent.mouseLocation){
             windowCtr.close()
             closed = true
             self.windowCtr = nil
@@ -492,7 +494,7 @@ private class ClipWindowController: NSWindowController, NSWindowDelegate {
     func windowDidResignActive(_ notification: Notification) {
         self.close() // 如果需要的话
     }
-
+    
     override func showWindow(_ sender: Any?) {
         hotkeyMgr.registerHotKey()
         super.showWindow(sender)

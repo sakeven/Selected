@@ -23,8 +23,10 @@ class GptAction: Decodable{
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
                     do {
-                        let stream = ChatService(prompt: self.prompt, options: pluginInfo.getOptionsValue())?.chat(ctx: chatCtx)
-                        for try await event in stream! {
+                        guard let chatService = ChatService(prompt: self.prompt, options: pluginInfo.getOptionsValue()) else {
+                            return
+                        }
+                        for try await event in chatService.chat(ctx: chatCtx) {
                             switch event {
                                 case .textDelta(let text):
                                     DispatchQueue.main.async{
@@ -35,7 +37,8 @@ class GptAction: Decodable{
                                     break
                             }
                         }
-                    }catch {
+                    } catch {
+                        AppLogger.plugin.error("PerformAction \(error)")
                     }
                 })
         } else {

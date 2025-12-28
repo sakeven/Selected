@@ -48,7 +48,9 @@ fileprivate struct ToolsManager {
         guard let functions = functions else { return [] }
         var tools = [MessageParameter.Tool]()
         for fc in functions {
-            let schema = try! JSONDecoder().decode(JSONSchema.self, from: fc.parameters.data(using: .utf8)!)
+            guard let schema = try? JSONDecoder().decode(JSONSchema.self, from: fc.parameters.data(using: .utf8)!) else {
+                continue
+            }
             let tool = MessageParameter.Tool.function(name: fc.name, description: fc.description, inputSchema: schema)
             tools.append(tool)
         }

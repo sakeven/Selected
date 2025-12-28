@@ -58,13 +58,13 @@ public class TTSManager {
         clearExpiredVoiceData()
         let hashValue = text.hash
         if let cached = voiceDataCache[hashValue] {
-            print("Using cached TTS data")
+            logger.info("Using cached TTS data")
             audioPlayer?.stop()
             do {
                 audioPlayer = try AVAudioPlayer(data: cached.data)
                 audioPlayer?.play()
             } catch {
-                print("Audio player error: \(error)")
+                logger.error("Audio player error: \(error)")
             }
             return
         }
@@ -89,7 +89,7 @@ public class TTSManager {
             audioPlayer = try AVAudioPlayer(data: result.audio)
             audioPlayer?.play()
         } catch {
-            print("audioCreateSpeech error: \(error)")
+            logger.error("audioCreateSpeech error: \(error)")
         }
     }
 
@@ -98,7 +98,7 @@ public class TTSManager {
         clearExpiredVoiceData()
         let hashValue = text.hash
         if let cached = voiceDataCache[hashValue] {
-            print("Using cached TTS data")
+            logger.info("Using cached TTS data")
             return cached.data
         }
 
@@ -119,7 +119,7 @@ public class TTSManager {
             voiceDataCache[hashValue] = VoiceData(data: result.audio, lastAccessTime: Date())
             return result.audio
         } catch {
-            print("audioCreateSpeech error: \(error)")
+            logger.error("audioCreateSpeech error: \(error)")
             return nil
         }
     }

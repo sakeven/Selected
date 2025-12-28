@@ -76,9 +76,13 @@ class SpotlightWindowManager {
         guard let windowCtr = windowCtr else {
             return true
         }
+
+        guard let window =  windowCtr.window else {
+            return true
+        }
+
         var closed = false
-        let frame =  windowCtr.window!.frame
-        if !frame.contains(NSEvent.mouseLocation){
+        if !window.frame.contains(NSEvent.mouseLocation){
             windowCtr.close()
             closed = true
             self.windowCtr = nil

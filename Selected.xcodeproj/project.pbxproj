@@ -259,6 +259,7 @@
 			children = (
 				381BAD922F01232500E279E7 /* AppLogger.swift */,
 				381BAD8F2EF0523B00E279E7 /* JSONFormat.swift */,
+				38230CA22BA1DBA8002A52E9 /* Utils.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -425,7 +426,6 @@
 			isa = PBXGroup;
 			children = (
 				38D1CAC12D9179370091A332 /* AIUtils */,
-				38230CA22BA1DBA8002A52E9 /* Utils.swift */,
 				381BAD942F0123C500E279E7 /* Clipboard */,
 				388DABA92BC6C683000B2739 /* OCR.swift */,
 				388DABBA2BEA5B3C000B2739 /* StarDict.swift */,

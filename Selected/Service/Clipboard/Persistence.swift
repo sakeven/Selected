@@ -36,7 +36,7 @@ class PersistenceController {
             do {
                 try ctx.save()
             } catch {
-                fatalError("\(error)")
+                AppLogger.clipboard.error("\(error)")
             }
         }
     }
@@ -120,8 +120,9 @@ class PersistenceController {
             let res = try context.fetch(fetchRequest)
             return res.first
         } catch {
-            fatalError("\(error)")
+            AppLogger.clipboard.error("\(error)")
         }
+        return nil
     }
 
     func delete(item: ClipHistoryData) {
@@ -131,7 +132,7 @@ class PersistenceController {
                 ctx.delete(item)
                 try ctx.save()
             } catch {
-                fatalError("\(error)")
+                AppLogger.clipboard.error("\(error)")
             }
         }
     }
@@ -153,7 +154,7 @@ class PersistenceController {
                 }
                 try ctx.save()
             } catch {
-                fatalError("\(error)")
+                AppLogger.clipboard.error("\(error)")
             }
         }
     }

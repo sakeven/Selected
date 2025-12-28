@@ -21,17 +21,21 @@ enum OptionType: String, Decodable {
 }
 
 func getBoolOption(pluginName: String, identifier: String) -> Bool {
-    let defaults = UserDefaults(suiteName: defaultsSuiteName(pluginName))!
+    guard let defaults = UserDefaults(suiteName: defaultsSuiteName(pluginName)) else {
+        return false
+    }
     return defaults.bool(forKey: identifier)
 }
 
 func getStringOption(pluginName: String, identifier: String) -> String? {
-    let defaults = UserDefaults(suiteName: defaultsSuiteName(pluginName))!
-    return defaults.string(forKey: identifier)
+    let defaults = UserDefaults(suiteName: defaultsSuiteName(pluginName))
+    return defaults?.string(forKey: identifier)
 }
 
 func setOption(pluginName: String, identifier: String, val: Any) {
-    let defaults = UserDefaults(suiteName: defaultsSuiteName(pluginName))!
+    guard let defaults = UserDefaults(suiteName: defaultsSuiteName(pluginName)) else {
+        return
+    }
     defaults.set(val, forKey: identifier)
     PluginManager.shared.optionValueChangeCnt += 1
 }
@@ -41,6 +45,5 @@ func removeOptionsOf(pluginName: String) {
 }
 
 func defaultsSuiteName(_ pluginName: String) -> String {
-    let bundleIdentifier = Bundle.main.bundleIdentifier ?? "io.kitool.Selected"
-    return bundleIdentifier + "." + pluginName
+    return SelfBundleID + "." + pluginName
 }

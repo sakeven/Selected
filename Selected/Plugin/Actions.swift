@@ -56,9 +56,10 @@ class URLAction: Decodable {
             actionMeta: generic, complete: { ctx in
                 
                 let urlString = replaceOptions(content: self.url, selectedText: ctx.Text, options: pluginInfo.getOptionsValue())
-                let url = URL(string: urlString)!
-                
-                NSLog(url.scheme ?? "")
+                guard let url = URL(string: urlString) else {
+                    return
+                }
+
                 if url.scheme != "http" && url.scheme != "https" {
                     // not a web link
                     NSWorkspace.shared.open(url)
@@ -84,9 +85,11 @@ class URLAction: Decodable {
 
 extension URL {
     func setScheme(_ value: String) -> URL {
-        let components = NSURLComponents.init(url: self, resolvingAgainstBaseURL: true)
-        components?.scheme = value
-        return (components?.url!)!
+        guard let components = NSURLComponents.init(url: self, resolvingAgainstBaseURL: true) else {
+            return self
+        }
+        components.scheme = value
+        return components.url ?? self
     }
 }
 
@@ -102,8 +105,10 @@ class OpenLinksAction: Decodable {
                 
                 for urlString in ctx.URLs {
                     NSLog("open \(urlString)")
-                    var url = URL(string: urlString)!
-                    
+                    guard var url = URL(string: urlString) else {
+                        continue
+                    }
+
                     if url.scheme == nil || url.scheme == "" {
                         url = url.setScheme("https")
                     }
@@ -152,7 +157,7 @@ class WebSearchAction {
                 
                 let url = URL(string: urlString)!
                 
-                NSLog(url.scheme ?? "")
+                AppLogger.plugin.info("open \(urlString)")
                 if url.scheme != "http" && url.scheme != "https" {
                     // not a web link
                     NSWorkspace.shared.open(url)
@@ -185,8 +190,9 @@ class MapAction {
     func generate(generic: GenericAction) -> PerformAction {
         let pa = PerformAction(
             actionMeta: generic, complete: { ctx in
-                let url = URL(string: "maps://?q="+ctx.Address)!
-                NSWorkspace.shared.open(url)
+                if let url = URL(string: "maps://?q="+ctx.Address) {
+                    NSWorkspace.shared.open(url)
+                }
             })
         pa.supported = supported
         return pa
@@ -403,9 +409,10 @@ func FilterActions(_ ctx: SelectedTextContext, list: [PerformAction] ) -> [Perfo
         }
         
         if let regexStr = action.actionMeta.regex {
-            let reg = try! Regex(regexStr)
-            if !ctx.Text.contains(reg) {
-                continue
+            if let reg = try? Regex(regexStr) {
+                if !ctx.Text.contains(reg) {
+                    continue
+                }
             }
         }
         filtered.append(action)

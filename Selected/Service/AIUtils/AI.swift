@@ -63,7 +63,7 @@ struct Translation {
                 }
             }
         } catch {
-            print("contentTrans2Chinese error \(error)")
+            logger.error("contentTrans2Chinese error \(error)")
         }
     }
 
@@ -82,7 +82,7 @@ struct Translation {
                 }
             }
         } catch {
-            print("catch \(error)")
+            logger.error("catch \(error)")
         }
     }
 
@@ -255,7 +255,7 @@ func openSVGInBrowser(svgData: String) -> Bool {
         }
         return true
     } catch {
-        print("打开 SVG 文件时发生错误: \(error.localizedDescription)")
+        logger.error("open SVG: \(error)")
         return false
     }
 }
