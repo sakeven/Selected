@@ -17,7 +17,7 @@ struct SupportedApp: Decodable {
 struct Supported: Decodable {
     var apps: [SupportedApp]?
     var urls: [String]?
-    
+
     func match(url: String, bundleID: String) -> Bool {
         if apps == nil && urls == nil {
             return true
@@ -31,7 +31,7 @@ struct Supported: Decodable {
             }
             appsEmpty = apps.isEmpty
         }
-        
+
         var urlsEmpty = true
         if let urls = urls {
             for supportedURL in urls {
@@ -52,29 +52,29 @@ struct PluginInfo: Decodable {
     var minSelectedVersion: String?
     var description: String?
     var options: [Option]
-    
+
     // not in config
     var enabled: Bool = true
     var pluginDir = ""
-    
-    
+
+
     enum CodingKeys: String, CodingKey {
         case icon, name, version,
              minSelectedVersion, description,
              options
     }
-    
+
     init() {
         self.icon = "symbol:pencil.and.scribble"
         self.name = "system"
         self.options = [Option]()
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         self.icon = try values.decode(String.self, forKey: .icon)
         self.name = try values.decode(String.self, forKey: .name)
-        
+
         if values.contains(.version) {
             self.version = try values.decode(String.self, forKey: .version)
         }
@@ -89,10 +89,10 @@ struct PluginInfo: Decodable {
             self.options = try values.decode([Option].self, forKey: .options)
         }
     }
-    
+
     func getOptionsValue() -> [String:String] {
         var dict = [String:String]()
-        
+
         for option in options {
             if option.type == .boolean {
                 let val = getBoolOption(pluginName: name, identifier: option.identifier)
@@ -119,28 +119,28 @@ struct Plugin: Decodable {
 class PluginManager: ObservableObject {
     private var extensionsDir: URL
     private let filemgr = FileManager.default
-    
+
     @Published var plugins = [Plugin]()
-    
+
     // notify for option value changed
     // we may use option value to construct action title.
     // It's useful when we want to see action real title at the time we change option value.
     @Published var optionValueChangeCnt = 0
-    
+
     static let shared = PluginManager()
-    
+
     init(){
         let fileManager = FileManager.default
         // 应用程序子目录
         extensionsDir = appSupportURL.appendingPathComponent("Extensions", isDirectory: true)
-        
+
         // 检查目录是否存在，否则尝试创建它
         if !fileManager.fileExists(atPath: extensionsDir.path) {
             try! fileManager.createDirectory(at: extensionsDir, withIntermediateDirectories: true, attributes: nil)
         }
         AppLogger.plugin.info("Application Extensions Directory: \(self.extensionsDir.path)")
     }
-    
+
     private func copyFile(fpath: String, tpath: String) -> Bool{
         AppLogger.plugin.debug("install from \(fpath) to \(tpath)")
         if filemgr.contentsEqual(atPath: fpath, andPath: tpath) {
@@ -152,7 +152,7 @@ class PluginManager: ObservableObject {
             if fileManager.fileExists(atPath: tpath){
                 try fileManager.removeItem(atPath: tpath)
             }
-            
+
             try fileManager.copyItem(atPath: fpath, toPath: tpath)
             return true
         } catch {
@@ -160,16 +160,16 @@ class PluginManager: ObservableObject {
         }
         return false
     }
-    
+
     func install(url: URL) {
         if url.hasDirectoryPath {
             AppLogger.plugin.info("install \(url.lastPathComponent)")
-            if copyFile(fpath: url.path(percentEncoded: false), tpath: extensionsDir.appending(component: url.lastPathComponent).path(percentEncoded: false)) {
+            if copyFile(fpath: url.path(percentEncoded: false), tpath: extensionsDir.appending(component: url.lastPathComponent).path(percentEncoded: false)+"/") {
                 loadPlugins()
             }
         }
     }
-    
+
     func remove(_ pluginDir: String, _ pluginName: String) {
         do {
             try filemgr.removeItem(at: extensionsDir.appendingPathComponent(pluginDir, isDirectory: true))
@@ -179,11 +179,11 @@ class PluginManager: ObservableObject {
         }
         loadPlugins()
     }
-    
+
     func getPlugins() -> [Plugin] {
         return self.plugins
     }
-    
+
     func loadPlugins(){
         var list = [Plugin]()
         let pluginDirs = try! filemgr.contentsOfDirectory(atPath: extensionsDir.path)
@@ -200,7 +200,7 @@ class PluginManager: ObservableObject {
                 if plugin.info.icon.hasPrefix("file://./"){
                     plugin.info.icon = "file://"+extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).appendingPathComponent(plugin.info.icon.trimPrefix("file://./"), isDirectory: false).path
                 }
-                
+
                 for i in plugin.actions.indices {
                     var action = plugin.actions[i]
                     do {
@@ -209,11 +209,11 @@ class PluginManager: ObservableObject {
                             meta.icon =  "file://"+extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).appendingPathComponent(action.meta.icon.trimPrefix("file://./"), isDirectory: false).path
                         }
                         action.meta = meta
-                        
+
                         if let runCommand = action.runCommand {
                             runCommand.pluginPath = extensionsDir.appendingPathComponent(pluginDir, isDirectory: true).path
                         }
-                        
+
                         if let gpt = action.gpt, var tools = gpt.tools {
                             tools =  tools.map { tool in
                                 var mutTool = tool
@@ -222,7 +222,7 @@ class PluginManager: ObservableObject {
                             }
                             gpt.tools = tools
                         }
-                        
+
                         if let regex = action.meta.regex {
                             _ = try Regex(regex)
                         }
@@ -231,19 +231,19 @@ class PluginManager: ObservableObject {
                     }
                     plugin.actions[i] = action
                 }
-                
+
                 list.append(plugin)
             }
         }
         self.plugins = list
     }
-    
+
     var allActions: [PerformAction] {
         var list = [PerformAction]()
         list.append(WebSearchAction().generate(
             generic: GenericAction(title: "Search", icon: "symbol:magnifyingglass", after: "", identifier: "selected.websearch")
         ))
-        
+
         let pluginList = plugins
         AppLogger.plugin.debug("get all")
         pluginList.forEach { Plugin in
@@ -253,7 +253,7 @@ class PluginManager: ObservableObject {
             Plugin.actions.forEach { Action in
                 var generic = Action.meta
                 generic.title = replaceOptions(content: generic.title, selectedText: "", options: Plugin.info.getOptionsValue())
-                
+
                 if let url = Action.url {
                     list.append(url.generate(pluginInfo: Plugin.info, generic: generic))
                     return
@@ -276,7 +276,7 @@ class PluginManager: ObservableObject {
                 }
             }
         }
-        
+
         list.append(TranslationAction(target: "cn").generate(
             generic: GenericAction(title: "翻译到中文", icon: "square 译中", after: "", identifier: "selected.translation.cn")
         ))
@@ -289,7 +289,7 @@ class PluginManager: ObservableObject {
         list.append(SpeackAction().generate(
             generic: GenericAction(title: "Speak", icon: "symbol:play.circle", after: "", identifier: "selected.speak")
         ))
-        
+
         return list
     }
 }
