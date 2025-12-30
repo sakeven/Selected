@@ -17,13 +17,14 @@ class GptAction: Decodable{
         self.prompt = prompt
     }
 
-    func generate(pluginInfo: PluginInfo,  generic: GenericAction) -> PerformAction {
-        if generic.after == kAfterPaste  {
+    func generate(pluginInfo: PluginInfo, generic: GenericAction) -> PerformAction {
+        if generic.after == kAfterPaste {
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
                     do {
-                        guard let chatService = ChatService(prompt: self.prompt, options: pluginInfo.getOptionsValue()) else {
+                        guard let chatService = ChatService(
+                            prompt: self.prompt, options: pluginInfo.getOptionsValue(), reasoning: false) else {
                             return
                         }
                         for try await event in chatService.chat(ctx: chatCtx) {
@@ -32,10 +33,38 @@ class GptAction: Decodable{
                                     DispatchQueue.main.async{
                                         _ = WindowManager.shared.closeOnlyPopbarWindows(.force)
                                     }
-                                    pasteText((text))
+                                    pasteText(text)
                                 default:
                                     break
                             }
+                        }
+                    } catch {
+                        AppLogger.plugin.error("PerformAction \(error)")
+                    }
+                })
+        } else if generic.after == kAfterXShow || generic.after == kAfterShow{
+            return PerformAction(
+                actionMeta: generic, complete: { ctx in
+                    let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
+                    do {
+                        guard let chatService = ChatService(
+                            prompt: self.prompt, options: pluginInfo.getOptionsValue(), reasoning: false) else {
+                            return
+                        }
+                        var output = ""
+                        for try await event in chatService.chat(ctx: chatCtx) {
+                            switch event {
+                                case .textDelta(let text):
+                                    output += text
+                                default:
+                                    break
+                            }
+                        }
+                        logger.info("output: \(output)")
+                        let editable = (generic.after == kAfterXShow) && ctx.Editable
+                        DispatchQueue.main.async{
+                            _ = WindowManager.shared.closeOnlyPopbarWindows(.force)
+                            WindowManager.shared.createTextWindow(output, editable: editable)
                         }
                     } catch {
                         AppLogger.plugin.error("PerformAction \(error)")

@@ -203,8 +203,8 @@ class TTSWindowController: BaseWindowController {
 }
 
 class TextWindowController: BaseWindowController {
-    init(text: String) {
-        let view = PopResultView(text: text)
+    init(text: String, editable: Bool) {
+        let view = PopResultView(text: text, editable: editable)
         super.init(rootView: AnyView(view), windowType: .text, positionStrategy: .nearMouse, size: .zero)
     }
 
@@ -255,8 +255,8 @@ class WindowManager {
         createWindow(windowController)
     }
 
-    func createTextWindow(_ text: String) {
-        createWindow(TextWindowController(text: text))
+    func createTextWindow(_ text: String, editable: Bool) {
+        createWindow(TextWindowController(text: text, editable: editable))
     }
 
     func closeOnlyPopbarWindows(_ mode: CloseWindowMode) -> Bool {

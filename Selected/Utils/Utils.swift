@@ -15,6 +15,15 @@ func PressPasteKey() {
     PressKey(keycode: Keycode.v, flags: .maskCommand)
 }
 
+func PressKey(keycode: CGKeyCode) {
+    guard let keydownEvent = CGEvent(keyboardEventSource: nil, virtualKey: keycode, keyDown: true) else{return}
+    keydownEvent.post(tap: .cghidEventTap)
+
+    guard let keyupEvent = CGEvent(keyboardEventSource: nil, virtualKey: keycode, keyDown: false) else{return}
+    keyupEvent.post(tap: .cghidEventTap)
+}
+
+
 func PressKey(keycode: CGKeyCode, flags: CGEventFlags) {
     guard let keydownEvent = CGEvent(keyboardEventSource: nil, virtualKey: keycode, keyDown: true) else{return}
 

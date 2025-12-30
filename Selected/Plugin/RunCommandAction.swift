@@ -65,7 +65,9 @@ class RunCommandAction: Decodable {
                     } else if generic.after == kAfterCopy {
                         copyText(output)
                     } else if generic.after == kAfterShow {
-                        WindowManager.shared.createTextWindow(output)
+                        WindowManager.shared.createTextWindow(output, editable: false)
+                    } else if generic.after == kAfterXShow {
+                        WindowManager.shared.createTextWindow(output, editable: ctx.Editable)
                     }
                 }
             } catch {
@@ -74,6 +76,21 @@ class RunCommandAction: Decodable {
         })
     }
 }
+
+// pasteTextBefore: When there is a text selection, the cursor will move forward, then insert the text, which is equivalent to inserting the text before the currently seleted text.
+// Note that some applications dot not support this operation and always insert the text after the currently selected text, such as Terminal.
+func pasteTextBefore(_ text: String) {
+    PressKey(keycode: Keycode.leftArrow)
+    pasteText(text)
+}
+
+// pasteTextAfter: When there is a text selection, the cursor will move backward, then insert the text, which is equivalent to inserting the text after the currently seleted text.
+// Note that some applications dot not support this operation and always insert the text after the currently selected text, such as Terminal.
+func pasteTextAfter(_ text: String) {
+    PressKey(keycode: Keycode.rightArrow)
+    pasteText(text)
+}
+
 
 func pasteText(_ text: String) {
     let id = UUID().uuidString
