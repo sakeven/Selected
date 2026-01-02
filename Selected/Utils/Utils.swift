@@ -267,31 +267,6 @@ func getCurrentAppLanguage() -> String {
 }
 
 
-func jsonify(_ jsonString: String) -> String {
-    // 1. 将 JSON 字符串转换为 UTF-8 编码的 Data
-    guard let jsonData = jsonString.data(using: .utf8) else {
-        return jsonString
-    }
-    do {
-        // 2. 使用 JSONSerialization 将 Data 解析为字典
-        if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
-            // 3. 重新编码为 JSON 字符串
-            let prettyJsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
-            if let prettyPrintedString = String(data: prettyJsonData, encoding: .utf8) {
-                // 打印最终解码后的 JSON 字符串
-                return prettyPrintedString
-            } else {
-                print("Failed to convert data to string.")
-            }
-        } else {
-            print("Failed to parse JSON.")
-        }
-    } catch {
-        print("Error deserializing JSON: \(error.localizedDescription)")
-    }
-    return jsonString
-}
-
 func createTemporaryURLForData(_ data: Data, fileName: String) -> URL? {
     // 获取临时目录 URL
     let tempDirectoryURL = FileManager.default.temporaryDirectory

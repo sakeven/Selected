@@ -91,7 +91,10 @@ fileprivate struct ToolsManager {
             continuation.yield(.toolCallStarted(.init(id: tool.id, name: tool.name, message: message)))
 
             if let ret = try fc.Run(arguments: tool.input, options: options) {
-                continuation.yield(.toolCallFinished(.init(id: tool.id, name: tool.name, ret: ret)))
+                let statusMessage = (fc.showResult ?? true)
+                ? ret
+                : String(format: NSLocalizedString("called_tool", comment: "tool message"), fc.name)
+                continuation.yield(.toolCallFinished(.init(id: tool.id, name: tool.name, ret: statusMessage)))
                 toolUseResults.append(.toolResult(tool.id, ret))
             }
         }
@@ -306,7 +309,7 @@ class ClaudeAIProvider: AIProvider {
                     case .contentBlockStop:
                         if lastToolUseBlockIndex == result.index! {
                             var toolUse = toolUseList.last!
-                            toolUse.input = jsonify(toolParameters)
+                            toolUse.input = try JSONFormatter.prettify(toolParameters)
                             toolUseList[toolUseList.count - 1] = toolUse
                         }
                     default:
