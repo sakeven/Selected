@@ -8,16 +8,13 @@
 import Foundation
 import SwiftUI
 import MarkdownUI
-import Highlightr
+import Textual
 
 struct MessageView: View {
     @ObservedObject var message: ResponseMessage
 
     @Environment(\.colorScheme) private var colorScheme
 
-
-    @State private var rotation: Double = 0
-    @State private var animationTimer: Timer? = nil
     @State private var spinning = false
 
     var body: some View {
@@ -80,7 +77,9 @@ struct MessageView: View {
                 }
             } else {
                 if message.summary != "" {
-                    MarkdownWithLateXView(markdownString: $message.summary).font(.caption.monospaced())
+                    StructuredText(markdown: message.summary)
+                        .textual.textSelection(.enabled)
+                        .font(.caption.monospaced())
                         .foregroundColor(.secondary)
                         .padding(.leading, 20.0)
                         .padding(.top, 5)
@@ -107,7 +106,11 @@ struct MessageView: View {
                 if !message.images.isEmpty {
                     previewHeader.padding(.leading, 20.0)
                 }
-                MarkdownWithLateXView(markdownString: $message.message)
+                StructuredText(markdown: message.message)
+                    .textual.fontScale(1.1)
+                    .textual.textSelection(.enabled)
+                    .textual.structuredTextStyle(.gitHub)
+                    .textual.overflowMode(.wrap)
                     .padding(.leading, 20.0)
                     .padding(.trailing, 40.0)
                     .padding(.top, 5)
@@ -233,4 +236,3 @@ struct ToolRowView: View {
 #Preview {
     ToolRowView(tool: AIToolCall(name: "local_crawler", ret: "", status: .success))
 }
-
