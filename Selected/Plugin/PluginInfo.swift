@@ -241,7 +241,7 @@ class PluginManager: ObservableObject {
     var allActions: [PerformAction] {
         var list = [PerformAction]()
         list.append(WebSearchAction().generate(
-            generic: GenericAction(title: "Search", icon: "symbol:magnifyingglass", after: "", identifier: "selected.websearch")
+            generic: GenericAction(title: "Search", icon: "symbol:magnifyingglass", identifier: "selected.websearch")
         ))
 
         let pluginList = plugins
@@ -278,16 +278,16 @@ class PluginManager: ObservableObject {
         }
 
         list.append(TranslationAction(target: "cn").generate(
-            generic: GenericAction(title: "翻译到中文", icon: "square 译中", after: "", identifier: "selected.translation.cn")
+            generic: GenericAction(title: "翻译到中文", icon: "square 译中", identifier: "selected.translation.cn")
         ))
         list.append(TranslationAction(target: "en").generate(
-            generic: GenericAction(title: "Translate to English", icon: "symbol:e.square", after: "", identifier: "selected.translation.en")
+            generic: GenericAction(title: "Translate to English", icon: "symbol:e.square", identifier: "selected.translation.en")
         ))
         list.append(CopyAction().generate(
-            generic: GenericAction(title: "Copy", icon: "symbol:doc.on.clipboard", after: "", identifier: "selected.copy")
+            generic: GenericAction(title: "Copy", icon: "symbol:doc.on.clipboard", identifier: "selected.copy")
         ))
         list.append(SpeackAction().generate(
-            generic: GenericAction(title: "Speak", icon: "symbol:play.circle", after: "", identifier: "selected.speak")
+            generic: GenericAction(title: "Speak", icon: "symbol:play.circle", identifier: "selected.speak")
         ))
 
         return list

@@ -11,28 +11,31 @@ import Yams
 import AppKit
 import Defaults
 
-let kAfterPaste = "paste"
-let kAfterCopy = "copy"
-let kAfterShow = "show"
-let kAfterXShow = "xshow"
+enum AfterAction: String, Decodable {
+    case none = ""
+    case paste
+    case copy
+    case show
+    case xshow
+}
 
 
 struct GenericAction: Decodable {
     var title: String
     var icon: String
-    var after: String
+    var after: AfterAction?
     var identifier: String
     var regex: String?
     var description: String?
     
-    init(title: String, icon: String, after: String, identifier: String) {
+    init(title: String, icon: String, after: AfterAction? = nil , identifier: String) {
         self.title = title
         self.icon = icon
         self.after = after
         self.identifier = identifier
     }
     
-    init(title: String, icon: String, after: String, identifier: String, regex: String) {
+    init(title: String, icon: String, after: AfterAction? = nil, identifier: String, regex: String) {
         self.title = title
         self.icon = icon
         self.after = after
@@ -396,9 +399,9 @@ func FilterActions(_ ctx: SelectedTextContext, list: [PerformAction] ) -> [Perfo
     var l = list
     // Here are default actions.
     l.append(OpenLinksAction().generate(
-        generic: GenericAction(title: "OpenLinks", icon: "symbol:link", after: "", identifier: "selected.openlinks")
+        generic: GenericAction(title: "OpenLinks", icon: "symbol:link", identifier: "selected.openlinks")
     ))
-    l.append(MapAction().generate(generic: GenericAction(title: "Map", icon: "symbol:mappin.and.ellipse", after: "", identifier: "selected.map")))
+    l.append(MapAction().generate(generic: GenericAction(title: "Map", icon: "symbol:mappin.and.ellipse", identifier: "selected.map")))
     for action in l {
         if let supported = action.supported {
             if !supported(ctx) {
@@ -406,7 +409,7 @@ func FilterActions(_ ctx: SelectedTextContext, list: [PerformAction] ) -> [Perfo
             }
         }
         
-        if !ctx.Editable && action.actionMeta.after == "paste" {
+        if !ctx.Editable && action.actionMeta.after == .paste {
             continue
         }
         

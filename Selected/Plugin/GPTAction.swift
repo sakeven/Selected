@@ -18,7 +18,7 @@ class GptAction: Decodable{
     }
 
     func generate(pluginInfo: PluginInfo, generic: GenericAction) -> PerformAction {
-        if generic.after == kAfterPaste {
+        if generic.after == .paste {
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
@@ -42,7 +42,7 @@ class GptAction: Decodable{
                         AppLogger.plugin.error("PerformAction \(error)")
                     }
                 })
-        } else if generic.after == kAfterXShow || generic.after == kAfterShow{
+        } else if generic.after == .xshow || generic.after == .show {
             return PerformAction(
                 actionMeta: generic, complete: { ctx in
                     let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID)
@@ -61,7 +61,7 @@ class GptAction: Decodable{
                             }
                         }
                         logger.info("output: \(output)")
-                        let editable = (generic.after == kAfterXShow) && ctx.Editable
+                        let editable = (generic.after == .xshow) && ctx.Editable
                         DispatchQueue.main.async{
                             _ = WindowManager.shared.closeOnlyPopbarWindows(.force)
                             WindowManager.shared.createTextWindow(output, editable: editable)

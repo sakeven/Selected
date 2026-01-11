@@ -60,13 +60,13 @@ class RunCommandAction: Decodable {
                     command: self.command[0],
                     arguments: [String](self.command[1...]),
                     withEnv: env) {
-                    if ctx.Editable && generic.after == kAfterPaste {
+                    if ctx.Editable && generic.after == .paste {
                         pasteText(output)
-                    } else if generic.after == kAfterCopy {
+                    } else if generic.after == .copy {
                         copyText(output)
-                    } else if generic.after == kAfterShow {
+                    } else if generic.after == .show {
                         WindowManager.shared.createTextWindow(output, editable: false)
-                    } else if generic.after == kAfterXShow {
+                    } else if generic.after == .xshow {
                         WindowManager.shared.createTextWindow(output, editable: ctx.Editable)
                     }
                 }
