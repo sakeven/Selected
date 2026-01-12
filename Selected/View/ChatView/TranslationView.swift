@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import MarkdownUI
+import Textual
 
 struct TranslationView: View {
     var text: String
@@ -19,7 +20,6 @@ struct TranslationView: View {
 
     @EnvironmentObject var pinned: PinnedModel
     @Environment(\.colorScheme) private var colorScheme
-    var highlighter = CustomCodeSyntaxHighlighter()
 
     @State private var word: Word?
 
@@ -146,14 +146,11 @@ struct TranslationView: View {
                 Divider()
             }
 
-            Markdown(self.transText)
-                .markdownBlockStyle(\.codeBlock, body: {label in
-                    // wrap long lines
-                    highlighter.setTheme(theme: codeTheme).highlightCode(label.content, language: label.language)
-                        .padding()
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .markdownMargin(top: .em(1), bottom: .em(1))
-                })
+            StructuredText(markdown: transText)
+                .textual.fontScale(1.1)
+                .textual.structuredTextStyle(.gitHub)
+                .textual.textSelection(.enabled)
+                .textual.overflowMode(.wrap)
                 .textSelection(.enabled)
                 .padding(.top, 0)
                 .padding([.horizontal, .bottom], 20.0)
@@ -167,15 +164,6 @@ struct TranslationView: View {
             Text("in translating")
                 .font(.system(size: 14))
         }.padding(.leading, 20)
-    }
-
-    private var codeTheme: CodeTheme {
-        switch self.colorScheme {
-            case .dark:
-                return .dark
-            default:
-                return .light
-        }
     }
 }
 

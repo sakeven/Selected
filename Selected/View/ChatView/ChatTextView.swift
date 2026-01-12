@@ -51,7 +51,7 @@ struct ChatTextView: View {
                             }
                         }.padding(.bottom, 10)
 
-                        Text(ctx.text.trimmingCharacters(in: .whitespacesAndNewlines)).font(.custom( "UbuntuMonoNFM", size: 14)).foregroundColor(.gray).lineLimit(1)
+                        Text(ctx.text.trimmingCharacters(in: .whitespacesAndNewlines)).font(.custom( "UbuntuMonoNFM", size: 16)).foregroundColor(.gray).lineLimit(1)
                             .frame(alignment: .leading).padding(.leading, 10).copyable([ctx.text]).textSelection(.enabled)
                         if ctx.webPageURL != "" {
                             HStack {
