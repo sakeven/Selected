@@ -127,7 +127,6 @@ class OpenAIProvider: AIProvider{
         self.openAI = OpenAI(configuration: configuration)
         self.options = [:]
         self.responseQuery = OpenAIProvider.createResponseQuery(functions: tools, model: model, thinking: reasoning)
-
     }
 
     // 更新对话查询
@@ -135,6 +134,7 @@ class OpenAIProvider: AIProvider{
         responseQuery = CreateModelResponseQuery(
             input: .textInput(message),
             model: responseQuery.model,
+            instructions: responseQuery.instructions,
             previousResponseId: responseQuery.previousResponseId,
             reasoning: responseQuery.reasoning,
             stream: true,
@@ -154,6 +154,7 @@ class OpenAIProvider: AIProvider{
         responseQuery = CreateModelResponseQuery(
             input: input,
             model: responseQuery.model,
+            instructions: responseQuery.instructions,
             previousResponseId: responseQuery.previousResponseId,
             reasoning: responseQuery.reasoning,
             stream: true,
@@ -165,6 +166,7 @@ class OpenAIProvider: AIProvider{
         responseQuery = CreateModelResponseQuery(
             input: responseQuery.input,
             model: responseQuery.model,
+            instructions: responseQuery.instructions,
             previousResponseId: lastResponseId,
             reasoning: responseQuery.reasoning,
             stream: true,
@@ -176,6 +178,7 @@ class OpenAIProvider: AIProvider{
         responseQuery = CreateModelResponseQuery(
             input: input,
             model: responseQuery.model,
+            instructions: responseQuery.instructions,
             previousResponseId: lastResponseId,
             reasoning: responseQuery.reasoning,
             stream: true,

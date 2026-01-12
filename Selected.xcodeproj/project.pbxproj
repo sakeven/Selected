@@ -54,7 +54,6 @@
 		3888D8052BA86A0F00A7B75D /* PluginListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3888D8042BA86A0F00A7B75D /* PluginListView.swift */; };
 		3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3888D8062BA86AF600A7B75D /* WindowManager.swift */; };
 		388DABAA2BC6C683000B2739 /* OCR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388DABA92BC6C683000B2739 /* OCR.swift */; };
-		388DABAD2BCC0A1A000B2739 /* Highlightr in Frameworks */ = {isa = PBXBuildFile; productRef = 388DABAC2BCC0A1A000B2739 /* Highlightr */; };
 		388DABAF2BD147F6000B2739 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388DABAE2BD147F6000B2739 /* TextView.swift */; };
 		388DABB22BD549EE000B2739 /* ShortcutRecorder in Frameworks */ = {isa = PBXBuildFile; productRef = 388DABB12BD549EE000B2739 /* ShortcutRecorder */; };
 		388DABB42BD54A03000B2739 /* ShortcutRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 388DABB32BD54A03000B2739 /* ShortcutRecorderView.swift */; };
@@ -73,7 +72,6 @@
 		38D1CAC22D9179370091A332 /* TTSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CAC02D9179370091A332 /* TTSManager.swift */; };
 		38D1CAC32D9179370091A332 /* ImageGeneration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CABF2D9179370091A332 /* ImageGeneration.swift */; };
 		38D1CAC42D9179370091A332 /* FunctionDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CABE2D9179370091A332 /* FunctionDefinition.swift */; };
-		38DEBE372B9DD80300CD2A35 /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = 38DEBE362B9DD80300CD2A35 /* GoogleGenerativeAI */; };
 		38DEBE392B9DDD0500CD2A35 /* AI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DEBE382B9DDD0500CD2A35 /* AI.swift */; };
 		38DF1D4A2BB7A3BC0063A879 /* Option.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D492BB7A3BC0063A879 /* Option.swift */; };
 		38DF1D4D2BB94DCD0063A879 /* ApplicationSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D4C2BB94DCD0063A879 /* ApplicationSettingView.swift */; };
@@ -86,8 +84,6 @@
 		38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A482BB5A3D80035A3AA /* SpeakAction.swift */; };
 		38F5E29C2B98ACB9002FEEFE /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E29B2B98ACB9002FEEFE /* OpenAI */; };
 		38F5E29F2B9AB332002FEEFE /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E29E2B9AB332002FEEFE /* MarkdownUI */; };
-		38F5E2A22B9AB361002FEEFE /* CodeSyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F5E2A12B9AB361002FEEFE /* CodeSyntaxHighlighter.swift */; };
-		38F93F672D86D4C300D1C208 /* LaTeXSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F93F662D86D4C300D1C208 /* LaTeXSwiftUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -190,7 +186,6 @@
 		38DF1D5A2BC2BFCA0063A879 /* PDFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFView.swift; sourceTree = "<group>"; };
 		38E20A462BB44D5A0035A3AA /* SharingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingButton.swift; sourceTree = "<group>"; };
 		38E20A482BB5A3D80035A3AA /* SpeakAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakAction.swift; sourceTree = "<group>"; };
-		38F5E2A12B9AB361002FEEFE /* CodeSyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeSyntaxHighlighter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -206,7 +201,6 @@
 				385EA9EA2C5FC624009B8F0E /* HotKey in Frameworks */,
 				38DF1D552BC269760063A879 /* MathParser in Frameworks */,
 				388DABC02BEA5E73000B2739 /* GRDB in Frameworks */,
-				38F93F672D86D4C300D1C208 /* LaTeXSwiftUI in Frameworks */,
 				38AD8D8A2C19D2DB00EAFA5D /* DSWaveformImage in Frameworks */,
 				3860106B2C4222BB00EB9AE7 /* SwiftAnthropic in Frameworks */,
 				386010662C3AE22C00EB9AE7 /* Stencil in Frameworks */,
@@ -214,11 +208,9 @@
 				386AD7442B8F6E77008C346D /* Defaults in Frameworks */,
 				38F5E29C2B98ACB9002FEEFE /* OpenAI in Frameworks */,
 				385EA9ED2C6256BA009B8F0E /* Sparkle in Frameworks */,
-				38DEBE372B9DD80300CD2A35 /* GoogleGenerativeAI in Frameworks */,
 				38D132562F0D463B000F899A /* Textual in Frameworks */,
 				3831FD332BA532D400A4262B /* Yams in Frameworks */,
 				386AD7512B8F7AA5008C346D /* SettingsAccess in Frameworks */,
-				388DABAD2BCC0A1A000B2739 /* Highlightr in Frameworks */,
 				388DABB22BD549EE000B2739 /* ShortcutRecorder in Frameworks */,
 				38F5E29F2B9AB332002FEEFE /* MarkdownUI in Frameworks */,
 			);
@@ -328,7 +320,6 @@
 				3888D8082BA884DB00A7B75D /* Info.plist */,
 				38230C9D2B9F3307002A52E9 /* Plugin */,
 				38DEBE302B9D67E800CD2A35 /* Service */,
-				38F5E2A02B9AB345002FEEFE /* SyntaxHighlighter */,
 				386AD74C2B8F79F1008C346D /* View */,
 				386AD7452B8F6F9D008C346D /* Configuration */,
 				386AD7172B8F6BFA008C346D /* App.swift */,
@@ -447,14 +438,6 @@
 			path = ClipView;
 			sourceTree = "<group>";
 		};
-		38F5E2A02B9AB345002FEEFE /* SyntaxHighlighter */ = {
-			isa = PBXGroup;
-			children = (
-				38F5E2A12B9AB361002FEEFE /* CodeSyntaxHighlighter.swift */,
-			);
-			path = SyntaxHighlighter;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -480,10 +463,8 @@
 				386AD7502B8F7AA5008C346D /* SettingsAccess */,
 				38F5E29B2B98ACB9002FEEFE /* OpenAI */,
 				38F5E29E2B9AB332002FEEFE /* MarkdownUI */,
-				38DEBE362B9DD80300CD2A35 /* GoogleGenerativeAI */,
 				3831FD322BA532D400A4262B /* Yams */,
 				38DF1D542BC269760063A879 /* MathParser */,
-				388DABAC2BCC0A1A000B2739 /* Highlightr */,
 				388DABB12BD549EE000B2739 /* ShortcutRecorder */,
 				388DABBF2BEA5E73000B2739 /* GRDB */,
 				38AD8D892C19D2DB00EAFA5D /* DSWaveformImage */,
@@ -492,7 +473,6 @@
 				3860106A2C4222BB00EB9AE7 /* SwiftAnthropic */,
 				385EA9E92C5FC624009B8F0E /* HotKey */,
 				385EA9EC2C6256BA009B8F0E /* Sparkle */,
-				38F93F662D86D4C300D1C208 /* LaTeXSwiftUI */,
 				38D132552F0D463B000F899A /* Textual */,
 			);
 			productName = Selected;
@@ -578,10 +558,8 @@
 				386AD74F2B8F7AA5008C346D /* XCRemoteSwiftPackageReference "SettingsAccess" */,
 				38F5E29A2B98ACB9002FEEFE /* XCRemoteSwiftPackageReference "OpenAI" */,
 				38F5E29D2B9AB332002FEEFE /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
-				38DEBE352B9DD80300CD2A35 /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
 				3831FD312BA532D400A4262B /* XCRemoteSwiftPackageReference "Yams" */,
 				38DF1D532BC269760063A879 /* XCRemoteSwiftPackageReference "DDMathParser" */,
-				388DABAB2BCC0A1A000B2739 /* XCRemoteSwiftPackageReference "Highlightr" */,
 				388DABB02BD549EE000B2739 /* XCRemoteSwiftPackageReference "ShortcutRecorder" */,
 				388DABBE2BEA5E73000B2739 /* XCRemoteSwiftPackageReference "GRDB" */,
 				38AD8D882C19D2DB00EAFA5D /* XCRemoteSwiftPackageReference "DSWaveformImage" */,
@@ -591,7 +569,6 @@
 				385EA9EB2C6256BA009B8F0E /* XCRemoteSwiftPackageReference "Sparkle" */,
 				386789212C9B0A1A00D7DD62 /* XCRemoteSwiftPackageReference "Defaults" */,
 				386789222C9B0A7900D7DD62 /* XCRemoteSwiftPackageReference "SettingsAccess" */,
-				38F93F652D86D4C300D1C208 /* XCRemoteSwiftPackageReference "LaTeXSwiftUI" */,
 				38D132542F0D463B000F899A /* XCRemoteSwiftPackageReference "textual" */,
 			);
 			productRefGroup = 386AD7152B8F6BFA008C346D /* Products */;
@@ -681,7 +658,6 @@
 				38D1CAC32D9179370091A332 /* ImageGeneration.swift in Sources */,
 				3868D6042EEEC2D500B41E3A /* ChatInputView.swift in Sources */,
 				38D1CAC42D9179370091A332 /* FunctionDefinition.swift in Sources */,
-				38F5E2A22B9AB361002FEEFE /* CodeSyntaxHighlighter.swift in Sources */,
 				3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */,
 				3801CA4E2BA522B6007D7868 /* Actions.swift in Sources */,
 				3860105C2C2FA0A700EB9AE7 /* PopResultView.swift in Sources */,
@@ -1099,14 +1075,6 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/orchetect/SettingsAccess";
 		};
-		388DABAB2BCC0A1A000B2739 /* XCRemoteSwiftPackageReference "Highlightr" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/raspu/Highlightr";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.1.2;
-			};
-		};
 		388DABB02BD549EE000B2739 /* XCRemoteSwiftPackageReference "ShortcutRecorder" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Kentzo/ShortcutRecorder";
@@ -1139,14 +1107,6 @@
 				minimumVersion = 0.1.1;
 			};
 		};
-		38DEBE352B9DD80300CD2A35 /* XCRemoteSwiftPackageReference "generative-ai-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google/generative-ai-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.4.8;
-			};
-		};
 		38DF1D532BC269760063A879 /* XCRemoteSwiftPackageReference "DDMathParser" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/davedelong/DDMathParser";
@@ -1169,14 +1129,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.3.0;
-			};
-		};
-		38F93F652D86D4C300D1C208 /* XCRemoteSwiftPackageReference "LaTeXSwiftUI" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/colinc86/LaTeXSwiftUI";
-			requirement = {
-				branch = main;
-				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -1217,11 +1169,6 @@
 			package = 386AD74F2B8F7AA5008C346D /* XCRemoteSwiftPackageReference "SettingsAccess" */;
 			productName = SettingsAccess;
 		};
-		388DABAC2BCC0A1A000B2739 /* Highlightr */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 388DABAB2BCC0A1A000B2739 /* XCRemoteSwiftPackageReference "Highlightr" */;
-			productName = Highlightr;
-		};
 		388DABB12BD549EE000B2739 /* ShortcutRecorder */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 388DABB02BD549EE000B2739 /* XCRemoteSwiftPackageReference "ShortcutRecorder" */;
@@ -1247,11 +1194,6 @@
 			package = 38D132542F0D463B000F899A /* XCRemoteSwiftPackageReference "textual" */;
 			productName = Textual;
 		};
-		38DEBE362B9DD80300CD2A35 /* GoogleGenerativeAI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 38DEBE352B9DD80300CD2A35 /* XCRemoteSwiftPackageReference "generative-ai-swift" */;
-			productName = GoogleGenerativeAI;
-		};
 		38DF1D542BC269760063A879 /* MathParser */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 38DF1D532BC269760063A879 /* XCRemoteSwiftPackageReference "DDMathParser" */;
@@ -1266,11 +1208,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 38F5E29D2B9AB332002FEEFE /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
 			productName = MarkdownUI;
-		};
-		38F93F662D86D4C300D1C208 /* LaTeXSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 38F93F652D86D4C300D1C208 /* XCRemoteSwiftPackageReference "LaTeXSwiftUI" */;
-			productName = LaTeXSwiftUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 

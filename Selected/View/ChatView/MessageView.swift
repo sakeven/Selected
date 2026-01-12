@@ -77,7 +77,7 @@ struct MessageView: View {
                 }
             } else {
                 if message.summary != "" {
-                    StructuredText(markdown: message.summary)
+                    StructuredText(markdown: message.summary, patternOptions: .init(mathExpressions: true))
                         .textual.textSelection(.enabled)
                         .font(.caption.monospaced())
                         .foregroundColor(.secondary)
@@ -106,7 +106,7 @@ struct MessageView: View {
                 if !message.images.isEmpty {
                     previewHeader.padding(.leading, 20.0)
                 }
-                StructuredText(markdown: message.message)
+                StructuredText(markdown: message.message, patternOptions: .init(mathExpressions: true))
                     .textual.fontScale(1.1)
                     .textual.textSelection(.enabled)
                     .textual.structuredTextStyle(.gitHub)
@@ -150,15 +150,6 @@ struct MessageView: View {
                     }
                 }
             })
-        }
-    }
-
-    private var codeTheme: CodeTheme {
-        switch self.colorScheme {
-            case .dark:
-                return .dark
-            default:
-                return .light
         }
     }
 }

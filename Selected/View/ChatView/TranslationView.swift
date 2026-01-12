@@ -20,7 +20,6 @@ struct TranslationView: View {
 
     @EnvironmentObject var pinned: PinnedModel
     @Environment(\.colorScheme) private var colorScheme
-    var highlighter = CustomCodeSyntaxHighlighter()
 
     @State private var word: Word?
 
@@ -165,15 +164,6 @@ struct TranslationView: View {
             Text("in translating")
                 .font(.system(size: 14))
         }.padding(.leading, 20)
-    }
-
-    private var codeTheme: CodeTheme {
-        switch self.colorScheme {
-            case .dark:
-                return .dark
-            default:
-                return .light
-        }
     }
 }
 
