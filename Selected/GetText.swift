@@ -169,7 +169,14 @@ let SupportedCmdCAppList: [String] = ["com.microsoft.VSCode",
                                       "com.laiwang.DingTalk",
                                       "dd.work.exclusive4aliding",
                                       "com.kangfenmao.CherryStudio",
-                                      "com.tencent.xinWeChat"]
+                                      "com.tencent.xinWeChat",
+
+                                      // browsers
+                                      "com.apple.Safari",
+                                      "com.google.Chrome",     // Google Chrome
+                                      "com.microsoft.edgemac", // Microsoft Edge
+                                      "company.thebrowser.Browser",  // Arc
+]
 
 let copyableAppList: [String] = ["dev.warp.Warp-Stable",
                                  "com.microsoft.onenote.mac",
