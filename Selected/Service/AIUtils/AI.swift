@@ -196,10 +196,11 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
 
 
 func systemPrompt() -> String{
-    let dateFormatter = DateFormatter()
-    dateFormatter.locale = Locale.current
-    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-    let localDate = dateFormatter.string(from: Date())
+//    let dateFormatter = DateFormatter()
+//    dateFormatter.locale = Locale.current
+//    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+//    let localDate = dateFormatter.string(from: Date())
+//    Current time is \(localDate).
 
     let language = getCurrentAppLanguage()
     var currentLocation = ""
@@ -210,7 +211,6 @@ func systemPrompt() -> String{
                       You are a tool running on macOS called Selected. You can help user do anything.
                       The system language is \(language), you should try to reply in \(language) as much as possible, unless the user specifies to use another language, such as specifying to translate into a certain language.
                       When you need to output formulas, if it is a block formula, you should use the format $$a=b$$, and if it is an inline formula, you should use the format $a=b$.
-                      Current time is \(localDate).
                       \(currentLocation)
                       """
 }
