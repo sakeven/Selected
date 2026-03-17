@@ -519,6 +519,8 @@ fileprivate class ResponseStatus : ObservableObject {
                 break
             case .customToolCall(_):
                 break
+            case .keepalive:
+                break
         }
     }
 
