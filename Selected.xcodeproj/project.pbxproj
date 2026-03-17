@@ -567,8 +567,6 @@
 				386010692C4222BB00EB9AE7 /* XCRemoteSwiftPackageReference "SwiftAnthropic" */,
 				385EA9E82C5FC58D009B8F0E /* XCRemoteSwiftPackageReference "HotKey" */,
 				385EA9EB2C6256BA009B8F0E /* XCRemoteSwiftPackageReference "Sparkle" */,
-				386789212C9B0A1A00D7DD62 /* XCRemoteSwiftPackageReference "Defaults" */,
-				386789222C9B0A7900D7DD62 /* XCRemoteSwiftPackageReference "SettingsAccess" */,
 				38D132542F0D463B000F899A /* XCRemoteSwiftPackageReference "textual" */,
 			);
 			productRefGroup = 386AD7152B8F6BFA008C346D /* Products */;
@@ -1051,7 +1049,7 @@
 				minimumVersion = 2.1.0;
 			};
 		};
-		386789212C9B0A1A00D7DD62 /* XCRemoteSwiftPackageReference "Defaults" */ = {
+		386AD7422B8F6E77008C346D /* XCRemoteSwiftPackageReference "Defaults" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/Defaults.git";
 			requirement = {
@@ -1059,21 +1057,13 @@
 				minimumVersion = 8.2.0;
 			};
 		};
-		386789222C9B0A7900D7DD62 /* XCRemoteSwiftPackageReference "SettingsAccess" */ = {
+		386AD74F2B8F7AA5008C346D /* XCRemoteSwiftPackageReference "SettingsAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/orchetect/SettingsAccess";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.0.0;
 			};
-		};
-		386AD7422B8F6E77008C346D /* XCRemoteSwiftPackageReference "Defaults" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sindresorhus/Defaults.git";
-		};
-		386AD74F2B8F7AA5008C346D /* XCRemoteSwiftPackageReference "SettingsAccess" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/orchetect/SettingsAccess";
 		};
 		388DABB02BD549EE000B2739 /* XCRemoteSwiftPackageReference "ShortcutRecorder" */ = {
 			isa = XCRemoteSwiftPackageReference;
