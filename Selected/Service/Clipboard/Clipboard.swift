@@ -300,26 +300,13 @@ class ClipboardHotKeyManager {
 
 
 private class EnterHotKeyManager {
-    private var hotkey: HotKey?
-
-    func registerHotKey() {
-        if hotkey != nil {
-            return
+    func handleIfNeeded() -> Bool {
+        guard shouldHandleReturn() else {
+            return false
         }
-        hotkey = HotKey(key: .return, modifiers: [])
-        hotkey?.keyDownHandler = {
-            self.handle()
-        }
-    }
 
-    func unregisterHotKey() {
-        hotkey?.keyDownHandler = nil
-        hotkey = nil
-    }
-
-    func handle() {
         guard let item = ClipViewModel.shared.selectedItem else {
-            return
+            return false
         }
 
         let id = UUID().uuidString
@@ -338,6 +325,19 @@ private class EnterHotKeyManager {
         PressPasteKey()
         ClipWindowManager.shared.forceCloseWindow()
         ClipService.shared.resumeMonitor(id)
+        return true
+    }
+
+    private func shouldHandleReturn() -> Bool {
+        guard let firstResponder = NSApp.keyWindow?.firstResponder else {
+            return true
+        }
+
+        if let textView = firstResponder as? NSTextView {
+            return !textView.hasMarkedText()
+        }
+
+        return true
     }
 }
 
@@ -443,6 +443,7 @@ class ClipWindowManager {
 
 private class ClipWindowController: NSWindowController, NSWindowDelegate {
     var hotkeyMgr = EnterHotKeyManager()
+    private var localKeyMonitor: Any?
 
     init(rootView: AnyView) {
         let window = FloatingPanel(
@@ -496,12 +497,20 @@ private class ClipWindowController: NSWindowController, NSWindowDelegate {
     }
     
     override func showWindow(_ sender: Any?) {
-        hotkeyMgr.registerHotKey()
         super.showWindow(sender)
+        localKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            guard let self else { return event }
+            guard self.window?.isKeyWindow == true else { return event }
+            guard event.keyCode == Keycode.returnKey else { return event }
+            return self.hotkeyMgr.handleIfNeeded() ? nil : event
+        }
     }
 
     func windowWillClose(_ notification: Notification) {
-        hotkeyMgr.unregisterHotKey()
+        if let localKeyMonitor {
+            NSEvent.removeMonitor(localKeyMonitor)
+            self.localKeyMonitor = nil
+        }
         ClipViewModel.shared.selectedItem = nil
     }
 }
