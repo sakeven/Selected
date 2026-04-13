@@ -5,156 +5,13 @@
 //  Created by sake on 2024/4/7.
 //
 
+import AppKit
+import CoreData
 import Foundation
-import SwiftUI
 import PDFKit
+import SwiftUI
 
-struct ClipDataView: View {
-    @ObservedObject var data: ClipHistoryData
-
-    var body: some View {
-        VStack(alignment: .leading){
-            if let item = data.getItems().first {
-                let type = NSPasteboard.PasteboardType(item.type!)
-                previewView.id(data.MD5())
-                Spacer()
-                Divider()
-
-                HStack {
-                    Text("Application:")
-                    Spacer()
-                    getIcon(data.application!)
-                    Text(getAppName(data.application!))
-                }
-                .frame(height: 17)
-
-                HStack {
-                    Text("Content type:")
-                    Spacer()
-                    if let text = data.plainText, isValidHttpUrl(text) {
-                        Text("Link")
-                    } else {
-                        let str = "\(type)"
-                        Text(NSLocalizedString(str, comment: ""))
-                    }
-                }
-                .frame(height: 17)
-
-                HStack {
-                    Text("Date:")
-                    Spacer()
-                    Text("\(format(data.firstCopiedAt!))")
-                }
-                .frame(height: 17)
-
-                if data.numberOfCopies > 1 {
-                    HStack {
-                        Text("Last copied:")
-                        Spacer()
-                        Text("\(format(data.lastCopiedAt!))")
-                    }
-                    .frame(height: 17)
-
-                    HStack {
-                        Text("Copied:")
-                        Spacer()
-                        Text("\(data.numberOfCopies) times")
-                    }
-                    .frame(height: 17)
-                }
-
-                if let url = data.url {
-                    if type == .fileURL {
-                        let url = URL(string: String(decoding: item.data!, as: UTF8.self))!
-                        HStack {
-                            Text("Path:")
-                            Spacer()
-                            Text(url.path().removingPercentEncoding!).lineLimit(1)
-                        }
-                        .frame(height: 17)
-                    } else {
-                        HStack {
-                            Text("URL:")
-                            Spacer()
-                            Link(destination: URL(string: url)!, label: {
-                                Text(url).lineLimit(1)
-                            })
-                        }
-                        .frame(height: 17)
-                    }
-                }
-                HStack {
-                    Text("Actions:")
-                    Spacer()
-                    ClipActionBar(data: data)
-                }
-            } else {
-                EmptyView()
-            }
-        }
-        .padding()
-        .frame(width: 550)
-    }
-
-    private var previewView: some View {
-        VStack{
-            if let item = data.getItems().first {
-                let type = NSPasteboard.PasteboardType(item.type!)
-                if type == .png || type == .tiff {
-                    Image(nsImage: NSImage(data: item.data!)!)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } else if type == .rtf {
-                    RTFView(rtfData: item.data!)
-                } else if type == .fileURL {
-                    let url = URL(string: String(decoding: item.data!, as: UTF8.self))!
-                    let name = url.lastPathComponent.removingPercentEncoding!
-                    if name.hasSuffix(".pdf") {
-                        PDFKitRepresentedView(url: url)
-                    } else {
-                        QuickLookPreview(url: url)
-                    }
-                } else if type == .color {
-                    if let data = item.data,
-                       let color = decodeNSColor(from: data){
-                        HStack{
-                            Spacer()
-                            Circle()
-                                .fill(Color(nsColor:color))// swiftUIColor(from: color)))
-                                .overlay(
-                                    Circle().stroke(.primary.opacity(0.15), lineWidth: 1)
-                                )
-                            Spacer()
-                        }
-                    }
-                } else if let plainText = data.plainText {
-                    TextView(text: plainText)
-                }
-            }
-        }
-    }
-
-    private func getAppName(_ bundleID: String) -> String {
-        guard let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else {
-            return "Unknown"
-        }
-        return FileManager.default.displayName(atPath: bundleURL.path)
-    }
-
-    private func getIcon(_ bundleID: String) -> some View {
-        guard let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else{
-            return AnyView(EmptyView())
-        }
-        return AnyView(
-            Image(nsImage: NSWorkspace.shared.icon(forFile: bundleURL.path))
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 15, height: 15)
-        )
-    }
-}
-
-func format(_ d: Date) -> String{
+func format(_ d: Date) -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.dateStyle = .medium
     dateFormatter.timeStyle = .short
@@ -178,159 +35,146 @@ class ClipViewModel: ObservableObject {
     @Published var selectedItem: ClipHistoryData?
 }
 
-// MARK: - 剪贴板项行（根据剪贴板数据类型展示不同内容）
-struct ClipRowView: View {
-    @ObservedObject var clip: ClipHistoryData
+private enum ClipDisplayKind {
+    case color
+    case file
+    case image
+    case link
+    case text
+    case richText
+    case html
+    case unknown
 
-    var body: some View {
-        HStack(spacing: 4) {
-            if clip.isPinned {
-                Image(systemName: "pin.fill")
-                    .imageScale(.small)
-                    .padding(.leading, 4)
-            }
-
-            rowContent
+    var label: String {
+        switch self {
+        case .color: return "Color"
+        case .file: return "File"
+        case .image: return "Image"
+        case .link: return "Link"
+        case .text: return "Plain Text"
+        case .richText: return "Rich Text"
+        case .html: return "HTML"
+        case .unknown: return "Clipboard Item"
         }
     }
 
-    @ViewBuilder
-    private var rowContent: some View {
-        if let item = clip.getItems().first,
-           let typeString = item.type {
-            let type = NSPasteboard.PasteboardType(rawValue: typeString)
-            switch type {
-                case .color:
-                    if let data = item.data,
-                       let color = decodeNSColor(from: data) {
-                        Label {
-                            Text("Color")
-                                .padding(.leading, 10)
-                        } icon: {
-                            Image(systemName: "circle.circle.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(Color(nsColor: color))
-                        }
-                    }
-                case .png, .tiff:
-                    if let data = item.data,
-                       let image = NSImage(data: data) {
-                        let widthStr = valueFormatter.string(from: NSNumber(value: Double(image.size.width))) ?? ""
-                        let heightStr = valueFormatter.string(from: NSNumber(value: Double(image.size.height))) ?? ""
-                        Label {
-                            Text("Image \(widthStr) * \(heightStr)")
-                                .padding(.leading, 10)
-                        } icon: {
-                            Image(nsImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
-                        }
-                    } else {
-                        EmptyView()
-                    }
-
-                case .fileURL:
-                    if let data = item.data,
-                       let url = URL(string: String(decoding: data, as: UTF8.self)) {
-                        Label {
-                            Text(url.lastPathComponent.removingPercentEncoding ?? "")
-                                .lineLimit(1)
-                                .padding(.leading, 10)
-                        } icon: {
-                            Image(systemName: "doc.on.doc")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
-                        }
-                    } else {
-                        EmptyView()
-                    }
-
-                case .rtf:
-                    if let plainText = clip.plainText {
-                        Label {
-                            Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines).removingAllNewlines())
-                                .lineLimit(1)
-                                .padding(.leading, 10)
-                        } icon: {
-                            Image(systemName: "doc.richtext")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
-                        }
-                    } else {
-                        EmptyView()
-                    }
-
-                case .string:
-                    if let plainText = clip.plainText {
-                        Label {
-                            Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines).removingAllNewlines())
-                                .lineLimit(1)
-                                .padding(.leading, 10)
-                        } icon: {
-                            Image(systemName: "doc.plaintext")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
-                        }
-                    } else {
-                        EmptyView()
-                    }
-
-                case .html:
-                    if let plainText = clip.plainText {
-                        Label {
-                            Text(plainText.trimmingCharacters(in: .whitespacesAndNewlines))
-                                .lineLimit(1)
-                                .padding(.leading, 10)
-                        } icon: {
-                            Image(systemName: "circle.dashed.rectangle")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
-                        }
-                    } else {
-                        EmptyView()
-                    }
-
-                case .URL:
-                    if let urlString = clip.url {
-                        Label {
-                            Text(urlString.trimmingCharacters(in: .whitespacesAndNewlines))
-                                .lineLimit(1)
-                                .padding(.leading, 10)
-                        } icon: {
-                            Image(systemName: "link")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 20, height: 20)
-                        }
-                    } else {
-                        EmptyView()
-                    }
-
-                default:
-                    EmptyView()
-            }
-        } else {
-            EmptyView()
+    var tint: Color {
+        switch self {
+        case .color: return .green
+        case .file: return .blue
+        case .image: return .orange
+        case .link: return .blue
+        case .text: return .indigo
+        case .richText: return .purple
+        case .html: return .mint
+        case .unknown: return .gray
         }
+    }
+
+    var symbolName: String {
+        switch self {
+        case .color: return "circle.fill"
+        case .file: return "doc.on.doc"
+        case .image: return "photo"
+        case .link: return "link"
+        case .text: return "doc.text"
+        case .richText: return "doc.richtext"
+        case .html: return "circle.dashed.rectangle"
+        case .unknown: return "doc"
+        }
+    }
+}
+
+private extension ColorScheme {
+    var clipBackdropColors: [Color] {
+        switch self {
+        case .dark:
+            [
+                Color(red: 0.24, green: 0.47, blue: 0.72),
+                Color(red: 0.15, green: 0.21, blue: 0.29),
+                Color(red: 0.25, green: 0.36, blue: 0.47)
+            ]
+        default:
+            [
+                Color(red: 0.88, green: 0.94, blue: 0.99),
+                Color(red: 0.71, green: 0.82, blue: 0.92),
+                Color(red: 0.80, green: 0.89, blue: 0.96)
+            ]
+        }
+    }
+
+    var clipShellOverlay: Color {
+        self == .dark ? Color.black.opacity(0.14) : Color(red: 0.16, green: 0.28, blue: 0.38).opacity(0.03)
+    }
+
+    var clipShellStroke: Color {
+        self == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.2)
+    }
+
+    var clipOuterStroke: Color {
+        self == .dark ? Color.white.opacity(0.1) : Color(red: 0.22, green: 0.35, blue: 0.48).opacity(0.08)
+    }
+
+    var clipPanelFill: Color {
+        self == .dark ? Color.black.opacity(0.12) : Color(red: 0.23, green: 0.36, blue: 0.48).opacity(0.05)
+    }
+
+    var clipPanelStroke: Color {
+        self == .dark ? Color.white.opacity(0.07) : Color.white.opacity(0.22)
+    }
+
+    var clipDetailFill: Color {
+        self == .dark ? Color.black.opacity(0.08) : Color(red: 0.20, green: 0.33, blue: 0.45).opacity(0.035)
+    }
+
+    var clipDetailStroke: Color {
+        self == .dark ? Color.white.opacity(0.05) : Color.white.opacity(0.16)
+    }
+
+    var clipCardFill: Color {
+        self == .dark ? Color.black.opacity(0.1) : Color(red: 0.20, green: 0.32, blue: 0.44).opacity(0.05)
+    }
+
+    var clipPreviewFill: Color {
+        self == .dark ? Color.black.opacity(0.14) : Color(red: 0.19, green: 0.31, blue: 0.43).opacity(0.055)
+    }
+
+    var clipSelectedFill: Color {
+        self == .dark ? Color.white.opacity(0.06) : Color.white.opacity(0.16)
+    }
+
+    var clipSelectedStroke: Color {
+        self == .dark ? Color.white.opacity(0.1) : Color.white.opacity(0.22)
+    }
+
+    var clipDivider: Color {
+        self == .dark ? Color.white.opacity(0.12) : Color.white.opacity(0.22)
+    }
+
+    var clipPrimaryText: Color {
+        self == .dark
+            ? Color.white.opacity(0.96)
+            : Color(red: 0.16, green: 0.23, blue: 0.31).opacity(0.96)
+    }
+
+    var clipSecondaryText: Color {
+        self == .dark
+            ? Color.white.opacity(0.8)
+            : Color(red: 0.25, green: 0.35, blue: 0.46).opacity(0.9)
     }
 }
 
 struct ClipView: View {
     @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.colorScheme) private var colorScheme
 
     @FetchRequest(
         sortDescriptors: [
             NSSortDescriptor(keyPath: \ClipHistoryData.isPinned, ascending: false),
             NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: false)
         ],
-        animation: .default)
+        animation: .default
+    )
     private var clips: FetchedResults<ClipHistoryData>
 
     @ObservedObject var viewModel = ClipViewModel.shared
@@ -339,118 +183,173 @@ struct ClipView: View {
     @State private var searchText = ""
     @State private var localSelection: ClipHistoryData?
 
-    // 过滤后的结果
     private var filteredClips: [ClipHistoryData] {
         if searchText.isEmpty {
             return Array(clips)
-        } else {
-            return clips.filter { clip in
-                if let plainText = clip.plainText,
-                   plainText.localizedCaseInsensitiveContains(searchText) {
-                    return true
-                }
-                if let url = clip.url,
-                   url.localizedCaseInsensitiveContains(searchText) {
-                    return true
-                }
-                if let item = clip.getItems().first,
-                   let type = item.type,
-                   NSPasteboard.PasteboardType(type) == .fileURL,
-                   let data = item.data,
-                   let urlString = String(data: data, encoding: .utf8),
-                   let url = URL(string: urlString),
-                   url.lastPathComponent.localizedCaseInsensitiveContains(searchText) {
-                    return true
-                }
-                return false
+        }
+
+        return clips.filter { clip in
+            if let plainText = clip.plainText,
+               plainText.localizedCaseInsensitiveContains(searchText) {
+                return true
             }
+
+            if let url = clip.url,
+               url.localizedCaseInsensitiveContains(searchText) {
+                return true
+            }
+
+            if let fileName = clip.fileURLValue?.lastPathComponent.removingPercentEncoding,
+               fileName.localizedCaseInsensitiveContains(searchText) {
+                return true
+            }
+
+            return false
         }
     }
 
     var body: some View {
         ZStack {
-            HStack(spacing: 0) {
-                // 左侧列表
-                VStack {
-                    SearchBarView(searchText: $searchText, onArrowKey: handleArrowKey).padding([.leading, .top], 10)
+            backdrop
 
-                    if filteredClips.isEmpty {
-                        Text(searchText.isEmpty ? "Clipboard History" : "No results found")
-                            .frame(width: 250)
-                            .padding(.top)
-                        Spacer()
-                    } else {
-                        ScrollViewReader { proxy in
-                            List(filteredClips,
-                                 id: \.self,
-                                 selection: $localSelection) { clipData in
-                                ClipRowView(clip: clipData)
-                                    .frame(height: 30)
-                                    .tag(clipData)
-                                    .contextMenu {
-                                        Button(action: {
-                                            togglePin(clipData)
-                                        }) {
-                                            Label(clipData.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"), systemImage: "pin").labelStyle(.titleAndIcon)
-                                        }
-                                        Divider()
-                                        Button(action: {
-                                            delete(clipData)
-                                        }) {
-                                            Label("Delete", systemImage: "trash").labelStyle(.titleAndIcon)
-                                        }
-                                    }
-                                    .background(.clear)
-                            }.padding(.leading, 10)
-                                .listStyle(.plain)
-                                .scrollContentBackground(.hidden)
-                                .listRowBackground(Color.clear)
-                                .background(.clear)
-                                .frame(width: 250)
-                                .frame(minWidth: 250, maxWidth: 250)
-                                .onChange(of: searchText) { _ in
-                                    if !filteredClips.isEmpty {
-                                        localSelection = filteredClips.first
-                                        withAnimation {
-                                            proxy.scrollTo(filteredClips.first, anchor: .top)
-                                        }
-                                    } else {
-                                        localSelection = nil
-                                    }
-                                }
-                        }
-                    }
-                }
+            HSplitView {
+                sidebar
+                    .frame(minWidth: 280, idealWidth: 320, maxWidth: 340)
 
-                // 右侧详情
-                Group {
-                    if let selected = localSelection {
-                        ClipDataView(data: selected)
-                    } else {
-                        Text("Clipboard History")
-                            .foregroundColor(.secondary)
-                    }
-                }
-
+                detailPane
+                    .frame(minWidth: 500)
             }
+            .padding(12)
+            .background(panelBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .stroke(colorScheme.clipShellStroke, lineWidth: 1)
+            )
         }
-        .frame(width: 800, height: 450)
-        .background(.ultraThinMaterial)
-        .cornerRadius(12)
+        .frame(width: 920, height: 560)
+        .clipShape(RoundedRectangle(cornerRadius: 34, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 34, style: .continuous)
+                .stroke(colorScheme.clipOuterStroke, lineWidth: 1)
+        )
+        .compositingGroup()
         .onAppear {
             localSelection = clips.first
             viewModel.selectedItem = localSelection
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.isFocused = true
+                isFocused = true
             }
         }
-        .onChange(of: localSelection) { newValue in
+        .onChange(of: localSelection) { _, newValue in
             viewModel.selectedItem = newValue
         }
         .focused($isFocused)
     }
 
-    // MARK: - 方向键处理：现在改操作 localSelection，而不是直接改 viewModel
+    private var panelBackground: some View {
+        RoundedRectangle(cornerRadius: 28, style: .continuous)
+            .fill(.regularMaterial)
+            .overlay(colorScheme.clipShellOverlay)
+    }
+
+    private var backdrop: some View {
+        LinearGradient(
+            colors: colorScheme.clipBackdropColors,
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .overlay(Color.black.opacity(colorScheme == .dark ? 0.12 : 0.06))
+    }
+
+    private var sidebar: some View {
+        VStack(spacing: 14) {
+            SearchBarView(searchText: $searchText, onArrowKey: handleArrowKey)
+
+            if filteredClips.isEmpty {
+                ContentUnavailableView.search(text: searchText)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(filteredClips, id: \.objectID) { clipData in
+                                Button {
+                                    localSelection = clipData
+                                } label: {
+                                    ClipRowView(
+                                        clip: clipData,
+                                        isSelected: localSelection?.objectID == clipData.objectID
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                                .id(clipData.objectID)
+                                .contextMenu {
+                                    Button(action: {
+                                        togglePin(clipData)
+                                    }) {
+                                        Label(
+                                            clipData.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"),
+                                            systemImage: "pin"
+                                        )
+                                    }
+
+                                    Divider()
+
+                                    Button(action: {
+                                        delete(clipData)
+                                    }) {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.top, 6)
+                    }
+                    .scrollIndicators(.hidden)
+                    .onChange(of: localSelection?.objectID.uriRepresentation()) {
+                        guard let selected = localSelection else { return }
+                        withAnimation(.easeInOut(duration: 0.14)) {
+                            proxy.scrollTo(selected.objectID, anchor: .center)
+                        }
+                    }
+                    .onChange(of: searchText) {
+                        guard let first = filteredClips.first else {
+                            localSelection = nil
+                            return
+                        }
+
+                        localSelection = first
+                        withAnimation(.easeInOut(duration: 0.14)) {
+                            proxy.scrollTo(first.objectID, anchor: .top)
+                        }
+                    }
+                }
+            }
+        }
+        .padding(12)
+        .frame(maxHeight: .infinity, alignment: .top)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(colorScheme.clipPanelFill)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(colorScheme.clipPanelStroke, lineWidth: 1)
+                )
+        )
+        .padding(.trailing, 12)
+    }
+
+    @ViewBuilder
+    private var detailPane: some View {
+        if let selected = localSelection {
+            ClipDataView(data: selected)
+        } else {
+            ContentUnavailableView.search(text: searchText)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
     private func handleArrowKey(_ direction: CustomSearchField.ArrowDirection) {
         guard !filteredClips.isEmpty else { return }
 
@@ -462,22 +361,18 @@ struct ClipView: View {
             } else {
                 localSelection = filteredClips.first
             }
-        } else if direction == .up {
-            if let current = localSelection,
-               let index = filteredClips.firstIndex(of: current),
-               index > 0 {
-                localSelection = filteredClips[index - 1]
-            }
+        } else if let current = localSelection,
+                  let index = filteredClips.firstIndex(of: current),
+                  index > 0 {
+            localSelection = filteredClips[index - 1]
         }
     }
 
-    // MARK: - 删除逻辑，也改用 localSelection 作为参考
     private func delete(_ clipData: ClipHistoryData) {
         let currentSelection = localSelection
         let selectedItemIdx = currentSelection.flatMap { filteredClips.firstIndex(of: $0) } ?? 0
         let idx = filteredClips.firstIndex(of: clipData) ?? 0
 
-        // 先算好删除后的选中索引
         let newIndexAfterDeletion: Int?
         if currentSelection == clipData {
             if filteredClips.count > idx + 1 {
@@ -496,19 +391,18 @@ struct ClipView: View {
         PersistenceController.shared.delete(item: clipData)
 
         DispatchQueue.main.async {
-            let newFiltered = self.filteredClips  // 删除后重新计算
+            let newFiltered = filteredClips
             if let newIndex = newIndexAfterDeletion,
                newFiltered.indices.contains(newIndex) {
-                self.localSelection = newFiltered[newIndex]
-            } else if !newFiltered.isEmpty {
-                self.localSelection = newFiltered.first
+                localSelection = newFiltered[newIndex]
+            } else if let first = newFiltered.first {
+                localSelection = first
             } else {
-                self.localSelection = nil
+                localSelection = nil
             }
         }
     }
 
-    // MARK: - 置顶 / 取消置顶
     private func togglePin(_ clipData: ClipHistoryData) {
         clipData.isPinned.toggle()
         do {
@@ -517,8 +411,560 @@ struct ClipView: View {
             print("Failed to toggle pin: \(error)")
         }
 
-        // 如果刚操作的是当前选中项，保证选中引用不变（指向最新的托管对象状态）
+        localSelection = clipData
         viewModel.selectedItem = clipData
+    }
+}
+
+private struct ClipRowView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject var clip: ClipHistoryData
+    let isSelected: Bool
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                Image(systemName: "pin.fill")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(colorScheme.clipPrimaryText.opacity(clip.isPinned ? 0.92 : 0))
+                    .frame(width: 12)
+                    .accessibilityHidden(true)
+
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .stroke(clip.displayKind.tint, lineWidth: 2)
+                    .frame(width: 28, height: 28)
+                    .overlay(ClipKindIcon(kind: clip.displayKind))
+
+                Text(clip.rowTitle)
+                    .font(.body.weight(isSelected ? .semibold : .medium))
+                    .foregroundStyle(colorScheme.clipPrimaryText)
+                    .lineLimit(1)
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 14)
+            .frame(height: 54)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(isSelected ? colorScheme.clipSelectedFill : Color.clear)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .stroke(isSelected ? colorScheme.clipSelectedStroke : .clear, lineWidth: 1)
+                    )
+            )
+
+            Rectangle()
+                .fill(colorScheme.clipDivider)
+                .frame(height: 1)
+                .padding(.leading, 64)
+        }
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(clip.rowTitle), \(clip.contentTypeLabel)")
+        .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
+    }
+}
+
+private struct ClipKindIcon: View {
+    let kind: ClipDisplayKind
+
+    var body: some View {
+        if kind == .color {
+            Circle()
+                .fill(kind.tint)
+                .frame(width: 12, height: 12)
+        } else {
+            Image(systemName: kind.symbolName)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(kind.tint)
+        }
+    }
+}
+
+struct ClipDataView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject var data: ClipHistoryData
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 14) {
+                previewCard
+
+                Rectangle()
+                    .fill(colorScheme.clipDivider)
+                    .frame(height: 1)
+
+                ClipMetadataCard(data: data)
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+        }
+        .scrollIndicators(.hidden)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(colorScheme.clipDetailFill)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .stroke(colorScheme.clipDetailStroke, lineWidth: 1)
+                )
+        )
+        .padding(.leading, 12)
+        .padding(.vertical, 6)
+        .padding(.trailing, 2)
+    }
+
+    private var previewCard: some View {
+        ClipPreviewStage(data: data)
+            .id(data.MD5())
+            .padding(20)
+            .frame(maxWidth: .infinity)
+            .frame(height: 230)
+            .background(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(colorScheme.clipPreviewFill)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .stroke(colorScheme.clipPanelStroke, lineWidth: 1)
+                    )
+            )
+    }
+}
+
+private struct ClipMetadataCard: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject var data: ClipHistoryData
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            applicationRow
+
+            ClipMetadataRow(title: "Content type:") {
+                Text(data.contentTypeLabel)
+                    .font(.body.weight(.medium))
+            }
+
+            ClipMetadataRow(title: "Date:") {
+                Text(data.firstCopiedText)
+            }
+
+            if let lastCopiedText = data.lastCopiedText {
+                ClipMetadataRow(title: "Last copied:") {
+                    Text(lastCopiedText)
+                }
+            }
+
+            ClipMetadataRow(title: "Copied:") {
+                Text(data.copiesText)
+            }
+
+            if let locationInfo = data.locationInfo {
+                ClipMetadataRow(title: "\(locationInfo.title):") {
+                    Text(locationInfo.value)
+                        .lineLimit(1)
+                        .textSelection(.enabled)
+                }
+            }
+
+            if data.plainText != nil {
+                ClipMetadataRow(title: "Actions:") {
+                    ClipActionBar(data: data)
+                }
+            }
+        }
+        .padding(18)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(colorScheme.clipCardFill)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .stroke(colorScheme.clipPanelStroke, lineWidth: 1)
+                )
+        )
+    }
+
+    private var applicationRow: some View {
+        ClipMetadataRow(title: "Application:") {
+            HStack(spacing: 8) {
+                if let icon = data.appIcon {
+                    Image(nsImage: icon)
+                        .resizable()
+                        .interpolation(.high)
+                        .frame(width: 18, height: 18)
+                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                }
+
+                Text(data.appDisplayName)
+                    .font(.body.weight(.medium))
+            }
+        }
+    }
+}
+
+private struct ClipPreviewStage: View {
+    @ObservedObject var data: ClipHistoryData
+
+    var body: some View {
+        Group {
+            switch data.displayKind {
+            case .color:
+                ClipColorPreview(data: data)
+            case .file:
+                ClipFilePreview(data: data)
+            case .image:
+                ClipImagePreview(data: data)
+            case .link:
+                ClipLinkPreview(data: data)
+            case .text, .richText, .html, .unknown:
+                ClipTextPreview(data: data)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+private struct ClipColorPreview: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject var data: ClipHistoryData
+
+    var body: some View {
+        GeometryReader { geometry in
+            let diameter = min(geometry.size.width * 0.56, geometry.size.height * 0.9)
+
+            HStack {
+                Spacer()
+                Circle()
+                    .fill(data.colorValue.map(Color.init(nsColor:)) ?? .green)
+                    .frame(width: diameter, height: diameter)
+                    .overlay(
+                        Circle()
+                            .stroke(colorScheme.clipSelectedStroke, lineWidth: 1)
+                    )
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+}
+
+private struct ClipFilePreview: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject var data: ClipHistoryData
+
+    var body: some View {
+        if let url = data.fileURLValue {
+            if url.pathExtension.lowercased() == "pdf" {
+                PDFKitRepresentedView(url: url)
+            } else {
+                QuickLookPreview(url: url)
+            }
+        } else {
+            VStack(alignment: .leading, spacing: 12) {
+                Image(systemName: "doc.text.fill")
+                    .font(.largeTitle)
+                    .foregroundStyle(data.displayKind.tint)
+
+                Text(data.detailTitle)
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(colorScheme.clipPrimaryText)
+                    .lineLimit(2)
+
+                if let locationInfo = data.locationInfo {
+                    Text(locationInfo.value)
+                        .font(.body)
+                        .foregroundStyle(colorScheme.clipSecondaryText)
+                        .lineLimit(3)
+                }
+
+                Spacer(minLength: 0)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        }
+    }
+}
+
+private struct ClipImagePreview: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject var data: ClipHistoryData
+
+    var body: some View {
+        if let imageData = data.primaryItem?.data,
+           let image = NSImage(data: imageData) {
+            Image(nsImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        } else {
+            VStack(spacing: 14) {
+                Image(systemName: "photo.on.rectangle.angled")
+                    .font(.largeTitle)
+                    .foregroundStyle(colorScheme.clipPrimaryText.opacity(0.84))
+
+                Text(data.detailTitle)
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(colorScheme.clipPrimaryText)
+                    .lineLimit(2)
+
+                if let locationInfo = data.locationInfo {
+                    Text(locationInfo.value)
+                        .font(.body)
+                        .foregroundStyle(colorScheme.clipSecondaryText)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+}
+
+private struct ClipLinkPreview: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject var data: ClipHistoryData
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(data.detailTitle)
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(colorScheme.clipPrimaryText)
+                .lineLimit(2)
+
+            if let previewText = data.cleanedPreviewText,
+               previewText != data.displayURLString {
+                Text(previewText)
+                    .font(.body)
+                    .foregroundStyle(colorScheme.clipPrimaryText.opacity(0.9))
+                    .lineLimit(4)
+            }
+
+            Spacer(minLength: 0)
+
+            if let urlString = data.displayURLString,
+               let url = URL(string: urlString),
+               isValidHttpUrl(urlString) {
+                Link(destination: url) {
+                    Text(urlString)
+                        .font(.callout)
+                        .foregroundStyle(colorScheme.clipSecondaryText)
+                        .lineLimit(1)
+                }
+            } else if let urlString = data.displayURLString {
+                Text(urlString)
+                    .font(.callout)
+                    .foregroundStyle(colorScheme.clipSecondaryText)
+                    .lineLimit(1)
+                    .textSelection(.enabled)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+}
+
+private struct ClipTextPreview: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject var data: ClipHistoryData
+
+    var body: some View {
+        if let plainText = data.plainText, !plainText.isEmpty {
+            TextView(text: plainText)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        } else {
+            Text(data.detailTitle)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(colorScheme.clipSecondaryText)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+}
+
+private struct ClipMetadataRow<Content: View>: View {
+    @Environment(\.colorScheme) private var colorScheme
+    let title: String
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 16) {
+            Text(title)
+                .font(.body)
+                .foregroundStyle(colorScheme.clipPrimaryText.opacity(0.92))
+                .frame(width: 120, alignment: .leading)
+
+            Spacer(minLength: 0)
+
+            content
+                .font(.body)
+                .foregroundStyle(colorScheme.clipPrimaryText)
+                .multilineTextAlignment(.trailing)
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private extension ClipHistoryData {
+    var primaryItem: ClipHistoryItem? {
+        getItems().first
+    }
+
+    var primaryPasteboardType: NSPasteboard.PasteboardType? {
+        guard let type = primaryItem?.type else { return nil }
+        return NSPasteboard.PasteboardType(rawValue: type)
+    }
+
+    var displayKind: ClipDisplayKind {
+        guard let type = primaryPasteboardType else {
+            if let plainText = plainText, isValidHttpUrl(plainText) {
+                return .link
+            }
+            return plainText == nil ? .unknown : .text
+        }
+
+        switch type {
+        case .color:
+            return .color
+        case .png, .tiff:
+            return .image
+        case .fileURL:
+            return .file
+        case .rtf:
+            return .richText
+        case .html:
+            return .html
+        case .URL:
+            return .link
+        case .string:
+            if let plainText = plainText, isValidHttpUrl(plainText) {
+                return .link
+            }
+            return .text
+        default:
+            return url == nil ? .unknown : .link
+        }
+    }
+
+    var contentTypeLabel: String {
+        displayKind.label
+    }
+
+    var cleanedPreviewText: String? {
+        guard let plainText else { return nil }
+        let trimmed = plainText.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+
+    var rowTitle: String {
+        switch displayKind {
+        case .color:
+            return "Color"
+        case .file:
+            return fileURLValue?.lastPathComponent.removingPercentEncoding ?? "File"
+        case .image:
+            return imageSizeText.map { "Image \($0)" } ?? "Image"
+        case .link:
+            return displayURLString ?? cleanedPreviewText?.removingAllNewlines() ?? "Link"
+        case .text, .richText, .html:
+            return cleanedPreviewText?.removingAllNewlines() ?? contentTypeLabel
+        case .unknown:
+            return cleanedPreviewText?.removingAllNewlines() ?? displayURLString ?? "Clipboard Item"
+        }
+    }
+
+    var detailTitle: String {
+        switch displayKind {
+        case .file:
+            return fileURLValue?.lastPathComponent.removingPercentEncoding ?? rowTitle
+        default:
+            return rowTitle
+        }
+    }
+
+    var fileURLValue: URL? {
+        guard primaryPasteboardType == .fileURL,
+              let data = primaryItem?.data,
+              let string = String(data: data, encoding: .utf8) else {
+            return nil
+        }
+        return URL(string: string)
+    }
+
+    var displayURLString: String? {
+        if displayKind == .file {
+            if let fileURLValue {
+                return fileURLValue.path.removingPercentEncoding ?? fileURLValue.path
+            }
+            return nil
+        }
+
+        if let url, !url.isEmpty {
+            return url
+        }
+
+        if let cleanedPreviewText, isValidHttpUrl(cleanedPreviewText) {
+            return cleanedPreviewText
+        }
+
+        return nil
+    }
+
+    var imageSizeText: String? {
+        guard let data = primaryItem?.data,
+              let image = NSImage(data: data) else {
+            return nil
+        }
+
+        let width = valueFormatter.string(from: NSNumber(value: Double(image.size.width))) ?? ""
+        let height = valueFormatter.string(from: NSNumber(value: Double(image.size.height))) ?? ""
+        guard !width.isEmpty, !height.isEmpty else { return nil }
+        return "\(width) × \(height)"
+    }
+
+    var colorValue: NSColor? {
+        guard let data = primaryItem?.data else { return nil }
+        return decodeNSColor(from: data)
+    }
+
+    var appDisplayName: String {
+        guard let bundleID = application,
+              let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else {
+            return "Unknown"
+        }
+        return FileManager.default.displayName(atPath: bundleURL.path)
+    }
+
+    var appIcon: NSImage? {
+        guard let bundleID = application,
+              let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else {
+            return nil
+        }
+        return NSWorkspace.shared.icon(forFile: bundleURL.path)
+    }
+
+    var firstCopiedText: String {
+        firstCopiedAt.map(format) ?? "-"
+    }
+
+    var lastCopiedText: String? {
+        guard numberOfCopies > 1, let lastCopiedAt else { return nil }
+        return format(lastCopiedAt)
+    }
+
+    var copiesText: String {
+        if numberOfCopies == 1 {
+            return "1"
+        }
+        return String(format: String(localized: "%d times"), numberOfCopies)
+    }
+
+    var locationInfo: (title: String, value: String)? {
+        switch displayKind {
+        case .file:
+            guard let fileURLValue else { return nil }
+            return ("Path", fileURLValue.path.removingPercentEncoding ?? fileURLValue.path)
+        case .image:
+            guard let imageSizeText else { return nil }
+            return ("Size", imageSizeText)
+        case .link:
+            guard let displayURLString else { return nil }
+            return ("URL", displayURLString)
+        default:
+            return nil
+        }
     }
 }
 
@@ -537,18 +983,23 @@ struct ClipActionBar: View {
     @ObservedObject var data: ClipHistoryData
 
     var body: some View {
-        HStack{
+        HStack(spacing: 8) {
             if data.isJSON {
                 Button("Prettify JSON") {
                     prettifyJSON()
                 }
+                .buttonStyle(.bordered)
             }
+
             if data.plainText != nil {
                 Button("Paste plain text") {
                     pastePlainText()
                 }
+                .buttonStyle(.borderedProminent)
+                .tint(Color(red: 0.82, green: 0.67, blue: 0.54))
             }
         }
+        .controlSize(.small)
     }
 
     private func prettifyJSON() {
@@ -572,7 +1023,6 @@ struct ClipActionBar: View {
 }
 
 extension String {
-    /// 移除所有换行（\n、\r\n、\r）
     func removingAllNewlines() -> String {
         self
             .replacingOccurrences(of: "\r\n", with: "")
@@ -582,37 +1032,32 @@ extension String {
 }
 
 func decodeNSColor(from data: Data) -> NSColor? {
-    return NSColor(pasteboardPropertyList: data, ofType: .color)
+    NSColor(pasteboardPropertyList: data, ofType: .color)
 }
 
 func colorToData(color: NSColor) -> Data? {
     do {
-        let data = try NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: true)
-        return data
+        return try NSKeyedArchiver.archivedData(withRootObject: color, requiringSecureCoding: true)
     } catch {
         logger.error("convert color to Data: \(error)")
         return nil
     }
 }
 
-
 func swiftUIColor(from c1: NSColor) -> NSColor {
-    // 1. 获取原始分量
     let count = c1.numberOfComponents
     var rawComponents = Array<CGFloat>(repeating: 0, count: count)
 
-    // 2. 直接从 NSColor 提取原始数值，不经过 cgColor
     c1.getComponents(&rawComponents)
 
-    // 2. 归一化：将数值除以 255
     let normalizedComponents = rawComponents.map { $0 > 1.0 ? $0 / 255.0 : $0 }
 
-    // 3. 用正确的数值和【原始色彩空间】重新构造 NSColor
-    let correctedColor = NSColor(colorSpace: c1.colorSpace,
-                                 components: normalizedComponents,
-                                 count: normalizedComponents.count)
+    let correctedColor = NSColor(
+        colorSpace: c1.colorSpace,
+        components: normalizedComponents,
+        count: normalizedComponents.count
+    )
 
-    // 4. 现在再转换到 sRGB
     if let sRGBColor = correctedColor.usingColorSpace(.sRGB) {
         return sRGBColor
     }

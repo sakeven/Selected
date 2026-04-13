@@ -17,10 +17,35 @@ let SelfBundleID = Bundle.main.bundleIdentifier ?? "io.kitool.Selected"
 
 let logger = Logger(subsystem: SelfBundleID, category: "")
 
+var isPreview: Bool {
+    let environment = ProcessInfo.processInfo.environment
+    return environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+        || environment["XCODE_RUNNING_FOR_PLAYGROUNDS"] == "1"
+}
+
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    private var previewWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        if isPreview {
+            let window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 320, height: 240),
+                styleMask: [.titled, .closable, .miniaturizable],
+                backing: .buffered,
+                defer: false
+            )
+            window.titleVisibility = .hidden
+            window.titlebarAppearsTransparent = true
+            window.isReleasedWhenClosed = false
+            window.contentView = NSHostingView(rootView: PreviewHostView())
+            window.center()
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            previewWindow = window
+            return
+        }
+
         setDefaultAppForCustomFileType()
         // 不需要主窗口，不需要显示在 dock 上
         NSApp.setActivationPolicy(NSApplication.ActivationPolicy.accessory)
@@ -97,7 +122,7 @@ struct SelectedApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
-        MenuBarExtra() {
+        MenuBarExtra(isInserted: .constant(!isPreview)) {
             MenuItemView()
         } label: {
             Label {
@@ -115,8 +140,21 @@ struct SelectedApp: App {
             SelectedMainMenu()
         }.handlesExternalEvents(matching: [])
         Settings {
-            SettingsView()
+            if isPreview {
+                PreviewHostView()
+            } else {
+                SettingsView()
+            }
         }
+    }
+}
+
+private struct PreviewHostView: View {
+    var body: some View {
+        Color.white
+            .opacity(0.001)
+            .frame(width: 16, height: 16)
+            .allowsHitTesting(false)
     }
 }
 
@@ -241,4 +279,3 @@ let eventTypeMap: [ NSEvent.EventType: String] = [
     .leftMouseDragged: "leftMouseDragged",
     .scrollWheel: "scrollWheel"
 ]
-

@@ -21,8 +21,15 @@ struct MenuItemView: View {
 
     @ObservedObject var pause = PauseModel.shared
 
+    private let updaterController: SPUStandardUpdaterController?
 
-    let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+    init() {
+        if isPreview {
+            updaterController = nil
+        } else {
+            updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+        }
+    }
 
     var body: some View {
         Group {
@@ -33,7 +40,9 @@ struct MenuItemView: View {
             feedbackItem
             docItem
             aboutItem
-            CheckForUpdatesView(updater: updaterController.updater)
+            if let updaterController {
+                CheckForUpdatesView(updater: updaterController.updater)
+            }
             Divider()
             quitItem
                 .keyboardShortcut(.init("q"))
