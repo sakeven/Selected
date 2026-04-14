@@ -170,15 +170,17 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
     @Published var summary: String
     @Published var message: String
     @Published var images: [Data]
+    let previewImages: [NSImage?]
 
     @Published var role: Role
     @Published var status: Status
-    @Published var tools: [String: AIToolCall]
-
-    // 给 View 用的、有序的数组视图
-    var items: [(key: String, value: AIToolCall)] {
-        tools.sorted { $0.key < $1.key }   // 按 key 排序
+    @Published var tools: [String: AIToolCall] {
+        didSet {
+            items = tools.sorted { $0.key < $1.key }
+        }
     }
+
+    var items: [(key: String, value: AIToolCall)]
 
     var new: Bool = false // new start of message
 
@@ -190,7 +192,9 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
         self.status = status
         self.summary = ""
         self.images = images
+        self.previewImages = images.map(NSImage.init(data:))
         self.tools = [String: AIToolCall]()
+        self.items = []
     }
 }
 

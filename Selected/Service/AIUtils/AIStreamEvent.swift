@@ -50,6 +50,7 @@ enum AIStreamEvent {
 
     case toolCallStarted(ToolCallStart)      // 第一次出现这个 tool_call
     case toolCallFinished(ToolCallResult)     // 结束（可选）
+    case toolCallUpdated(ToolCallUpdate)
 
     case error(String)
     
@@ -68,6 +69,10 @@ struct AIToolCall: Identifiable {
     let name: String
     let ret: String
     let status: AIToolCallStatus
+    let arguments: String?
+    let command: String?
+    let workdir: String?
+    let sourceLinks: [AIToolSourceLink]
 }
 
 enum AIToolCallStatus {
@@ -76,16 +81,36 @@ enum AIToolCallStatus {
     case failure
 }
 
+struct AIToolSourceLink: Identifiable, Hashable {
+    let title: String
+    let url: String
+
+    var id: String { "\(title)|\(url)" }
+}
+
 struct ToolCallResult {
     let id: String
     let name: String
     let ret: String
+    let arguments: String?
+    let command: String?
+    let workdir: String?
+    let sourceLinks: [AIToolSourceLink]
 }
 
 struct ToolCallStart {
     let id: String
     let name: String
     let message: String
+    let arguments: String?
+    let command: String?
+    let workdir: String?
+    let sourceLinks: [AIToolSourceLink]
+}
+
+struct ToolCallUpdate {
+    let id: String
+    let sourceLinks: [AIToolSourceLink]
 }
 
 struct AIToolCallDelta {
@@ -102,4 +127,3 @@ enum AIProviderKind: String, Sendable {
     case openAI
     case anthropic
 }
-

@@ -50,4 +50,8 @@ public struct FunctionDefinition: Codable, Equatable {
     func getParameters() -> JSONSchema? {
         return try? JSONDecoder().decode(JSONSchema.self, from: parameters.data(using: .utf8)!)
     }
+
+    var commandLine: String? {
+        command?.joined(separator: " ")
+    }
 }

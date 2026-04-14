@@ -88,12 +88,13 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
         // 保证悬浮在全屏应用之上
         let window = FloatingPanel(
             contentRect: .zero,
+            styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false,
             key: true
         )
 
-        window.isOpaque = true
+        window.isOpaque = false
         window.backgroundColor = .clear
         self.resultWindow = true
         pinnedModel = PinnedModel()
@@ -101,8 +102,14 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
         super.init(window: window)
 
         let view = ChatTextView(ctx: ctx, viewModel: MessageViewModel(chatService: chatService)).environmentObject(pinnedModel)
+        let hostingView = NSHostingView(rootView: AnyView(view))
+        hostingView.wantsLayer = true
+        hostingView.layer?.backgroundColor = NSColor.clear.cgColor
+
         window.level = .screenSaver
-        window.contentView = NSHostingView(rootView: AnyView(view))
+        window.hasShadow = false
+        window.contentView = hostingView
+        clearBackgroundsOnAncestorChain(startingAt: window.contentView?.superview)
         window.delegate = self // 设置代理为自己来监听窗口事件
 
         _ = chatWindowPositionManager.restorePosition(for: window)
@@ -152,7 +159,22 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
     override func showWindow(_ sender: Any?) {
         super.showWindow(sender)
         DispatchQueue.main.async{
+            if let window = self.window {
+                self.clearBackgroundsOnAncestorChain(startingAt: window.contentView?.superview)
+            }
             self.positionWindow()
+        }
+    }
+
+    private func clearBackgroundsOnAncestorChain(startingAt view: NSView?) {
+        var currentView = view
+        while let view = currentView {
+            view.wantsLayer = true
+            view.layer?.backgroundColor = NSColor.clear.cgColor
+            if let effectView = view as? NSVisualEffectView {
+                effectView.state = .inactive
+            }
+            currentView = view.superview
         }
     }
 }

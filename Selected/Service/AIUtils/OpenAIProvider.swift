@@ -282,12 +282,21 @@ class OpenAIProvider: AIProvider{
         for (callId, tool) in toolCallsDict {
             // 如果工具定义中有模板，则渲染后更新消息
             var toolMessage = ""
-            if let funcDef = functionMap[tool.name],
+            let functionDef = functionMap[tool.name]
+            if let funcDef = functionDef,
                let template = funcDef.template {
                 toolMessage = renderTemplate(templateString: template, json: tool.arguments)
                 AppLogger.ai.debug("\(toolMessage)")
             }
-            continuation.yield(.toolCallStarted(.init(id: tool.id, name: tool.name, message: toolMessage)))
+            continuation.yield(.toolCallStarted(.init(
+                id: tool.id,
+                name: tool.name,
+                message: toolMessage,
+                arguments: tool.arguments,
+                command: functionDef?.commandLine,
+                workdir: functionDef?.workdir,
+                sourceLinks: []
+            )))
 
             // 根据工具名称调用不同的逻辑
             if tool.name == dalle3Def.name {
@@ -296,7 +305,15 @@ class OpenAIProvider: AIProvider{
                 let item = Components.Schemas.Item.FunctionCallOutputItemParam(.init(callId: callId, _type: .functionCallOutput, output: .case1(url)))
                 input.append(.item(item))
                 let ret = "[![this is picture](" + url + ")](" + url + ")"
-                let message = ToolCallResult(id: tool.id, name: tool.name, ret: ret)
+                let message = ToolCallResult(
+                    id: tool.id,
+                    name: tool.name,
+                    ret: ret,
+                    arguments: tool.arguments,
+                    command: nil,
+                    workdir: nil,
+                    sourceLinks: [.init(title: "Generated image", url: url)]
+                )
                 continuation.yield(.toolCallFinished(message))
             } else if tool.name == svgToolOpenAIDef.name {
                 _ = openSVGInBrowser(svgData: tool.arguments)
@@ -304,7 +321,15 @@ class OpenAIProvider: AIProvider{
                 let item = Components.Schemas.Item.FunctionCallOutputItemParam(.init(callId: callId, _type: .functionCallOutput, output:  .case1("display svg successfully")))
                 input.append(.item(item))
 
-                let message = ToolCallResult(id: tool.id, name: tool.name, ret: NSLocalizedString("display_svg", comment: ""))
+                let message = ToolCallResult(
+                    id: tool.id,
+                    name: tool.name,
+                    ret: NSLocalizedString("display_svg", comment: ""),
+                    arguments: tool.arguments,
+                    command: nil,
+                    workdir: nil,
+                    sourceLinks: []
+                )
                 continuation.yield(.toolCallFinished(message))
 
             } else {
@@ -314,7 +339,15 @@ class OpenAIProvider: AIProvider{
                         let statusMessage = (funcDef.showResult ?? true)
                         ? ret
                         : String(format: NSLocalizedString("called_tool", comment: "tool message"), funcDef.name)
-                        let message = ToolCallResult(id: tool.id, name: tool.name, ret: statusMessage)
+                        let message = ToolCallResult(
+                            id: tool.id,
+                            name: tool.name,
+                            ret: statusMessage,
+                            arguments: tool.arguments,
+                            command: funcDef.commandLine,
+                            workdir: funcDef.workdir,
+                            sourceLinks: []
+                        )
                         continuation.yield(.toolCallFinished(message))
                         let item = Components.Schemas.Item.FunctionCallOutputItemParam(.init(callId: callId, _type: .functionCallOutput, output: .case1(ret)))
                         input.append(.item(item))
@@ -390,6 +423,7 @@ class OpenAIProvider: AIProvider{
 fileprivate class ResponseStatus : ObservableObject {
     public var lastOpenAIResponseId: String?
     public var toolCallsDict: [String: FunctionCallParam]
+    private var lastWebSearchCallId: String?
     public var hasToolsCalled: Bool {
         get {
             !toolCallsDict.isEmpty
@@ -440,11 +474,15 @@ fileprivate class ResponseStatus : ObservableObject {
                 AppLogger.ai.debug("Response refusal: \(String(describing:refusalEvent))")
                 break
             case .outputTextAnnotation(let annotationEvent):
-                // Handle text annotations
                 switch annotationEvent {
                     case .added(let event):
-                        // TODO: Implement proper annotation handling when type conversion is resolved
-                        AppLogger.ai.debug("Text annotation added: itemId=\(event.itemId), annotationIndex=\(event.annotationIndex)")
+                        guard let toolCallID = lastWebSearchCallId else { break }
+                        if case let .UrlCitationBody(citation) = event.annotation {
+                            continuation.yield(.toolCallUpdated(.init(
+                                id: toolCallID,
+                                sourceLinks: [.init(title: citation.title, url: citation.url)]
+                            )))
+                        }
                 }
             case .reasoning(let reasoningEvent):
                 // Handle reasoning events - could show reasoning in UI
@@ -504,11 +542,28 @@ fileprivate class ResponseStatus : ObservableObject {
             case .webSearchCall(let webSearchCall):
                 switch webSearchCall {
                     case .inProgress(let webSearch):
-                        continuation.yield(.toolCallStarted(.init(id: webSearch.itemId, name: String(localized:  "Web search"), message: String(localized: "in progress"))))
+                        lastWebSearchCallId = webSearch.itemId
+                        continuation.yield(.toolCallStarted(.init(
+                            id: webSearch.itemId,
+                            name: String(localized:  "Web search"),
+                            message: String(localized: "in progress"),
+                            arguments: nil,
+                            command: nil,
+                            workdir: nil,
+                            sourceLinks: []
+                        )))
                     case .searching(_):
                         break
                     case .completed(let webSearch):
-                        continuation.yield(.toolCallFinished(.init(id: webSearch.itemId, name: String(localized:  "Web search"), ret: String(localized: "completed"))))
+                        continuation.yield(.toolCallFinished(.init(
+                            id: webSearch.itemId,
+                            name: String(localized:  "Web search"),
+                            ret: String(localized: "completed"),
+                            arguments: nil,
+                            command: nil,
+                            workdir: nil,
+                            sourceLinks: []
+                        )))
                 }
                 break
             case .mcpCall(_):

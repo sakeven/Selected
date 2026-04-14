@@ -10,8 +10,8 @@ import SwiftUI
 import PhotosUI
 
 struct ChatInputView: View {
-    var viewModel: MessageViewModel
-    @State private var newText: String = ""
+    @ObservedObject var viewModel: MessageViewModel
+    @State private var newText = ""
     @State private var task: Task<Void, Never>? = nil
     @State private var selectedPickerItems: [PhotosPickerItem] = []
     @State private var pickedImages: [PickedImage] = []
@@ -21,64 +21,71 @@ struct ChatInputView: View {
     var onCancel: (() -> Void)?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             if !pickedImages.isEmpty {
                 previewHeader
             }
 
-            if #available(macOS 14.0, *) {
-                ZStack(alignment: .leading) {
-                    if newText.isEmpty {
-                        Text("Press cmd+enter to send new message")
-                            .foregroundStyle(.secondary)
-                            .padding(4)
-                    }
-                    TextEditor(text: $newText)
-                        .onKeyPress(.return, phases: .down) { keyPress in
-                            guard keyPress.modifiers.contains(.command) else { return .ignored }
-                            submitMessage()
-                            return .handled
-                        }
-                        .opacity(newText.isEmpty ? 0.25 : 1)
-                        .padding(10)
-                }
-                .frame(minHeight: 70)
-                .scrollContentBackground(.hidden)
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(8)
-//                .onDisappear { task?.cancel() }
-            } else {
-                TextField("Press enter to send new message", text: $newText, axis: .vertical)
-                    .lineLimit(3...)
-                    .textFieldStyle(.plain)
-                    .padding(10)
-                    .scrollContentBackground(.hidden)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(8)
-                    .onSubmit { submitMessage() }
-//                    .onDisappear { task?.cancel() }
-            }
-
-            HStack {
+            HStack(alignment: .bottom, spacing: 12) {
                 PhotosPicker(selection: $selectedPickerItems,
                              maxSelectionCount: 5,
                              matching: .images) {
-                    Label("Choose photos", systemImage: "photo.on.rectangle.angled")
-                }.onChange(of: selectedPickerItems) { items in
+                    composerAccessoryButton(systemImage: "photo")
+                }
+                .buttonStyle(.plain)
+                .disabled(viewModel.inProgress)
+                .onChange(of: selectedPickerItems) { _, items in
                     loadImagesFromPhotosPicker(items)
                     selectedPickerItems = []
                 }
-                Button("Choose local photos", systemImage: "photo.badge.plus") {
+
+                Button {
                     showFileImporter = true
+                } label: {
+                    composerAccessoryButton(systemImage: "photo.badge.plus")
                 }
-                Spacer()
-                if viewModel.inProgress {
-                    Button("Stop", systemImage: "stop.circle" ) {
+                .buttonStyle(.plain)
+                .disabled(viewModel.inProgress)
+
+                composerEditor
+
+                Button {
+                    if viewModel.inProgress {
                         cancel()
-                    }.foregroundStyle(.red)
+                    } else {
+                        submitMessage()
+                    }
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(primaryActionTint)
+                            .frame(width: 40, height: 40)
+
+                        if viewModel.inProgress {
+                            Image(systemName: "stop.fill")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundStyle(.white)
+                        } else {
+                            Image(systemName: "arrow.up")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(.white)
+                        }
+                    }
                 }
+                .buttonStyle(.plain)
+                .disabled(primaryActionDisabled)
             }
         }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color(nsColor: .controlBackgroundColor).opacity(0.72))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(Color.primary.opacity(0.06), lineWidth: 1)
+        )
         .fileImporter(
             isPresented: $showFileImporter,
             allowedContentTypes: [.image],
@@ -133,6 +140,7 @@ struct ChatInputView: View {
     }
 
     func submitMessage() {
+        guard !viewModel.inProgress else { return }
         let text = newText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else {
             showMissingTextAlert = true
@@ -151,30 +159,73 @@ struct ChatInputView: View {
         }
     }
 
+    private var composerEditor: some View {
+        Group {
+            if #available(macOS 14.0, *) {
+                ZStack(alignment: .topLeading) {
+                    if newText.isEmpty {
+                        Text("Press cmd+enter to send new message")
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 16)
+                            .padding(.top, 14)
+                            .allowsHitTesting(false)
+                    }
+
+                    TextEditor(text: $newText)
+                        .onKeyPress(.return, phases: .down) { keyPress in
+                            guard keyPress.modifiers.contains(.command) else { return .ignored }
+                            submitMessage()
+                            return .handled
+                        }
+                        .scrollContentBackground(.hidden)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                        .frame(minHeight: 44, maxHeight: 96, alignment: .topLeading)
+                }
+            } else {
+                TextField("Press enter to send new message", text: $newText, axis: .vertical)
+                    .lineLimit(3...)
+                    .textFieldStyle(.plain)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 12)
+                    .onSubmit { submitMessage() }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(minHeight: 60, maxHeight: 112, alignment: .topLeading)
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(Color(nsColor: .windowBackgroundColor).opacity(0.92))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(Color.primary.opacity(0.05), lineWidth: 1)
+        )
+    }
+
     private var previewHeader: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 8) {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
                 ForEach(pickedImages) { image in
                     ZStack(alignment: .topTrailing) {
                         if let nsImage = NSImage(data: image.data) {
                             Image(nsImage: nsImage)
                                 .resizable()
                                 .scaledToFill()
-                                .frame(width: 64, height: 64)
-                                .clipShape(RoundedRectangle(cornerRadius: 6))
+                                .frame(width: 72, height: 72)
+                                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                         } else {
-                            Color.gray.frame(width: 64, height: 64)
+                            Color.gray.frame(width: 72, height: 72)
                         }
                         Button {
                             removePickedImage(image)
                         } label: {
                             Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.white)
-                                .padding(3)
-                                .background(Color.black.opacity(0.6))
-                                .clipShape(Circle())
+                                .font(.system(size: 18))
+                                .foregroundStyle(.white, Color.black.opacity(0.55))
                         }
                         .buttonStyle(.plain)
+                        .offset(x: 6, y: -6)
                     }
                 }
             }
@@ -185,6 +236,29 @@ struct ChatInputView: View {
         if let index = pickedImages.firstIndex(where: { $0.id == image.id }) {
             pickedImages.remove(at: index)
         }
+    }
+
+    private var primaryActionDisabled: Bool {
+        if viewModel.inProgress {
+            return false
+        }
+        return newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var primaryActionTint: Color {
+        if viewModel.inProgress {
+            return .red
+        }
+        return primaryActionDisabled ? Color.secondary.opacity(0.24) : .accentColor
+    }
+
+    private func composerAccessoryButton(systemImage: String) -> some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 18, weight: .semibold))
+            .foregroundStyle(viewModel.inProgress ? Color.secondary : Color.accentColor)
+            .frame(width: 38, height: 38)
+            .background(Color.accentColor.opacity(0.10))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
 

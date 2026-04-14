@@ -311,6 +311,7 @@
       }
     },
     "Choose local photos" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -321,6 +322,7 @@
       }
     },
     "Choose photos" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -953,6 +955,7 @@
       }
     },
     "Stop" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1016,6 +1019,7 @@
       }
     },
     "Tool Call List" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1024,6 +1028,9 @@
           }
         }
       }
+    },
+    "Tools" : {
+
     },
     "Translation" : {
       "localizations" : {

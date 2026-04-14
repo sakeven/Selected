@@ -11,11 +11,17 @@ import SwiftUI
 class FloatingPanel: NSPanel {
     var key = false
     var main = false
-    init(contentRect: NSRect, backing: NSWindow.BackingStoreType, defer flag: Bool, key: Bool = false) {
+    init(
+        contentRect: NSRect,
+        styleMask: NSWindow.StyleMask = [.nonactivatingPanel, .resizable, .closable, .fullSizeContentView],
+        backing: NSWindow.BackingStoreType,
+        defer flag: Bool,
+        key: Bool = false
+    ) {
         self.key = key
         self.main = key
         // Not sure if .titled does affect anything here. Kept it because I think it might help with accessibility but I did not test that.
-        super.init(contentRect: contentRect, styleMask: [.nonactivatingPanel, .resizable, .closable, .fullSizeContentView], backing: backing, defer: flag)
+        super.init(contentRect: contentRect, styleMask: styleMask, backing: backing, defer: flag)
         
         // Set this if you want the panel to remember its size/position
         //        self.setFrameAutosaveName("a unique name")
