@@ -13,6 +13,18 @@ public struct ChatContext {
     let text: String
     let webPageURL: String
     let bundleID: String
+    let images: [Data]
+    let files: [AIFileAttachment]
+    let request: String?
+
+    init(text: String, webPageURL: String, bundleID: String, images: [Data] = [], files: [AIFileAttachment] = [], request: String? = nil) {
+        self.text = text
+        self.webPageURL = webPageURL
+        self.bundleID = bundleID
+        self.images = images
+        self.files = files
+        self.request = request
+    }
 }
 
 func isWord(str: String) -> Bool {
@@ -145,10 +157,12 @@ struct ChatService: AIProvider{
 public class UserMessage{
     let text: String
     let images: [Data]
+    let files: [AIFileAttachment]
 
-    init(text: String, images: [Data]=[]) {
+    init(text: String, images: [Data] = [], files: [AIFileAttachment] = []) {
         self.text = text
         self.images = images
+        self.files = files
     }
 }
 

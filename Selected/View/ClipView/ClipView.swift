@@ -7,6 +7,7 @@
 
 import AppKit
 import CoreData
+import Defaults
 import Foundation
 import PDFKit
 import SwiftUI
@@ -47,14 +48,14 @@ private enum ClipDisplayKind {
 
     var label: String {
         switch self {
-        case .color: return "Color"
-        case .file: return "File"
-        case .image: return "Image"
-        case .link: return "Link"
-        case .text: return "Plain Text"
-        case .richText: return "Rich Text"
-        case .html: return "HTML"
-        case .unknown: return "Clipboard Item"
+        case .color: return String(localized: "Color")
+        case .file: return String(localized: "File")
+        case .image: return String(localized: "Image")
+        case .link: return String(localized: "Link")
+        case .text: return String(localized: "Plain Text")
+        case .richText: return String(localized: "Rich Text")
+        case .html: return String(localized: "HTML")
+        case .unknown: return String(localized: "Clipboard Item")
         }
     }
 
@@ -64,7 +65,7 @@ private enum ClipDisplayKind {
         case .file: return .blue
         case .image: return .orange
         case .link: return .blue
-        case .text: return .indigo
+        case .text: return .blue
         case .richText: return .purple
         case .html: return .mint
         case .unknown: return .gray
@@ -87,86 +88,56 @@ private enum ClipDisplayKind {
 
 private extension ColorScheme {
     var clipBackdropColors: [Color] {
-        switch self {
-        case .dark:
-            [
-                Color(red: 0.24, green: 0.47, blue: 0.72),
-                Color(red: 0.15, green: 0.21, blue: 0.29),
-                Color(red: 0.25, green: 0.36, blue: 0.47)
-            ]
-        default:
-            [
-                Color(red: 0.88, green: 0.94, blue: 0.99),
-                Color(red: 0.71, green: 0.82, blue: 0.92),
-                Color(red: 0.80, green: 0.89, blue: 0.96)
-            ]
-        }
-    }
-
-    var clipShellOverlay: Color {
-        self == .dark ? Color.black.opacity(0.14) : Color(red: 0.16, green: 0.28, blue: 0.38).opacity(0.03)
+        self == .dark
+            ? [Color(red: 0.12, green: 0.14, blue: 0.18), Color(red: 0.09, green: 0.10, blue: 0.13)]
+            : [Color(red: 0.96, green: 0.97, blue: 0.99), Color(red: 0.91, green: 0.93, blue: 0.96)]
     }
 
     var clipShellStroke: Color {
-        self == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.2)
-    }
-
-    var clipOuterStroke: Color {
-        self == .dark ? Color.white.opacity(0.1) : Color(red: 0.22, green: 0.35, blue: 0.48).opacity(0.08)
+        self == .dark ? Color.white.opacity(0.12) : Color.white.opacity(0.8)
     }
 
     var clipPanelFill: Color {
-        self == .dark ? Color.black.opacity(0.12) : Color(red: 0.23, green: 0.36, blue: 0.48).opacity(0.05)
+        self == .dark ? Color.white.opacity(0.025) : Color.white.opacity(0.4)
     }
 
     var clipPanelStroke: Color {
-        self == .dark ? Color.white.opacity(0.07) : Color.white.opacity(0.22)
+        self == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)
     }
 
     var clipDetailFill: Color {
-        self == .dark ? Color.black.opacity(0.08) : Color(red: 0.20, green: 0.33, blue: 0.45).opacity(0.035)
-    }
-
-    var clipDetailStroke: Color {
-        self == .dark ? Color.white.opacity(0.05) : Color.white.opacity(0.16)
+        self == .dark ? Color.black.opacity(0.12) : Color.white.opacity(0.6)
     }
 
     var clipCardFill: Color {
-        self == .dark ? Color.black.opacity(0.1) : Color(red: 0.20, green: 0.32, blue: 0.44).opacity(0.05)
+        self == .dark ? Color.white.opacity(0.035) : Color.white.opacity(0.7)
     }
 
     var clipPreviewFill: Color {
-        self == .dark ? Color.black.opacity(0.14) : Color(red: 0.19, green: 0.31, blue: 0.43).opacity(0.055)
+        Color(nsColor: .textBackgroundColor)
     }
 
     var clipSelectedFill: Color {
-        self == .dark ? Color.white.opacity(0.06) : Color.white.opacity(0.16)
+        Color.accentColor.opacity(self == .dark ? 0.22 : 0.10)
     }
 
     var clipSelectedStroke: Color {
-        self == .dark ? Color.white.opacity(0.1) : Color.white.opacity(0.22)
+        Color.accentColor.opacity(self == .dark ? 0.55 : 0.35)
     }
 
     var clipDivider: Color {
-        self == .dark ? Color.white.opacity(0.12) : Color.white.opacity(0.22)
+        self == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.07)
     }
 
-    var clipPrimaryText: Color {
-        self == .dark
-            ? Color.white.opacity(0.96)
-            : Color(red: 0.16, green: 0.23, blue: 0.31).opacity(0.96)
-    }
+    var clipPrimaryText: Color { .primary }
+    var clipSecondaryText: Color { .secondary }
 
-    var clipSecondaryText: Color {
-        self == .dark
-            ? Color.white.opacity(0.8)
-            : Color(red: 0.25, green: 0.35, blue: 0.46).opacity(0.9)
-    }
 }
 
 struct ClipView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @FetchRequest(
         sortDescriptors: [
@@ -182,6 +153,7 @@ struct ClipView: View {
 
     @State private var searchText = ""
     @State private var localSelection: ClipHistoryData?
+    @State private var aiRequest: ClipAIPromptView.Request?
 
     private var filteredClips: [ClipHistoryData] {
         if searchText.isEmpty {
@@ -209,31 +181,108 @@ struct ClipView: View {
     }
 
     var body: some View {
-        ZStack {
-            backdrop
+        VStack(spacing: 0) {
+            HStack(spacing: 16) {
+                Label("Clipboard", systemImage: "clipboard")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
 
-            HSplitView {
+                SearchBarView(searchText: $searchText, onArrowKey: handleArrowKey)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .overlay(alignment: .bottom) {
+                Rectangle().fill(colorScheme.clipDivider).frame(height: 1)
+            }
+
+            HStack(spacing: 0) {
                 sidebar
-                    .frame(minWidth: 280, idealWidth: 320, maxWidth: 340)
+                    .frame(width: 320)
+
+                Rectangle()
+                    .fill(colorScheme.clipDivider)
+                    .frame(width: 1)
 
                 detailPane
                     .frame(minWidth: 500)
             }
-            .padding(12)
-            .background(panelBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .stroke(colorScheme.clipShellStroke, lineWidth: 1)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+
+            HStack(spacing: 16) {
+                Label("clip.navigate", systemImage: "arrow.up.arrow.down")
+                Button {
+                    ClipWindowManager.shared.forceCloseWindow()
+                } label: {
+                    HStack(spacing: 6) {
+                        Text(verbatim: "Esc")
+                            .monospaced()
+                        Text("clip.dismiss")
+                    }
+                }
+                .buttonStyle(.plain)
+                .help("clip.dismiss.shortcut")
+                Spacer()
+
+                if let selected = localSelection {
+                    ClipActionBar(data: selected)
+
+                    Divider().frame(height: 16)
+
+                    Button("clip.copy.short", systemImage: "doc.on.doc") {
+                        ClipService.shared.restore(selected, paste: false)
+                    }
+                    .buttonStyle(.bordered)
+                    .help("clip.copy")
+
+                    Button {
+                        togglePin(selected)
+                    } label: {
+                        Label(selected.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"), systemImage: selected.isPinned ? "pin.slash" : "pin")
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button("clip.paste", systemImage: "return") {
+                        ClipService.shared.restore(selected, paste: true)
+                    }
+                    .buttonStyle(.borderedProminent)
+
+                    Menu {
+                        ClipActionsMenu(data: selected, onTogglePin: { togglePin(selected) }, onDelete: { delete(selected) }) { instruction, translation in
+                            requestAI(selected, instruction: instruction, translation: translation)
+                        }
+                    } label: {
+                        Label("clip.actions", systemImage: "ellipsis.circle")
+                    }
+                    .menuStyle(.borderlessButton)
+                    .fixedSize()
+                }
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 12)
+            .background(colorScheme.clipPanelFill)
+            .overlay(alignment: .top) {
+                Rectangle().fill(colorScheme.clipDivider).frame(height: 1)
+            }
+        }
+        .frame(width: 960, height: 600)
+        .sheet(item: $aiRequest) { request in
+            ClipAIPromptView(data: request.data, instruction: request.instruction, translation: request.translation)
+        }
+        .background {
+            LinearGradient(
+                colors: colorScheme.clipBackdropColors,
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
             )
         }
-        .frame(width: 920, height: 560)
-        .clipShape(RoundedRectangle(cornerRadius: 34, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 34, style: .continuous)
-                .stroke(colorScheme.clipOuterStroke, lineWidth: 1)
-        )
-        .compositingGroup()
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .overlay {
+            RoundedRectangle(cornerRadius: 24)
+                .strokeBorder(colorScheme.clipShellStroke, lineWidth: 1)
+        }
         .onAppear {
             localSelection = clips.first
             viewModel.selectedItem = localSelection
@@ -247,32 +296,30 @@ struct ClipView: View {
         .focused($isFocused)
     }
 
-    private var panelBackground: some View {
-        RoundedRectangle(cornerRadius: 28, style: .continuous)
-            .fill(.regularMaterial)
-            .overlay(colorScheme.clipShellOverlay)
-    }
-
-    private var backdrop: some View {
-        LinearGradient(
-            colors: colorScheme.clipBackdropColors,
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .overlay(Color.black.opacity(colorScheme == .dark ? 0.12 : 0.06))
-    }
-
     private var sidebar: some View {
-        VStack(spacing: 14) {
-            SearchBarView(searchText: $searchText, onArrowKey: handleArrowKey)
+        VStack(spacing: 10) {
+            HStack {
+                Text("Clipboard History")
+                Spacer()
+                Text(filteredClips.count, format: .number)
+                    .monospacedDigit()
+            }
+            .font(.caption.weight(.medium))
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 12)
 
             if filteredClips.isEmpty {
-                ContentUnavailableView.search(text: searchText)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                if searchText.isEmpty {
+                    ContentUnavailableView("clip.empty.title", systemImage: "clipboard", description: Text("clip.empty.description"))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    ContentUnavailableView.search(text: searchText)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             } else {
                 ScrollViewReader { proxy in
                     ScrollView {
-                        LazyVStack(spacing: 0) {
+                        LazyVStack(spacing: 4) {
                             ForEach(filteredClips, id: \.objectID) { clipData in
                                 Button {
                                     localSelection = clipData
@@ -285,67 +332,40 @@ struct ClipView: View {
                                 .buttonStyle(.plain)
                                 .id(clipData.objectID)
                                 .contextMenu {
-                                    Button(action: {
-                                        togglePin(clipData)
-                                    }) {
-                                        Label(
-                                            clipData.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"),
-                                            systemImage: "pin"
-                                        )
-                                    }
-
-                                    Divider()
-
-                                    Button(action: {
-                                        delete(clipData)
-                                    }) {
-                                        Label("Delete", systemImage: "trash")
+                                    ClipActionsMenu(data: clipData, onTogglePin: { togglePin(clipData) }, onDelete: { delete(clipData) }) { instruction, translation in
+                                        requestAI(clipData, instruction: instruction, translation: translation)
                                     }
                                 }
                             }
                         }
-                        .padding(.top, 6)
+                        .padding(2)
                     }
                     .scrollIndicators(.hidden)
                     .onChange(of: localSelection?.objectID.uriRepresentation()) {
                         guard let selected = localSelection else { return }
-                        withAnimation(.easeInOut(duration: 0.14)) {
+                        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.14)) {
                             proxy.scrollTo(selected.objectID, anchor: .center)
-                        }
-                    }
-                    .onChange(of: searchText) {
-                        guard let first = filteredClips.first else {
-                            localSelection = nil
-                            return
-                        }
-
-                        localSelection = first
-                        withAnimation(.easeInOut(duration: 0.14)) {
-                            proxy.scrollTo(first.objectID, anchor: .top)
                         }
                     }
                 }
             }
         }
-        .padding(12)
+        .onChange(of: searchText) {
+            localSelection = filteredClips.first
+        }
+        .padding(.vertical, 8)
+        .padding(.trailing, 10)
         .frame(maxHeight: .infinity, alignment: .top)
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(colorScheme.clipPanelFill)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(colorScheme.clipPanelStroke, lineWidth: 1)
-                )
-        )
-        .padding(.trailing, 12)
     }
 
     @ViewBuilder
     private var detailPane: some View {
         if let selected = localSelection {
-            ClipDataView(data: selected)
+            ClipDataView(data: selected) { instruction, translation in
+                requestAI(selected, instruction: instruction, translation: translation)
+            }
         } else {
-            ContentUnavailableView.search(text: searchText)
+            ContentUnavailableView("clip.preview.empty", systemImage: "doc.text.magnifyingglass", description: Text("clip.preview.description"))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
@@ -403,6 +423,10 @@ struct ClipView: View {
         }
     }
 
+    private func requestAI(_ clip: ClipHistoryData, instruction: String, translation: Bool) {
+        aiRequest = ClipAIPromptView.Request(data: clip, instruction: instruction, translation: translation)
+    }
+
     private func togglePin(_ clipData: ClipHistoryData) {
         clipData.isPinned.toggle()
         do {
@@ -421,46 +445,71 @@ private struct ClipRowView: View {
     @ObservedObject var clip: ClipHistoryData
     let isSelected: Bool
 
+    @State private var isHovered = false
+
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 12) {
-                Image(systemName: "pin.fill")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(colorScheme.clipPrimaryText.opacity(clip.isPinned ? 0.92 : 0))
-                    .frame(width: 12)
-                    .accessibilityHidden(true)
+        HStack(spacing: 12) {
+            RoundedRectangle(cornerRadius: 10)
+                .fill(clip.displayKind.tint.opacity(0.12))
+                .frame(width: 34, height: 34)
+                .overlay {
+                    if clip.displayKind == .image,
+                       let imageData = clip.primaryItem?.data,
+                       let image = NSImage(data: imageData) {
+                        Image(nsImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 34, height: 34)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    } else if clip.displayKind == .color, let color = clip.colorValue {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color(nsColor: color))
+                            .padding(3)
+                    } else {
+                        ClipKindIcon(kind: clip.displayKind)
+                    }
+                }
+                .accessibilityHidden(true)
 
-                RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .stroke(clip.displayKind.tint, lineWidth: 2)
-                    .frame(width: 28, height: 28)
-                    .overlay(ClipKindIcon(kind: clip.displayKind))
-
+            VStack(alignment: .leading, spacing: 5) {
                 Text(clip.rowTitle)
-                    .font(.body.weight(isSelected ? .semibold : .medium))
-                    .foregroundStyle(colorScheme.clipPrimaryText)
+                    .font(.body.weight(isSelected ? .semibold : .regular))
+                    .foregroundStyle(.primary)
                     .lineLimit(1)
+                    .multilineTextAlignment(.leading)
 
-                Spacer(minLength: 0)
+                HStack(spacing: 5) {
+                    Text(clip.contentTypeLabel)
+                    Text("·")
+                    Text(clip.appDisplayName)
+                        .lineLimit(1)
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
-            .padding(.horizontal, 14)
-            .frame(height: 54)
-            .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(isSelected ? colorScheme.clipSelectedFill : Color.clear)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(isSelected ? colorScheme.clipSelectedStroke : .clear, lineWidth: 1)
-                    )
-            )
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Rectangle()
-                .fill(colorScheme.clipDivider)
-                .frame(height: 1)
-                .padding(.leading, 64)
+            if clip.isPinned {
+                Image(systemName: "pin.fill")
+                    .font(.caption)
+                    .foregroundStyle(Color.accentColor)
+                    .accessibilityLabel(Text("clip.pinned"))
+            }
         }
-        .contentShape(Rectangle())
+        .padding(.horizontal, 10)
+        .padding(.vertical, 9)
+        .frame(minHeight: 58)
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(isSelected ? colorScheme.clipSelectedFill : (isHovered ? colorScheme.clipCardFill : .clear))
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 12)
+                .strokeBorder(isSelected ? colorScheme.clipSelectedStroke : .clear, lineWidth: 1)
+        }
+        .contentShape(RoundedRectangle(cornerRadius: 12))
+        .onHover { isHovered = $0 }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(clip.rowTitle), \(clip.contentTypeLabel)")
         .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
     }
 }
@@ -484,50 +533,95 @@ private struct ClipKindIcon: View {
 struct ClipDataView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var data: ClipHistoryData
+    @Default(.aiService) private var aiService
+    let onAIRequest: (String, Bool) -> Void
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 14) {
-                previewCard
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 10) {
+                Label(data.contentTypeLabel, systemImage: data.displayKind.symbolName)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(data.displayKind.tint)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(data.displayKind.tint.opacity(0.10), in: Capsule())
 
-                Rectangle()
-                    .fill(colorScheme.clipDivider)
-                    .frame(height: 1)
+                Spacer()
 
-                ClipMetadataCard(data: data)
+                if data.isPinned {
+                    Label("clip.pinned", systemImage: "pin.fill")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
-            .padding(12)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
-        }
-        .scrollIndicators(.hidden)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(colorScheme.clipDetailFill)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(colorScheme.clipDetailStroke, lineWidth: 1)
-                )
-        )
-        .padding(.leading, 12)
-        .padding(.vertical, 6)
-        .padding(.trailing, 2)
-    }
 
-    private var previewCard: some View {
-        ClipPreviewStage(data: data)
-            .id(data.MD5())
-            .padding(20)
-            .frame(maxWidth: .infinity)
-            .frame(height: 230)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(colorScheme.clipPreviewFill)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .stroke(colorScheme.clipPanelStroke, lineWidth: 1)
-                    )
-            )
+            ClipPreviewStage(data: data)
+                .id(data.MD5())
+                .padding(18)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(colorScheme.clipPreviewFill, in: RoundedRectangle(cornerRadius: 14))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 14)
+                        .strokeBorder(colorScheme.clipPanelStroke, lineWidth: 1)
+                }
+                .clipped()
+
+            if let kind = data.aiContentKind(openAI: aiService == "OpenAI") {
+                HStack(spacing: 8) {
+                    Button("clip.ai.ask", systemImage: "sparkles") {
+                        onAIRequest("", false)
+                    }
+                    .tint(.accentColor)
+
+                    if kind == .text || kind == .document {
+                        Button("clip.ai.summarize", systemImage: "list.bullet.rectangle") {
+                            onAIRequest(String(localized: "clip.ai.prompt.summarize"), false)
+                        }
+                    } else {
+                        Button("clip.ai.explain", systemImage: "text.magnifyingglass") {
+                            onAIRequest(String(localized: "clip.ai.prompt.explain"), false)
+                        }
+                    }
+
+                    if kind == .image || kind == .document {
+                        Button("clip.ai.extract", systemImage: "text.viewfinder") {
+                            onAIRequest(String(localized: "clip.ai.prompt.extract"), false)
+                        }
+                    } else if kind == .text {
+                        Button("clip.ai.polish", systemImage: "pencil.line") {
+                            onAIRequest(String(localized: "clip.ai.prompt.polish"), false)
+                        }
+                    }
+
+                    if kind != .code && kind != .link {
+                        Menu {
+                            Button("clip.ai.translateChinese") {
+                                onAIRequest(String(localized: "clip.ai.prompt.translateChinese"), true)
+                            }
+                            Button("clip.ai.translateEnglish") {
+                                onAIRequest(String(localized: "clip.ai.prompt.translateEnglish"), true)
+                            }
+                        } label: {
+                            Label("clip.ai.translate", systemImage: "character.bubble")
+                        }
+                        .menuStyle(.borderlessButton)
+                        .fixedSize()
+                    }
+
+                    Spacer(minLength: 0)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.regular)
+                .font(.callout)
+            }
+
+            ClipMetadataCard(data: data)
+
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(colorScheme.clipDetailFill, in: RoundedRectangle(cornerRadius: 16))
+        .padding(.leading, 12)
     }
 }
 
@@ -538,11 +632,6 @@ private struct ClipMetadataCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             applicationRow
-
-            ClipMetadataRow(title: "Content type:") {
-                Text(data.contentTypeLabel)
-                    .font(.body.weight(.medium))
-            }
 
             ClipMetadataRow(title: "Date:") {
                 Text(data.firstCopiedText)
@@ -565,22 +654,11 @@ private struct ClipMetadataCard: View {
                         .textSelection(.enabled)
                 }
             }
-
-            if data.plainText != nil {
-                ClipMetadataRow(title: "Actions:") {
-                    ClipActionBar(data: data)
-                }
-            }
         }
-        .padding(18)
-        .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(colorScheme.clipCardFill)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .stroke(colorScheme.clipPanelStroke, lineWidth: 1)
-                )
-        )
+        .padding(.top, 16)
+        .overlay(alignment: .top) {
+            Rectangle().fill(colorScheme.clipDivider).frame(height: 1)
+        }
     }
 
     private var applicationRow: some View {
@@ -763,7 +841,7 @@ private struct ClipTextPreview: View {
 
     var body: some View {
         if let plainText = data.plainText, !plainText.isEmpty {
-            TextView(text: plainText)
+            TextView(text: plainText, font: data.isJSON ? .monospacedSystemFont(ofSize: 14, weight: .regular) : .systemFont(ofSize: 14))
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         } else {
             Text(data.detailTitle)
@@ -781,10 +859,10 @@ private struct ClipMetadataRow<Content: View>: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
-            Text(title)
-                .font(.body)
-                .foregroundStyle(colorScheme.clipPrimaryText.opacity(0.92))
-                .frame(width: 120, alignment: .leading)
+            Text(LocalizedStringKey(title))
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .frame(width: 110, alignment: .leading)
 
             Spacer(minLength: 0)
 
@@ -851,11 +929,11 @@ private extension ClipHistoryData {
     var rowTitle: String {
         switch displayKind {
         case .color:
-            return "Color"
+            return String(localized: "Color")
         case .file:
             return fileURLValue?.lastPathComponent.removingPercentEncoding ?? "File"
         case .image:
-            return imageSizeText.map { "Image \($0)" } ?? "Image"
+            return imageSizeText.map { "\(String(localized: "Image")) \($0)" } ?? String(localized: "Image")
         case .link:
             return displayURLString ?? cleanedPreviewText?.removingAllNewlines() ?? "Link"
         case .text, .richText, .html:
@@ -995,11 +1073,10 @@ struct ClipActionBar: View {
                 Button("Paste plain text") {
                     pastePlainText()
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(Color(red: 0.82, green: 0.67, blue: 0.54))
+                .buttonStyle(.bordered)
             }
         }
-        .controlSize(.small)
+        .controlSize(.regular)
     }
 
     private func prettifyJSON() {

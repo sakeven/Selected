@@ -46,6 +46,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
+        let removedOpenAIModels = [
+            "gpt-5.2", "gpt-5.2-pro", "gpt-5.1", "gpt-5-mini", "gpt-5", "gpt-5-pro",
+            "gpt-4.1", "gpt-4.1-mini", "o4-mini", "o3", "gpt-4o", "gpt-4o-mini", "o3-mini"
+        ]
+        if removedOpenAIModels.contains(Defaults[.openAIModel]) {
+            let smallerModels = ["gpt-5-mini", "gpt-4.1-mini", "o4-mini", "gpt-4o-mini", "o3-mini"]
+            Defaults[.openAIModel] = smallerModels.contains(Defaults[.openAIModel]) ? .gpt5_6_terra : .gpt5_6_sol
+        }
+        if removedOpenAIModels.contains(Defaults[.openAITranslationModel]) {
+            Defaults[.openAITranslationModel] = .gpt5_6_luna
+        }
+
         setDefaultAppForCustomFileType()
         // 不需要主窗口，不需要显示在 dock 上
         NSApp.setActivationPolicy(NSApplication.ActivationPolicy.accessory)

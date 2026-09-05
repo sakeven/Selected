@@ -112,6 +112,35 @@ struct ChatTextView: View {
                 }
             }
 
+            if let request = ctx.request {
+                Text(request)
+                    .font(.body)
+                    .lineLimit(3)
+                    .textSelection(.enabled)
+            }
+
+            if !ctx.images.isEmpty || !ctx.files.isEmpty {
+                HStack(spacing: 10) {
+                    ForEach(Array(ctx.images.enumerated()), id: \.offset) { _, data in
+                        if let image = NSImage(data: data) {
+                            Image(nsImage: image)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 64, height: 64)
+                                .clipShape(.rect(cornerRadius: 8))
+                                .accessibilityLabel(Text("Image"))
+                        }
+                    }
+                    ForEach(Array(ctx.files.enumerated()), id: \.offset) { _, file in
+                        Label(file.filename, systemImage: "doc.fill")
+                            .font(.caption)
+                            .lineLimit(1)
+                            .padding(10)
+                            .background(.primary.opacity(0.05), in: .rect(cornerRadius: 10))
+                    }
+                }
+            }
+
             HStack(alignment: .top, spacing: 10) {
                 Image(systemName: "text.quote")
                     .font(.caption.weight(.semibold))

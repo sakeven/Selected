@@ -23,10 +23,10 @@ extension Defaults.Keys {
     // OpenAI
     static let openAIAPIKey = Key<String>("OpenAIAPIKey", default: "")
     static let openAIAPIHost = Key<String>("OpenAIAPIHost",default: "api.openai.com")
-    static let openAIModel = Key<OpenAIModel>("OpenAIModel", default: .gpt4_o)
+    static let openAIModel = Key<OpenAIModel>("OpenAIModel", default: .gpt5_6_sol)
     static let openAIModelReasoningEffort = Key<OpenAIModelReasoningEffort>("openAIModelReasoningEffort", default: .medium)
 
-    static let openAITranslationModel = Key<OpenAIModel>("OpenAITranslationModel", default: .gpt4_o_mini)
+    static let openAITranslationModel = Key<OpenAIModel>("OpenAITranslationModel", default: .gpt5_6_luna)
 
     static let openAIVoice = Key<AudioSpeechQuery.AudioSpeechVoice>("OpenAIVoice", default: .shimmer)
     static let openAITTSModel = Key<OpenAIModel>("OpenAITTSModel", default: .gpt_4o_mini_tts)

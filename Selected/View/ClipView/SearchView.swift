@@ -10,29 +10,23 @@ import SwiftUI
 
 private extension ColorScheme {
     var clipSearchFill: Color {
-        self == .dark ? Color.white.opacity(0.06) : Color(red: 0.20, green: 0.34, blue: 0.46).opacity(0.08)
+        Color(nsColor: .textBackgroundColor).opacity(self == .dark ? 0.65 : 0.9)
     }
 
     var clipSearchStroke: Color {
-        self == .dark ? Color.white.opacity(0.14) : Color.white.opacity(0.24)
+        self == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08)
     }
 
     var clipSearchIcon: Color {
-        self == .dark
-            ? Color.white.opacity(0.9)
-            : Color(red: 0.19, green: 0.29, blue: 0.4).opacity(0.92)
+        .secondary
     }
 
     var clipSearchTextColor: NSColor {
-        self == .dark
-            ? .white.withAlphaComponent(0.95)
-            : NSColor(calibratedRed: 0.16, green: 0.23, blue: 0.31, alpha: 0.96)
+        .labelColor
     }
 
     var clipSearchPlaceholderColor: NSColor {
-        self == .dark
-            ? .white.withAlphaComponent(0.4)
-            : NSColor(calibratedRed: 0.32, green: 0.41, blue: 0.51, alpha: 0.82)
+        .secondaryLabelColor
     }
 }
 
@@ -88,11 +82,15 @@ struct CustomSearchField: NSViewRepresentable {
         textField.focusRingType = .none
         textField.textColor = textColor
         textField.font = .systemFont(ofSize: 14)
+        textField.setAccessibilityLabel(placeholder)
         return textField
     }
 
     func updateNSView(_ nsView: NSTextField, context: Context) {
-        nsView.stringValue = text
+        context.coordinator.parent = self
+        if nsView.stringValue != text {
+            nsView.stringValue = text
+        }
         nsView.textColor = textColor
         nsView.placeholderAttributedString = NSAttributedString(
             string: placeholder,
@@ -116,15 +114,27 @@ struct SearchBarView: View {
 
             CustomSearchField(
                 text: $searchText,
-                placeholder: "Search",
+                placeholder: String(localized: "clip.search"),
                 onArrowKey: onArrowKey,
                 textColor: colorScheme.clipSearchTextColor,
                 placeholderColor: colorScheme.clipSearchPlaceholderColor
             )
                 .frame(height: 20)
+
+            if !searchText.isEmpty {
+                Button {
+                    searchText = ""
+                } label: {
+                    Label("clip.search.clear", systemImage: "xmark.circle.fill")
+                        .labelStyle(.iconOnly)
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .help(Text("clip.search.clear"))
+            }
         }
         .padding(.horizontal, 14)
-        .frame(height: 38)
+        .frame(height: 40)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
                 .fill(colorScheme.clipSearchFill)

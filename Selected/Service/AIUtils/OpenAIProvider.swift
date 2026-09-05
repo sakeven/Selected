@@ -14,74 +14,58 @@ import AVFoundation
 typealias OpenAIModel = Model
 
 extension Model {
-    static let gpt5_2 = "gpt-5.2"
-    static let gpt5_2_pro = "gpt-5.2-pro"
-    static let gpt5_pro = "gpt-5-pro"
+    static let gpt6_astra = "gpt-6-astra"
+    static let gpt5_6_sol = "gpt-5.6-sol"
+    static let gpt5_6_terra = "gpt-5.6-terra"
+    static let gpt5_6_luna = "gpt-5.6-luna"
 }
 
-let OpenAIModels: [Model] = [
-    .gpt5_2, .gpt5_2_pro,
-    .gpt5_1,
-    .gpt5_mini, .gpt5,
-    .gpt5_pro,
-    .gpt4_1, .gpt4_1_mini, .o4_mini,
-    .o3, .gpt4_o, .gpt4_o_mini, .o3_mini]
+let OpenAIModels: [Model] = [.gpt6_astra, .gpt5_6_sol, .gpt5_6_terra, .gpt5_6_luna]
 let OpenAITTSModels: [Model] = [.gpt_4o_mini_tts, .tts_1, .tts_1_hd]
-let OpenAITranslationModels: [Model] = [.gpt5_1, .gpt4_1_mini, .gpt4_o, .gpt4_o_mini]
+let OpenAITranslationModels: [Model] = [
+    .gpt5_6_luna, .gpt5_6_terra, .gpt5_6_sol, .gpt6_astra
+]
 
 typealias OpenAIModelReasoningEffort = Components.Schemas.ReasoningEffort
 let OpenAIReasoningEfforts = Components.Schemas.ReasoningEffort.allCases
 
 func isReasoningModel(_ model: Model) -> Bool {
-    return [.gpt5_2, .gpt5_2_pro, .gpt5_mini, .gpt5, .gpt5_1, .gpt5_pro, .o4_mini, .o3, .o1, .o3_mini].contains(model)
+    OpenAIModels.contains(model) || model == "gpt-5.6"
 }
 
 
 extension OpenAIModel {
     var supportedReasoningEfforts: [OpenAIModelReasoningEffort] {
-        if !isReasoningModel(self){
-            return []
-        }
         switch self {
-            case .gpt5_pro:
-                return [.high]
-            case .gpt5:
-                return [.low, .medium, .high]
-            case .gpt5_1:
-                return [.none, .low, .medium, .high]
-            case .gpt5_2, .gpt5_2_pro:
-                return [.none, .low, .medium, .high, .xhigh]
-            default:
-                return [.low, .medium, .high]
+        case .gpt6_astra:
+            return [.low, .medium, .high, .xhigh]
+        case .gpt5_6_sol, .gpt5_6_terra, .gpt5_6_luna, "gpt-5.6":
+            return [.none, .low, .medium, .high, .xhigh]
+        default:
+            return []
         }
     }
 
     var supportsReasoningEffort: Bool {
         !supportedReasoningEfforts.isEmpty
     }
-}
 
-let dalle3Def = ChatQuery.ChatCompletionToolParam.FunctionDefinition(
-    name: "Dall-E-3",
-    description: "When user asks for a picture, create a prompt that dalle can use to generate the image. The prompt must be in English. Translate to English if needed. The url of the image will be returned.",
-    parameters:
-            .init(
-                fields: [
-                    .type(.object),
-                    .properties(
-                        [
-                            "prompt":
-                                    .init(
-                                        fields: [
-                                            .type( .string),
-                                            .description( "the generated prompt sent to dalle3"),
-                                        ]
-                                    )
-                        ]
-                    )
-                ]
-            )
-)
+    func reasoningConfiguration(preferred: OpenAIModelReasoningEffort, thinking: Bool) -> Components.Schemas.Reasoning? {
+        let supported = supportedReasoningEfforts
+        guard let minimumEffort = supported.first else { return nil }
+
+        let effort: OpenAIModelReasoningEffort
+        if !thinking {
+            effort = minimumEffort
+        } else if supported.contains(preferred) {
+            effort = preferred
+        } else {
+            effort = .medium
+        }
+
+        return .init(effort: effort, summary: effort == .none ? nil : .auto)
+    }
+}
 
 final class MiddleWare: OpenAIMiddleware {
     func intercept(response: URLResponse?, request: URLRequest, data: Data?) -> (response: URLResponse?, data: Data?) {
@@ -143,14 +127,7 @@ class OpenAIProvider: AIProvider{
     }
 
     private func updateQuery(message: UserMessage) {
-        var inputItems = [InputContent]()
-        inputItems.append(.inputText(.init(_type: .inputText, text: message.text)))
-        for image in message.images {
-            inputItems.append(.inputImage(.init(imageData: image, detail: .auto)))
-        }
-        let input = CreateModelResponseQuery.Input.inputItemList([
-            .inputMessage(.init(role: .user, content: .inputItemContentList(inputItems)))
-        ])
+        let input = Self.messageInput(message)
         responseQuery = CreateModelResponseQuery(
             input: input,
             model: responseQuery.model,
@@ -160,6 +137,21 @@ class OpenAIProvider: AIProvider{
             stream: true,
             tools: responseQuery.tools,
         )
+    }
+
+    static func messageInput(_ message: UserMessage) -> CreateModelResponseQuery.Input {
+        var inputItems = [InputContent]()
+        inputItems.append(.inputText(.init(_type: .inputText, text: message.text)))
+        for image in message.images {
+            let mimeType = image.starts(with: [0x89, 0x50, 0x4E, 0x47]) ? "image/png" : "image/jpeg"
+            inputItems.append(.inputImage(.init(_type: .inputImage, imageUrl: "data:\(mimeType);base64,\(image.base64EncodedString())", detail: .auto)))
+        }
+        for file in message.files {
+            inputItems.append(.inputFile(.init(_type: .inputFile, filename: file.filename, fileData: "data:\(file.mimeType);base64,\(file.data.base64EncodedString())")))
+        }
+        return .inputItemList([
+            .inputMessage(.init(role: .user, content: .inputItemContentList(inputItems)))
+        ])
     }
 
     private func updateQuery(lastResponseId: String) {
@@ -211,7 +203,10 @@ class OpenAIProvider: AIProvider{
     func chat(ctx: ChatContext) -> AsyncThrowingStream<AIStreamEvent, Error> {
         var messageContent = renderChatContent(content: prompt, chatCtx: ctx, options: options)
         messageContent = replaceOptions(content: messageContent, selectedText: ctx.text, options: options)
-        return chatFollow(userMessage: UserMessage(text: messageContent))
+        if let request = ctx.request {
+            messageContent = "\(request)\n\n\(messageContent)"
+        }
+        return chatFollow(userMessage: UserMessage(text: messageContent, images: ctx.images, files: ctx.files))
     }
 
     private let maxToolLoops = 8
@@ -299,23 +294,7 @@ class OpenAIProvider: AIProvider{
             )))
 
             // 根据工具名称调用不同的逻辑
-            if tool.name == dalle3Def.name {
-                let url = try await ImageGeneration.generateDalle3Image(openAI: openAI, arguments: tool.arguments)
-
-                let item = Components.Schemas.Item.FunctionCallOutputItemParam(.init(callId: callId, _type: .functionCallOutput, output: .case1(url)))
-                input.append(.item(item))
-                let ret = "[![this is picture](" + url + ")](" + url + ")"
-                let message = ToolCallResult(
-                    id: tool.id,
-                    name: tool.name,
-                    ret: ret,
-                    arguments: tool.arguments,
-                    command: nil,
-                    workdir: nil,
-                    sourceLinks: [.init(title: "Generated image", url: url)]
-                )
-                continuation.yield(.toolCallFinished(message))
-            } else if tool.name == svgToolOpenAIDef.name {
+            if tool.name == svgToolOpenAIDef.name {
                 _ = openSVGInBrowser(svgData: tool.arguments)
 
                 let item = Components.Schemas.Item.FunctionCallOutputItemParam(.init(callId: callId, _type: .functionCallOutput, output:  .case1("display svg successfully")))
@@ -362,10 +341,6 @@ class OpenAIProvider: AIProvider{
         var tools: [Tool]? = nil
         if let functions = functions {
             var toolList: [Tool] = [
-                .functionTool(
-                    .init(name: dalle3Def.name,
-                          description: dalle3Def.description,
-                          parameters: dalle3Def.parameters!, strict: false)),
                 .functionTool(.init(name: svgToolOpenAIDef.name,
                                     description: svgToolOpenAIDef.description,
                                     parameters: svgToolOpenAIDef.parameters!, strict: false))
@@ -384,29 +359,15 @@ class OpenAIProvider: AIProvider{
             tools = toolList
         }
 
-        var reasoning: Components.Schemas.Reasoning? = nil
-        if isReasoningModel(model) {
-            var reasoningEffort = Defaults[.openAIModelReasoningEffort]
-            if model == .gpt5_pro {
-                reasoningEffort = .high
-            }
-            reasoning =  .init(
-                effort: reasoningEffort,
-                summary: .auto)
-
-            if !(model == .gpt5 && reasoningEffort == .minimal) {
-                if var toolList = tools {
-                    toolList.append(.webSearchTool(.init(_type: .webSearch)))
-                    tools = toolList
-                }
-            }
+        let reasoning = model.reasoningConfiguration(
+            preferred: Defaults[.openAIModelReasoningEffort],
+            thinking: thinking
+        )
+        if reasoning != nil, var toolList = tools {
+            toolList.append(.webSearchTool(.init(_type: .webSearch)))
+            tools = toolList
         }
 
-
-        if !thinking && ( model == .gpt5_1 || model == .gpt5_2)  {
-            // only support for gpt_5.1 which default reasoningEffort is none.
-            reasoning = nil
-        }
 
         return CreateModelResponseQuery(
             input: .textInput(""),

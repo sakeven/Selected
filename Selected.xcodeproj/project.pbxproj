@@ -70,7 +70,6 @@
 		38CC554C2BA9B6E900069553 /* RunCommandAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CC554B2BA9B6E900069553 /* RunCommandAction.swift */; };
 		38D132562F0D463B000F899A /* Textual in Frameworks */ = {isa = PBXBuildFile; productRef = 38D132552F0D463B000F899A /* Textual */; };
 		38D1CAC22D9179370091A332 /* TTSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CAC02D9179370091A332 /* TTSManager.swift */; };
-		38D1CAC32D9179370091A332 /* ImageGeneration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CABF2D9179370091A332 /* ImageGeneration.swift */; };
 		38D1CAC42D9179370091A332 /* FunctionDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D1CABE2D9179370091A332 /* FunctionDefinition.swift */; };
 		38DEBE392B9DDD0500CD2A35 /* AI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DEBE382B9DDD0500CD2A35 /* AI.swift */; };
 		38DF1D4A2BB7A3BC0063A879 /* Option.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38DF1D492BB7A3BC0063A879 /* Option.swift */; };
@@ -84,6 +83,10 @@
 		38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A482BB5A3D80035A3AA /* SpeakAction.swift */; };
 		38F5E29C2B98ACB9002FEEFE /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E29B2B98ACB9002FEEFE /* OpenAI */; };
 		38F5E29F2B9AB332002FEEFE /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E29E2B9AB332002FEEFE /* MarkdownUI */; };
+		FE0905260000000000000002 /* ClipAIMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0905260000000000000001 /* ClipAIMenu.swift */; };
+		FE0905260000000000000012 /* ClipActionsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0905260000000000000011 /* ClipActionsMenu.swift */; };
+		FE0905260000000000000022 /* AIFileAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0905260000000000000021 /* AIFileAttachment.swift */; };
+		FE0905260000000000000042 /* ClipAIPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0905260000000000000041 /* ClipAIPromptView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -175,7 +178,6 @@
 		38CC554B2BA9B6E900069553 /* RunCommandAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunCommandAction.swift; sourceTree = "<group>"; };
 		38D132452F07BC7F000F899A /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		38D1CABE2D9179370091A332 /* FunctionDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionDefinition.swift; sourceTree = "<group>"; };
-		38D1CABF2D9179370091A332 /* ImageGeneration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGeneration.swift; sourceTree = "<group>"; };
 		38D1CAC02D9179370091A332 /* TTSManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSManager.swift; sourceTree = "<group>"; };
 		38DEBE382B9DDD0500CD2A35 /* AI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AI.swift; sourceTree = "<group>"; };
 		38DF1D492BB7A3BC0063A879 /* Option.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Option.swift; sourceTree = "<group>"; };
@@ -186,6 +188,10 @@
 		38DF1D5A2BC2BFCA0063A879 /* PDFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFView.swift; sourceTree = "<group>"; };
 		38E20A462BB44D5A0035A3AA /* SharingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingButton.swift; sourceTree = "<group>"; };
 		38E20A482BB5A3D80035A3AA /* SpeakAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakAction.swift; sourceTree = "<group>"; };
+		FE0905260000000000000001 /* ClipAIMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipAIMenu.swift; sourceTree = "<group>"; };
+		FE0905260000000000000011 /* ClipActionsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipActionsMenu.swift; sourceTree = "<group>"; };
+		FE0905260000000000000021 /* AIFileAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIFileAttachment.swift; sourceTree = "<group>"; };
+		FE0905260000000000000041 /* ClipAIPromptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipAIPromptView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -396,9 +402,9 @@
 				382C919E2ED475F900F5A45A /* OpenAIProvider.swift */,
 				382C919C2ED4758800F5A45A /* AIStreamEvent.swift */,
 				38D1CABE2D9179370091A332 /* FunctionDefinition.swift */,
-				38D1CABF2D9179370091A332 /* ImageGeneration.swift */,
 				38D1CAC02D9179370091A332 /* TTSManager.swift */,
 				38DEBE382B9DDD0500CD2A35 /* AI.swift */,
+				FE0905260000000000000021 /* AIFileAttachment.swift */,
 			);
 			path = AIUtils;
 			sourceTree = "<group>";
@@ -431,6 +437,9 @@
 			children = (
 				3817BA812D8B0B8800A1C50F /* SearchView.swift */,
 				38DF1D512BC2408A0063A879 /* ClipView.swift */,
+				FE0905260000000000000011 /* ClipActionsMenu.swift */,
+				FE0905260000000000000001 /* ClipAIMenu.swift */,
+				FE0905260000000000000041 /* ClipAIPromptView.swift */,
 				38DF1D562BC2BC120063A879 /* QuickLookView.swift */,
 				38DF1D582BC2BF9F0063A879 /* RTFView.swift */,
 				38DF1D5A2BC2BFCA0063A879 /* PDFView.swift */,
@@ -613,6 +622,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE0905260000000000000042 /* ClipAIPromptView.swift in Sources */,
+				FE0905260000000000000022 /* AIFileAttachment.swift in Sources */,
 				38AD8D6F2C0C023600EAFA5D /* GPTAction.swift in Sources */,
 				38DF1D4D2BB94DCD0063A879 /* ApplicationSettingView.swift in Sources */,
 				38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */,
@@ -653,7 +664,6 @@
 				386AD7572B90D867008C346D /* GetText.swift in Sources */,
 				3868D6DA2EEEF9A600B41E3A /* WindowPositionManager.swift in Sources */,
 				38D1CAC22D9179370091A332 /* TTSManager.swift in Sources */,
-				38D1CAC32D9179370091A332 /* ImageGeneration.swift in Sources */,
 				3868D6042EEEC2D500B41E3A /* ChatInputView.swift in Sources */,
 				38D1CAC42D9179370091A332 /* FunctionDefinition.swift in Sources */,
 				3888D8072BA86AF600A7B75D /* WindowManager.swift in Sources */,
@@ -661,6 +671,8 @@
 				3860105C2C2FA0A700EB9AE7 /* PopResultView.swift in Sources */,
 				38CC18B62B9C7B7C0023DF18 /* PopBarView.swift in Sources */,
 				38DF1D522BC2408A0063A879 /* ClipView.swift in Sources */,
+				FE0905260000000000000012 /* ClipActionsMenu.swift in Sources */,
+				FE0905260000000000000002 /* ClipAIMenu.swift in Sources */,
 				384EEF312C6CDAA300EF6412 /* ChatWindow.swift in Sources */,
 				382C919D2ED4758800F5A45A /* AIStreamEvent.swift in Sources */,
 				3831FD362BA6DE3D00A4262B /* UserConfigs.swift in Sources */,

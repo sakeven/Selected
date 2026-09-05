@@ -262,21 +262,18 @@ class ClaudeAIProvider: AIProvider {
     func chat(ctx: ChatContext) -> AsyncThrowingStream<AIStreamEvent, Error> {
         var userMessage = renderChatContent(content: prompt, chatCtx: ctx, options: options)
         userMessage = replaceOptions(content: userMessage, selectedText: ctx.text, options: options)
-        queryManager.update(with: .init(role: .user, content: .text(userMessage)))
-        return chatFollow(userMessage: UserMessage(text: userMessage))
+        if let request = ctx.request {
+            userMessage = "\(request)\n\n\(userMessage)"
+        }
+        return chatFollow(userMessage: UserMessage(text: userMessage, images: ctx.images, files: ctx.files))
     }
 
     /// 聊天跟进：追加用户消息，并循环处理直到得到完整回复
     func chatFollow(userMessage: UserMessage) -> AsyncThrowingStream<AIStreamEvent, Error>  {
-        if userMessage.images.isEmpty {
-            queryManager.update(with: .init(role: .user, content: .text(userMessage.text)))
-        } else {
-            var content = [MessageParameter.Message.Content.ContentObject]()
-            for image in userMessage.images {
-                content.append(.image(.init(type: .base64, mediaType: .jpeg, data: image.base64EncodedString())))
-            }
-            content.append(.text( userMessage.text))
-            queryManager.update(with: .init(role: .user, content: .list(content)))
+        do {
+            queryManager.update(with: .init(role: .user, content: try Self.messageContent(userMessage)))
+        } catch {
+            return AsyncThrowingStream { $0.finish(throwing: error) }
         }
 
         return AsyncThrowingStream { continuation in
@@ -298,6 +295,22 @@ class ClaudeAIProvider: AIProvider {
                 }
             }
         }
+    }
+
+    static func messageContent(_ message: UserMessage) throws -> MessageParameter.Message.Content {
+        if message.images.isEmpty && message.files.isEmpty {
+            return .text(message.text)
+        }
+        var content = [MessageParameter.Message.Content.ContentObject]()
+        for file in message.files {
+            content.append(.document(try .pdf(base64Data: file.data.base64EncodedString(), title: file.filename)))
+        }
+        for image in message.images {
+            let isPNG = image.starts(with: [0x89, 0x50, 0x4E, 0x47])
+            content.append(.image(.init(type: .base64, mediaType: isPNG ? .png : .jpeg, data: image.base64EncodedString())))
+        }
+        content.append(.text(message.text))
+        return .list(content)
     }
 
     /// 单轮聊天处理：流式接收回复，并处理可能的工具调用

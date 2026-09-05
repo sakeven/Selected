@@ -69,6 +69,24 @@ class ClipService {
         lock.unlock()
     }
 
+    func restore(_ item: ClipHistoryData, paste: Bool) {
+        let id = UUID().uuidString
+        pauseMonitor(id)
+        defer { resumeMonitor(id) }
+
+        pasteboard.clearContents()
+        for content in item.getItems() {
+            pasteboard.setData(content.data, forType: NSPasteboard.PasteboardType(rawValue: content.type!))
+        }
+        PersistenceController.shared.updateClipHistoryData(item)
+
+        if paste {
+            ClipWindowManager.shared.resignKey()
+            PressPasteKey()
+        }
+        ClipWindowManager.shared.forceCloseWindow()
+    }
+
     private func checkPasteboard() {
         lock.lock()
         defer {
@@ -309,22 +327,7 @@ private class EnterHotKeyManager {
             return false
         }
 
-        let id = UUID().uuidString
-        ClipService.shared.pauseMonitor(id)
-
-        let pboard = NSPasteboard.general
-        pboard.clearContents()
-        for t in item.getItems() {
-            pboard.setData(t.data, forType: NSPasteboard.PasteboardType(rawValue: t.type!))
-        }
-
-        PersistenceController.shared.updateClipHistoryData(item)
-
-        // 粘贴时需要取消 key window，才能复制到当前的应用上。
-        ClipWindowManager.shared.resignKey()
-        PressPasteKey()
-        ClipWindowManager.shared.forceCloseWindow()
-        ClipService.shared.resumeMonitor(id)
+        ClipService.shared.restore(item, paste: true)
         return true
     }
 
@@ -501,6 +504,15 @@ private class ClipWindowController: NSWindowController, NSWindowDelegate {
         localKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self else { return event }
             guard self.window?.isKeyWindow == true else { return event }
+            guard self.window?.attachedSheet == nil else { return event }
+            if event.keyCode == Keycode.escape {
+                guard event.modifierFlags.intersection([.command, .option, .control, .shift]).isEmpty else { return event }
+                if let textView = self.window?.firstResponder as? NSTextView, textView.hasMarkedText() {
+                    return event
+                }
+                self.close()
+                return nil
+            }
             guard event.keyCode == Keycode.returnKey else { return event }
             return self.hotkeyMgr.handleIfNeeded() ? nil : event
         }
