@@ -4,25 +4,25 @@ struct PluginActionEditorView: View {
     @Binding var action: Action
 
     var body: some View {
-        SettingsField(title: "动作名称") {
-            TextField("例如：总结内容", text: $action.meta.title).accessibilityLabel("动作名称")
+        SettingsField(title: String(localized: "Action Name")) {
+            TextField("For example: Summarize", text: $action.meta.title).accessibilityLabel("Action Name")
         }
         PluginSegmentedControl(values: ActionKind.allCases, selection: Binding(get: { action.kind }, set: { action.setKind($0) }), title: { $0.title })
         switch action.kind {
         case .url:
-            SettingsField(title: "链接模板") {
+            SettingsField(title: String(localized: "URL Template")) {
                 TextField("https://example.com/search?q={selected.text}", text: Binding(get: { action.url?.url ?? "" }, set: { action.url?.url = $0 }), axis: .vertical)
-                    .accessibilityLabel("链接模板")
+                    .accessibilityLabel("URL Template")
             }
-            Text("{selected.text} 表示选中文字，{selected.options.标识} 表示选项值。")
+            Text("Use {selected.text} for selected text and {selected.options.identifier} for an option value.")
                 .font(.caption).foregroundStyle(.secondary)
         case .service:
-            SettingsField(title: "macOS 服务名称") {
+            SettingsField(title: String(localized: "macOS Service Name")) {
                 TextField("Make Sticky", text: Binding(get: { action.service?.name ?? "" }, set: { action.service?.name = $0 }))
-                    .accessibilityLabel("macOS 服务名称")
+                    .accessibilityLabel("macOS Service Name")
             }
         case .keycombo:
-            SettingsField(title: "快捷键 · 每行一个组合") {
+            SettingsField(title: String(localized: "Keyboard Shortcuts · One per line")) {
                 TextEditor(text: Binding(get: {
                     action.keycombo?.keycombos?.joined(separator: "\n") ?? action.keycombo?.keycombo ?? ""
                 }, set: { value in
@@ -36,44 +36,44 @@ struct PluginActionEditorView: View {
                     }
                 }))
                 .font(.system(.body, design: .monospaced)).scrollContentBackground(.hidden)
-                .frame(minHeight: 65).accessibilityLabel("快捷键组合")
+                .frame(minHeight: 65).accessibilityLabel("Keyboard Shortcuts")
             }
-            Text("例如 cmd shift c。多个组合按顺序执行。")
+            Text("For example, cmd shift c. Multiple shortcuts run in order.")
                 .font(.caption).foregroundStyle(.secondary)
             if action.keycombo?.supported != nil {
-                Text("已有的应用匹配规则会保留，可在 YAML 中修改。")
+                Text("Existing app matching rules are preserved. Edit them in YAML.")
                     .font(.caption).foregroundStyle(.secondary)
             }
         case .gpt:
-            SettingsField(title: "提示词") {
+            SettingsField(title: String(localized: "Prompt")) {
                 TextEditor(text: Binding(get: { action.gpt?.prompt ?? "" }, set: { action.gpt?.prompt = $0 }))
                     .font(.body).scrollContentBackground(.hidden)
-                    .frame(minHeight: 120).accessibilityLabel("AI 提示词")
+                    .frame(minHeight: 120).accessibilityLabel("AI Prompt")
             }
-            Text("使用 {{selected.text}} 插入选中文字，{{options.标识}} 插入选项值。")
+            Text("Use {{selected.text}} to insert selected text and {{options.identifier}} to insert an option value.")
                 .font(.caption).foregroundStyle(.secondary)
-            Toggle("启用推理", isOn: Binding(get: { action.gpt?.reasoning ?? (action.meta.after == nil || action.meta.after == AfterAction.none) }, set: { action.gpt?.reasoning = $0 }))
+            Toggle("Enable reasoning", isOn: Binding(get: { action.gpt?.reasoning ?? (action.meta.after == nil || action.meta.after == AfterAction.none) }, set: { action.gpt?.reasoning = $0 }))
                 .toggleStyle(.switch).controlSize(.small)
             if let tools = action.gpt?.tools, !tools.isEmpty {
-                Label("已保留 \(tools.count) 个 AI 工具，可在 YAML 中编辑。", systemImage: "wrench.and.screwdriver")
+                Label("\(tools.count) AI tools preserved. Edit them in YAML.", systemImage: "wrench.and.screwdriver")
                     .font(.caption).foregroundStyle(.secondary)
             }
         case .runCommand:
-            SettingsField(title: "命令与参数") {
+            SettingsField(title: String(localized: "Command and Arguments")) {
                 TextEditor(text: Binding(get: { action.runCommand?.command.joined(separator: "\n") ?? "" }, set: {
                     action.runCommand?.command = $0.isEmpty ? [] : $0.components(separatedBy: "\n")
                 }))
                 .font(.system(.body, design: .monospaced)).scrollContentBackground(.hidden)
-                .frame(minHeight: 120).accessibilityLabel("命令与参数")
+                .frame(minHeight: 120).accessibilityLabel("Command and Arguments")
             }
-            Text("第一行是程序，之后每行一个参数。选中文字通过 SELECTED_TEXT 传入，工作目录为插件包。")
+            Text("Enter the program on the first line, then one argument per line. Selected text is passed through SELECTED_TEXT. The working directory is the plugin package.")
                 .font(.caption).foregroundStyle(.secondary)
         }
         if action.gpt != nil || action.runCommand != nil {
-            SettingsMenuPicker(title: "结果处理", values: AfterAction.allCases,
+            SettingsMenuPicker(title: String(localized: "Output Handling"), values: AfterAction.allCases,
                              selection: Binding<AfterAction>(get: { action.meta.after ?? AfterAction.none }, set: { action.meta.after = $0 }), label: resultTitle)
         }
-        DisclosureGroup("显示条件") {
+        DisclosureGroup("Display Conditions") {
             VStack(alignment: .leading, spacing: 16) {
                 ForEach(ActionRequirement.allCases, id: \.self) { requirement in
                     Toggle(requirement.title, isOn: Binding(get: {
@@ -85,27 +85,27 @@ struct PluginActionEditorView: View {
                         action.meta.requirements = requirements.isEmpty ? nil : requirements
                     })).toggleStyle(.switch).controlSize(.small)
                 }
-                SettingsField(title: "文本正则表达式 · 可选") {
-                    TextField("不限制", text: $action.meta.regex.text).accessibilityLabel("文本正则表达式")
+                SettingsField(title: String(localized: "Text Regular Expression · Optional")) {
+                    TextField("No limit", text: $action.meta.regex.text).accessibilityLabel("Text Regular Expression")
                 }
-                PluginStringListField(title: "仅在这些应用显示 · 逗号分隔 bundle ID", values: $action.meta.requiredApps)
-                PluginStringListField(title: "在这些应用隐藏 · 逗号分隔 bundle ID", values: $action.meta.excludedApps)
-                Text("所有条件须同时满足；动作接收完整选中文本。")
+                PluginStringListField(title: String(localized: "Show Only in These Apps · Comma-separated bundle IDs"), values: $action.meta.requiredApps)
+                PluginStringListField(title: String(localized: "Hide in These Apps · Comma-separated bundle IDs"), values: $action.meta.excludedApps)
+                Text("All conditions must match. The action receives the full selected text.")
                     .font(.caption).foregroundStyle(.secondary)
             }.padding(.top, 14)
         }.font(.subheadline)
-        DisclosureGroup("更多设置") {
+        DisclosureGroup("More Settings") {
             VStack(alignment: .leading, spacing: 16) {
-                SettingsField(title: "动作标识") {
-                    TextField("com.example.action", text: $action.meta.identifier).accessibilityLabel("动作标识")
+                SettingsField(title: String(localized: "Action Identifier")) {
+                    TextField("com.example.action", text: $action.meta.identifier).accessibilityLabel("Action Identifier")
                 }
-                Text("应用配置会引用此标识，发布后应保持稳定。")
+                Text("App configurations reference this identifier. Keep it unchanged after publishing.")
                     .font(.caption).foregroundStyle(.secondary)
-                SettingsField(title: "图标") {
-                    TextField("symbol:bolt", text: $action.meta.icon).accessibilityLabel("动作图标")
+                SettingsField(title: String(localized: "Icon")) {
+                    TextField("symbol:bolt", text: $action.meta.icon).accessibilityLabel("Action Icon")
                 }
-                SettingsField(title: "说明") {
-                    TextField("简短描述这个动作", text: $action.meta.description.text).accessibilityLabel("动作说明")
+                SettingsField(title: String(localized: "Description")) {
+                    TextField("Briefly describe this action", text: $action.meta.description.text).accessibilityLabel("Action Description")
                 }
             }.padding(.top, 14)
         }.font(.subheadline)
@@ -113,11 +113,11 @@ struct PluginActionEditorView: View {
 
     private func resultTitle(_ result: AfterAction) -> String {
         switch result {
-        case .none: return action.gpt != nil ? "打开对话" : "不处理输出"
-        case .paste: return "替换选中文本"
-        case .copy: return "复制到剪贴板"
-        case .show: return "显示结果"
-        case .xshow: return "显示并允许替换"
+        case .none: return action.gpt != nil ? String(localized: "Open Chat") : String(localized: "Ignore Output")
+        case .paste: return String(localized: "Replace Selected Text")
+        case .copy: return String(localized: "Copy to Clipboard")
+        case .show: return String(localized: "Show Result")
+        case .xshow: return String(localized: "Show and Allow Replacement")
         }
     }
 }

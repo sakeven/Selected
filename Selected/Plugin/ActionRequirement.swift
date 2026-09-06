@@ -5,10 +5,10 @@ enum ActionRequirement: String, Codable, CaseIterable {
 
     var title: String {
         switch self {
-        case .text: return "有选中文本"
-        case .editable: return "可粘贴文本"
-        case .url: return "包含一个链接"
-        case .urls: return "包含链接"
+        case .text: return String(localized: "Text is selected")
+        case .editable: return String(localized: "Text can be pasted")
+        case .url: return String(localized: "Contains one link")
+        case .urls: return String(localized: "Contains links")
         }
     }
 }

@@ -18,7 +18,7 @@ struct SettingsDisclosureGroupStyle: DisclosureGroupStyle {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
-            .accessibilityValue(configuration.isExpanded ? "已展开" : "已折叠")
+            .accessibilityValue(configuration.isExpanded ? String(localized: "Expanded") : String(localized: "Collapsed"))
 
             if configuration.isExpanded {
                 configuration.content

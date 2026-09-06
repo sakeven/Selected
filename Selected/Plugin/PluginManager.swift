@@ -56,23 +56,23 @@ class PluginManager: ObservableObject {
     private func checkConflicts(_ plugin: Plugin, replacing existing: Plugin?) throws {
         let others = plugins.filter { $0.id != existing?.id }
         if others.contains(where: { $0.id == plugin.id }) {
-            throw PluginValidationError(messages: ["插件标识已存在：\(plugin.id)。"])
+            throw PluginValidationError(messages: [String(localized: "Plugin identifier already exists: \(plugin.id).")])
         }
         let actionIDs = Set(others.flatMap { $0.actions.map(\.meta.identifier) })
         let conflicts = plugin.actions.filter { actionIDs.contains($0.meta.identifier) }
         if !conflicts.isEmpty {
-            throw PluginValidationError(messages: conflicts.map { "动作标识已被其他插件使用：\($0.meta.identifier)。" })
+            throw PluginValidationError(messages: conflicts.map { String(localized: "Action identifier is already used by another plugin: \($0.meta.identifier).") })
         }
     }
 
     private func checkUpgrade(_ plugin: Plugin, from existing: Plugin?) throws {
         guard let existing else { return }
         guard plugin.id == existing.id else {
-            throw PluginValidationError(messages: ["已安装插件的标识不可更改。"])
+            throw PluginValidationError(messages: [String(localized: "The identifier of an installed plugin cannot be changed.")])
         }
         if let old = existing.info.version.flatMap(PluginVersion.init) {
             guard let new = plugin.info.version.flatMap(PluginVersion.init), new > old else {
-                throw PluginValidationError(messages: ["新版本必须高于已安装版本 \(existing.info.version ?? "")。"])
+                throw PluginValidationError(messages: [String(localized: "The new version must be higher than the installed version \(existing.info.version ?? "").")])
             }
         }
     }
@@ -88,7 +88,7 @@ class PluginManager: ObservableObject {
         try checkUpgrade(incoming, from: existing)
         let destination = existing.map(directory(for:)) ?? extensionsDir.appendingPathComponent(url.lastPathComponent, isDirectory: true)
         if existing == nil, fileManager.fileExists(atPath: destination.path) {
-            throw PluginValidationError(messages: ["安装目录已被其他插件占用：\(destination.lastPathComponent)。"])
+            throw PluginValidationError(messages: [String(localized: "The installation folder is already used by another plugin: \(destination.lastPathComponent).")])
         }
         try stageAndReplace(source: url, manifest: nil, destination: destination)
         loadPlugins()
@@ -104,12 +104,12 @@ class PluginManager: ObservableObject {
         if let existing {
             guard let installed = plugins.first(where: { $0.id == existing.id }),
                   installed.source == existing.source else {
-                throw PluginValidationError(messages: ["插件已在编辑期间发生变化，请重新打开编辑器。"])
+                throw PluginValidationError(messages: [String(localized: "The plugin changed while you were editing. Please reopen the editor.")])
             }
             current = installed
         } else {
             guard plugin.info.identifier != nil, plugin.info.version != nil else {
-                throw PluginValidationError(messages: ["新插件必须填写标识和版本。"])
+                throw PluginValidationError(messages: [String(localized: "New plugins require an identifier and a version.")])
             }
             current = nil
         }
@@ -117,7 +117,7 @@ class PluginManager: ObservableObject {
         try checkUpgrade(plugin, from: current)
         let destination = current.map(directory(for:)) ?? extensionsDir.appendingPathComponent(plugin.id + ".selectedext", isDirectory: true)
         if current == nil, fileManager.fileExists(atPath: destination.path) {
-            throw PluginValidationError(messages: ["安装目录已存在。"])
+            throw PluginValidationError(messages: [String(localized: "The installation folder already exists.")])
         }
         let yaml = try YAMLEncoder().encode(plugin)
         try stageAndReplace(source: current.map(directory(for:)), manifest: yaml, destination: destination)
@@ -151,7 +151,7 @@ class PluginManager: ObservableObject {
     func restorePreviousVersion(_ plugin: Plugin) throws {
         let previous = previousDirectory(for: plugin)
         let restored = try readManifest(at: previous)
-        guard restored.id == plugin.id else { throw PluginValidationError(messages: ["历史版本的插件标识不一致。"]) }
+        guard restored.id == plugin.id else { throw PluginValidationError(messages: [String(localized: "The previous version has a different plugin identifier.")]) }
         if let issue = restored.compatibilityIssue(hostVersion: hostVersion) { throw PluginValidationError(messages: [issue]) }
         try checkConflicts(restored, replacing: plugin)
         _ = try fileManager.replaceItemAt(directory(for: plugin), withItemAt: previous)
@@ -184,11 +184,11 @@ class PluginManager: ObservableObject {
                     guard (try directory.resourceValues(forKeys: [.isDirectoryKey])).isDirectory == true else { continue }
                     var plugin = try readManifest(at: directory)
                     guard !pluginIDs.contains(plugin.id) else {
-                        throw PluginValidationError(messages: ["重复的插件标识：\(plugin.id)。"])
+                        throw PluginValidationError(messages: [String(localized: "Duplicate plugin identifier: \(plugin.id).")])
                     }
                     let ids = Set(plugin.actions.map(\.meta.identifier))
                     guard actionIDs.isDisjoint(with: ids) else {
-                        throw PluginValidationError(messages: ["与其他插件的动作标识冲突：\(actionIDs.intersection(ids).sorted().joined(separator: ", "))。"])
+                        throw PluginValidationError(messages: [String(localized: "Action identifiers conflict with another plugin: \(actionIDs.intersection(ids).sorted().joined(separator: ", ")).")])
                     }
                     pluginIDs.insert(plugin.id)
                     actionIDs.formUnion(ids)
@@ -223,7 +223,7 @@ class PluginManager: ObservableObject {
     }
 
     var allActions: [PerformAction] {
-        var result = [WebSearchAction().generate(generic: GenericAction(title: "Search", icon: "symbol:magnifyingglass", identifier: "selected.websearch"))]
+        var result = [WebSearchAction().generate(generic: GenericAction(title: String(localized: "Search"), icon: "symbol:magnifyingglass", identifier: "selected.websearch"))]
         for plugin in plugins where plugin.info.enabled && plugin.compatibilityIssue(hostVersion: hostVersion) == nil {
             for action in plugin.actions {
                 var generic = action.meta
@@ -242,10 +242,10 @@ class PluginManager: ObservableObject {
                 }
             }
         }
-        result.append(TranslationAction(target: "cn").generate(generic: GenericAction(title: "翻译到中文", icon: "square 译中", identifier: "selected.translation.cn")))
-        result.append(TranslationAction(target: "en").generate(generic: GenericAction(title: "Translate to English", icon: "symbol:e.square", identifier: "selected.translation.en")))
-        result.append(CopyAction().generate(generic: GenericAction(title: "Copy", icon: "symbol:doc.on.clipboard", identifier: "selected.copy")))
-        result.append(SpeackAction().generate(generic: GenericAction(title: "Speak", icon: "symbol:play.circle", identifier: "selected.speak")))
+        result.append(TranslationAction(target: "cn").generate(generic: GenericAction(title: String(localized: "Translate to Chinese"), icon: "square 译中", identifier: "selected.translation.cn")))
+        result.append(TranslationAction(target: "en").generate(generic: GenericAction(title: String(localized: "Translate to English"), icon: "symbol:e.square", identifier: "selected.translation.en")))
+        result.append(CopyAction().generate(generic: GenericAction(title: String(localized: "Copy"), icon: "symbol:doc.on.clipboard", identifier: "selected.copy")))
+        result.append(SpeackAction().generate(generic: GenericAction(title: String(localized: "Speak"), icon: "symbol:play.circle", identifier: "selected.speak")))
         return result
     }
 }

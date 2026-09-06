@@ -15,25 +15,25 @@ struct PluginListView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                SettingsPageHeader(title: "插件", subtitle: "\(pluginMgr.plugins.count) 个已安装 · 让选中文字更有用")
-                Button("导入…", systemImage: "square.and.arrow.down", action: importPlugin)
+                SettingsPageHeader(title: "Plugins", subtitle: "\(pluginMgr.plugins.count) installed · Do more with selected text")
+                Button("Import…", systemImage: "square.and.arrow.down", action: importPlugin)
                     .buttonStyle(SettingsButtonStyle())
-                Button("新建插件", systemImage: "plus") {
+                Button("New Plugin", systemImage: "plus") {
                     editor = PluginEditorSession(plugin: .new(), existing: nil)
                 }
                 .buttonStyle(SettingsButtonStyle(emphasis: .primary))
                 Menu {
-                    Button("重新加载", systemImage: "arrow.clockwise") { pluginMgr.loadPlugins() }
-                    Button("打开插件文件夹", systemImage: "folder") { NSWorkspace.shared.open(pluginMgr.extensionsDir) }
+                    Button("Reload", systemImage: "arrow.clockwise") { pluginMgr.loadPlugins() }
+                    Button("Open Plugins Folder", systemImage: "folder") { NSWorkspace.shared.open(pluginMgr.extensionsDir) }
                 } label: {
-                    Label("更多插件管理操作", systemImage: "ellipsis")
+                    Label("More plugin management actions", systemImage: "ellipsis")
                         .labelStyle(.iconOnly).frame(width: 30, height: 32)
                         .contentShape(.rect)
                 }
                 .menuStyle(.borderlessButton)
                 .menuIndicator(.hidden)
                 .fixedSize()
-                .help("更多插件管理操作")
+                .help("More plugin management actions")
             }
             .controlSize(.large)
             .padding(20)
@@ -41,7 +41,7 @@ struct PluginListView: View {
             HSplitView {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("已安装").font(.caption.weight(.medium)).foregroundStyle(.secondary)
+                        Text("Installed").font(.caption.weight(.medium)).foregroundStyle(.secondary)
                             .padding(.horizontal, 12).padding(.bottom, 4)
                         ForEach(pluginMgr.plugins) { plugin in
                             Button {
@@ -55,13 +55,13 @@ struct PluginListView: View {
                                         .accessibilityHidden(true)
                                     VStack(alignment: .leading, spacing: 5) {
                                         Text(plugin.info.name).font(.subheadline.weight(.semibold)).lineLimit(1)
-                                        Text("\(plugin.actions.count) 个动作 · " + (plugin.info.version.map { "v" + $0 } ?? "未标记版本"))
+                                        Text("\(plugin.actions.count) actions · \(plugin.info.version.map { "v" + $0 } ?? String(localized: "Unversioned"))")
                                             .font(.caption).foregroundStyle(.secondary).lineLimit(1)
                                     }
                                     Spacer(minLength: 0)
-                                    if !plugin.info.enabled { Image(systemName: "pause.circle").foregroundStyle(.secondary).accessibilityLabel("已停用") }
+                                    if !plugin.info.enabled { Image(systemName: "pause.circle").foregroundStyle(.secondary).accessibilityLabel("Disabled") }
                                     if plugin.compatibilityIssue(hostVersion: pluginMgr.hostVersion) != nil {
-                                        Image(systemName: "exclamationmark.triangle").foregroundStyle(.orange).accessibilityLabel("版本不兼容")
+                                        Image(systemName: "exclamationmark.triangle").foregroundStyle(.orange).accessibilityLabel("Incompatible Version")
                                     }
                                 }
                                 .padding(10)
@@ -85,11 +85,11 @@ struct PluginListView: View {
                     .frame(minWidth: 370, maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     ContentUnavailableView {
-                        Label("开始使用插件", systemImage: "puzzlepiece.extension")
+                        Label("Get Started with Plugins", systemImage: "puzzlepiece.extension")
                     } description: {
-                        Text("创建自己的文字操作，或导入已有插件。")
+                        Text("Create your own text actions or import an existing plugin.")
                     } actions: {
-                        Button("新建插件", systemImage: "plus") {
+                        Button("New Plugin", systemImage: "plus") {
                             editor = PluginEditorSession(plugin: .new(), existing: nil)
                         }.buttonStyle(SettingsButtonStyle(emphasis: .primary))
                     }
@@ -98,7 +98,7 @@ struct PluginListView: View {
             }
             if !pluginMgr.loadIssues.isEmpty {
                 Divider()
-                DisclosureGroup("\(pluginMgr.loadIssues.count) 个插件加载失败") {
+                DisclosureGroup("\(pluginMgr.loadIssues.count) plugins failed to load") {
                     ScrollView {
                         Text(pluginMgr.loadIssues.joined(separator: "\n\n"))
                             .font(.caption).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
@@ -118,8 +118,8 @@ struct PluginListView: View {
         .sheet(item: $editor) { session in
             PluginEditorView(session: session, manager: pluginMgr) { id in selection = id }
         }
-        .alert("插件操作失败", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
-            Button("好", role: .cancel) { errorMessage = nil }
+        .alert("Plugin Operation Failed", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
+            Button("OK", role: .cancel) { errorMessage = nil }
         } message: { Text(errorMessage ?? "") }
     }
 
@@ -129,7 +129,7 @@ struct PluginListView: View {
         panel.canChooseFiles = true
         panel.treatsFilePackagesAsDirectories = false
         panel.allowsMultipleSelection = false
-        panel.message = "选择包含 config.yaml 的 .selectedext 插件包或文件夹。"
+        panel.message = String(localized: "Choose a .selectedext plugin package or a folder containing config.yaml.")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         do {
             try pluginMgr.install(url: url)

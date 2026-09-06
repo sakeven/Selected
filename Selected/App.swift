@@ -104,7 +104,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 try PluginManager.shared.install(url: url)
             } catch {
                 let alert = NSAlert()
-                alert.messageText = "插件安装失败"
+                alert.messageText = String(localized: "Plugin Installation Failed")
                 alert.informativeText = error.localizedDescription
                 alert.runModal()
             }

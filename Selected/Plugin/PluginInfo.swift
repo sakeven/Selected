@@ -68,7 +68,7 @@ struct Plugin: Codable, Identifiable {
     static func new() -> Plugin {
         var info = PluginInfo()
         info.identifier = "local.\(UUID().uuidString.lowercased())"
-        info.name = "新插件"
+        info.name = String(localized: "Untitled Plugin")
         info.version = "1.0.0"
         return Plugin(info: info, actions: [Action.new()])
     }

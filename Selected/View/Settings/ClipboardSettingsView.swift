@@ -7,8 +7,8 @@ struct ClipboardSettingsView: View {
     @Default(.clipboardHistoryTime) private var keepTime
 
     var body: some View {
-        SettingsPage(title: "Clipboard", subtitle: "设置剪贴板历史记录、唤出快捷键与保留时间。") {
-            SettingsSection(title: "历史记录") {
+        SettingsPage(title: "Clipboard", subtitle: "Configure clipboard history, its keyboard shortcut, and retention period.") {
+            SettingsSection(title: "History") {
                 HStack {
                     Text("Clipboard History").font(.subheadline)
                     Spacer()

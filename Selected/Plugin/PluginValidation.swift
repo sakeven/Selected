@@ -18,74 +18,74 @@ extension Plugin {
             if !condition { errors.append(message) }
         }
         func nonempty(_ text: String) -> Bool { !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-        check((schemaVersion ?? 1) == Self.currentSchemaVersion, "不支持 schemaVersion \(schemaVersion ?? 1)，当前支持版本为 1。")
-        check(nonempty(info.name), "插件名称不能为空。")
+        check((schemaVersion ?? 1) == Self.currentSchemaVersion, String(localized: "Unsupported schemaVersion \(schemaVersion ?? 1). The supported version is 1."))
+        check(nonempty(info.name), String(localized: "The plugin name cannot be empty."))
         if let identifier = info.identifier {
             check(identifier.range(of: #"^[A-Za-z0-9][A-Za-z0-9.-]*$"#, options: .regularExpression) != nil,
-                  "插件标识只能包含字母、数字、点和连字符，且须以字母或数字开头。")
+                  String(localized: "The plugin identifier can contain only letters, numbers, dots, and hyphens, and must start with a letter or number."))
         }
-        if let version = info.version { check(PluginVersion(version) != nil, "插件版本无效，请使用例如 1.0.0 或 1.1.0-beta.1。") }
-        if let minimum = info.minSelectedVersion { check(PluginVersion(minimum) != nil, "最低 Selected 版本无效。") }
-        check(!actions.isEmpty, "至少需要一个动作。")
+        if let version = info.version { check(PluginVersion(version) != nil, String(localized: "Invalid plugin version. Use a version such as 1.0.0 or 1.1.0-beta.1.")) }
+        if let minimum = info.minSelectedVersion { check(PluginVersion(minimum) != nil, String(localized: "Invalid minimum Selected version.")) }
+        check(!actions.isEmpty, String(localized: "At least one action is required."))
         var actionIDs = Set<String>()
         for action in actions {
             let name = action.meta.title
-            check(nonempty(name), "动作标题不能为空。")
-            check(nonempty(action.meta.identifier), "动作标识不能为空。")
-            check(actionIDs.insert(action.meta.identifier).inserted, "动作标识重复：\(action.meta.identifier)。")
-            check(!Self.builtInActionIDs.contains(action.meta.identifier), "动作标识与内置动作冲突：\(action.meta.identifier)。")
+            check(nonempty(name), String(localized: "The action title cannot be empty."))
+            check(nonempty(action.meta.identifier), String(localized: "The action identifier cannot be empty."))
+            check(actionIDs.insert(action.meta.identifier).inserted, String(localized: "Duplicate action identifier: \(action.meta.identifier)."))
+            check(!Self.builtInActionIDs.contains(action.meta.identifier), String(localized: "Action identifier conflicts with a built-in action: \(action.meta.identifier)."))
             let count = [action.url != nil, action.service != nil, action.keycombo != nil,
                          action.gpt != nil, action.runCommand != nil].filter { $0 }.count
-            check(count == 1, "\(name)：必须且只能配置一种动作类型。")
+            check(count == 1, String(localized: "\(name): Configure exactly one action type."))
             if let regex = action.meta.regex {
-                check((try? Regex(regex)) != nil, "\(name)：正则表达式无效。")
+                check((try? Regex(regex)) != nil, String(localized: "\(name): Invalid regular expression."))
             }
             if let url = action.url {
                 let rendered = PluginTemplate.render(url.url, context: SelectedTextContext(Text: "example"),
                                                      options: info.options.reduce(into: [:]) { $0[$1.identifier] = $1.defaultValue }, urlEncoded: true)
-                check(nonempty(url.url) && URL(string: rendered)?.scheme != nil, "\(name)：URL 必须包含协议，例如 https://。")
+                check(nonempty(url.url) && URL(string: rendered)?.scheme != nil, String(localized: "\(name): The URL must include a scheme, such as https://."))
             }
-            if let service = action.service { check(nonempty(service.name), "\(name)：服务名称不能为空。") }
+            if let service = action.service { check(nonempty(service.name), String(localized: "\(name): The service name cannot be empty.")) }
             if let command = action.runCommand {
-                check(!command.command.isEmpty && nonempty(command.command.first ?? ""), "\(name)：命令不能为空。")
+                check(!command.command.isEmpty && nonempty(command.command.first ?? ""), String(localized: "\(name): The command cannot be empty."))
             }
             if let keys = action.keycombo {
                 let combos = keys.keycombos ?? (keys.keycombo.isEmpty ? [] : [keys.keycombo])
-                check(keys.keycombo.isEmpty || keys.keycombos == nil, "\(name)：keycombo 与 keycombos 只能设置一项。")
+                check(keys.keycombo.isEmpty || keys.keycombos == nil, String(localized: "\(name): Set either keycombo or keycombos, not both."))
                 check(!combos.isEmpty && combos.allSatisfy { combo in
                     let tokens = combo.split(separator: " ").map(String.init)
                     return !tokens.isEmpty && tokens.allSatisfy { KeyMaskMapping[$0] != nil || KeycodeMapping[$0] != nil }
                         && tokens.filter { KeycodeMapping[$0] != nil && KeyMaskMapping[$0] == nil }.count == 1
-                }, "\(name)：快捷键无效，请使用例如 cmd shift c，每个组合只能有一个普通按键。")
+                }, String(localized: "\(name): Invalid shortcut. Use a shortcut such as cmd shift c, with exactly one non-modifier key per combination."))
             }
             if let gpt = action.gpt {
-                check(nonempty(gpt.prompt), "\(name)：AI 提示词不能为空。")
+                check(nonempty(gpt.prompt), String(localized: "\(name): The AI prompt cannot be empty."))
                 for tool in gpt.tools ?? [] {
-                    check(tool.getParameters() != nil, "\(name)：工具 \(tool.name) 的 JSON Schema 无效。")
+                    check(tool.getParameters() != nil, String(localized: "\(name): Invalid JSON Schema for tool \(tool.name)."))
                     if let command = tool.command {
-                        check(!command.isEmpty && nonempty(command.first ?? ""), "\(name)：工具 \(tool.name) 的命令不能为空。")
+                        check(!command.isEmpty && nonempty(command.first ?? ""), String(localized: "\(name): The command for tool \(tool.name) cannot be empty."))
                     }
                 }
             }
             if let after = action.meta.after, after != .none {
-                check(action.runCommand != nil || action.gpt != nil, "\(name)：结果处理仅适用于命令和 AI 动作。")
+                check(action.runCommand != nil || action.gpt != nil, String(localized: "\(name): Output handling is available only for command and AI actions."))
             }
         }
         var optionIDs = Set<String>()
         for option in info.options {
             check(option.identifier.range(of: #"^[A-Za-z_][A-Za-z0-9_]*$"#, options: .regularExpression) != nil,
-                  "选项标识 \(option.identifier) 无效，请使用字母、数字和下划线，且不能以数字开头。")
-            check(optionIDs.insert(option.identifier.uppercased()).inserted, "选项标识重复（忽略大小写）：\(option.identifier)。")
+                  String(localized: "Invalid option identifier \(option.identifier). Use letters, numbers, and underscores, and do not start with a number."))
+            check(optionIDs.insert(option.identifier.uppercased()).inserted, String(localized: "Duplicate option identifier (case-insensitive): \(option.identifier)."))
             if option.type == .boolean, let value = option.defaultVal {
-                check(["true", "false"].contains(value), "\(option.identifier)：开关默认值须为 true 或 false。")
+                check(["true", "false"].contains(value), String(localized: "\(option.identifier): The default toggle value must be true or false."))
             }
             if option.type == .multiple {
                 let values = option.values ?? []
-                check(!values.isEmpty && Set(values).count == values.count, "\(option.identifier)：单选必须有不重复的候选值。")
-                if let value = option.defaultVal { check(values.contains(value), "\(option.identifier)：默认值不在候选值中。") }
-                if let labels = option.valueLabels { check(labels.count == values.count, "\(option.identifier)：显示名称数量必须与候选值一致。") }
+                check(!values.isEmpty && Set(values).count == values.count, String(localized: "\(option.identifier): Single-choice options require unique choices."))
+                if let value = option.defaultVal { check(values.contains(value), String(localized: "\(option.identifier): The default value is not one of the choices.")) }
+                if let labels = option.valueLabels { check(labels.count == values.count, String(localized: "\(option.identifier): The number of display labels must match the number of choices.")) }
             }
-            check(option.type != .secret || option.defaultVal?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty != false, "\(option.identifier)：密钥不能写入默认值，请在配置页输入。")
+            check(option.type != .secret || option.defaultVal?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty != false, String(localized: "\(option.identifier): Secrets cannot have a default value. Enter the secret on the configuration page."))
         }
         if !errors.isEmpty { throw PluginValidationError(messages: errors) }
     }
@@ -93,6 +93,6 @@ extension Plugin {
     func compatibilityIssue(hostVersion: String) -> String? {
         guard let minimum = info.minSelectedVersion, let required = PluginVersion(minimum),
               let current = PluginVersion(hostVersion), current < required else { return nil }
-        return "需要 Selected \(minimum) 或更新版本，当前为 \(hostVersion)。"
+        return String(localized: "Requires Selected \(minimum) or later. The current version is \(hostVersion).")
     }
 }

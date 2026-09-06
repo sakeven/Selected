@@ -2,23 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "" : {
-
-    },
-    "·" : {
-
-    },
-    "[%@]" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[%@]"
-          }
-        }
-      }
-    },
-    "{selected.text} 表示选中文字，{selected.options.标识} 表示选项值。" : {
-
+      "shouldTranslate" : false
     },
     "%@" : {
       "extractionState" : "stale",
@@ -27,6 +11,166 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@"
+          }
+        }
+      }
+    },
+    "%@: Configure exactly one action type." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：必须且只能配置一种动作类型。"
+          }
+        }
+      }
+    },
+    "%@: Invalid JSON Schema for tool %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：工具 %@ 的 JSON Schema 无效。"
+          }
+        }
+      }
+    },
+    "%@: Invalid regular expression." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：正则表达式无效。"
+          }
+        }
+      }
+    },
+    "%@: Invalid shortcut. Use a shortcut such as cmd shift c, with exactly one non-modifier key per combination." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：快捷键无效，请使用例如 cmd shift c，每个组合只能有一个普通按键。"
+          }
+        }
+      }
+    },
+    "%@: Output handling is available only for command and AI actions." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：结果处理仅适用于命令和 AI 动作。"
+          }
+        }
+      }
+    },
+    "%@: Secrets cannot have a default value. Enter the secret on the configuration page." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：密钥不能写入默认值，请在配置页输入。"
+          }
+        }
+      }
+    },
+    "%@: Set either keycombo or keycombos, not both." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：keycombo 与 keycombos 只能设置一项。"
+          }
+        }
+      }
+    },
+    "%@: Single-choice options require unique choices." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：单选必须有不重复的候选值。"
+          }
+        }
+      }
+    },
+    "%@: The AI prompt cannot be empty." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：AI 提示词不能为空。"
+          }
+        }
+      }
+    },
+    "%@: The command cannot be empty." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：命令不能为空。"
+          }
+        }
+      }
+    },
+    "%@: The command for tool %@ cannot be empty." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：工具 %@ 的命令不能为空。"
+          }
+        }
+      }
+    },
+    "%@: The default toggle value must be true or false." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：开关默认值须为 true 或 false。"
+          }
+        }
+      }
+    },
+    "%@: The default value is not one of the choices." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：默认值不在候选值中。"
+          }
+        }
+      }
+    },
+    "%@: The number of display labels must match the number of choices." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：显示名称数量必须与候选值一致。"
+          }
+        }
+      }
+    },
+    "%@: The service name cannot be empty." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：服务名称不能为空。"
+          }
+        }
+      }
+    },
+    "%@: The URL must include a scheme, such as https://." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：URL 必须包含协议，例如 https://。"
           }
         }
       }
@@ -42,16 +186,129 @@
       }
     },
     "%lld" : {
-
+      "shouldTranslate" : false
     },
-    "%lld 个动作" : {
-
+    "%lld actions" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld action"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld actions"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个动作"
+          }
+        }
+      }
     },
-    "%lld 个已安装 · 让选中文字更有用" : {
-
+    "%lld actions · %@" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld action · %@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld actions · %@"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个动作 · %@"
+          }
+        }
+      }
     },
-    "%lld 个插件加载失败" : {
-
+    "%lld AI tools preserved. Edit them in YAML." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld AI tool preserved. Edit it in YAML."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld AI tools preserved. Edit them in YAML."
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已保留 %lld 个 AI 工具，可在 YAML 中编辑。"
+          }
+        }
+      }
+    },
+    "%lld installed · Do more with selected text" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个已安装 · 让选中文字更有用"
+          }
+        }
+      }
+    },
+    "%lld plugins failed to load" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld plugin failed to load"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld plugins failed to load"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 个插件加载失败"
+          }
+        }
+      }
     },
     "1 Year" : {
       "extractionState" : "manual",
@@ -65,7 +322,7 @@
       }
     },
     "1.0.0" : {
-
+      "shouldTranslate" : false
     },
     "1x" : {
       "localizations" : {
@@ -77,6 +334,17 @@
         }
       }
     },
+    "24 Hours" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "24 小时"
+          }
+        }
+      }
+    },
     "3 Months" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -84,6 +352,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "3 个月"
+          }
+        }
+      }
+    },
+    "30 Days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 天"
           }
         }
       }
@@ -110,24 +389,12 @@
         }
       }
     },
-    "24 Hours" : {
-      "extractionState" : "manual",
+    "[%@]" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "24 小时"
-          }
-        }
-      }
-    },
-    "30 Days" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "30 天"
+            "value" : "[%@]"
           }
         }
       }
@@ -142,13 +409,92 @@
         }
       }
     },
-    "Actions" : {
-      "extractionState" : "stale",
+    "Action Description" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "操作"
+            "value" : "动作说明"
+          }
+        }
+      }
+    },
+    "Action Icon" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作图标"
+          }
+        }
+      }
+    },
+    "Action Identifier" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作标识"
+          }
+        }
+      }
+    },
+    "Action identifier conflicts with a built-in action: %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作标识与内置动作冲突：%@。"
+          }
+        }
+      }
+    },
+    "Action identifier is already used by another plugin: %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作标识已被其他插件使用：%@。"
+          }
+        }
+      }
+    },
+    "Action identifiers conflict with another plugin: %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与其他插件的动作标识冲突：%@。"
+          }
+        }
+      }
+    },
+    "Action Name" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作名称"
+          }
+        }
+      }
+    },
+    "Actions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作"
+          }
+        }
+      }
+    },
+    "Actions  ·  %lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作  ·  %lld"
           }
         }
       }
@@ -175,11 +521,75 @@
         }
       }
     },
-    "AI Chat" : {
-
+    "Add Action" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加动作"
+          }
+        }
+      }
     },
-    "AI 提示词" : {
-
+    "Add App" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加应用"
+          }
+        }
+      }
+    },
+    "Add language choices, toggles, or secrets to customize your plugin." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可以添加语言选择、开关或密钥，让插件按需工作。"
+          }
+        }
+      }
+    },
+    "Add Option" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加选项"
+          }
+        }
+      }
+    },
+    "Advanced Settings" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高级设置"
+          }
+        }
+      }
+    },
+    "AI Chat" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 对话"
+          }
+        }
+      }
+    },
+    "AI Prompt" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 提示词"
+          }
+        }
+      }
     },
     "AIService" : {
       "localizations" : {
@@ -187,6 +597,32 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "AI 服务"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI Service"
+          }
+        }
+      }
+    },
+    "All conditions must match. The action receives the full selected text." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有条件须同时满足；动作接收完整选中文本。"
+          }
+        }
+      }
+    },
+    "Allow multiple lines" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许多行输入"
           }
         }
       }
@@ -198,6 +634,12 @@
             "state" : "translated",
             "value" : "API 地址"
           }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API Host"
+          }
         }
       }
     },
@@ -207,6 +649,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "API 密钥"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API Key"
+          }
+        }
+      }
+    },
+    "App configurations reference this identifier. Keep it unchanged after publishing." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用配置会引用此标识，发布后应保持稳定。"
           }
         }
       }
@@ -232,6 +690,16 @@
         }
       }
     },
+    "Arguments" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "参数"
+          }
+        }
+      }
+    },
     "assistant" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -239,6 +707,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "助理"
+          }
+        }
+      }
+    },
+    "At least one action is required." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "至少需要一个动作。"
+          }
+        }
+      }
+    },
+    "Basic Information" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "基本信息"
+          }
+        }
+      }
+    },
+    "Basic Settings" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "基础设置"
+          }
+        }
+      }
+    },
+    "Briefly describe this action" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "简短描述这个动作"
           }
         }
       }
@@ -283,6 +791,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在调用"
+          }
+        }
+      }
+    },
+    "Can run local commands" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可运行本机命令"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消"
           }
         }
       }
@@ -752,12 +1280,52 @@
         }
       }
     },
+    "Check Configuration" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查配置"
+          }
+        }
+      }
+    },
     "Check for Updates" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "检查更新"
+          }
+        }
+      }
+    },
+    "Choices · Comma-separated" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "候选值 · 逗号分隔"
+          }
+        }
+      }
+    },
+    "Choose a .selectedext plugin package or a folder containing config.yaml." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择包含 config.yaml 的 .selectedext 插件包或文件夹。"
+          }
+        }
+      }
+    },
+    "Choose actions to run on selected text." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择动作，定义选中文字后的操作。"
           }
         }
       }
@@ -780,6 +1348,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择相册"
+          }
+        }
+      }
+    },
+    "Choose toolbar actions and their order for each app." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为不同应用选择工具栏中的动作与显示顺序。"
           }
         }
       }
@@ -1517,6 +2095,16 @@
         }
       }
     },
+    "Collapsed" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已折叠"
+          }
+        }
+      }
+    },
     "Color" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1528,10 +2116,40 @@
       }
     },
     "com.example.action" : {
-
+      "shouldTranslate" : false
     },
     "com.example.plugin" : {
-
+      "shouldTranslate" : false
+    },
+    "Command" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "命令"
+          }
+        }
+      }
+    },
+    "Command and Arguments" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "命令与参数"
+          }
+        }
+      }
+    },
+    "Command exit code: %d" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "命令退出码 %d"
+          }
+        }
+      }
     },
     "completed" : {
       "localizations" : {
@@ -1539,6 +2157,56 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已完成"
+          }
+        }
+      }
+    },
+    "Configuration" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置"
+          }
+        }
+      }
+    },
+    "Configuration is valid. Version and identifier conflicts will be checked when saving." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "配置检查通过，保存时将检查版本与标识冲突。"
+          }
+        }
+      }
+    },
+    "Configure clipboard history, its keyboard shortcut, and retention period." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设置剪贴板历史记录、唤出快捷键与保留时间。"
+          }
+        }
+      }
+    },
+    "Contains links" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "包含链接"
+          }
+        }
+      }
+    },
+    "Contains one link" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "包含一个链接"
           }
         }
       }
@@ -1561,6 +2229,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已复制："
+          }
+        }
+      }
+    },
+    "Copy" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制"
+          }
+        }
+      }
+    },
+    "Copy to Clipboard" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制到剪贴板"
+          }
+        }
+      }
+    },
+    "Create Plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "创建插件"
+          }
+        }
+      }
+    },
+    "Create your own text actions or import an existing plugin." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "创建自己的文字操作，或导入已有插件。"
+          }
+        }
+      }
+    },
+    "Create Your Plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "创建你的插件"
+          }
+        }
+      }
+    },
+    "Current version: %@. After saving, you can restore the previous version." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前版本 %@，保存后可恢复上一版本。"
           }
         }
       }
@@ -1607,12 +2335,142 @@
         }
       }
     },
+    "Default Value" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认值"
+          }
+        }
+      }
+    },
+    "Define configurable fields, then enter their values on the details page." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "定义可配置的字段，参数值在详情页填写。"
+          }
+        }
+      }
+    },
     "Delete" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除"
+          }
+        }
+      }
+    },
+    "Delete Action" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除动作"
+          }
+        }
+      }
+    },
+    "Delete Option" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除选项"
+          }
+        }
+      }
+    },
+    "Delete Plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除插件"
+          }
+        }
+      }
+    },
+    "Delete Plugin…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除插件…"
+          }
+        }
+      }
+    },
+    "Delete “%@”, its settings, and previous versions?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除“%@”及其参数和历史版本？"
+          }
+        }
+      }
+    },
+    "Description" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "说明"
+          }
+        }
+      }
+    },
+    "Disable Plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停用插件"
+          }
+        }
+      }
+    },
+    "Disabled" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已停用"
+          }
+        }
+      }
+    },
+    "Display Conditions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示条件"
+          }
+        }
+      }
+    },
+    "Display Labels · Optional, in the same order as the choices" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示名称 · 可选，顺序对应候选值"
+          }
+        }
+      }
+    },
+    "Display Name" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示名称"
           }
         }
       }
@@ -1644,6 +2502,126 @@
         }
       }
     },
+    "Drag to reorder" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "拖动调整顺序"
+          }
+        }
+      }
+    },
+    "Duplicate action identifier: %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作标识重复：%@。"
+          }
+        }
+      }
+    },
+    "Duplicate option identifier (case-insensitive): %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选项标识重复（忽略大小写）：%@。"
+          }
+        }
+      }
+    },
+    "Duplicate plugin identifier: %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重复的插件标识：%@。"
+          }
+        }
+      }
+    },
+    "Edit Plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编辑插件"
+          }
+        }
+      }
+    },
+    "Enable Plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用插件"
+          }
+        }
+      }
+    },
+    "Enable reasoning" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用推理"
+          }
+        }
+      }
+    },
+    "Enabled" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已启用"
+          }
+        }
+      }
+    },
+    "Enabled by default" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认开启"
+          }
+        }
+      }
+    },
+    "Enter %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入%@"
+          }
+        }
+      }
+    },
+    "Enter the program on the first line, then one argument per line. Selected text is passed through SELECTED_TEXT. The working directory is the plugin package." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第一行是程序，之后每行一个参数。选中文字通过 SELECTED_TEXT 传入，工作目录为插件包。"
+          }
+        }
+      }
+    },
+    "Enter the value on the plugin details page to save it to Keychain." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在插件详情页填写，保存到系统钥匙串。"
+          }
+        }
+      }
+    },
     "exchange" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1654,12 +2632,82 @@
         }
       }
     },
+    "Executable not found: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到可执行命令：%@"
+          }
+        }
+      }
+    },
+    "Existing app matching rules are preserved. Edit them in YAML." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已有的应用匹配规则会保留，可在 YAML 中修改。"
+          }
+        }
+      }
+    },
+    "Expanded" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已展开"
+          }
+        }
+      }
+    },
+    "Explain what users should enter" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帮助用户理解如何填写"
+          }
+        }
+      }
+    },
+    "Export Plugin…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导出插件…"
+          }
+        }
+      }
+    },
+    "Export the plugin definition and resources without personal settings or secrets. Choose a new filename." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导出插件定义与资源，不包含个人参数和密钥。请选择一个新文件名。"
+          }
+        }
+      }
+    },
     "Extensions" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "扩展"
+          }
+        }
+      }
+    },
+    "Extra High" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "极高"
           }
         }
       }
@@ -1705,6 +2753,46 @@
         }
       }
     },
+    "For example, cmd shift c. Multiple shortcuts run in order." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如 cmd shift c。多个组合按顺序执行。"
+          }
+        }
+      }
+    },
+    "For example: Output language" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：输出语言"
+          }
+        }
+      }
+    },
+    "For example: Reading Assistant" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：阅读助手"
+          }
+        }
+      }
+    },
+    "For example: Summarize" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "例如：总结内容"
+          }
+        }
+      }
+    },
     "General" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1716,12 +2804,58 @@
         }
       }
     },
+    "Get Started with Plugins" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始使用插件"
+          }
+        }
+      }
+    },
+    "Hide in These Apps · Comma-separated bundle IDs" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在这些应用隐藏 · 逗号分隔 bundle ID"
+          }
+        }
+      }
+    },
+    "High" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高"
+          }
+        }
+      }
+    },
+    "History" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "历史记录"
+          }
+        }
+      }
+    },
     "HotKey" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "快捷键"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keyboard Shortcut"
           }
         }
       }
@@ -1738,7 +2872,37 @@
       }
     },
     "https://example.com/search?q={selected.text}" : {
-
+      "shouldTranslate" : false
+    },
+    "Icon" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图标"
+          }
+        }
+      }
+    },
+    "Identifier" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "标识"
+          }
+        }
+      }
+    },
+    "Ignore Output" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不处理输出"
+          }
+        }
+      }
     },
     "Image" : {
       "localizations" : {
@@ -1767,6 +2931,16 @@
         }
       }
     },
+    "Import…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入…"
+          }
+        }
+      }
+    },
     "in progress" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1787,12 +2961,72 @@
         }
       }
     },
+    "Incompatible Version" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "版本不兼容"
+          }
+        }
+      }
+    },
+    "Installed" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已安装"
+          }
+        }
+      }
+    },
     "Instructions" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "指令"
+          }
+        }
+      }
+    },
+    "Instructions · Optional" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "填写说明 · 可选"
+          }
+        }
+      }
+    },
+    "Invalid minimum Selected version." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低 Selected 版本无效。"
+          }
+        }
+      }
+    },
+    "Invalid option identifier %@. Use letters, numbers, and underscores, and do not start with a number." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选项标识 %@ 无效，请使用字母、数字和下划线，且不能以数字开头。"
+          }
+        }
+      }
+    },
+    "Invalid plugin version. Use a version such as 1.0.0 or 1.1.0-beta.1." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件版本无效，请使用例如 1.0.0 或 1.1.0-beta.1。"
           }
         }
       }
@@ -1807,8 +3041,48 @@
         }
       }
     },
+    "Keyboard Shortcut" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快捷键"
+          }
+        }
+      }
+    },
+    "Keyboard Shortcuts" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快捷键组合"
+          }
+        }
+      }
+    },
+    "Keyboard Shortcuts · One per line" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快捷键 · 每行一个组合"
+          }
+        }
+      }
+    },
+    "Keychain access failed" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "钥匙串访问失败"
+          }
+        }
+      }
+    },
     "language" : {
-
+      "shouldTranslate" : false
     },
     "Last copied:" : {
       "extractionState" : "stale",
@@ -1831,6 +3105,26 @@
         }
       }
     },
+    "Leave empty for no default value" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "留空则不设默认值"
+          }
+        }
+      }
+    },
+    "Legacy plugins use their name as the identifier. Keep the name unchanged to preserve existing settings." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "旧插件使用名称作为标识，保持名称不变可以保留已有参数。"
+          }
+        }
+      }
+    },
     "Link" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1841,11 +3135,88 @@
         }
       }
     },
-    "macOS 服务名称" : {
-
+    "Low" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "低"
+          }
+        }
+      }
+    },
+    "macOS Service" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS 服务"
+          }
+        }
+      }
+    },
+    "macOS Service Name" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS 服务名称"
+          }
+        }
+      }
     },
     "Make Sticky" : {
-
+      "shouldTranslate" : false
+    },
+    "Manage startup, search, and AI services to make Selected work your way." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "管理启动、搜索与 AI 服务，让 Selected 按你的习惯工作。"
+          }
+        }
+      }
+    },
+    "Medium" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "中"
+          }
+        }
+      }
+    },
+    "Minimal" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "极低"
+          }
+        }
+      }
+    },
+    "Minimum Selected Version" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低 Selected 版本"
+          }
+        }
+      }
+    },
+    "Minimum Selected Version · Optional" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最低 Selected 版本 · 可选"
+          }
+        }
+      }
     },
     "Model" : {
       "localizations" : {
@@ -1857,12 +3228,142 @@
         }
       }
     },
+    "More" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多"
+          }
+        }
+      }
+    },
+    "More plugin management actions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多插件管理操作"
+          }
+        }
+      }
+    },
+    "More Settings" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多设置"
+          }
+        }
+      }
+    },
+    "Move Down" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下移"
+          }
+        }
+      }
+    },
+    "Move Up" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上移"
+          }
+        }
+      }
+    },
     "mp3" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "mp3"
+          }
+        }
+      }
+    },
+    "New Action" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新动作"
+          }
+        }
+      }
+    },
+    "New Plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新建插件"
+          }
+        }
+      }
+    },
+    "New plugins require an identifier and a version." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新插件必须填写标识和版本。"
+          }
+        }
+      }
+    },
+    "No action restrictions. All available actions are shown." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未限制动作，显示全部可用操作。"
+          }
+        }
+      }
+    },
+    "No apps available to add" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有可添加的应用"
+          }
+        }
+      }
+    },
+    "No custom actions. Using the default configuration." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未单独配置动作，沿用默认设置。"
+          }
+        }
+      }
+    },
+    "No limit" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不限制"
+          }
+        }
+      }
+    },
+    "No Options Yet" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有选项"
           }
         }
       }
@@ -1878,12 +3379,102 @@
         }
       }
     },
+    "None" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "好"
+          }
+        }
+      }
+    },
+    "Open Chat" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开对话"
+          }
+        }
+      }
+    },
+    "Open Plugins Folder" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开插件文件夹"
+          }
+        }
+      }
+    },
+    "Open URL" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开链接"
+          }
+        }
+      }
+    },
     "OpenAI" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "OpenAI"
+          }
+        }
+      }
+    },
+    "Option Default Value" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选项默认值"
+          }
+        }
+      }
+    },
+    "Option Display Name" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选项显示名称"
+          }
+        }
+      }
+    },
+    "Option Identifier" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选项标识"
+          }
+        }
+      }
+    },
+    "Option Instructions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选项填写说明"
           }
         }
       }
@@ -1895,6 +3486,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选项"
+          }
+        }
+      }
+    },
+    "Options  ·  %lld" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选项  ·  %lld"
+          }
+        }
+      }
+    },
+    "Other Apps" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他应用"
+          }
+        }
+      }
+    },
+    "Output" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输出"
+          }
+        }
+      }
+    },
+    "Output Handling" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "结果处理"
           }
         }
       }
@@ -1961,6 +3592,106 @@
         }
       }
     },
+    "Plugin Description" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件简介"
+          }
+        }
+      }
+    },
+    "Plugin Icon" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件图标"
+          }
+        }
+      }
+    },
+    "Plugin identifier already exists: %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件标识已存在：%@。"
+          }
+        }
+      }
+    },
+    "Plugin Information" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件信息"
+          }
+        }
+      }
+    },
+    "Plugin Installation Failed" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件安装失败"
+          }
+        }
+      }
+    },
+    "Plugin Name" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件名称"
+          }
+        }
+      }
+    },
+    "Plugin Operation Failed" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件操作失败"
+          }
+        }
+      }
+    },
+    "Plugin Version" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件版本"
+          }
+        }
+      }
+    },
+    "Plugin YAML Definition" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件 YAML 定义"
+          }
+        }
+      }
+    },
+    "Plugins" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件"
+          }
+        }
+      }
+    },
     "PNG image" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2004,6 +3735,16 @@
         }
       }
     },
+    "Prompt" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提示词"
+          }
+        }
+      }
+    },
     "Quit" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2014,12 +3755,88 @@
         }
       }
     },
+    "Ready to use. No configuration needed." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无需配置，可以直接使用。"
+          }
+        }
+      }
+    },
     "ReasoningEffort" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "推理强度"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reasoning Effort"
+          }
+        }
+      }
+    },
+    "Reload" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新加载"
+          }
+        }
+      }
+    },
+    "Remove App Configuration" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除应用配置"
+          }
+        }
+      }
+    },
+    "Replace Selected Text" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "替换选中文本"
+          }
+        }
+      }
+    },
+    "Requires Selected %@ or later. The current version is %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "需要 Selected %@ 或更新版本，当前为 %@。"
+          }
+        }
+      }
+    },
+    "Restore Previous Version" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复上一版本"
+          }
+        }
+      }
+    },
+    "Restore the previous version? This replaces the current plugin definition and keeps your settings." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复上一版本？当前插件定义将被替换，个人参数保留。"
           }
         }
       }
@@ -2055,12 +3872,112 @@
         }
       }
     },
+    "Run Command" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "运行命令"
+          }
+        }
+      }
+    },
+    "Running" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在运行"
+          }
+        }
+      }
+    },
+    "Save" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存"
+          }
+        }
+      }
+    },
+    "Save Changes" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存更改"
+          }
+        }
+      }
+    },
+    "Save this value" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存此参数"
+          }
+        }
+      }
+    },
+    "Save to Keychain" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存到系统钥匙串"
+          }
+        }
+      }
+    },
+    "Saved" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已保存"
+          }
+        }
+      }
+    },
+    "Schema Version" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "协议版本"
+          }
+        }
+      }
+    },
+    "Search" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索"
+          }
+        }
+      }
+    },
     "Search URL" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "搜索地址"
+          }
+        }
+      }
+    },
+    "Secret" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "密钥"
           }
         }
       }
@@ -2118,6 +4035,76 @@
         }
       }
     },
+    "Show and Allow Replacement" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示并允许替换"
+          }
+        }
+      }
+    },
+    "Show in Finder" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 Finder 中显示"
+          }
+        }
+      }
+    },
+    "Show Only in These Apps · Comma-separated bundle IDs" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅在这些应用显示 · 逗号分隔 bundle ID"
+          }
+        }
+      }
+    },
+    "Show Result" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示结果"
+          }
+        }
+      }
+    },
+    "Single Choice" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单选"
+          }
+        }
+      }
+    },
+    "Sources" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "来源"
+          }
+        }
+      }
+    },
+    "Speak" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "朗读"
+          }
+        }
+      }
+    },
     "Spotlight" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2134,6 +4121,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "聚焦的快捷键"
+          }
+        }
+      }
+    },
+    "Stable Identifier" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "稳定标识"
+          }
+        }
+      }
+    },
+    "Stable Plugin Identifier" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件稳定标识"
+          }
+        }
+      }
+    },
+    "Start with an action and make it work your way." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从一个动作开始，按你的方式工作。"
           }
         }
       }
@@ -2159,8 +4176,38 @@
         }
       }
     },
+    "Summarize the following:\n{{selected.text}}" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请总结以下内容：\n{{selected.text}}"
+          }
+        }
+      }
+    },
+    "Summary" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "简介"
+          }
+        }
+      }
+    },
+    "Switching to the visual editor parses and validates the YAML. Saving reformats it and removes comments." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切回可视化会解析并校验；保存时重新排版，不保留注释。"
+          }
+        }
+      }
+    },
     "symbol:bolt" : {
-
+      "shouldTranslate" : false
     },
     "system" : {
       "extractionState" : "manual",
@@ -2184,12 +4231,192 @@
         }
       }
     },
+    "Text" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文本"
+          }
+        }
+      }
+    },
+    "Text can be pasted" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可粘贴文本"
+          }
+        }
+      }
+    },
     "Text content needs to be entered." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "需要输入文本信息。"
+          }
+        }
+      }
+    },
+    "Text is selected" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有选中文本"
+          }
+        }
+      }
+    },
+    "Text Regular Expression" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文本正则表达式"
+          }
+        }
+      }
+    },
+    "Text Regular Expression · Optional" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文本正则表达式 · 可选"
+          }
+        }
+      }
+    },
+    "The action identifier cannot be empty." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作标识不能为空。"
+          }
+        }
+      }
+    },
+    "The action title cannot be empty." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作标题不能为空。"
+          }
+        }
+      }
+    },
+    "The identifier of an installed plugin cannot be changed." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已安装插件的标识不可更改。"
+          }
+        }
+      }
+    },
+    "The installation folder already exists." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安装目录已存在。"
+          }
+        }
+      }
+    },
+    "The installation folder is already used by another plugin: %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安装目录已被其他插件占用：%@。"
+          }
+        }
+      }
+    },
+    "The new version must be higher than the installed version %@." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新版本必须高于已安装版本 %@。"
+          }
+        }
+      }
+    },
+    "The plugin changed while you were editing. Please reopen the editor." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件已在编辑期间发生变化，请重新打开编辑器。"
+          }
+        }
+      }
+    },
+    "The plugin identifier can contain only letters, numbers, dots, and hyphens, and must start with a letter or number." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件标识只能包含字母、数字、点和连字符，且须以字母或数字开头。"
+          }
+        }
+      }
+    },
+    "The plugin name cannot be empty." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件名称不能为空。"
+          }
+        }
+      }
+    },
+    "The previous version has a different plugin identifier." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "历史版本的插件标识不一致。"
+          }
+        }
+      }
+    },
+    "The previous version is kept after editing or updating. Your settings are saved separately." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编辑或更新后会保留上一版本，个人参数独立保存。"
+          }
+        }
+      }
+    },
+    "The previous version is saved. Restore it from the More menu." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已保留上一版本，可通过“更多”菜单恢复。"
+          }
+        }
+      }
+    },
+    "Toggle" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开关"
           }
         }
       }
@@ -2216,6 +4443,26 @@
         }
       }
     },
+    "Translate to Chinese" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻译到中文"
+          }
+        }
+      }
+    },
+    "Translate to English" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "翻译到英文"
+          }
+        }
+      }
+    },
     "Translation" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2233,6 +4480,12 @@
             "state" : "translated",
             "value" : "TTS 指令"
           }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TTS Instructions"
+          }
         }
       }
     },
@@ -2242,6 +4495,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "TTS 模型"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TTS Model"
           }
         }
       }
@@ -2257,6 +4516,56 @@
         }
       }
     },
+    "Unsupported schemaVersion %lld. The supported version is 1." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支持 schemaVersion %lld，当前支持版本为 1。"
+          }
+        }
+      }
+    },
+    "Untitled Action" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未命名动作"
+          }
+        }
+      }
+    },
+    "Untitled Plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新插件"
+          }
+        }
+      }
+    },
+    "Unversioned" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未标记版本"
+          }
+        }
+      }
+    },
+    "URL Template" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "链接模板"
+          }
+        }
+      }
+    },
     "URL:" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2268,6 +4577,36 @@
         }
       }
     },
+    "Use {selected.text} for selected text and {selected.options.identifier} for an option value." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{selected.text} 表示选中文字，{selected.options.标识} 表示选项值。"
+          }
+        }
+      }
+    },
+    "Use {{selected.text}} to insert selected text and {{options.identifier}} to insert an option value." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用 {{selected.text}} 插入选中文字，{{options.标识}} 插入选项值。"
+          }
+        }
+      }
+    },
+    "Used for apps without their own configuration" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用未单独配置时使用"
+          }
+        }
+      }
+    },
     "user" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2275,6 +4614,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "用户"
+          }
+        }
+      }
+    },
+    "Uses the AI model and provider from General settings" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用通用设置中的 AI 模型与服务"
+          }
+        }
+      }
+    },
+    "Version" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "版本"
+          }
+        }
+      }
+    },
+    "Version %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "版本 %@"
+          }
+        }
+      }
+    },
+    "Visual" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可视化"
           }
         }
       }
@@ -2310,353 +4689,38 @@
         }
       }
     },
-    "上移" : {
-
-    },
-    "下移" : {
-
-    },
-    "不限制" : {
-
-    },
-    "为不同应用选择工具栏中的动作与显示顺序。" : {
-
-    },
-    "使用 {{selected.text}} 插入选中文字，{{options.标识}} 插入选项值。" : {
-
-    },
-    "使用通用设置中的 AI 模型与服务" : {
-
-    },
-    "例如 cmd shift c。多个组合按顺序执行。" : {
-
-    },
-    "例如：总结内容" : {
-
-    },
-    "例如：输出语言" : {
-
-    },
-    "例如：阅读助手" : {
-
-    },
-    "保存" : {
-
-    },
-    "保存到系统钥匙串" : {
-
-    },
-    "保存更改" : {
-
-    },
-    "保存此参数" : {
-
-    },
-    "停用插件" : {
-
-    },
-    "允许多行输入" : {
-
-    },
-    "其他应用" : {
-
-    },
-    "最低 Selected 版本" : {
-
-    },
-    "切回可视化会解析并校验；保存时重新排版，不保留注释。" : {
-
-    },
-    "创建你的插件" : {
-
-    },
-    "创建插件" : {
-
-    },
-    "创建自己的文字操作，或导入已有插件。" : {
-
-    },
-    "删除“%@”及其参数和历史版本？" : {
-
-    },
-    "删除动作" : {
-
-    },
-    "删除插件" : {
-
-    },
-    "删除插件…" : {
-
-    },
-    "删除选项" : {
-
-    },
-    "动作" : {
-
-    },
-    "动作名称" : {
-
-    },
-    "动作图标" : {
-
-    },
-    "动作标识" : {
-
-    },
-    "动作说明" : {
-
-    },
-    "协议版本" : {
-
-    },
-    "历史记录" : {
-
-    },
-    "取消" : {
-
-    },
-    "可以添加语言选择、开关或密钥，让插件按需工作。" : {
-
-    },
-    "可运行本机命令" : {
-
-    },
-    "启用推理" : {
-
-    },
-    "启用插件" : {
-
-    },
-    "命令与参数" : {
-
-    },
-    "图标也支持文本图标和包内文件，例如 file://./icon.png。" : {
-
-    },
-    "在 Finder 中显示" : {
-
-    },
-    "在插件详情页填写，保存到系统钥匙串。" : {
-
-    },
-    "基础设置" : {
-
-    },
-    "好" : {
-
-    },
-    "定义可配置的字段，参数值在详情页填写。" : {
-
-    },
-    "导入…" : {
-
-    },
-    "导出插件…" : {
-
-    },
-    "已保存" : {
-
-    },
-    "已保留 %lld 个 AI 工具，可在 YAML 中编辑。" : {
-
-    },
-    "已保留上一版本，可通过“更多”菜单恢复。" : {
-
-    },
-    "已停用" : {
-
-    },
-    "已启用" : {
-
-    },
-    "已安装" : {
-
-    },
-    "已展开" : {
-
-    },
-    "已折叠" : {
-
-    },
-    "已有的应用匹配规则会保留，可在 YAML 中修改。" : {
-
-    },
-    "帮助用户理解如何填写" : {
-
-    },
-    "应用未单独配置时使用" : {
-
-    },
-    "应用配置会引用此标识，发布后应保持稳定。" : {
-
-    },
-    "开始使用插件" : {
-
-    },
-    "当前版本 %@，保存后可恢复上一版本。" : {
-
-    },
-    "快捷键组合" : {
-
-    },
-    "恢复上一版本" : {
-
-    },
-    "恢复上一版本？当前插件定义将被替换，个人参数保留。" : {
-
-    },
-    "所有条件须同时满足；动作接收完整选中文本。" : {
-
-    },
-    "打开插件文件夹" : {
-
-    },
-    "拖动调整顺序" : {
-
-    },
-    "插件" : {
-
-    },
-    "插件 YAML 定义" : {
-
-    },
-    "插件信息" : {
-
-    },
-    "插件名称" : {
-
-    },
-    "插件图标" : {
-
-    },
-    "插件操作失败" : {
-
-    },
-    "插件版本" : {
-
-    },
-    "插件稳定标识" : {
-
-    },
-    "插件简介" : {
-
-    },
-    "文本正则表达式" : {
-
-    },
-    "新建插件" : {
-
-    },
-    "无需配置，可以直接使用。" : {
-
-    },
-    "旧插件使用名称作为标识，保持名称不变可以保留已有参数。" : {
-
-    },
-    "显示条件" : {
-
-    },
-    "更多" : {
-
-    },
-    "更多插件管理操作" : {
-
-    },
-    "更多设置" : {
-
-    },
-    "未单独配置动作，沿用默认设置。" : {
-
-    },
-    "未限制动作，显示全部可用操作。" : {
-
-    },
-    "标识" : {
-
-    },
-    "检查配置" : {
-
-    },
-    "正在运行" : {
-
-    },
-    "没有可添加的应用" : {
-
-    },
-    "添加动作" : {
-
-    },
-    "添加应用" : {
-
-    },
-    "添加选项" : {
-
-    },
-    "版本不兼容" : {
-
-    },
-    "留空则不设默认值" : {
-
-    },
-    "移除应用配置" : {
-
-    },
-    "第一行是程序，之后每行一个参数。选中文字通过 SELECTED_TEXT 传入，工作目录为插件包。" : {
-
-    },
-    "简短描述这个动作" : {
-
-    },
-    "管理启动、搜索与 AI 服务，让 Selected 按你的习惯工作。" : {
-
-    },
-    "编辑或更新后会保留上一版本，个人参数独立保存。" : {
-
-    },
-    "编辑插件" : {
-
-    },
-    "设置剪贴板历史记录、唤出快捷键与保留时间。" : {
-
-    },
-    "输入%@" : {
-
-    },
-    "还没有选项" : {
-
-    },
-    "这个插件可以帮你做什么？" : {
-
-    },
-    "选择动作，定义选中文字后的操作。" : {
-
-    },
-    "选项填写说明" : {
-
-    },
-    "选项显示名称" : {
-
-    },
-    "选项标识" : {
-
-    },
-    "选项默认值" : {
-
-    },
-    "配置" : {
-
-    },
-    "重新加载" : {
-
-    },
-    "链接模板" : {
-
-    },
-    "高级设置" : {
-
-    },
-    "默认开启" : {
-
+    "What can this plugin help you do?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个插件可以帮你做什么？"
+          }
+        }
+      }
+    },
+    "Workdir" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工作目录"
+          }
+        }
+      }
+    },
+    "You can also use text icons or files in the plugin package, such as file://./icon.png." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图标也支持文本图标和包内文件，例如 file://./icon.png。"
+          }
+        }
+      }
+    },
+    "·" : {
+      "shouldTranslate" : false
     }
   },
   "version" : "1.0"

@@ -9,8 +9,8 @@ struct ApplicationActionListView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                SettingsPageHeader(title: "Applications", subtitle: "为不同应用选择工具栏中的动作与显示顺序。")
-                Button("添加应用", systemImage: "plus") {
+                SettingsPageHeader(title: "Applications", subtitle: "Choose toolbar actions and their order for each app.")
+                Button("Add App", systemImage: "plus") {
                     availableApplications = getAllApplications()
                     isAddingApplication = true
                 }
@@ -87,7 +87,7 @@ struct ApplicationView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Divider().opacity(0.5)
                     if app.actions.isEmpty {
-                        Text(app.bundleID == "Default" ? "未限制动作，显示全部可用操作。" : "未单独配置动作，沿用默认设置。")
+                        Text(app.bundleID == "Default" ? String(localized: "No action restrictions. All available actions are shown.") : String(localized: "No custom actions. Using the default configuration."))
                             .font(.subheadline).foregroundStyle(.secondary)
                             .padding(.vertical, 8)
                     }
@@ -96,7 +96,7 @@ struct ApplicationView: View {
                             HStack(spacing: 12) {
                                 Image(systemName: "line.3.horizontal")
                                     .font(.caption).foregroundStyle(.tertiary)
-                                    .help("拖动调整顺序").accessibilityHidden(true)
+                                    .help("Drag to reorder").accessibilityHidden(true)
                                 Icon(action.actionMeta.icon)
                                     .foregroundStyle(.blue)
                                     .frame(width: 30, height: 30)
@@ -104,16 +104,16 @@ struct ApplicationView: View {
                                     .accessibilityHidden(true)
                                 Text(action.actionMeta.title).font(.subheadline)
                                 Spacer()
-                                Button("上移", systemImage: "arrow.up") { move(id, by: -1) }
-                                    .disabled(app.actions.first == id).help("上移")
-                                Button("下移", systemImage: "arrow.down") { move(id, by: 1) }
-                                    .disabled(app.actions.last == id).help("下移")
-                                Button("删除动作", systemImage: "trash", role: .destructive) {
+                                Button("Move Up", systemImage: "arrow.up") { move(id, by: -1) }
+                                    .disabled(app.actions.first == id).help("Move Up")
+                                Button("Move Down", systemImage: "arrow.down") { move(id, by: 1) }
+                                    .disabled(app.actions.last == id).help("Move Down")
+                                Button("Delete Action", systemImage: "trash", role: .destructive) {
                                     app.actions.removeAll { $0 == id }
                                     save()
                                 }
                                 .buttonStyle(SettingsButtonStyle(emphasis: .destructive))
-                                .help("删除动作")
+                                .help("Delete Action")
                             }
                             .labelStyle(.iconOnly)
                             .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
@@ -140,7 +140,7 @@ struct ApplicationView: View {
                         }
                         Spacer()
                         if app.bundleID != "Default" {
-                            Button("移除应用配置", systemImage: "trash", role: .destructive, action: removeApplication)
+                            Button("Remove App Configuration", systemImage: "trash", role: .destructive, action: removeApplication)
                                 .buttonStyle(SettingsButtonStyle(emphasis: .destructive))
                         }
                     }
@@ -153,13 +153,13 @@ struct ApplicationView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(getAppName(app.bundleID)).font(.subheadline.weight(.semibold))
                         if app.bundleID == "Default" {
-                            Text("应用未单独配置时使用").font(.caption).foregroundStyle(.secondary)
+                            Text("Used for apps without their own configuration").font(.caption).foregroundStyle(.secondary)
                         } else {
                             Text(app.bundleID).font(.caption).foregroundStyle(.secondary)
                         }
                     }
                     Spacer()
-                    Text("\(app.actions.count) 个动作")
+                    Text("\(app.actions.count) actions")
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 .contextMenu {
@@ -228,7 +228,7 @@ struct OnePicker: View {
                 Button(action.actionMeta.title) { onChange(action.actionMeta.identifier) }
             }
         } label: {
-            Label("添加动作", systemImage: "plus")
+            Label("Add Action", systemImage: "plus")
                 .font(.subheadline.weight(.medium)).foregroundStyle(.blue)
                 .padding(.horizontal, 12).padding(.vertical, 9)
                 .background(.blue.opacity(0.10), in: .rect(cornerRadius: 9))

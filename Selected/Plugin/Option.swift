@@ -68,10 +68,10 @@ enum OptionType: String, Codable, CaseIterable {
 
     var title: String {
         switch self {
-        case .string: return "文本"
-        case .boolean: return "开关"
-        case .multiple: return "单选"
-        case .secret: return "密钥"
+        case .string: return String(localized: "Text")
+        case .boolean: return String(localized: "Toggle")
+        case .multiple: return String(localized: "Single Choice")
+        case .secret: return String(localized: "Secret")
         }
     }
 }

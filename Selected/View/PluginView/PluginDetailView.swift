@@ -19,33 +19,33 @@ struct PluginDetailView: View {
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 5) {
                         Text(plugin.info.name).font(.title2.bold())
-                        Text(plugin.info.version.map { "版本 " + $0 } ?? "未标记版本")
+                        Text(plugin.info.version.map { String(localized: "Version \($0)") } ?? String(localized: "Unversioned"))
                             .font(.subheadline).foregroundStyle(.secondary)
                     }
                     Spacer(minLength: 8)
-                    Toggle("启用插件", isOn: Binding(get: { plugin.info.enabled }, set: { manager.setEnabled($0, for: plugin) }))
+                    Toggle("Enable Plugin", isOn: Binding(get: { plugin.info.enabled }, set: { manager.setEnabled($0, for: plugin) }))
                         .toggleStyle(.switch).labelsHidden()
-                        .help(plugin.info.enabled ? "停用插件" : "启用插件")
+                        .help(plugin.info.enabled ? String(localized: "Disable Plugin") : String(localized: "Enable Plugin"))
                 }
                 if let description = plugin.info.description, !description.isEmpty {
                     Text(description).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }
                 HStack(spacing: 10) {
-                    Button("编辑插件", systemImage: "slider.horizontal.3", action: edit)
+                    Button("Edit Plugin", systemImage: "slider.horizontal.3", action: edit)
                         .buttonStyle(SettingsButtonStyle(emphasis: .primary))
                     Menu {
-                        Button("导出插件…", systemImage: "square.and.arrow.up", action: exportPlugin)
-                        Button("在 Finder 中显示", systemImage: "folder") {
+                        Button("Export Plugin…", systemImage: "square.and.arrow.up", action: exportPlugin)
+                        Button("Show in Finder", systemImage: "folder") {
                             NSWorkspace.shared.activateFileViewerSelecting([manager.directory(for: plugin).appendingPathComponent("config.yaml")])
                         }
                         Divider()
-                        Button("恢复上一版本", systemImage: "clock.arrow.circlepath") { confirmRestore = true }
+                        Button("Restore Previous Version", systemImage: "clock.arrow.circlepath") { confirmRestore = true }
                             .disabled(!manager.hasPreviousVersion(plugin))
                         Divider()
-                        Button("删除插件…", systemImage: "trash", role: .destructive) { confirmDelete = true }
+                        Button("Delete Plugin…", systemImage: "trash", role: .destructive) { confirmDelete = true }
                     } label: {
                         HStack(spacing: 6) {
-                            Text("更多")
+                            Text("More")
                             Image(systemName: "chevron.down").font(.caption)
                         }
                         .font(.subheadline)
@@ -54,7 +54,7 @@ struct PluginDetailView: View {
                     }
                     .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
                     Spacer()
-                    Label(plugin.info.enabled ? "已启用" : "已停用", systemImage: plugin.info.enabled ? "checkmark.circle" : "pause.circle")
+                    Label(plugin.info.enabled ? String(localized: "Enabled") : String(localized: "Disabled"), systemImage: plugin.info.enabled ? "checkmark.circle" : "pause.circle")
                         .font(.caption).foregroundStyle(.secondary)
                 }.controlSize(.large)
             }
@@ -69,10 +69,10 @@ struct PluginDetailView: View {
                             .background(.orange.opacity(0.08), in: .rect(cornerRadius: 12))
                     }
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("配置").font(.headline)
+                        Text("Configuration").font(.headline)
                         SettingsCard {
                             if plugin.info.options.isEmpty {
-                                Label("无需配置，可以直接使用。", systemImage: "checkmark.circle")
+                                Label("Ready to use. No configuration needed.", systemImage: "checkmark.circle")
                                     .foregroundStyle(.secondary)
                             }
                             ForEach(plugin.info.options) { option in
@@ -83,7 +83,7 @@ struct PluginDetailView: View {
                     }
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
-                            Text("动作").font(.headline)
+                            Text("Actions").font(.headline)
                             Text("\(plugin.actions.count)")
                                 .font(.caption.weight(.medium)).foregroundStyle(.secondary)
                                 .padding(.horizontal, 7).padding(.vertical, 2)
@@ -106,18 +106,18 @@ struct PluginDetailView: View {
                             }
                         }
                         if plugin.actions.contains(where: { $0.runCommand != nil || $0.gpt?.tools?.contains(where: { $0.command != nil }) == true }) {
-                            Label("可运行本机命令", systemImage: "terminal").font(.caption).foregroundStyle(.secondary)
+                            Label("Can run local commands", systemImage: "terminal").font(.caption).foregroundStyle(.secondary)
                         }
                         if plugin.actions.contains(where: { $0.gpt != nil }) {
-                            Label("使用通用设置中的 AI 模型与服务", systemImage: "sparkles").font(.caption).foregroundStyle(.secondary)
+                            Label("Uses the AI model and provider from General settings", systemImage: "sparkles").font(.caption).foregroundStyle(.secondary)
                         }
                     }
-                    DisclosureGroup("插件信息") {
+                    DisclosureGroup("Plugin Information") {
                         VStack(alignment: .leading, spacing: 10) {
-                            LabeledContent("标识", value: plugin.id).textSelection(.enabled)
-                            LabeledContent("协议版本", value: "\(plugin.schemaVersion ?? 1)")
-                            if let minimum = plugin.info.minSelectedVersion { LabeledContent("最低 Selected 版本", value: minimum) }
-                            Text(manager.hasPreviousVersion(plugin) ? "已保留上一版本，可通过“更多”菜单恢复。" : "编辑或更新后会保留上一版本，个人参数独立保存。")
+                            LabeledContent("Identifier", value: plugin.id).textSelection(.enabled)
+                            LabeledContent("Schema Version", value: "\(plugin.schemaVersion ?? 1)")
+                            if let minimum = plugin.info.minSelectedVersion { LabeledContent("Minimum Selected Version", value: minimum) }
+                            Text(manager.hasPreviousVersion(plugin) ? String(localized: "The previous version is saved. Restore it from the More menu.") : String(localized: "The previous version is kept after editing or updating. Your settings are saved separately."))
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -129,11 +129,11 @@ struct PluginDetailView: View {
         .background(Color("SettingsBackground"))
         .tint(Color.blue)
         .disclosureGroupStyle(SettingsDisclosureGroupStyle())
-        .confirmationDialog("删除“\(plugin.info.name)”及其参数和历史版本？", isPresented: $confirmDelete, titleVisibility: .visible) {
-            Button("删除插件", role: .destructive) { perform { try manager.remove(plugin) } }
+        .confirmationDialog("Delete “\(plugin.info.name)”, its settings, and previous versions?", isPresented: $confirmDelete, titleVisibility: .visible) {
+            Button("Delete Plugin", role: .destructive) { perform { try manager.remove(plugin) } }
         }
-        .confirmationDialog("恢复上一版本？当前插件定义将被替换，个人参数保留。", isPresented: $confirmRestore, titleVisibility: .visible) {
-            Button("恢复上一版本") { perform { try manager.restorePreviousVersion(plugin) } }
+        .confirmationDialog("Restore the previous version? This replaces the current plugin definition and keeps your settings.", isPresented: $confirmRestore, titleVisibility: .visible) {
+            Button("Restore Previous Version") { perform { try manager.restorePreviousVersion(plugin) } }
         }
     }
 
@@ -144,7 +144,7 @@ struct PluginDetailView: View {
     private func exportPlugin() {
         let panel = NSSavePanel()
         panel.nameFieldStringValue = plugin.info.name + ".selectedext"
-        panel.message = "导出插件定义与资源，不包含个人参数和密钥。请选择一个新文件名。"
+        panel.message = String(localized: "Export the plugin definition and resources without personal settings or secrets. Choose a new filename.")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         perform { try manager.export(plugin, to: url) }
     }

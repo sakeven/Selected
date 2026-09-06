@@ -115,7 +115,7 @@ public func executeCommand(
         guard let executableURL = findExecutablePath(commandName: command,
                                                      currentDirectoryURL: URL(fileURLWithPath: workdir), path: path) else {
             throw NSError(domain: "Selected.Command", code: 127, userInfo: [
-                NSLocalizedDescriptionKey: "找不到可执行命令：\(command)"
+                NSLocalizedDescriptionKey: String(localized: "Executable not found: \(command)")
             ])
         }
         process.executableURL = executableURL
@@ -185,7 +185,7 @@ public func executeCommand(
         guard process.terminationStatus == 0 else {
             let message = String(data: stdErrData, encoding: .utf8) ?? ""
             throw NSError(domain: "Selected.Command", code: Int(process.terminationStatus), userInfo: [
-                NSLocalizedDescriptionKey: "命令退出码 \(process.terminationStatus)\(message.isEmpty ? "" : "：" + message)"
+                NSLocalizedDescriptionKey: String(localized: "Command exit code: \(process.terminationStatus)") + (message.isEmpty ? "" : "\n" + message)
             ])
         }
         return String(data: stdOutData, encoding: .utf8)

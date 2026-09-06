@@ -38,7 +38,7 @@ struct PluginSecretStore {
 
     private static func error(_ status: OSStatus) -> NSError {
         NSError(domain: NSOSStatusErrorDomain, code: Int(status), userInfo: [
-            NSLocalizedDescriptionKey: (SecCopyErrorMessageString(status, nil) as String?) ?? "钥匙串访问失败"
+            NSLocalizedDescriptionKey: (SecCopyErrorMessageString(status, nil) as String?) ?? String(localized: "Keychain access failed")
         ])
     }
 }

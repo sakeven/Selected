@@ -44,16 +44,16 @@ struct PluginOptionValueView: View {
                     Text(option.displayName)
                     Spacer()
                     if text != savedText {
-                        Button("保存", systemImage: "checkmark") { update(text) }
+                        Button("Save", systemImage: "checkmark") { update(text) }
                             .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
-                            .help(option.type == .secret ? "保存到系统钥匙串" : "保存此参数")
+                            .help(option.type == .secret ? String(localized: "Save to Keychain") : String(localized: "Save this value"))
                     } else if didSave {
-                        Label("已保存", systemImage: "checkmark.circle")
+                        Label("Saved", systemImage: "checkmark.circle")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                 }.frame(minHeight: 24)
                 if option.type == .secret {
-                    SecureField("输入\(option.displayName)", text: $text)
+                    SecureField("Enter \(option.displayName)", text: $text)
                         .focused($isFocused)
                         .textFieldStyle(.plain).padding(10)
                         .background(.primary.opacity(0.035), in: .rect(cornerRadius: 8))
@@ -70,7 +70,7 @@ struct PluginOptionValueView: View {
                         .overlay { RoundedRectangle(cornerRadius: 8).strokeBorder(isFocused ? Color.blue.opacity(0.6) : .primary.opacity(0.07), lineWidth: isFocused ? 1.5 : 1) }
                         .accessibilityLabel(option.displayName)
                 } else {
-                    TextField("输入\(option.displayName)", text: $text)
+                    TextField("Enter \(option.displayName)", text: $text)
                         .focused($isFocused)
                         .textFieldStyle(.plain).padding(10)
                         .background(.primary.opacity(0.035), in: .rect(cornerRadius: 8))

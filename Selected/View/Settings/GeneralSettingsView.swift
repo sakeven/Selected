@@ -33,8 +33,8 @@ struct GeneralSettingsView: View {
     }
 
     var body: some View {
-        SettingsPage(title: "General", subtitle: "管理启动、搜索与 AI 服务，让 Selected 按你的习惯工作。") {
-            SettingsSection(title: "基础设置") {
+        SettingsPage(title: "General", subtitle: "Manage startup, search, and AI services to make Selected work your way.") {
+            SettingsSection(title: "Basic Settings") {
                 HStack {
                     Text("Launch at login").font(.subheadline)
                     Spacer()
@@ -105,7 +105,16 @@ struct GeneralSettingsView: View {
                 }
             }
             if isReasoningModel(openAIModel) {
-                SettingsMenuPicker(title: String(localized: "ReasoningEffort"), values: openAIModel.supportedReasoningEfforts, selection: $openAIModelReasoningEffort, label: { $0.rawValue })
+                SettingsMenuPicker(title: String(localized: "ReasoningEffort"), values: openAIModel.supportedReasoningEfforts, selection: $openAIModelReasoningEffort) {
+                    switch $0 {
+                    case .none: String(localized: "None")
+                    case .minimal: String(localized: "Minimal")
+                    case .low: String(localized: "Low")
+                    case .medium: String(localized: "Medium")
+                    case .high: String(localized: "High")
+                    case .xhigh: String(localized: "Extra High")
+                    }
+                }
             }
             SettingsMenuPicker(title: String(localized: "Translation"), values: OpenAITranslationModels, selection: $openAITranslationModel, label: { $0 })
             Divider().opacity(0.5)

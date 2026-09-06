@@ -122,13 +122,13 @@ struct ToolRowView: View {
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 
-    private func detailTitle(_ title: String) -> some View {
+    private func detailTitle(_ title: LocalizedStringKey) -> some View {
         Text(title)
             .font(.caption.weight(.semibold))
             .foregroundStyle(.secondary)
     }
 
-    private func detailBlock(title: String, text: String, monospaced: Bool) -> some View {
+    private func detailBlock(title: LocalizedStringKey, text: String, monospaced: Bool) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             detailTitle(title)
             Text(text)

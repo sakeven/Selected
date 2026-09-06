@@ -8,8 +8,8 @@ struct PluginEditorView: View {
     let didSave: (String) -> Void
     @State private var draft: Plugin
     @State private var source = ""
-    @State private var mode = "可视化"
-    @State private var section = "基本信息"
+    @State private var mode = "Visual"
+    @State private var section = "Basic Information"
     @State private var expandedAction: UUID?
     @State private var expandedOption: UUID?
     @State private var message: String?
@@ -36,39 +36,39 @@ struct PluginEditorView: View {
                     .background(Color.blue.opacity(0.09), in: .rect(cornerRadius: 12))
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(session.existing == nil ? "创建你的插件" : "编辑插件").font(.title3.bold())
-                    Text(session.existing == nil ? "从一个动作开始，按你的方式工作。" : draft.info.name)
+                    Text(session.existing == nil ? String(localized: "Create Your Plugin") : String(localized: "Edit Plugin")).font(.title3.bold())
+                    Text(session.existing == nil ? String(localized: "Start with an action and make it work your way.") : draft.info.name)
                         .font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
                 }
                 Spacer(minLength: 16)
-                PluginSegmentedControl(values: ["可视化", "YAML"], selection: Binding(get: { mode }, set: switchMode), title: { $0 })
+                PluginSegmentedControl(values: ["Visual", "YAML"], selection: Binding(get: { mode }, set: switchMode), title: { $0 == "Visual" ? String(localized: "Visual") : $0 })
                     .frame(width: 170)
             }.padding(24)
             Divider().opacity(0.5)
             if mode == "YAML" {
                 VStack(alignment: .leading, spacing: 12) {
-                    Label("切回可视化会解析并校验；保存时重新排版，不保留注释。", systemImage: "info.circle")
+                    Label("Switching to the visual editor parses and validates the YAML. Saving reformats it and removes comments.", systemImage: "info.circle")
                         .font(.caption).foregroundStyle(.secondary)
                     TextEditor(text: $source)
                         .font(.system(.body, design: .monospaced)).autocorrectionDisabled()
                         .scrollContentBackground(.hidden).padding(14)
                         .background(Color(nsColor: .controlBackgroundColor), in: .rect(cornerRadius: 12))
                         .overlay { RoundedRectangle(cornerRadius: 12).strokeBorder(.primary.opacity(0.08)) }
-                        .accessibilityLabel("插件 YAML 定义")
+                        .accessibilityLabel("Plugin YAML Definition")
                 }.padding(24)
             } else {
-                PluginSegmentedControl(values: ["基本信息", "动作", "选项"], selection: $section) { value in
+                PluginSegmentedControl(values: ["Basic Information", "Actions", "Options"], selection: $section) { value in
                     switch value {
-                    case "动作": return "动作  ·  \(draft.actions.count)"
-                    case "选项": return "选项  ·  \(draft.info.options.count)"
-                    default: return value
+                    case "Actions": return String(localized: "Actions  ·  \(draft.actions.count)")
+                    case "Options": return String(localized: "Options  ·  \(draft.info.options.count)")
+                    default: return String(localized: "Basic Information")
                     }
                 }.padding(.horizontal, 24).padding(.top, 18).padding(.bottom, 6)
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         switch section {
-                        case "动作": actions
-                        case "选项": options
+                        case "Actions": actions
+                        case "Options": options
                         default: basicInfo
                         }
                     }.padding(24).frame(maxWidth: .infinity)
@@ -84,12 +84,12 @@ struct PluginEditorView: View {
                     }.frame(maxHeight: 60)
                 }
                 HStack(spacing: 10) {
-                    Button("检查配置", systemImage: "checkmark.shield") { validate() }
+                    Button("Check Configuration", systemImage: "checkmark.shield") { validate() }
                         .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
                     Spacer()
-                    Button("取消", role: .cancel) { dismiss() }
+                    Button("Cancel", role: .cancel) { dismiss() }
                         .buttonStyle(SettingsButtonStyle()).keyboardShortcut(.cancelAction)
-                    Button(session.existing == nil ? "创建插件" : "保存更改") { save() }
+                    Button(session.existing == nil ? String(localized: "Create Plugin") : String(localized: "Save Changes")) { save() }
                         .buttonStyle(SettingsButtonStyle(emphasis: .primary)).keyboardShortcut(.defaultAction)
                 }
             }.padding(.horizontal, 24).padding(.vertical, 16)
@@ -104,44 +104,44 @@ struct PluginEditorView: View {
     private var basicInfo: some View {
         VStack(alignment: .leading, spacing: 16) {
             SettingsCard {
-                SettingsField(title: "插件名称") {
-                    TextField("例如：阅读助手", text: $draft.info.name)
+                SettingsField(title: String(localized: "Plugin Name")) {
+                    TextField("For example: Reading Assistant", text: $draft.info.name)
                         .disabled(session.existing != nil && draft.info.identifier == nil)
-                        .accessibilityLabel("插件名称")
+                        .accessibilityLabel("Plugin Name")
                 }
-                SettingsField(title: "简介") {
-                    TextField("这个插件可以帮你做什么？", text: $draft.info.description.text, axis: .vertical)
-                        .lineLimit(2...3).accessibilityLabel("插件简介")
+                SettingsField(title: String(localized: "Summary")) {
+                    TextField("What can this plugin help you do?", text: $draft.info.description.text, axis: .vertical)
+                        .lineLimit(2...3).accessibilityLabel("Plugin Description")
                 }
                 HStack(alignment: .top, spacing: 16) {
-                    SettingsField(title: "版本") {
-                        TextField("1.0.0", text: $draft.info.version.text).accessibilityLabel("插件版本")
+                    SettingsField(title: String(localized: "Version")) {
+                        TextField("1.0.0", text: $draft.info.version.text).accessibilityLabel("Plugin Version")
                     }.frame(maxWidth: 180)
-                    SettingsField(title: "图标") {
-                        TextField("symbol:bolt", text: $draft.info.icon).accessibilityLabel("插件图标")
+                    SettingsField(title: String(localized: "Icon")) {
+                        TextField("symbol:bolt", text: $draft.info.icon).accessibilityLabel("Plugin Icon")
                     }
                 }
                 if let previous = session.existing?.info.version {
-                    Label("当前版本 \(previous)，保存后可恢复上一版本。", systemImage: "clock.arrow.circlepath")
+                    Label("Current version: \(previous). After saving, you can restore the previous version.", systemImage: "clock.arrow.circlepath")
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
             SettingsCard {
-                DisclosureGroup("高级设置") {
+                DisclosureGroup("Advanced Settings") {
                     VStack(alignment: .leading, spacing: 16) {
-                        SettingsField(title: "稳定标识") {
+                        SettingsField(title: String(localized: "Stable Identifier")) {
                             TextField("com.example.plugin", text: $draft.info.identifier.text)
-                                .disabled(session.existing != nil).accessibilityLabel("插件稳定标识")
+                                .disabled(session.existing != nil).accessibilityLabel("Stable Plugin Identifier")
                         }
                         if draft.info.identifier == nil {
-                            Text("旧插件使用名称作为标识，保持名称不变可以保留已有参数。")
+                            Text("Legacy plugins use their name as the identifier. Keep the name unchanged to preserve existing settings.")
                                 .font(.caption).foregroundStyle(.secondary)
                         }
-                        SettingsField(title: "最低 Selected 版本 · 可选") {
-                            TextField("不限制", text: $draft.info.minSelectedVersion.text)
-                                .accessibilityLabel("最低 Selected 版本")
+                        SettingsField(title: String(localized: "Minimum Selected Version · Optional")) {
+                            TextField("No limit", text: $draft.info.minSelectedVersion.text)
+                                .accessibilityLabel("Minimum Selected Version")
                         }
-                        Text("图标也支持文本图标和包内文件，例如 file://./icon.png。")
+                        Text("You can also use text icons or files in the plugin package, such as file://./icon.png.")
                             .font(.caption).foregroundStyle(.secondary)
                     }.padding(.top, 16)
                 }.font(.subheadline.weight(.medium))
@@ -152,7 +152,7 @@ struct PluginEditorView: View {
     private var actions: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("选择动作，定义选中文字后的操作。")
+                Text("Choose actions to run on selected text.")
                     .font(.subheadline).foregroundStyle(.secondary)
                 Spacer()
                 Menu {
@@ -164,7 +164,7 @@ struct PluginEditorView: View {
                         }
                     }
                 } label: {
-                    Label("添加动作", systemImage: "plus")
+                    Label("Add Action", systemImage: "plus")
                         .font(.subheadline.weight(.semibold)).foregroundStyle(Color.blue)
                         .padding(.horizontal, 12).padding(.vertical, 8)
                         .background(Color.blue.opacity(0.08), in: .rect(cornerRadius: 9))
@@ -178,18 +178,18 @@ struct PluginEditorView: View {
                             PluginActionEditorView(action: $action)
                             Divider().opacity(0.5)
                             HStack(spacing: 4) {
-                                Button("上移", systemImage: "arrow.up") { moveAction(action.id, by: -1) }
+                                Button("Move Up", systemImage: "arrow.up") { moveAction(action.id, by: -1) }
                                     .disabled(draft.actions.first?.id == action.id)
-                                Button("下移", systemImage: "arrow.down") { moveAction(action.id, by: 1) }
+                                Button("Move Down", systemImage: "arrow.down") { moveAction(action.id, by: 1) }
                                     .disabled(draft.actions.last?.id == action.id)
                                 Spacer()
-                                Button("删除动作", systemImage: "trash", role: .destructive) { draft.actions.removeAll { $0.id == action.id } }
+                                Button("Delete Action", systemImage: "trash", role: .destructive) { draft.actions.removeAll { $0.id == action.id } }
                                     .buttonStyle(SettingsButtonStyle(emphasis: .destructive))
                             }.buttonStyle(SettingsButtonStyle(emphasis: .quiet))
                         }.padding(.top, 14)
                     } label: {
                         HStack {
-                            Label(action.meta.title.isEmpty ? "未命名动作" : action.meta.title, systemImage: "bolt")
+                            Label(action.meta.title.isEmpty ? String(localized: "Untitled Action") : action.meta.title, systemImage: "bolt")
                                 .font(.subheadline.weight(.semibold))
                             Spacer()
                             Text(action.kind.title).font(.caption).foregroundStyle(.secondary)
@@ -203,10 +203,10 @@ struct PluginEditorView: View {
     private var options: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text("定义可配置的字段，参数值在详情页填写。")
+                Text("Define configurable fields, then enter their values on the details page.")
                     .font(.subheadline).foregroundStyle(.secondary)
                 Spacer()
-                Button("添加选项", systemImage: "plus") {
+                Button("Add Option", systemImage: "plus") {
                     let option = Option(identifier: "option_" + UUID().uuidString.prefix(8), type: .string)
                     draft.info.options.append(option)
                     expandedOption = option.id
@@ -214,8 +214,8 @@ struct PluginEditorView: View {
             }
             if draft.info.options.isEmpty {
                 SettingsCard {
-                    Label("还没有选项", systemImage: "slider.horizontal.3").font(.headline)
-                    Text("可以添加语言选择、开关或密钥，让插件按需工作。")
+                    Label("No Options Yet", systemImage: "slider.horizontal.3").font(.headline)
+                    Text("Add language choices, toggles, or secrets to customize your plugin.")
                         .foregroundStyle(.secondary)
                 }
             }
@@ -227,7 +227,7 @@ struct PluginEditorView: View {
                             PluginOptionEditorView(option: $option)
                             HStack {
                                 Spacer()
-                                Button("删除选项", systemImage: "trash", role: .destructive) { draft.info.options.removeAll { $0.id == option.id } }
+                                Button("Delete Option", systemImage: "trash", role: .destructive) { draft.info.options.removeAll { $0.id == option.id } }
                                     .buttonStyle(SettingsButtonStyle(emphasis: .destructive))
                             }
                         }.padding(.top, 14)
@@ -267,7 +267,7 @@ struct PluginEditorView: View {
     private func validate() {
         do {
             _ = try currentDraft()
-            message = "配置检查通过，保存时将检查版本与标识冲突。"
+            message = String(localized: "Configuration is valid. Version and identifier conflicts will be checked when saving.")
             isError = false
         } catch { show(error) }
     }

@@ -6,15 +6,15 @@ struct ApplicationPickerView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("添加应用").font(.headline).padding(16)
+            Text("Add App").font(.headline).padding(16)
             Divider()
             if applications.isEmpty {
-                Text("没有可添加的应用").foregroundStyle(.secondary).padding(24)
+                Text("No apps available to add").foregroundStyle(.secondary).padding(24)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        applicationSection("正在运行", applications: applications.filter(\.isRunning))
-                        applicationSection("其他应用", applications: applications.filter { !$0.isRunning })
+                        applicationSection("Running", applications: applications.filter(\.isRunning))
+                        applicationSection("Other Apps", applications: applications.filter { !$0.isRunning })
                     }.padding(10)
                 }
                 .frame(maxHeight: 400)
