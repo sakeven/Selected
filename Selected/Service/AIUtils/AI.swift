@@ -185,6 +185,7 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
     @Published var message: String
     @Published var images: [Data]
     let previewImages: [NSImage?]
+    let files: [AIFileAttachment]
 
     @Published var role: Role
     @Published var status: Status
@@ -198,7 +199,7 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
 
     var new: Bool = false // new start of message
 
-    init(id: UUID = UUID(), message: String, images: [Data] = [], role: Role, new: Bool = false, status: Status = .initial) {
+    init(id: UUID = UUID(), message: String, images: [Data] = [], files: [AIFileAttachment] = [], role: Role, new: Bool = false, status: Status = .initial) {
         self.id = id
         self.message = message
         self.role = role
@@ -207,6 +208,7 @@ public class ResponseMessage: ObservableObject, Identifiable, Equatable{
         self.summary = ""
         self.images = images
         self.previewImages = images.map(NSImage.init(data:))
+        self.files = files
         self.tools = [String: AIToolCall]()
         self.items = []
     }

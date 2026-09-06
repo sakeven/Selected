@@ -15,90 +15,112 @@ struct ChatInputView: View {
     @State private var task: Task<Void, Never>? = nil
     @State private var selectedPickerItems: [PhotosPickerItem] = []
     @State private var pickedImages: [PickedImage] = []
+    @State private var pickedFiles: [PickedFile] = []
+    @State private var isImporting = false
+    @State private var showImportError = false
+    @State private var importError = ""
     @State private var showMissingTextAlert = false
     @State private var showFileImporter = false
 
     var onCancel: (() -> Void)?
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if !pickedImages.isEmpty {
-                previewHeader
-            }
+    @FocusState private var isInputFocused: Bool
+    @Environment(\.colorScheme) private var colorScheme
 
-            HStack(alignment: .bottom, spacing: 12) {
-                PhotosPicker(selection: $selectedPickerItems,
-                             maxSelectionCount: 5,
-                             matching: .images) {
-                    composerAccessoryButton(systemImage: "photo")
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if !pickedFiles.isEmpty {
+                ScrollView(.horizontal) {
+                    HStack(spacing: 8) {
+                        ForEach(pickedFiles) { file in
+                            HStack(spacing: 8) {
+                                Image(systemName: "doc.text")
+                                    .foregroundStyle(.secondary)
+                                Text(file.attachment.filename)
+                                    .font(.callout)
+                                    .lineLimit(1)
+                                Button { pickedFiles.removeAll { $0.id == file.id } } label: {
+                                    Label("chat.removeFile", systemImage: "xmark")
+                                        .labelStyle(.iconOnly)
+                                        .font(.caption)
+                                        .frame(width: 22, height: 22)
+                                        .contentShape(.rect)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(viewModel.inProgress || isImporting)
+                            }
+                            .padding(.leading, 10)
+                            .padding(.trailing, 4)
+                            .padding(.vertical, 6)
+                            .background(.primary.opacity(0.04), in: .rect(cornerRadius: 10))
+                        }
+                    }
+                }
+                .scrollIndicators(.hidden)
+            }
+            if !pickedImages.isEmpty { previewHeader }
+            if isImporting {
+                ProgressView("chat.preparingAttachments")
+                    .controlSize(.small)
+            }
+            composerEditor
+
+            HStack(spacing: 6) {
+                PhotosPicker(selection: $selectedPickerItems, maxSelectionCount: 5, matching: .images) {
+                    composerAccessoryButton(title: "chat.photos", systemImage: "photo")
                 }
                 .buttonStyle(.plain)
-                .disabled(viewModel.inProgress)
+                .disabled(viewModel.inProgress || isImporting)
+                .help("chat.photos")
                 .onChange(of: selectedPickerItems) { _, items in
                     loadImagesFromPhotosPicker(items)
                     selectedPickerItems = []
                 }
 
-                Button {
-                    showFileImporter = true
-                } label: {
-                    composerAccessoryButton(systemImage: "photo.badge.plus")
+                Button { showFileImporter = true } label: {
+                    composerAccessoryButton(title: "chat.addAttachments", systemImage: "paperclip")
                 }
                 .buttonStyle(.plain)
-                .disabled(viewModel.inProgress)
+                .disabled(viewModel.inProgress || isImporting)
+                .help("chat.addAttachments")
 
-                composerEditor
-
+                Spacer()
+                Text("chat.sendHint")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
                 Button {
-                    if viewModel.inProgress {
-                        cancel()
-                    } else {
-                        submitMessage()
-                    }
+                    if viewModel.inProgress { cancel() } else { submitMessage() }
                 } label: {
-                    ZStack {
-                        Circle()
-                            .fill(primaryActionTint)
-                            .frame(width: 40, height: 40)
-
-                        if viewModel.inProgress {
-                            Image(systemName: "stop.fill")
-                                .font(.system(size: 13, weight: .bold))
-                                .foregroundStyle(.white)
-                        } else {
-                            Image(systemName: "arrow.up")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(.white)
-                        }
-                    }
+                    Label(viewModel.inProgress ? "chat.stop" : "chat.send", systemImage: viewModel.inProgress ? "stop.fill" : "arrow.up")
+                        .labelStyle(.iconOnly)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(colorScheme == .dark ? Color.black : .white)
+                        .frame(width: 34, height: 34)
+                        .background(primaryActionDisabled ? Color.secondary.opacity(0.25) : Color.primary, in: Circle())
+                        .contentShape(Circle())
                 }
                 .buttonStyle(.plain)
                 .disabled(primaryActionDisabled)
+                .help(viewModel.inProgress ? "chat.stop" : "chat.send")
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(Color(nsColor: .controlBackgroundColor).opacity(0.72))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .stroke(Color.primary.opacity(0.06), lineWidth: 1)
-        )
-        .fileImporter(
-            isPresented: $showFileImporter,
-            allowedContentTypes: [.image],
-            allowsMultipleSelection: true
-        ) { result in
+        .padding(14)
+        .background(Color(nsColor: .textBackgroundColor), in: .rect(cornerRadius: 20))
+        .overlay {
+            RoundedRectangle(cornerRadius: 20)
+                .strokeBorder(.primary.opacity(isInputFocused ? 0.2 : 0.1), lineWidth: 1)
+        }
+        .shadow(color: .black.opacity(0.04), radius: 12, y: 4)
+        .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.data], allowsMultipleSelection: true) { result in
             switch result {
-                case .success(let urls):
-                    loadImagesFromFileImporter(urls)
-                case .failure(let error):
-                    logger.error("Import failed: \(error)")
+            case .success(let urls): loadFiles(urls)
+            case .failure(let error):
+                importError = error.localizedDescription
+                showImportError = true
             }
         }
         .alert("Text content needs to be entered.", isPresented: $showMissingTextAlert) {}
+        .alert("chat.attachmentError", isPresented: $showImportError) {} message: { Text(importError) }
     }
 
     func cancel() {
@@ -106,41 +128,66 @@ struct ChatInputView: View {
         onCancel?()
     }
 
-    func loadImagesFromFileImporter(_ urls: [URL]) {
+    private func loadFiles(_ urls: [URL]) {
+        guard !urls.isEmpty else { return }
+        let openAI = viewModel.usesOpenAIFileInputs
+        isImporting = true
         Task {
-            var newImages = pickedImages
+            defer { isImporting = false }
+            var errors: [String] = []
             for url in urls {
-                if let data = try? Data(contentsOf: url),
-                   let nsImage = NSImage(data: data),
-                   let jpegData = nsImage.openAIReadyImageData() {
-                    newImages.append(PickedImage(data: jpegData))
+                do {
+                    let content = try await Task.detached(priority: .userInitiated) {
+                        let access = url.startAccessingSecurityScopedResource()
+                        defer { if access { url.stopAccessingSecurityScopedResource() } }
+                        return try ClipAIContent.load(items: [ClipItem(type: .fileURL, data: Data(url.absoluteString.utf8))], plainText: nil, openAI: openAI)
+                    }.value
+                    let files = content.images.isEmpty
+                        ? (content.files.isEmpty ? [AIFileAttachment(filename: url.lastPathComponent, data: Data(content.text.utf8), mimeType: "text/plain")] : content.files)
+                        : []
+                    let addedBytes = content.images.reduce(0) { $0 + $1.count } + files.reduce(0) { $0 + $1.data.count }
+                    guard attachmentBytes + addedBytes < (openAI ? 50_000_000 : 23_000_000) else {
+                        throw ClipAIContent.ContentError.tooLarge
+                    }
+                    pickedImages += content.images.map { PickedImage(data: $0) }
+                    pickedFiles += files.map { PickedFile(attachment: $0) }
+                } catch {
+                    errors.append("\(url.lastPathComponent): \(error.localizedDescription)")
                 }
             }
-            await MainActor.run {
-                pickedImages = newImages
+            if !errors.isEmpty {
+                importError = errors.joined(separator: "\n")
+                showImportError = true
             }
         }
     }
 
-    func loadImagesFromPhotosPicker(_ items: [PhotosPickerItem]) {
+    private func loadImagesFromPhotosPicker(_ items: [PhotosPickerItem]) {
+        guard !items.isEmpty else { return }
+        isImporting = true
         Task {
-            var newImages = pickedImages
+            defer { isImporting = false }
             for item in items {
-                if
-                    let rawData = try? await item.loadTransferable(type: Data.self),
-                    let nsImage = NSImage(data: rawData),
-                    let jpegData = nsImage.openAIReadyImageData(){
-                    newImages.append(PickedImage(data: jpegData))
+                do {
+                    guard let rawData = try await item.loadTransferable(type: Data.self),
+                          let nsImage = NSImage(data: rawData),
+                          let jpegData = nsImage.openAIReadyImageData() else {
+                        throw ClipAIContent.ContentError.invalidImage
+                    }
+                    guard attachmentBytes + jpegData.count < (viewModel.usesOpenAIFileInputs ? 50_000_000 : 23_000_000) else {
+                        throw ClipAIContent.ContentError.tooLarge
+                    }
+                    pickedImages.append(PickedImage(data: jpegData))
+                } catch {
+                    importError = error.localizedDescription
+                    showImportError = true
                 }
-            }
-            await MainActor.run {
-                pickedImages = newImages
             }
         }
     }
 
     func submitMessage() {
-        guard !viewModel.inProgress else { return }
+        guard !viewModel.inProgress, !isImporting else { return }
         let text = newText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else {
             showMissingTextAlert = true
@@ -148,59 +195,40 @@ struct ChatInputView: View {
         }
 
         let attachments = pickedImages.map(\.data)
+        let files = pickedFiles.map(\.attachment)
 
         newText = ""
         pickedImages.removeAll()
+        pickedFiles.removeAll()
         selectedPickerItems.removeAll()
 
         task = Task {
             logger.debug("attachments: \(attachments.count)")
-            await viewModel.submit(message: .init(text: text, images: attachments))
+            await viewModel.submit(message: .init(text: text, images: attachments, files: files))
         }
     }
 
     private var composerEditor: some View {
-        Group {
-            if #available(macOS 14.0, *) {
-                ZStack(alignment: .topLeading) {
-                    if newText.isEmpty {
-                        Text("Press cmd+enter to send new message")
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 16)
-                            .padding(.top, 14)
-                            .allowsHitTesting(false)
-                    }
-
-                    TextEditor(text: $newText)
-                        .onKeyPress(.return, phases: .down) { keyPress in
-                            guard keyPress.modifiers.contains(.command) else { return .ignored }
-                            submitMessage()
-                            return .handled
-                        }
-                        .scrollContentBackground(.hidden)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 10)
-                        .frame(minHeight: 44, maxHeight: 96, alignment: .topLeading)
-                }
-            } else {
-                TextField("Press enter to send new message", text: $newText, axis: .vertical)
-                    .lineLimit(3...)
-                    .textFieldStyle(.plain)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 12)
-                    .onSubmit { submitMessage() }
+        ZStack(alignment: .topLeading) {
+            if newText.isEmpty {
+                Text("chat.input.placeholder")
+                    .foregroundStyle(.secondary)
+                    .padding(.leading, 5)
+                    .padding(.top, 1)
+                    .allowsHitTesting(false)
             }
+            TextEditor(text: $newText)
+                .scrollContentBackground(.hidden)
+                .focused($isInputFocused)
+                .accessibilityLabel(Text("chat.input.label"))
+                .onKeyPress(.return, phases: .down) { keyPress in
+                    guard keyPress.modifiers.contains(.command) else { return .ignored }
+                    submitMessage()
+                    return .handled
+                }
         }
-        .frame(maxWidth: .infinity)
-        .frame(minHeight: 60, maxHeight: 112, alignment: .topLeading)
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color(nsColor: .windowBackgroundColor).opacity(0.92))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color.primary.opacity(0.05), lineWidth: 1)
-        )
+        .font(.system(size: 14))
+        .frame(height: 72, alignment: .topLeading)
     }
 
     private var previewHeader: some View {
@@ -222,6 +250,7 @@ struct ChatInputView: View {
                         } label: {
                             Image(systemName: "xmark.circle.fill")
                                 .font(.system(size: 18))
+                                .accessibilityLabel(Text("chat.removeImage"))
                                 .foregroundStyle(.white, Color.black.opacity(0.55))
                         }
                         .buttonStyle(.plain)
@@ -238,28 +267,31 @@ struct ChatInputView: View {
         }
     }
 
+    private var attachmentBytes: Int {
+        pickedImages.reduce(0) { $0 + $1.data.count } + pickedFiles.reduce(0) { $0 + $1.attachment.data.count }
+    }
+
     private var primaryActionDisabled: Bool {
         if viewModel.inProgress {
             return false
         }
-        return newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        return isImporting || newText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    private var primaryActionTint: Color {
-        if viewModel.inProgress {
-            return .red
-        }
-        return primaryActionDisabled ? Color.secondary.opacity(0.24) : .accentColor
+    private func composerAccessoryButton(title: LocalizedStringKey, systemImage: String) -> some View {
+        Label(title, systemImage: systemImage)
+            .labelStyle(.iconOnly)
+            .font(.system(size: 15))
+            .foregroundStyle(.secondary)
+            .frame(width: 30, height: 30)
+            .contentShape(.rect)
     }
 
-    private func composerAccessoryButton(systemImage: String) -> some View {
-        Image(systemName: systemImage)
-            .font(.system(size: 18, weight: .semibold))
-            .foregroundStyle(viewModel.inProgress ? Color.secondary : Color.accentColor)
-            .frame(width: 38, height: 38)
-            .background(Color.accentColor.opacity(0.10))
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-    }
+}
+
+private struct PickedFile: Identifiable {
+    let id = UUID()
+    let attachment: AIFileAttachment
 }
 
 struct PickedImage: Identifiable {

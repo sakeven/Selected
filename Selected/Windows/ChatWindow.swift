@@ -87,8 +87,8 @@ private class ChatWindowController: NSWindowController, NSWindowDelegate {
         // 必须用 NSPanel 并设置 .nonactivatingPanel 以及 level 为 .screenSaver
         // 保证悬浮在全屏应用之上
         let window = FloatingPanel(
-            contentRect: .zero,
-            styleMask: [.borderless, .nonactivatingPanel],
+            contentRect: NSRect(x: 0, y: 0, width: 780, height: 720),
+            styleMask: [.borderless, .nonactivatingPanel, .resizable],
             backing: .buffered,
             defer: false,
             key: true

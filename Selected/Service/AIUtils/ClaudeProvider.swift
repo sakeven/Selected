@@ -303,7 +303,11 @@ class ClaudeAIProvider: AIProvider {
         }
         var content = [MessageParameter.Message.Content.ContentObject]()
         for file in message.files {
-            content.append(.document(try .pdf(base64Data: file.data.base64EncodedString(), title: file.filename)))
+            if file.mimeType == "text/plain" {
+                content.append(.text(String(decoding: file.data, as: UTF8.self)))
+            } else {
+                content.append(.document(try .pdf(base64Data: file.data.base64EncodedString(), title: file.filename)))
+            }
         }
         for image in message.images {
             let isPNG = image.starts(with: [0x89, 0x50, 0x4E, 0x47])

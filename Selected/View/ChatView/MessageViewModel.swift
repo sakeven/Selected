@@ -24,7 +24,7 @@ class MessageViewModel: ObservableObject {
         await withTaskGroup(of: Void.self) { group in
             group.addTask {
                 await MainActor.run {
-                    self.messages.append(ResponseMessage(message: message.text, images: message.images, role: .user, status: .finished))
+                    self.messages.append(ResponseMessage(message: message.text, images: message.images, files: message.files, role: .user, status: .finished))
                 }
             }
         }
@@ -32,6 +32,12 @@ class MessageViewModel: ObservableObject {
 
         self.messages.append(ResponseMessage(message: "", role: .assistant, status: .initial))
         let idx = self.messages.count-1
+        defer {
+            if self.messages[idx].status == .initial || self.messages[idx].status == .updating {
+                self.messages[idx].status = .finished
+            }
+            self.inProgress = false
+        }
         do {
             for try await event in stream {
                 guard !Task.isCancelled else { break }
@@ -92,11 +98,16 @@ class MessageViewModel: ObservableObject {
                 }
             }
         } catch {
+            guard !Task.isCancelled else { return }
             self.messages[idx].role = .system
             self.messages[idx].status = .failure
             self.messages[idx].message = error.localizedDescription
         }
-        self.inProgress = false
+    }
+
+    var usesOpenAIFileInputs: Bool {
+        let provider = (chatService as? ChatService)?.chatService ?? chatService
+        return provider is OpenAIProvider
     }
 
     // 开启第一条对话
@@ -105,6 +116,7 @@ class MessageViewModel: ObservableObject {
         let stream = chatService.chat(ctx: ctx)
 
         let idx = self.messages.count-1
+        defer { self.inProgress = false }
         do {
             for try await event in stream {
                 guard !Task.isCancelled else { break }
@@ -154,6 +166,7 @@ class MessageViewModel: ObservableObject {
                             )
                         }
                     case .error(let err):
+                        self.messages[idx].status = .failure
                         self.messages[idx].role = .system
                         self.messages[idx].message = err
                     case .reasoningDelta(let reasoningDelta):
@@ -169,11 +182,14 @@ class MessageViewModel: ObservableObject {
                 self.messages[idx].status = .finished
             }
         } catch {
+            guard !Task.isCancelled else {
+                self.messages[idx].status = .finished
+                return
+            }
             self.messages[idx].role = .system
             self.messages[idx].status = .failure
             self.messages[idx].message = error.localizedDescription
         }
-        self.inProgress = false
     }
 
     private func mergedSourceLinks(_ current: [AIToolSourceLink], _ incoming: [AIToolSourceLink]) -> [AIToolSourceLink] {

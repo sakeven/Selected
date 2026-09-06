@@ -1,70 +1,52 @@
-//
-//  ChatTextView.swift
-//  Selected
-//
-//  Created by sake on 2024/6/29.
-//
-
-import Foundation
 import SwiftUI
-import MarkdownUI
-import Defaults
 import Combine
 
 struct ChatTextView: View {
     let ctx: ChatContext
-
     @ObservedObject var viewModel: MessageViewModel
     @EnvironmentObject var pinned: PinnedModel
-    @State private var task: Task<Void, Never>? = nil
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var task: Task<Void, Never>?
     @State private var hostWindow: NSWindow?
     @State private var isCollapsed = false
+    @State private var expandedFrame: NSRect?
     @State private var isNearBottom = true
     @State private var shouldAutoFollowTranscript = true
 
     private let bottomAnchorID = "BOTTOM"
 
     var body: some View {
-        Group {
+        ZStack(alignment: .topLeading) {
+            VStack(spacing: 0) {
+                headerView
+                Divider().opacity(0.6)
+                transcriptView
+                ChatInputView(viewModel: viewModel, onCancel: { task?.cancel() })
+                    .padding(.horizontal, 22)
+                    .padding(.top, 10)
+                    .padding(.bottom, 18)
+            }
+            .frame(minWidth: 620, maxWidth: .infinity, minHeight: 520, maxHeight: .infinity)
+            .background(colorScheme == .dark ? Color(red: 0.105, green: 0.102, blue: 0.095) : Color(red: 0.996, green: 0.996, blue: 0.992))
+            .clipShape(.rect(cornerRadius: 20))
+            .overlay {
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(.primary.opacity(0.1), lineWidth: 1)
+            }
+            .frame(width: isCollapsed ? expandedFrame?.width : nil, height: isCollapsed ? expandedFrame?.height : nil)
+            .opacity(isCollapsed ? 0 : 1)
+            .allowsHitTesting(!isCollapsed)
+            .accessibilityHidden(isCollapsed)
+
             if isCollapsed {
                 CollapsedBubble(isCollapsed: $isCollapsed, window: hostWindow)
                     .fixedSize()
-            } else {
-                VStack(alignment: .leading, spacing: 0) {
-                    headerView
-                        .padding(.horizontal, 18)
-                        .padding(.top, 16)
-                        .padding(.bottom, 12)
-
-                    transcriptView
-
-                    Spacer(minLength: 0)
-
-                    ChatInputView(viewModel: viewModel, onCancel: {
-                        task?.cancel()
-                    })
-                    .padding(.horizontal, 16)
-                    .padding(.top, 10)
-                    .padding(.bottom, 16)
-                }
-                    .frame(minHeight: 650)
-                    .frame(width: 750,  alignment: .top)
-                    .background(
-                        RoundedRectangle(cornerRadius: 26, style: .continuous)
-                            .fill(Color(nsColor: .windowBackgroundColor).opacity(0.97))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 26, style: .continuous)
-                            .stroke(Color.primary.opacity(0.08), lineWidth: 1)
-                    )
-                    .clipShape(.rect(cornerRadius: 26))
-
             }
         }
-        .background(ChatWindowStyleSync(isCollapsed: isCollapsed) { window in
-            if hostWindow !== window {
-                hostWindow = window
-            }
+        .frame(width: isCollapsed ? 52 : nil, height: isCollapsed ? 52 : nil, alignment: .topLeading)
+        .background(ChatWindowStyleSync(isCollapsed: isCollapsed, expandedFrame: expandedFrame) { window in
+            if hostWindow !== window { hostWindow = window }
         })
         .onChange(of: viewModel.inProgress) { _, inProgress in
             if inProgress {
@@ -74,206 +56,131 @@ struct ChatTextView: View {
             }
         }
         .onAppear {
-            task = Task{
-                await viewModel.fetchMessages(ctx: ctx)
-            }
+            task = Task { await viewModel.fetchMessages(ctx: ctx) }
         }
-        .onDisappear(){
-            task?.cancel()
-        }
+        .onDisappear { task?.cancel() }
     }
 
     private var headerView: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 12) {
-                if ctx.bundleID != "" {
-                    HStack(spacing: 10) {
-                        getIcon(ctx.bundleID)
-                        Text(getAppName(ctx.bundleID))
-                            .font(.headline)
-                    }
-                }
+        HStack(spacing: 10) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 17, weight: .semibold))
+                .frame(width: 30, height: 30)
+                .accessibilityHidden(true)
 
-                Spacer(minLength: 0)
-
-                headerPillButton(
-                    title: pinned.pinned ? String(localized: "chat.unpin") : String(localized: "chat.pin"),
-                    systemImage: pinned.pinned ? "pin.slash" : "pin",
-                    tint: .secondary
-                ) {
-                    pinned.pinned.toggle()
-                }
-
-                headerIconButton(systemImage: "minus") {
-                    withAnimation {
-                        isCollapsed = true
-                        pinned.pinned = true
-                    }
+            VStack(alignment: .leading, spacing: 2) {
+                Text("AI Chat")
+                    .font(.headline)
+                if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: ctx.bundleID) {
+                    Text(FileManager.default.displayName(atPath: url.path))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
-
-            if let request = ctx.request {
-                Text(request)
-                    .font(.body)
-                    .lineLimit(3)
-                    .textSelection(.enabled)
+            Spacer()
+            Button { pinned.pinned.toggle() } label: {
+                Label(pinned.pinned ? "chat.unpin" : "chat.pin", systemImage: pinned.pinned ? "pin.fill" : "pin")
+                    .labelStyle(.iconOnly)
+                    .frame(width: 30, height: 30)
+                    .foregroundStyle(pinned.pinned ? Color.accentColor : .secondary)
+                    .background(pinned.pinned ? Color.accentColor.opacity(0.08) : .clear, in: .rect(cornerRadius: 8))
+                    .contentShape(.rect)
             }
+            .buttonStyle(.plain)
+            .help(pinned.pinned ? "chat.unpin" : "chat.pin")
 
-            if !ctx.images.isEmpty || !ctx.files.isEmpty {
-                HStack(spacing: 10) {
-                    ForEach(Array(ctx.images.enumerated()), id: \.offset) { _, data in
-                        if let image = NSImage(data: data) {
-                            Image(nsImage: image)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 64, height: 64)
-                                .clipShape(.rect(cornerRadius: 8))
-                                .accessibilityLabel(Text("Image"))
-                        }
-                    }
-                    ForEach(Array(ctx.files.enumerated()), id: \.offset) { _, file in
-                        Label(file.filename, systemImage: "doc.fill")
-                            .font(.caption)
-                            .lineLimit(1)
-                            .padding(10)
-                            .background(.primary.opacity(0.05), in: .rect(cornerRadius: 10))
-                    }
-                }
+            Button {
+                expandedFrame = hostWindow?.frame
+                isCollapsed = true
+                pinned.pinned = true
+            } label: {
+                Label("chat.collapse", systemImage: "minus")
+                    .labelStyle(.iconOnly)
+                    .frame(width: 30, height: 30)
+                    .contentShape(.rect)
             }
+            .buttonStyle(.plain)
+            .help("chat.collapse")
 
-            HStack(alignment: .top, spacing: 10) {
-                Image(systemName: "text.quote")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 2)
-
-                Text(ctx.text.trimmingCharacters(in: .whitespacesAndNewlines))
-                    .font(.custom("UbuntuMonoNFM", size: 15))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(3)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .copyable([ctx.text])
-                    .textSelection(.enabled)
-
-                if ctx.webPageURL != "", let url = URL(string: ctx.webPageURL) {
-                    Link(destination: url) {
-                        Image(systemName: "globe")
-                            .font(.system(size: 13, weight: .semibold))
-                            .frame(width: 30, height: 30)
-                            .background(Color.accentColor.opacity(0.12), in: Circle())
-                    }
-                    .buttonStyle(.plain)
-                }
+            Button { hostWindow?.close() } label: {
+                Label("chat.close", systemImage: "xmark")
+                    .labelStyle(.iconOnly)
+                    .frame(width: 30, height: 30)
+                    .contentShape(.rect)
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color(nsColor: .controlBackgroundColor).opacity(0.58))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(Color.primary.opacity(0.05), lineWidth: 1)
-            )
+            .buttonStyle(.plain)
+            .help("chat.close")
         }
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
     }
 
     private var transcriptView: some View {
-        ScrollViewReader { scrollViewProxy in
+        ScrollViewReader { proxy in
             ScrollView {
-                ChatTranscriptScrollObserver(
-                    isResponding: viewModel.inProgress,
-                    isNearBottom: $isNearBottom
-                ) { shouldFollow in
-                    shouldAutoFollowTranscript = shouldFollow
+                ChatTranscriptScrollObserver(isResponding: viewModel.inProgress, isNearBottom: $isNearBottom) {
+                    shouldAutoFollowTranscript = $0
                 }
                 .frame(width: 0, height: 0)
 
-                LazyVStack(alignment: .leading, spacing: 16) {
+                LazyVStack(alignment: .leading, spacing: 26) {
+                    ChatContextView(ctx: ctx)
                     ForEach(viewModel.messages) { message in
                         MessageView(message: message)
                             .id(message.id)
                     }
-                    Color.clear
-                        .frame(height: 1)
-                        .id(bottomAnchorID)
+                    Color.clear.frame(height: 1).id(bottomAnchorID)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 16)
+                .font(.system(size: 15))
+                .frame(maxWidth: 760)
+                .padding(.horizontal, 30)
+                .padding(.vertical, 24)
+                .frame(maxWidth: .infinity)
             }
             .onChange(of: viewModel.messages.count) { _, _ in
-                scrollToBottomIfNeeded(scrollViewProxy, animated: true)
+                if viewModel.messages.last?.role == .user { shouldAutoFollowTranscript = true }
+                scrollToBottomIfNeeded(proxy, animated: true)
             }
             .onReceive(lastMessageChangePublisher) { _ in
-                scrollToBottomIfNeeded(scrollViewProxy, animated: false)
+                scrollToBottomIfNeeded(proxy, animated: false)
+            }
+            .overlay(alignment: .bottom) {
+                if !isNearBottom {
+                    Button {
+                        shouldAutoFollowTranscript = true
+                        scrollToBottomIfNeeded(proxy, animated: true)
+                    } label: {
+                        Label("chat.latest", systemImage: "arrow.down")
+                            .font(.caption.weight(.medium))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(.regularMaterial, in: Capsule())
+                            .overlay(Capsule().strokeBorder(.primary.opacity(0.08), lineWidth: 1))
+                            .contentShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.bottom, 8)
+                }
             }
         }
-        .frame(height: 400)
-        .padding(.horizontal, 16)
-    }
-
-    private func getAppName(_ bundleID: String) -> String {
-        let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)!
-        return FileManager.default.displayName(atPath: bundleURL.path)
-    }
-
-    private func getIcon(_ bundleID: String) -> some View {
-        let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)!
-        return AnyView(
-            Image(nsImage: NSWorkspace.shared.icon(forFile: bundleURL.path)).resizable().aspectRatio(contentMode: .fit).frame(width: 30, height: 30)
-        )
     }
 
     private func scrollToBottomIfNeeded(_ proxy: ScrollViewProxy, animated: Bool) {
         guard shouldAutoFollowTranscript else { return }
-
         DispatchQueue.main.async {
-            if animated {
-                withAnimation(.easeOut(duration: 0.12)) {
-                    proxy.scrollTo(bottomAnchorID, anchor: .bottom)
-                }
-            } else {
+            withAnimation(animated && !reduceMotion ? .easeOut(duration: 0.15) : nil) {
                 proxy.scrollTo(bottomAnchorID, anchor: .bottom)
             }
         }
     }
 
     private var lastMessageChangePublisher: AnyPublisher<Void, Never> {
-        guard let last = viewModel.messages.last else {
-            return Empty().eraseToAnyPublisher()
-        }
+        guard let last = viewModel.messages.last else { return Empty().eraseToAnyPublisher() }
         return last.objectWillChange
             .throttle(for: .milliseconds(80), scheduler: RunLoop.main, latest: true)
             .map { _ in () }
             .eraseToAnyPublisher()
-    }
-
-    private func headerPillButton(title: String, systemImage: String, tint: Color, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Label(title, systemImage: systemImage)
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(tint)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 7)
-                .background(Color(nsColor: .controlBackgroundColor).opacity(0.88))
-                .overlay(
-                    Capsule()
-                        .stroke(Color.primary.opacity(0.06), lineWidth: 1)
-                )
-                .clipShape(Capsule())
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func headerIconButton(systemImage: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: systemImage)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(.secondary)
-                .frame(width: 30, height: 30)
-                .background(Color(nsColor: .controlBackgroundColor).opacity(0.88), in: Circle())
-        }
-        .buttonStyle(.plain)
     }
 }
 
@@ -415,153 +322,5 @@ private struct ChatTranscriptScrollObserver: NSViewRepresentable {
             }
             return nil
         }
-    }
-}
-private struct FocusEffectDisabler: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(macOS 14.0, *) {
-            content.focusEffectDisabled(true)
-        } else {
-            content
-        }
-    }
-}
-
-private struct ChatWindowStyleSync: NSViewRepresentable {
-    let isCollapsed: Bool
-    let onWindowResolved: (NSWindow) -> Void
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator()
-    }
-
-    func makeNSView(context: Context) -> NSView {
-        let view = NSView()
-        view.wantsLayer = true
-        view.layer?.backgroundColor = NSColor.clear.cgColor
-        return view
-    }
-
-    func updateNSView(_ nsView: NSView, context: Context) {
-        DispatchQueue.main.async {
-            guard let window = nsView.window else { return }
-            onWindowResolved(window)
-            context.coordinator.apply(to: window, isCollapsed: isCollapsed)
-        }
-    }
-
-    final class Coordinator {
-        private var lastCollapsed: Bool?
-        private var expandedFrame: NSRect?
-
-        func apply(to window: NSWindow, isCollapsed: Bool) {
-            if lastCollapsed == nil {
-                expandedFrame = window.frame
-            }
-
-            if !isCollapsed {
-                window.styleMask = [.borderless, .nonactivatingPanel]
-                window.isOpaque = false
-                window.backgroundColor = .clear
-                window.hasShadow = false
-                window.isMovableByWindowBackground = true
-
-                if let expandedFrame, lastCollapsed == true {
-                    window.setFrame(expandedFrame, display: true)
-                } else {
-                    expandedFrame = window.frame
-                }
-
-                lastCollapsed = false
-                return
-            }
-
-            if lastCollapsed != true {
-                expandedFrame = window.frame
-            }
-
-            window.styleMask = [.borderless, .nonactivatingPanel]
-            window.isOpaque = false
-            window.backgroundColor = .clear
-            window.hasShadow = false
-            window.isMovableByWindowBackground = false
-            window.setContentSize(NSSize(width: 52, height: 52))
-
-            lastCollapsed = true
-        }
-    }
-}
-
-struct CollapsedBubble: View {
-    @Binding var isCollapsed: Bool
-    let window: NSWindow?
-
-    @State private var dragStartOrigin: CGPoint?
-    @State private var dragStartMouseLocation: CGPoint?
-    @State private var didDragDuringGesture = false
-    @State private var suppressExpand = false
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .fill(Color(nsColor: .windowBackgroundColor).opacity(0.96))
-                .overlay(
-                    Circle()
-                        .stroke(Color.primary.opacity(0.08), lineWidth: 1)
-                )
-                .shadow(color: Color.black.opacity(0.14), radius: 18, y: 10)
-
-            Button {
-                guard !suppressExpand else { return }
-                withAnimation { isCollapsed = false }
-            } label: {
-                Image(systemName: "bubble.left.and.text.bubble.right.fill")
-                    .font(.system(size: 18))
-                    .foregroundStyle(.primary)
-                    .frame(width: 28, height: 28)
-                    .contentShape(Circle())
-            }
-            .buttonStyle(.plain)
-            .focusable(false)
-            .modifier(FocusEffectDisabler())
-        }
-        .frame(width: 52, height: 52)
-        .clipShape(Circle())
-        .contentShape(Circle())
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 1)
-                .onChanged { _ in
-                    guard let window else { return }
-
-                    if dragStartOrigin == nil {
-                        dragStartOrigin = window.frame.origin
-                        dragStartMouseLocation = NSEvent.mouseLocation
-                        didDragDuringGesture = false
-                    }
-
-                    guard let dragStartOrigin, let dragStartMouseLocation else { return }
-                    let currentMouseLocation = NSEvent.mouseLocation
-                    let dx = currentMouseLocation.x - dragStartMouseLocation.x
-                    let dy = currentMouseLocation.y - dragStartMouseLocation.y
-                    if !didDragDuringGesture {
-                        didDragDuringGesture = hypot(dx, dy) > 4
-                    }
-                    window.setFrameOrigin(.init(
-                        x: dragStartOrigin.x + dx,
-                        y: dragStartOrigin.y + dy
-                    ))
-                }
-                .onEnded { _ in
-                    if didDragDuringGesture {
-                        suppressExpand = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            suppressExpand = false
-                        }
-                    }
-                    dragStartOrigin = nil
-                    dragStartMouseLocation = nil
-                    didDragDuringGesture = false
-                }
-        )
     }
 }
