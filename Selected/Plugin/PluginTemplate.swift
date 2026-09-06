@@ -2,7 +2,7 @@ import Foundation
 
 struct PluginTemplate {
     static func render(_ template: String, context: SelectedTextContext,
-                       options: [String: String], urlEncoded: Bool = false) -> String {
+                       options: [String: String], urlEncoded: Bool = false, spacesAsPlus: Bool = false) -> String {
         var values = options.reduce(into: [String: String]()) { result, option in
             result["selected.options." + option.key] = option.value
         }
@@ -10,6 +10,7 @@ struct PluginTemplate {
         values["text"] = context.Text
         values["selected.bundleID"] = context.BundleID
         values["selected.webPageURL"] = context.WebPageURL
+        values["selected.clipboardText"] = context.ClipboardText ?? ""
         let pattern = #"\{(text|selected\.[A-Za-z0-9_.-]+)\}"#
         let regex = try! NSRegularExpression(pattern: pattern)
         var result = template
@@ -18,7 +19,9 @@ struct PluginTemplate {
             guard let keyRange = Range(match.range(at: 1), in: template),
                   let value = values[String(template[keyRange])],
                   let range = Range(match.range, in: result) else { continue }
-            result.replaceSubrange(range, with: urlEncoded ? value.addingPercentEncoding(withAllowedCharacters: allowed)! : value)
+            var replacement = urlEncoded ? value.addingPercentEncoding(withAllowedCharacters: allowed)! : value
+            if urlEncoded && spacesAsPlus { replacement = replacement.replacingOccurrences(of: "%20", with: "+") }
+            result.replaceSubrange(range, with: replacement)
         }
         return result
     }

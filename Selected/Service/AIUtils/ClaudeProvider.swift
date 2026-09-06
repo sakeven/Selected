@@ -277,10 +277,11 @@ class ClaudeAIProvider: AIProvider {
         }
 
         return AsyncThrowingStream { continuation in
-            Task {
+            let task = Task {
                 var hasToolCall = false
                 do {
                     for _ in 0..<maxToolLoops {
+                        try Task.checkCancellation()
                         hasToolCall = try await chatOneRound(continuation: continuation)
                         if !hasToolCall {
                             continuation.yield(.done)
@@ -294,6 +295,7 @@ class ClaudeAIProvider: AIProvider {
                     continuation.finish(throwing: error)
                 }
             }
+            continuation.onTermination = { _ in task.cancel() }
         }
     }
 

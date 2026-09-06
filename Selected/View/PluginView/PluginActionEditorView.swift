@@ -69,12 +69,26 @@ struct PluginActionEditorView: View {
             Text("Enter the program on the first line, then one argument per line. Selected text is passed through SELECTED_TEXT. The working directory is the plugin package.")
                 .font(.caption).foregroundStyle(.secondary)
         }
+        if action.gpt != nil || action.runCommand != nil || action.url != nil {
+            Toggle("Include clipboard text", isOn: Binding(get: { action.meta.includeClipboard == true }, set: { action.meta.includeClipboard = $0 ? true : nil }))
+                .toggleStyle(.switch).controlSize(.small)
+            if action.meta.includeClipboard == true {
+                Text("Capture clipboard text when this action runs. Retries reuse the captured text.")
+                    .font(.caption).foregroundStyle(.secondary)
+                Text(action.gpt != nil ? "AI template: {{selected.clipboardText}}" : action.url != nil ? "URL template: {selected.clipboardText}" : "Command variable: SELECTED_CLIPBOARD_TEXT")
+                    .font(.system(.caption, design: .monospaced)).foregroundStyle(.secondary).textSelection(.enabled)
+            }
+        }
         if action.gpt != nil || action.runCommand != nil {
             SettingsMenuPicker(title: String(localized: "Output Handling"), values: AfterAction.allCases,
                              selection: Binding<AfterAction>(get: { action.meta.after ?? AfterAction.none }, set: { action.meta.after = $0 }), label: resultTitle)
         }
         DisclosureGroup("Display Conditions") {
             VStack(alignment: .leading, spacing: 16) {
+                if action.popclip != nil {
+                    Label("PopClip input matching is preserved. Edit its rules in YAML; changing the action type uses Selected's native behavior.", systemImage: "info.circle")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
                 ForEach(ActionRequirement.allCases, id: \.self) { requirement in
                     Toggle(requirement.title, isOn: Binding(get: {
                         action.meta.requirements?.contains(requirement) == true

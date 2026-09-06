@@ -51,6 +51,11 @@ struct PluginInfo: Codable {
     func getOptionsValue() -> [String: String] {
         Dictionary(uniqueKeysWithValues: options.map { ($0.identifier, $0.value(pluginID: id)) })
     }
+
+    func missingOptions(values: [String: String]? = nil) -> [Option] {
+        let values = values ?? getOptionsValue()
+        return options.filter { $0.required == true && (values[$0.identifier] ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+    }
 }
 
 struct Plugin: Codable, Identifiable {
@@ -58,9 +63,10 @@ struct Plugin: Codable, Identifiable {
     var info: PluginInfo
     var actions: [Action]
     var source: Data?
+    var importedFrom: String?
 
     enum CodingKeys: String, CodingKey {
-        case schemaVersion, info, actions
+        case schemaVersion, info, actions, importedFrom
     }
 
     var id: String { info.id }

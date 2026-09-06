@@ -9,7 +9,7 @@ class PluginManager: ObservableObject {
     private let defaults: UserDefaults
 
     @Published private(set) var plugins: [Plugin] = []
-    @Published private(set) var loadIssues: [String] = []
+    @Published private(set) var loadIssues: [PluginLoadIssue] = []
     @Published var optionValueChangeCnt = 0
 
     static let shared = PluginManager()
@@ -94,7 +94,7 @@ class PluginManager: ObservableObject {
         loadPlugins()
     }
 
-    func save(_ plugin: Plugin, replacing existing: Plugin?) throws {
+    func save(_ plugin: Plugin, replacing existing: Plugin?, resources: URL? = nil) throws {
         try plugin.validate()
         if let issue = plugin.compatibilityIssue(hostVersion: hostVersion) {
             throw PluginValidationError(messages: [issue])
@@ -120,8 +120,22 @@ class PluginManager: ObservableObject {
             throw PluginValidationError(messages: [String(localized: "The installation folder already exists.")])
         }
         let yaml = try YAMLEncoder().encode(plugin)
-        try stageAndReplace(source: current.map(directory(for:)), manifest: yaml, destination: destination)
+        try stageAndReplace(source: resources ?? current.map(directory(for:)), manifest: yaml, destination: destination)
         loadPlugins()
+    }
+
+    func repair(_ source: String, issue: PluginLoadIssue, original: Data) throws -> String {
+        let manifestURL = issue.directory.appendingPathComponent("config.yaml")
+        guard try Data(contentsOf: manifestURL) == original else {
+            throw PluginValidationError(messages: [String(localized: "The plugin changed while you were editing. Please reopen the editor.")])
+        }
+        let plugin = try YAMLDecoder().decode(Plugin.self, from: source)
+        try plugin.validate()
+        loadPlugins()
+        try checkConflicts(plugin, replacing: nil)
+        try stageAndReplace(source: issue.directory, manifest: source, destination: issue.directory)
+        loadPlugins()
+        return plugin.id
     }
 
     private func stageAndReplace(source: URL?, manifest: String?, destination: URL) throws {
@@ -173,7 +187,7 @@ class PluginManager: ObservableObject {
 
     func loadPlugins() {
         var loaded: [Plugin] = []
-        var issues: [String] = []
+        var issues: [PluginLoadIssue] = []
         do {
             try fileManager.createDirectory(at: extensionsDir, withIntermediateDirectories: true)
             let directories = try fileManager.contentsOfDirectory(at: extensionsDir, includingPropertiesForKeys: [.isDirectoryKey], options: .skipsHiddenFiles)
@@ -210,10 +224,10 @@ class PluginManager: ObservableObject {
                     }
                     loaded.append(plugin)
                 } catch {
-                    issues.append("\(directory.lastPathComponent)：\(error.localizedDescription)")
+                    issues.append(PluginLoadIssue(directory: directory, message: error.localizedDescription))
                 }
             }
-        } catch { issues.append(error.localizedDescription) }
+        } catch { issues.append(PluginLoadIssue(directory: extensionsDir, message: error.localizedDescription)) }
         plugins = loaded
         loadIssues = issues
     }
@@ -224,20 +238,37 @@ class PluginManager: ObservableObject {
 
     var allActions: [PerformAction] {
         var result = [WebSearchAction().generate(generic: GenericAction(title: String(localized: "Search"), icon: "symbol:magnifyingglass", identifier: "selected.websearch"))]
-        for plugin in plugins where plugin.info.enabled && plugin.compatibilityIssue(hostVersion: hostVersion) == nil {
+        for plugin in plugins where plugin.info.enabled && plugin.compatibilityIssue(hostVersion: hostVersion) == nil && plugin.info.missingOptions().isEmpty {
             for action in plugin.actions {
                 var generic = action.meta
                 generic.title = PluginTemplate.render(generic.title, context: SelectedTextContext(), options: plugin.info.getOptionsValue())
                 let generated: PerformAction?
                 switch action.kind {
-                case .url: generated = action.url?.generate(pluginInfo: plugin.info, generic: generic)
+                case .url: generated = action.url?.generate(pluginInfo: plugin.info, generic: generic, popclip: action.popclip)
                 case .service: generated = action.service?.generate(generic: generic)
-                case .keycombo: generated = action.keycombo?.generate(pluginInfo: plugin.info, generic: generic)
+                case .keycombo: generated = action.keycombo?.generate(pluginInfo: plugin.info, generic: generic, popclip: action.popclip)
                 case .gpt: generated = action.gpt?.generate(pluginInfo: plugin.info, generic: generic)
                 case .runCommand: generated = action.runCommand?.generate(pluginInfo: plugin.info, generic: generic)
                 }
                 if let generated {
                     generated.pluginInfo = plugin.info
+                    let values = plugin.info.getOptionsValue()
+                    let options = action.popclip == nil ? values : PopClipAction.optionValues(plugin.info, values: values)
+                    generated.supported = { (try? action.prepareContext($0, options: options)) != nil }
+                    if let complete = generated.complete {
+                        generated.complete = { context in
+                            let context = MainActor.assumeIsolated { action.captureContext(context) }
+                            guard let prepared = try? action.prepareContext(context, options: options) else { return }
+                            complete(prepared)
+                        }
+                    }
+                    if let complete = generated.completeAsync {
+                        generated.completeAsync = { context in
+                            let context = await MainActor.run { action.captureContext(context) }
+                            guard let prepared = try? action.prepareContext(context, options: options) else { return }
+                            await complete(prepared)
+                        }
+                    }
                     result.append(generated)
                 }
             }

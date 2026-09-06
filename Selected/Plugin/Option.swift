@@ -10,9 +10,10 @@ struct Option: Codable, Identifiable {
     var values: [String]?
     var valueLabels: [String]?
     var multiline: Bool?
+    var required: Bool?
 
     enum CodingKeys: String, CodingKey {
-        case identifier, type, label, description, defaultVal, values, valueLabels, multiline
+        case identifier, type, label, description, defaultVal, values, valueLabels, multiline, required
     }
 
     var displayName: String { label.flatMap { $0.isEmpty ? nil : $0 } ?? identifier }

@@ -30,6 +30,7 @@ struct GenericAction: Codable {
     var requirements: [ActionRequirement]?
     var requiredApps: [String]?
     var excludedApps: [String]?
+    var includeClipboard: Bool?
     
     init(title: String, icon: String, after: AfterAction? = nil , identifier: String) {
         self.title = title
@@ -58,12 +59,14 @@ struct URLAction: Codable {
         self.url = url
     }
     
-    func generate(pluginInfo: PluginInfo, generic: GenericAction) -> PerformAction {
+    func generate(pluginInfo: PluginInfo, generic: GenericAction, popclip: PopClipAction? = nil) -> PerformAction {
         
         return PerformAction(
             actionMeta: generic, complete: { ctx in
                 
-                let urlString = PluginTemplate.render(self.url, context: ctx, options: pluginInfo.getOptionsValue(), urlEncoded: true)
+                let options = pluginInfo.getOptionsValue()
+                let urlString = popclip?.renderURL(self.url, context: ctx, options: PopClipAction.optionValues(pluginInfo, values: options), exactPhrase: NSEvent.modifierFlags.contains(.option))
+                    ?? PluginTemplate.render(self.url, context: ctx, options: options, urlEncoded: true)
                 guard let url = URL(string: urlString) else {
                     return
                 }
@@ -246,7 +249,7 @@ struct KeycomboAction: Codable {
         supported = try values.decodeIfPresent(Supported.self, forKey: .supported)
     }
 
-    func pressKeycombo(keycombo: String ){
+    func pressKeycombo(keycombo: String, tap: CGEventTapLocation = .cghidEventTap) {
         let list = keycombo.split(separator: " ")
         var flags = CGEventFlags(rawValue: 0)
         var keycode = UInt16(0)
@@ -259,7 +262,7 @@ struct KeycomboAction: Codable {
                 keycode = key
             }
         }
-        PressKey(keycode: keycode, flags:  flags)
+        PressKey(keycode: keycode, flags: flags, tap: tap)
     }
     
     private func isMatched(bundleID: String, url: String) -> Bool {
@@ -273,16 +276,16 @@ struct KeycomboAction: Codable {
         return isMatched(bundleID: ctx.BundleID, url: ctx.WebPageURL)
     }
     
-    func generate(pluginInfo: PluginInfo, generic: GenericAction) -> PerformAction {
+    func generate(pluginInfo: PluginInfo, generic: GenericAction, popclip: PopClipAction? = nil) -> PerformAction {
         let pa = PerformAction(pluginInfo: pluginInfo, actionMeta:
                                 generic, complete: { ctx in
             if let keycombos = self.keycombos, !keycombos.isEmpty {
                 for keycombo in keycombos {
-                    self.pressKeycombo(keycombo: keycombo)
+                    self.pressKeycombo(keycombo: keycombo, tap: popclip?.keyComboTarget == "session" ? .cgSessionEventTap : .cghidEventTap)
                     usleep(100000)
                 }
             } else {
-                self.pressKeycombo(keycombo: self.keycombo)
+                self.pressKeycombo(keycombo: self.keycombo, tap: popclip?.keyComboTarget == "session" ? .cgSessionEventTap : .cghidEventTap)
             }
         })
         pa.supported = self.supported
@@ -322,7 +325,7 @@ class TranslationAction: Decodable {
 struct Action: Codable, Identifiable {
     var id = UUID()
     enum CodingKeys: String, CodingKey {
-        case meta, url, service, keycombo, gpt, runCommand
+        case meta, url, service, keycombo, gpt, runCommand, popclip
     }
     var meta: GenericAction
     var url: URLAction?
@@ -330,6 +333,7 @@ struct Action: Codable, Identifiable {
     var keycombo: KeycomboAction?
     var gpt: GptAction?
     var runCommand: RunCommandAction?
+    var popclip: PopClipAction?
 }
 
 
@@ -428,15 +432,7 @@ func FilterActions(_ ctx: SelectedTextContext, list: [PerformAction] ) -> [Perfo
             continue
         }
         
-        if let regexStr = action.actionMeta.regex {
-            if let reg = try? Regex(regexStr) {
-                if !ctx.Text.contains(reg) {
-                    continue
-                }
-            }
-        }
         filtered.append(action)
     }
     return filtered
 }
-

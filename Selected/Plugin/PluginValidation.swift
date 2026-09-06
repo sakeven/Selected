@@ -29,6 +29,7 @@ extension Plugin {
         check(!actions.isEmpty, String(localized: "At least one action is required."))
         var actionIDs = Set<String>()
         for action in actions {
+            if let popclip = action.popclip { try popclip.validate() }
             let name = action.meta.title
             check(nonempty(name), String(localized: "The action title cannot be empty."))
             check(nonempty(action.meta.identifier), String(localized: "The action identifier cannot be empty."))
@@ -69,6 +70,10 @@ extension Plugin {
             }
             if let after = action.meta.after, after != .none {
                 check(action.runCommand != nil || action.gpt != nil, String(localized: "\(name): Output handling is available only for command and AI actions."))
+            }
+            if action.meta.includeClipboard == true {
+                check(action.gpt != nil || action.runCommand != nil || action.url != nil,
+                      String(localized: "\(name): Clipboard input is available only for AI, command, and URL actions."))
             }
         }
         var optionIDs = Set<String>()

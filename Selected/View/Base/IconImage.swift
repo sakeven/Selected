@@ -17,7 +17,7 @@ struct Icon: View {
     
     var body : some View {
         
-        if text.starts(with: "file://") {
+        if text.starts(with: "file://"), let sourceImage = NSImage(contentsOfFile: text.trimPrefix("file://")) {
             // load from a file
             
             let im: NSImage =
@@ -28,7 +28,7 @@ struct Icon: View {
                 
                 return $0
             }(
-                NSImage(contentsOfFile: text.trimPrefix("file://"))!
+                sourceImage
             )
            return
                 AnyView(Image(nsImage: im).resizable().aspectRatio(contentMode: .fit)

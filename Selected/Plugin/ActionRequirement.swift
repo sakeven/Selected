@@ -15,15 +15,29 @@ enum ActionRequirement: String, Codable, CaseIterable {
 
 extension GenericAction {
     func matches(_ context: SelectedTextContext) -> Bool {
-        if let apps = requiredApps, !apps.isEmpty, !apps.contains(context.BundleID) { return false }
-        if excludedApps?.contains(context.BundleID) == true { return false }
-        return (requirements ?? []).allSatisfy { requirement in
-            switch requirement {
-            case .text: return !context.Text.isEmpty
-            case .editable: return context.Editable
-            case .url: return context.URLs.count == 1
-            case .urls: return !context.URLs.isEmpty
-            }
+        unavailableReason(context) == nil
+    }
+
+    func unavailableReason(_ context: SelectedTextContext) -> String? {
+        if let apps = requiredApps, !apps.isEmpty, !apps.contains(context.BundleID) {
+            return String(localized: "This action is not enabled for the selected app.")
         }
+        if excludedApps?.contains(context.BundleID) == true {
+            return String(localized: "This action is hidden in the selected app.")
+        }
+        for requirement in requirements ?? [] {
+            let matches: Bool
+            switch requirement {
+            case .text: matches = !context.Text.isEmpty
+            case .editable: matches = context.Editable
+            case .url: matches = context.URLs.count == 1
+            case .urls: matches = !context.URLs.isEmpty
+            }
+            if !matches { return String(localized: "Condition not met: \(requirement.title)") }
+        }
+        if let regex, let expression = try? Regex(regex), !context.Text.contains(expression) {
+            return String(localized: "The text does not match the regular expression.")
+        }
+        return nil
     }
 }

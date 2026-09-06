@@ -7,6 +7,7 @@ struct PluginDetailView: View {
     let reportError: (String) -> Void
     @State private var confirmDelete = false
     @State private var confirmRestore = false
+    @State private var trialAction: Action?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -33,6 +34,9 @@ struct PluginDetailView: View {
                 HStack(spacing: 10) {
                     Button("Edit Plugin", systemImage: "slider.horizontal.3", action: edit)
                         .buttonStyle(SettingsButtonStyle(emphasis: .primary))
+                    Button("Test", systemImage: "play") { trialAction = plugin.actions.first }
+                        .buttonStyle(SettingsButtonStyle())
+                        .disabled(plugin.compatibilityIssue(hostVersion: manager.hostVersion) != nil)
                     Menu {
                         Button("Export Plugin…", systemImage: "square.and.arrow.up", action: exportPlugin)
                         Button("Show in Finder", systemImage: "folder") {
@@ -54,7 +58,7 @@ struct PluginDetailView: View {
                     }
                     .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
                     Spacer()
-                    Label(plugin.info.enabled ? String(localized: "Enabled") : String(localized: "Disabled"), systemImage: plugin.info.enabled ? "checkmark.circle" : "pause.circle")
+                    Label(!plugin.info.missingOptions().isEmpty ? String(localized: "Needs Configuration") : (plugin.info.enabled ? String(localized: "Enabled") : String(localized: "Disabled")), systemImage: !plugin.info.missingOptions().isEmpty ? "slider.horizontal.3" : (plugin.info.enabled ? "checkmark.circle" : "pause.circle"))
                         .font(.caption).foregroundStyle(.secondary)
                 }.controlSize(.large)
             }
@@ -70,6 +74,10 @@ struct PluginDetailView: View {
                     }
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Configuration").font(.headline)
+                        if !plugin.info.missingOptions().isEmpty {
+                            Label("Complete the required fields below to make this plugin available.", systemImage: "exclamationmark.circle")
+                                .font(.subheadline).foregroundStyle(.orange)
+                        }
                         SettingsCard {
                             if plugin.info.options.isEmpty {
                                 Label("Ready to use. No configuration needed.", systemImage: "checkmark.circle")
@@ -95,12 +103,18 @@ struct PluginDetailView: View {
                                     Icon(action.meta.icon).foregroundStyle(Color.blue).accessibilityHidden(true)
                                     VStack(alignment: .leading, spacing: 3) {
                                         Text(action.meta.title).font(.subheadline.weight(.medium))
+                                        if action.meta.includeClipboard == true {
+                                            Label("Includes clipboard text", systemImage: "clipboard").font(.caption).foregroundStyle(.blue)
+                                        }
                                         if let description = action.meta.description, !description.isEmpty {
                                             Text(description).font(.caption).foregroundStyle(.secondary)
                                         }
                                     }
                                     Spacer()
                                     Text(action.kind.title).font(.caption).foregroundStyle(.secondary)
+                                    Button("Test Action", systemImage: "play") { trialAction = action }
+                                        .labelStyle(.iconOnly).buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                                        .disabled(plugin.compatibilityIssue(hostVersion: manager.hostVersion) != nil)
                                 }
                                 if action.id != plugin.actions.last?.id { Divider().opacity(0.5) }
                             }
@@ -116,6 +130,12 @@ struct PluginDetailView: View {
                         VStack(alignment: .leading, spacing: 10) {
                             LabeledContent("Identifier", value: plugin.id).textSelection(.enabled)
                             LabeledContent("Schema Version", value: "\(plugin.schemaVersion ?? 1)")
+                            if let source = plugin.importedFrom {
+                                LabeledContent("Imported from PopClip", value: source)
+                                Button("View Original Source", systemImage: "folder") {
+                                    NSWorkspace.shared.open(manager.directory(for: plugin).appendingPathComponent("PopClip Source"))
+                                }.buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                            }
                             if let minimum = plugin.info.minSelectedVersion { LabeledContent("Minimum Selected Version", value: minimum) }
                             Text(manager.hasPreviousVersion(plugin) ? String(localized: "The previous version is saved. Restore it from the More menu.") : String(localized: "The previous version is kept after editing or updating. Your settings are saved separately."))
                                 .font(.caption).foregroundStyle(.secondary)
@@ -129,6 +149,9 @@ struct PluginDetailView: View {
         .background(Color("SettingsBackground"))
         .tint(Color.blue)
         .disclosureGroupStyle(SettingsDisclosureGroupStyle())
+        .sheet(item: $trialAction) { action in
+            PluginTrialView(plugin: plugin, directory: manager.directory(for: plugin), actionID: action.meta.identifier)
+        }
         .confirmationDialog("Delete “\(plugin.info.name)”, its settings, and previous versions?", isPresented: $confirmDelete, titleVisibility: .visible) {
             Button("Delete Plugin", role: .destructive) { perform { try manager.remove(plugin) } }
         }

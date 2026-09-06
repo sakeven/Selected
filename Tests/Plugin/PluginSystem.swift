@@ -272,7 +272,7 @@ struct PluginSystemTests {
     }
 }
 
-private struct PluginTestWorkspace {
+struct PluginTestWorkspace {
     let root: URL
     let manager: PluginManager
     let suiteName: String

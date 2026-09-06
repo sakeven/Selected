@@ -11,7 +11,7 @@ struct ApplicationActionListView: View {
             HStack(spacing: 12) {
                 SettingsPageHeader(title: "Applications", subtitle: "Choose toolbar actions and their order for each app.")
                 Button("Add App", systemImage: "plus") {
-                    availableApplications = getAllApplications()
+                    availableApplications = Application.available(excluding: Set(cfg.appConditions.map(\.bundleID)))
                     isAddingApplication = true
                 }
                 .buttonStyle(SettingsButtonStyle(emphasis: .primary))
@@ -40,36 +40,7 @@ struct ApplicationActionListView: View {
         .disclosureGroupStyle(SettingsDisclosureGroupStyle())
     }
 
-    private func getAllApplications() -> [Application] {
-        var apps: [String: Application] = [:]
-        let fileManager = FileManager.default
-        let directories = [URL(fileURLWithPath: "/Applications"),
-                           fileManager.homeDirectoryForCurrentUser.appendingPathComponent("Applications"),
-                           URL(fileURLWithPath: "/System/Applications")]
-        for directory in directories {
-            guard let enumerator = fileManager.enumerator(at: directory, includingPropertiesForKeys: nil,
-                                                          options: [.skipsHiddenFiles, .skipsPackageDescendants]) else { continue }
-            for case let url as URL in enumerator where url.pathExtension.lowercased() == "app" {
-                guard let identifier = Bundle(url: url)?.bundleIdentifier, apps[identifier] == nil else { continue }
-                apps[identifier] = Application(id: identifier,
-                                               icon: Image(nsImage: NSWorkspace.shared.icon(forFile: url.path)),
-                                               localizedName: fileManager.displayName(atPath: url.path), isRunning: false)
-            }
-        }
-        for app in NSWorkspace.shared.runningApplications {
-            guard let id = app.bundleIdentifier else { continue }
-            if apps[id] != nil {
-                apps[id]?.isRunning = true
-            } else if app.activationPolicy == .regular, let icon = app.icon, let name = app.localizedName {
-                apps[id] = Application(id: id, icon: Image(nsImage: icon), localizedName: name, isRunning: true)
-            }
-        }
-        for app in cfg.appConditions { apps.removeValue(forKey: app.bundleID) }
-        return apps.values.sorted {
-            if $0.isRunning != $1.isRunning { return $0.isRunning }
-            return $0.localizedName.localizedStandardCompare($1.localizedName) == .orderedAscending
-        }
-    }
+
 }
 
 struct ApplicationView: View {
@@ -216,6 +187,37 @@ struct Application: Identifiable {
     let icon: Image
     let localizedName: String
     var isRunning: Bool
+
+    static func available(excluding excluded: Set<String> = []) -> [Application] {
+        var apps: [String: Application] = [:]
+        let fileManager = FileManager.default
+        let directories = [URL(fileURLWithPath: "/Applications"),
+                           fileManager.homeDirectoryForCurrentUser.appendingPathComponent("Applications"),
+                           URL(fileURLWithPath: "/System/Applications")]
+        for directory in directories {
+            guard let enumerator = fileManager.enumerator(at: directory, includingPropertiesForKeys: nil,
+                                                          options: [.skipsHiddenFiles, .skipsPackageDescendants]) else { continue }
+            for case let url as URL in enumerator where url.pathExtension.lowercased() == "app" {
+                guard let identifier = Bundle(url: url)?.bundleIdentifier, apps[identifier] == nil else { continue }
+                apps[identifier] = Application(id: identifier,
+                                               icon: Image(nsImage: NSWorkspace.shared.icon(forFile: url.path)),
+                                               localizedName: fileManager.displayName(atPath: url.path), isRunning: false)
+            }
+        }
+        for app in NSWorkspace.shared.runningApplications {
+            guard let id = app.bundleIdentifier else { continue }
+            if apps[id] != nil {
+                apps[id]?.isRunning = true
+            } else if app.activationPolicy == .regular, let icon = app.icon, let name = app.localizedName {
+                apps[id] = Application(id: id, icon: Image(nsImage: icon), localizedName: name, isRunning: true)
+            }
+        }
+        for id in excluded { apps.removeValue(forKey: id) }
+        return apps.values.sorted {
+            if $0.isRunning != $1.isRunning { return $0.isRunning }
+            return $0.localizedName.localizedStandardCompare($1.localizedName) == .orderedAscending
+        }
+    }
 }
 
 struct OnePicker: View {

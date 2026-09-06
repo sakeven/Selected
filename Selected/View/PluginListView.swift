@@ -5,6 +5,9 @@ struct PluginListView: View {
     @State private var selection: String?
     @State private var editor: PluginEditorSession?
     @State private var errorMessage: String?
+    @State private var repairIssue: PluginLoadIssue?
+    @State private var popclipImport: PopClipImport?
+    @State private var isImporting = false
 
     init(manager: PluginManager = .shared) {
         pluginMgr = manager
@@ -18,6 +21,8 @@ struct PluginListView: View {
                 SettingsPageHeader(title: "Plugins", subtitle: "\(pluginMgr.plugins.count) installed · Do more with selected text")
                 Button("Import…", systemImage: "square.and.arrow.down", action: importPlugin)
                     .buttonStyle(SettingsButtonStyle())
+                    .disabled(isImporting)
+                if isImporting { ProgressView().controlSize(.small) }
                 Button("New Plugin", systemImage: "plus") {
                     editor = PluginEditorSession(plugin: .new(), existing: nil)
                 }
@@ -62,6 +67,8 @@ struct PluginListView: View {
                                     if !plugin.info.enabled { Image(systemName: "pause.circle").foregroundStyle(.secondary).accessibilityLabel("Disabled") }
                                     if plugin.compatibilityIssue(hostVersion: pluginMgr.hostVersion) != nil {
                                         Image(systemName: "exclamationmark.triangle").foregroundStyle(.orange).accessibilityLabel("Incompatible Version")
+                                    } else if !plugin.info.missingOptions().isEmpty {
+                                        Image(systemName: "slider.horizontal.3").foregroundStyle(.orange).accessibilityLabel("Needs Configuration")
                                     }
                                 }
                                 .padding(10)
@@ -100,8 +107,18 @@ struct PluginListView: View {
                 Divider()
                 DisclosureGroup("\(pluginMgr.loadIssues.count) plugins failed to load") {
                     ScrollView {
-                        Text(pluginMgr.loadIssues.joined(separator: "\n\n"))
-                            .font(.caption).textSelection(.enabled).frame(maxWidth: .infinity, alignment: .leading)
+                        VStack(alignment: .leading, spacing: 12) {
+                            ForEach(pluginMgr.loadIssues) { issue in
+                                HStack(alignment: .top, spacing: 12) {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(issue.directory.lastPathComponent).fontWeight(.medium)
+                                        Text(issue.message).textSelection(.enabled)
+                                    }.frame(maxWidth: .infinity, alignment: .leading)
+                                    Button("Repair…", systemImage: "wrench") { repairIssue = issue }
+                                        .buttonStyle(SettingsButtonStyle())
+                                }
+                            }
+                        }.font(.caption)
                     }.frame(maxHeight: 100)
                 }.padding(12).foregroundStyle(.red)
             }
@@ -118,6 +135,12 @@ struct PluginListView: View {
         .sheet(item: $editor) { session in
             PluginEditorView(session: session, manager: pluginMgr) { id in selection = id }
         }
+        .sheet(item: $repairIssue) { issue in
+            PluginRepairView(issue: issue, manager: pluginMgr) { selection = $0 }
+        }
+        .sheet(item: $popclipImport) { session in
+            PopClipImportView(session: session, manager: pluginMgr) { selection = $0 }
+        }
         .alert("Plugin Operation Failed", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
             Button("OK", role: .cancel) { errorMessage = nil }
         } message: { Text(errorMessage ?? "") }
@@ -129,8 +152,17 @@ struct PluginListView: View {
         panel.canChooseFiles = true
         panel.treatsFilePackagesAsDirectories = false
         panel.allowsMultipleSelection = false
-        panel.message = String(localized: "Choose a .selectedext plugin package or a folder containing config.yaml.")
+        panel.message = String(localized: "Choose a Selected plugin, a .popclipext package, or a .popclipextz archive.")
         guard panel.runModal() == .OK, let url = panel.url else { return }
+        if ["popclipext", "popclipextz"].contains(url.pathExtension.lowercased()) {
+            isImporting = true
+            Task {
+                defer { isImporting = false }
+                do { popclipImport = try await Task.detached { try PopClipImporter.inspect(url) }.value }
+                catch { errorMessage = error.localizedDescription }
+            }
+            return
+        }
         do {
             try pluginMgr.install(url: url)
             selection = try pluginMgr.readManifest(at: url).id

@@ -21,6 +21,8 @@ struct ClipActionsMenu: View {
             ClipAIMenu(kind: kind, onRequest: onAIRequest)
         }
 
+        ContentActionsMenu(input: ActionInput(clip: data), target: ClipWindowManager.shared.actionTarget ?? ActionTarget())
+
         Divider()
 
         Button(action: onTogglePin) {

@@ -16,14 +16,16 @@ public struct ChatContext {
     let images: [Data]
     let files: [AIFileAttachment]
     let request: String?
+    let clipboardText: String
 
-    init(text: String, webPageURL: String, bundleID: String, images: [Data] = [], files: [AIFileAttachment] = [], request: String? = nil) {
+    init(text: String, webPageURL: String, bundleID: String, images: [Data] = [], files: [AIFileAttachment] = [], request: String? = nil, clipboardText: String = "") {
         self.text = text
         self.webPageURL = webPageURL
         self.bundleID = bundleID
         self.images = images
         self.files = files
         self.request = request
+        self.clipboardText = clipboardText
     }
 }
 

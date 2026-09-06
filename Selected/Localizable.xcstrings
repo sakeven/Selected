@@ -4,6 +4,29 @@
     "" : {
       "shouldTranslate" : false
     },
+    "·" : {
+      "shouldTranslate" : false
+    },
+    "[%@]" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[%@]"
+          }
+        }
+      }
+    },
+    "%.2f s" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.2f 秒"
+          }
+        }
+      }
+    },
     "%@" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -11,6 +34,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@"
+          }
+        }
+      }
+    },
+    "%@: Clipboard input is available only for AI, command, and URL actions." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：只有 AI、命令和 URL 动作支持额外剪贴板输入。"
           }
         }
       }
@@ -282,6 +315,16 @@
         }
       }
     },
+    "%lld options available after import" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入后可配置 %lld 个参数"
+          }
+        }
+      }
+    },
     "%lld plugins failed to load" : {
       "localizations" : {
         "en" : {
@@ -334,17 +377,6 @@
         }
       }
     },
-    "24 Hours" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "24 小时"
-          }
-        }
-      }
-    },
     "3 Months" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -352,17 +384,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "3 个月"
-          }
-        }
-      }
-    },
-    "30 Days" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "30 天"
           }
         }
       }
@@ -389,12 +410,24 @@
         }
       }
     },
-    "[%@]" : {
+    "24 Hours" : {
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "[%@]"
+            "value" : "24 小时"
+          }
+        }
+      }
+    },
+    "30 Days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 天"
           }
         }
       }
@@ -405,6 +438,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关于"
+          }
+        }
+      }
+    },
+    "Action" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动作"
           }
         }
       }
@@ -591,18 +634,28 @@
         }
       }
     },
-    "AIService" : {
+    "AI template: {{selected.clipboardText}}" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI 服务"
+            "value" : "AI 模板：{{selected.clipboardText}}"
           }
-        },
+        }
+      }
+    },
+    "AIService" : {
+      "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "AI Service"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 服务"
           }
         }
       }
@@ -629,32 +682,42 @@
     },
     "APIHost" : {
       "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "API 地址"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "API Host"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API 地址"
           }
         }
       }
     },
     "APIKey" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API Key"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "API 密钥"
           }
-        },
-        "en" : {
+        }
+      }
+    },
+    "App Bundle Identifier" : {
+      "localizations" : {
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API Key"
+            "value" : "应用标识"
           }
         }
       }
@@ -665,6 +728,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "应用配置会引用此标识，发布后应保持稳定。"
+          }
+        }
+      }
+    },
+    "Application Context" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用场景"
           }
         }
       }
@@ -717,6 +790,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "至少需要一个动作。"
+          }
+        }
+      }
+    },
+    "Attachment input" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "附件内容"
           }
         }
       }
@@ -811,6 +894,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "取消"
+          }
+        }
+      }
+    },
+    "Cancel Run" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取消运行"
+          }
+        }
+      }
+    },
+    "Cancelled" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已取消"
+          }
+        }
+      }
+    },
+    "Capture clipboard text when this action runs. Retries reuse the captured text." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "运行时取得一份剪贴板文本，重试时沿用同一份内容。"
           }
         }
       }
@@ -1311,11 +1424,22 @@
       }
     },
     "Choose a .selectedext plugin package or a folder containing config.yaml." : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择包含 config.yaml 的 .selectedext 插件包或文件夹。"
+          }
+        }
+      }
+    },
+    "Choose a Selected plugin, a .popclipext package, or a .popclipextz archive." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择 Selected 插件、.popclipext 插件包或 .popclipextz 压缩包。"
           }
         }
       }
@@ -1326,6 +1450,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择动作，定义选中文字后的操作。"
+          }
+        }
+      }
+    },
+    "Choose an archive containing exactly one .popclipext package." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请选择只包含一个 .popclipext 插件的压缩包。"
+          }
+        }
+      }
+    },
+    "Choose App…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择应用…"
           }
         }
       }
@@ -2095,6 +2239,26 @@
         }
       }
     },
+    "Clipboard reference" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剪贴板参考内容"
+          }
+        }
+      }
+    },
+    "Close" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        }
+      }
+    },
     "Collapsed" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2114,6 +2278,9 @@
           }
         }
       }
+    },
+    "com.apple.Safari" : {
+
     },
     "com.example.action" : {
       "shouldTranslate" : false
@@ -2151,12 +2318,82 @@
         }
       }
     },
+    "Command variable: SELECTED_CLIPBOARD_TEXT" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "命令变量：SELECTED_CLIPBOARD_TEXT"
+          }
+        }
+      }
+    },
+    "Compatibility is checked by capability. The PopClip host version is retained in the original source." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按具体能力检查兼容性，原始源码中保留 PopClip 最低版本要求。"
+          }
+        }
+      }
+    },
+    "Compatible with this import" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可以导入"
+          }
+        }
+      }
+    },
+    "Complete the required fields below to make this plugin available." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "填写并保存下方必填参数后，即可使用此插件。"
+          }
+        }
+      }
+    },
     "completed" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "已完成"
+          }
+        }
+      }
+    },
+    "Completed" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已完成"
+          }
+        }
+      }
+    },
+    "Completed without text output" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "操作完成，无文本输出"
+          }
+        }
+      }
+    },
+    "Condition not met: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未满足条件：%@"
           }
         }
       }
@@ -2191,6 +2428,16 @@
         }
       }
     },
+    "Configure these required options first: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先配置必填参数：%@"
+          }
+        }
+      }
+    },
     "Contains links" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2211,6 +2458,16 @@
         }
       }
     },
+    "Content" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内容"
+          }
+        }
+      }
+    },
     "Content type:" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2218,6 +2475,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "类型："
+          }
+        }
+      }
+    },
+    "Continue in chat" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "继续对话"
+          }
+        }
+      }
+    },
+    "Continue working with this result." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "继续处理这份结果。"
+          }
+        }
+      }
+    },
+    "Copied" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已复制"
           }
         }
       }
@@ -2243,12 +2530,53 @@
         }
       }
     },
+    "Copy original text" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制原文"
+          }
+        }
+      }
+    },
+    "Copy this step's input" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制本步输入"
+          }
+        }
+      }
+    },
     "Copy to Clipboard" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "复制到剪贴板"
+          }
+        }
+      }
+    },
+    "Could not focus the original app. Try again or copy the result." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法切换到原应用，请重试或复制结果。"
+          }
+        }
+      }
+    },
+    "Could not open the plugin URL." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法打开插件生成的链接。"
           }
         }
       }
@@ -2365,6 +2693,16 @@
         }
       }
     },
+    "Delete “%@”, its settings, and previous versions?" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除“%@”及其参数和历史版本？"
+          }
+        }
+      }
+    },
     "Delete Action" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2401,16 +2739,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除插件…"
-          }
-        }
-      }
-    },
-    "Delete “%@”, its settings, and previous versions?" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "删除“%@”及其参数和历史版本？"
           }
         }
       }
@@ -2502,6 +2830,16 @@
         }
       }
     },
+    "Done" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
+          }
+        }
+      }
+    },
     "Drag to reorder" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2552,6 +2890,26 @@
         }
       }
     },
+    "Empty input" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入为空"
+          }
+        }
+      }
+    },
+    "Enable Accessibility access for Selected in System Settings to paste into other apps." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请在系统设置中允许 Selected 使用辅助功能，以粘贴到其他应用。"
+          }
+        }
+      }
+    },
     "Enable Plugin" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2598,6 +2956,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "输入%@"
+          }
+        }
+      }
+    },
+    "Enter a sample here. Testing does not read your system clipboard." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请在此填写示例内容，试运行不会读取系统剪贴板。"
           }
         }
       }
@@ -2658,6 +3026,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已展开"
+          }
+        }
+      }
+    },
+    "Expected one Config.yaml, Config.json, or Config.plist file." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件包中应包含一个 Config.yaml、Config.json 或 Config.plist 文件。"
           }
         }
       }
@@ -2749,6 +3127,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "文件"
+          }
+        }
+      }
+    },
+    "Fix the source, then validate and reload the plugin." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "修复源码，校验通过后重新加载插件。"
           }
         }
       }
@@ -2846,16 +3234,16 @@
     },
     "HotKey" : {
       "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "快捷键"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Keyboard Shortcut"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快捷键"
           }
         }
       }
@@ -2871,6 +3259,9 @@
         }
       }
     },
+    "https://example.com" : {
+
+    },
     "https://example.com/search?q={selected.text}" : {
       "shouldTranslate" : false
     },
@@ -2880,6 +3271,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "图标"
+          }
+        }
+      }
+    },
+    "Icon replaced with a system icon: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此图标将替换为系统图标：%@"
           }
         }
       }
@@ -2931,12 +3332,42 @@
         }
       }
     },
+    "Import from PopClip" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入 PopClip 插件"
+          }
+        }
+      }
+    },
+    "Import into Selected" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入到 Selected"
+          }
+        }
+      }
+    },
     "Import…" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "导入…"
+          }
+        }
+      }
+    },
+    "Imported from PopClip" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PopClip 来源"
           }
         }
       }
@@ -2961,12 +3392,52 @@
         }
       }
     },
+    "Include clipboard text" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "包含剪贴板文本"
+          }
+        }
+      }
+    },
+    "Includes clipboard text" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "包含剪贴板文本"
+          }
+        }
+      }
+    },
     "Incompatible Version" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "版本不兼容"
+          }
+        }
+      }
+    },
+    "Input for this step" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本步输入"
+          }
+        }
+      }
+    },
+    "Input matches · Preview" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "满足条件 · 输入预览"
           }
         }
       }
@@ -3027,6 +3498,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "插件版本无效，请使用例如 1.0.0 或 1.1.0-beta.1。"
+          }
+        }
+      }
+    },
+    "JavaScript and TypeScript plugins are not supported yet." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂不支持 JavaScript 和 TypeScript 插件。"
           }
         }
       }
@@ -3135,6 +3616,16 @@
         }
       }
     },
+    "Local version %@ → %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地版本 %@ → %@"
+          }
+        }
+      }
+    },
     "Low" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3238,6 +3729,16 @@
         }
       }
     },
+    "More actions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多操作"
+          }
+        }
+      }
+    },
     "More plugin management actions" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3288,6 +3789,16 @@
         }
       }
     },
+    "Needs Configuration" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "待配置"
+          }
+        }
+      }
+    },
     "New Action" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3314,6 +3825,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新插件必须填写标识和版本。"
+          }
+        }
+      }
+    },
+    "Next action" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "继续处理"
           }
         }
       }
@@ -3358,6 +3879,16 @@
         }
       }
     },
+    "No matching actions" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有匹配的动作"
+          }
+        }
+      }
+    },
     "No Options Yet" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3385,6 +3916,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无"
+          }
+        }
+      }
+    },
+    "Not supported in this import: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本次导入暂不支持：%@"
           }
         }
       }
@@ -3500,6 +4041,36 @@
         }
       }
     },
+    "Original app" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原应用"
+          }
+        }
+      }
+    },
+    "Original content" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原内容"
+          }
+        }
+      }
+    },
+    "Original restored" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已恢复原文"
+          }
+        }
+      }
+    },
     "Other Apps" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3530,12 +4101,72 @@
         }
       }
     },
+    "Paste" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴"
+          }
+        }
+      }
+    },
+    "Paste at current cursor" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴到当前光标"
+          }
+        }
+      }
+    },
+    "Paste destination: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴到：%@"
+          }
+        }
+      }
+    },
     "Paste plain text" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "粘贴纯文本"
+          }
+        }
+      }
+    },
+    "Paste to %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴到 %@"
+          }
+        }
+      }
+    },
+    "Paste was sent, but the replacement could not be verified. Check the original app." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已发送粘贴，但无法确认替换结果，请检查原应用。"
+          }
+        }
+      }
+    },
+    "Pasted" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已粘贴"
           }
         }
       }
@@ -3662,6 +4293,16 @@
         }
       }
     },
+    "Plugin resources must be regular files or folders, without symbolic links." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件资源必须是普通文件或文件夹，不能包含符号链接。"
+          }
+        }
+      }
+    },
     "Plugin Version" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3703,6 +4344,16 @@
         }
       }
     },
+    "PopClip input matching is preserved. Edit its rules in YAML; changing the action type uses Selected's native behavior." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保留 PopClip 输入匹配规则，可在 YAML 中编辑；更改动作类型后使用 Selected 原生行为。"
+          }
+        }
+      }
+    },
     "Press cmd+enter to send new message" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -3731,6 +4382,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "JSON 格式化"
+          }
+        }
+      }
+    },
+    "Preview ready" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预览已就绪"
+          }
+        }
+      }
+    },
+    "Preview the input, check matching rules, and inspect the result." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预览输入、检查匹配条件，并查看执行结果。"
+          }
+        }
+      }
+    },
+    "Process content" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "处理内容"
+          }
+        }
+      }
+    },
+    "Processing content…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在处理内容…"
           }
         }
       }
@@ -3767,16 +4458,16 @@
     },
     "ReasoningEffort" : {
       "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "推理强度"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reasoning Effort"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "推理强度"
           }
         }
       }
@@ -3801,6 +4492,36 @@
         }
       }
     },
+    "Repair Plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "修复插件"
+          }
+        }
+      }
+    },
+    "Repair…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "修复…"
+          }
+        }
+      }
+    },
+    "Replace original selection" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "替换原选区"
+          }
+        }
+      }
+    },
     "Replace Selected Text" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3811,12 +4532,42 @@
         }
       }
     },
+    "Replace the installed plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "替换已安装插件"
+          }
+        }
+      }
+    },
+    "Required before running" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "运行前必填"
+          }
+        }
+      }
+    },
     "Requires Selected %@ or later. The current version is %@." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "需要 Selected %@ 或更新版本，当前为 %@。"
+          }
+        }
+      }
+    },
+    "Restore original selection" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复原选区"
           }
         }
       }
@@ -3841,12 +4592,42 @@
         }
       }
     },
+    "Result" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "处理结果"
+          }
+        }
+      }
+    },
     "Resume" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "恢复"
+          }
+        }
+      }
+    },
+    "Retry" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重试"
+          }
+        }
+      }
+    },
+    "Review compatibility before adding the plugin to Selected." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查兼容性后，将插件添加到 Selected。"
           }
         }
       }
@@ -3872,12 +4653,32 @@
         }
       }
     },
+    "Run AI" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "运行 AI"
+          }
+        }
+      }
+    },
     "Run Command" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "运行命令"
+          }
+        }
+      }
+    },
+    "Run failed" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "运行失败"
           }
         }
       }
@@ -3892,12 +4693,52 @@
         }
       }
     },
+    "Running…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在运行…"
+          }
+        }
+      }
+    },
+    "Sample Clipboard Text" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "示例剪贴板文本"
+          }
+        }
+      }
+    },
+    "Sample Text" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "示例文本"
+          }
+        }
+      }
+    },
     "Save" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "保存"
+          }
+        }
+      }
+    },
+    "Save and Reload" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存并重新加载"
           }
         }
       }
@@ -3962,6 +4803,16 @@
         }
       }
     },
+    "Search actions or plugins" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索动作或插件"
+          }
+        }
+      }
+    },
     "Search URL" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4010,6 +4861,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Selected"
+          }
+        }
+      }
+    },
+    "Set up your AI provider and API key in General settings first." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先在通用设置中配置 AI 服务和 API 密钥。"
           }
         }
       }
@@ -4231,6 +5092,36 @@
         }
       }
     },
+    "Test" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "试运行"
+          }
+        }
+      }
+    },
+    "Test Action" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "试运行动作"
+          }
+        }
+      }
+    },
+    "Test Plugin" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件试运行"
+          }
+        }
+      }
+    },
     "Text" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4311,6 +5202,36 @@
         }
       }
     },
+    "The archive contains an invalid resource path." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "压缩包中包含无效的资源路径。"
+          }
+        }
+      }
+    },
+    "The command runs locally. Results stay here instead of being pasted or copied." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "命令会在本机运行，结果显示在这里，不会自动粘贴或复制。"
+          }
+        }
+      }
+    },
+    "The command timed out after 60 seconds." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "命令运行超过 60 秒，已超时。"
+          }
+        }
+      }
+    },
     "The identifier of an installed plugin cannot be changed." : {
       "localizations" : {
         "zh-Hans" : {
@@ -4341,12 +5262,72 @@
         }
       }
     },
+    "The macOS service could not complete the action." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS 服务未能完成此操作。"
+          }
+        }
+      }
+    },
     "The new version must be higher than the installed version %@." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "新版本必须高于已安装版本 %@。"
+          }
+        }
+      }
+    },
+    "The original app is no longer available. Copy the result instead." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原应用已退出，请复制结果后使用。"
+          }
+        }
+      }
+    },
+    "The original attachment is retained for retry." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重试时会沿用原附件。"
+          }
+        }
+      }
+    },
+    "The original package is preserved. Options use Selected's settings and local Keychain." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保留原始插件包，参数使用 Selected 设置和本机钥匙串存储。"
+          }
+        }
+      }
+    },
+    "The original text could not be verified after restoring. Check the original app." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法确认原文已恢复，请检查原应用。"
+          }
+        }
+      }
+    },
+    "The original text has changed. Copy the result or paste at the current cursor." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原文已发生变化，请复制结果或粘贴到当前光标位置。"
           }
         }
       }
@@ -4381,6 +5362,26 @@
         }
       }
     },
+    "The plugin package exceeds the 50 MB import limit." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "插件包超过 50 MB 导入限制。"
+          }
+        }
+      }
+    },
+    "The PopClip configuration must be a dictionary." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PopClip 配置必须是字典结构。"
+          }
+        }
+      }
+    },
     "The previous version has a different plugin identifier." : {
       "localizations" : {
         "zh-Hans" : {
@@ -4407,6 +5408,126 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已保留上一版本，可通过“更多”菜单恢复。"
+          }
+        }
+      }
+    },
+    "The sample is sent to your configured AI provider. Results stay here instead of being pasted or copied." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "示例文本将发送给已配置的 AI 服务，结果显示在这里，不会自动粘贴或复制。"
+          }
+        }
+      }
+    },
+    "The text does not match the regular expression." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文本不匹配正则表达式。"
+          }
+        }
+      }
+    },
+    "The text has changed since replacement. The original is still available to copy." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "替换后文字又发生了变化，你仍可以复制保留的原文。"
+          }
+        }
+      }
+    },
+    "This action is hidden in the selected app." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此动作在所选应用中隐藏。"
+          }
+        }
+      }
+    },
+    "This action is not enabled for the selected app." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此动作未在所选应用中启用。"
+          }
+        }
+      }
+    },
+    "This action may call its configured AI tools during the test." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "试运行时，此动作可能调用已配置的 AI 工具。"
+          }
+        }
+      }
+    },
+    "This action needs a live selection in the original app." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此动作需要在原应用中选中文字后运行。"
+          }
+        }
+      }
+    },
+    "This action requires an editable text field." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此动作需要可编辑的文本区域。"
+          }
+        }
+      }
+    },
+    "This app cannot restore the selection. Paste at the current cursor instead." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此应用不支持恢复选区，请粘贴到当前光标位置。"
+          }
+        }
+      }
+    },
+    "This app or webpage is excluded by the shortcut's matching rules." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此应用或网页不符合快捷键的匹配规则。"
+          }
+        }
+      }
+    },
+    "This first release supports declarative URL, keyboard shortcut, and plain-text macOS service actions. Script runtimes and other unsupported capabilities are listed above." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "首批支持声明式 URL、快捷键和纯文本 macOS 服务动作。上方列出了暂不支持的脚本运行环境及其他能力。"
+          }
+        }
+      }
+    },
+    "This replaces the current definition, including local edits. Your settings and a previous-version backup are kept." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将替换当前插件定义，包括本地修改；保留个人参数和上一版本备份。"
           }
         }
       }
@@ -4475,32 +5596,32 @@
     },
     "TTSInstructions" : {
       "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "TTS 指令"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "TTS Instructions"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TTS 指令"
           }
         }
       }
     },
     "TTSModel" : {
       "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "TTS 模型"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "TTS Model"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TTS 模型"
           }
         }
       }
@@ -4512,6 +5633,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未知"
+          }
+        }
+      }
+    },
+    "Unsupported or invalid PopClip field: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不支持或无效的 PopClip 字段：%@"
+          }
+        }
+      }
+    },
+    "Unsupported PopClip key target: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂不支持此 PopClip 按键目标：%@"
+          }
+        }
+      }
+    },
+    "Unsupported PopClip requirement: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂不支持此 PopClip 条件：%@"
           }
         }
       }
@@ -4566,6 +5717,26 @@
         }
       }
     },
+    "URL template: {selected.clipboardText}" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL 模板：{selected.clipboardText}"
+          }
+        }
+      }
+    },
+    "URL, shortcut, and service actions are previewed here without opening apps or sending keystrokes." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL、快捷键和系统服务仅显示预览，不会打开应用或发送按键。"
+          }
+        }
+      }
+    },
     "URL:" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4577,22 +5748,22 @@
         }
       }
     },
-    "Use {selected.text} for selected text and {selected.options.identifier} for an option value." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "{selected.text} 表示选中文字，{selected.options.标识} 表示选项值。"
-          }
-        }
-      }
-    },
     "Use {{selected.text}} to insert selected text and {{options.identifier}} to insert an option value." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用 {{selected.text}} 插入选中文字，{{options.标识}} 插入选项值。"
+          }
+        }
+      }
+    },
+    "Use {selected.text} for selected text and {selected.options.identifier} for an option value." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "{selected.text} 表示选中文字，{selected.options.标识} 表示选项值。"
           }
         }
       }
@@ -4648,6 +5819,16 @@
         }
       }
     },
+    "View Original Source" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看原始源码"
+          }
+        }
+      }
+    },
     "Visual" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4689,6 +5870,16 @@
         }
       }
     },
+    "Webpage URL" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "网页地址"
+          }
+        }
+      }
+    },
     "What can this plugin help you do?" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4719,8 +5910,15 @@
         }
       }
     },
-    "·" : {
-      "shouldTranslate" : false
+    "You can switch apps while this runs." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "处理期间可以继续使用其他应用。"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

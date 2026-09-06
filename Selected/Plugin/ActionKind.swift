@@ -36,7 +36,9 @@ extension Action {
         keycombo = nil
         gpt = nil
         runCommand = nil
+        popclip = nil
         meta.after = nil
+        meta.includeClipboard = nil
         switch kind {
         case .url: url = URLAction(url: "https://www.google.com/search?q={selected.text}")
         case .service: service = ServiceAction(name: "Make Sticky")

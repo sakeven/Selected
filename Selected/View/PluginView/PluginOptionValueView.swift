@@ -80,6 +80,10 @@ struct PluginOptionValueView: View {
                 }
             }
             if let description = option.description { Text(description).font(.caption).foregroundStyle(.secondary) }
+            if option.required == true && savedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Label("Required before running", systemImage: "exclamationmark.circle")
+                    .font(.caption).foregroundStyle(.orange)
+            }
             if let errorMessage {
                 Label(errorMessage, systemImage: "exclamationmark.circle").font(.caption).foregroundStyle(.red)
             }

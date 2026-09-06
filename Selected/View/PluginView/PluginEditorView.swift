@@ -14,6 +14,7 @@ struct PluginEditorView: View {
     @State private var expandedOption: UUID?
     @State private var message: String?
     @State private var isError = false
+    @State private var trialPlugin: Plugin?
 
     init(session: PluginEditorSession, manager: PluginManager, didSave: @escaping (String) -> Void) {
         self.session = session
@@ -86,6 +87,9 @@ struct PluginEditorView: View {
                 HStack(spacing: 10) {
                     Button("Check Configuration", systemImage: "checkmark.shield") { validate() }
                         .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                    Button("Test", systemImage: "play") {
+                        do { trialPlugin = try currentDraft() } catch { show(error) }
+                    }.buttonStyle(SettingsButtonStyle(emphasis: .quiet))
                     Spacer()
                     Button("Cancel", role: .cancel) { dismiss() }
                         .buttonStyle(SettingsButtonStyle()).keyboardShortcut(.cancelAction)
@@ -99,6 +103,9 @@ struct PluginEditorView: View {
         .background(Color("SettingsBackground"))
         .frame(width: 760, height: 680)
         .interactiveDismissDisabled()
+        .sheet(item: $trialPlugin) { plugin in
+            PluginTrialView(plugin: plugin, directory: session.existing.map { manager.directory(for: $0) } ?? manager.extensionsDir)
+        }
     }
 
     private var basicInfo: some View {

@@ -424,7 +424,12 @@ struct ClipView: View {
     }
 
     private func requestAI(_ clip: ClipHistoryData, instruction: String, translation: Bool) {
-        aiRequest = ClipAIPromptView.Request(data: clip, instruction: instruction, translation: translation)
+        if instruction.isEmpty {
+            aiRequest = ClipAIPromptView.Request(data: clip, instruction: instruction, translation: translation)
+        } else {
+            ActionRequest.ai(instruction: instruction, translation: translation).perform(input: ActionInput(clip: clip),
+                                                                                       target: ClipWindowManager.shared.actionTarget ?? ActionTarget())
+        }
     }
 
     private func togglePin(_ clipData: ClipHistoryData) {
@@ -534,6 +539,7 @@ struct ClipDataView: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var data: ClipHistoryData
     @Default(.aiService) private var aiService
+    @State private var showActions = false
     let onAIRequest: (String, Bool) -> Void
 
     var body: some View {
@@ -547,6 +553,16 @@ struct ClipDataView: View {
                     .background(data.displayKind.tint.opacity(0.10), in: Capsule())
 
                 Spacer()
+
+                Button("Process content", systemImage: "wand.and.stars") { showActions = true }
+                    .buttonStyle(SettingsButtonStyle(emphasis: .primary))
+                    .tint(.blue)
+                    .popover(isPresented: $showActions) {
+                        ContentActionPicker(input: ActionInput(clip: data)) { request in
+                            showActions = false
+                            request.perform(input: ActionInput(clip: data), target: ClipWindowManager.shared.actionTarget ?? ActionTarget())
+                        }
+                    }
 
                 if data.isPinned {
                     Label("clip.pinned", systemImage: "pin.fill")

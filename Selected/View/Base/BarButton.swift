@@ -19,17 +19,17 @@ struct BarButton: View {
     var title: String
     var clicked: ((_: Binding<Bool>) -> Void) /// use closure for callback
 
-    @State private var shouldPopover: Bool = false
-    @State private var hoverWorkItem: DispatchWorkItem?
-
+    @State private var isHovering = false
+    @State private var showTitle = false
     @State private var isLoading = false
 
 
     var body: some View {
         Button {
+            isHovering = false
+            showTitle = false
             DispatchQueue.main.async {
                 clicked($isLoading)
-                NSLog("isLoading \(isLoading)")
             }
         } label: {
             ZStack {
@@ -43,28 +43,23 @@ struct BarButton: View {
                 }
             }
         }.frame(width: 40, height: 30)
-            .buttonStyle(BarButtonStyle()).onHover(perform: { hovering in
-                hoverWorkItem?.cancel()
-                if title.count == 0 {
-                    shouldPopover = false
-                    return
-                }
-                if !hovering{
-                    shouldPopover = false
-                    return
-                }
-                
-                let workItem = DispatchWorkItem {
-                    shouldPopover = hovering
-                }
-                hoverWorkItem = workItem
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: workItem)
-            })
-            .popover(isPresented: $shouldPopover, content: {
-                // 增加 interactiveDismissDisabled。
-                // 否则有 popover 时，需要点击 action 使得 popover 消失然后再次点击才能产生 onclick 事件。
-                Text(title).font(.headline).padding(5).interactiveDismissDisabled()
-            })
+            .buttonStyle(BarButtonStyle())
+            .disabled(isLoading)
+            .onHover { isHovering = $0 }
+            .task(id: isHovering) {
+                showTitle = false
+                guard isHovering, !title.isEmpty, !isLoading else { return }
+                do { try await Task.sleep(for: .milliseconds(600)) }
+                catch { return }
+                showTitle = true
+            }
+            .popover(isPresented: $showTitle) {
+                Text(title).font(.headline).padding(5)
+                    // Keep a visible tooltip from consuming the action's first click.
+                    .interactiveDismissDisabled()
+            }
+            .onDisappear { isHovering = false; showTitle = false }
+            .accessibilityLabel(title)
     }
 }
 

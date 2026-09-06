@@ -27,21 +27,24 @@ struct RunCommandAction: Codable {
         self.command = command
     }
 
+    func environment(pluginInfo: PluginInfo, generic: GenericAction, context: SelectedTextContext) -> [String: String] {
+        var env = ["SELECTED_TEXT": context.Text,
+                   "SELECTED_PLUGIN": pluginInfo.id,
+                   "SELECTED_PLUGIN_VERSION": pluginInfo.version ?? "",
+                   "SELECTED_EDITABLE": context.Editable.description,
+                   "SELECTED_BUNDLEID": context.BundleID,
+                   "SELECTED_ACTION": generic.identifier,
+                   "SELECTED_WEBPAGE_URL": context.WebPageURL,
+                   "SELECTED_URLS": context.URLs.joined(separator: "\n")]
+        if generic.includeClipboard == true { env["SELECTED_CLIPBOARD_TEXT"] = context.ClipboardText ?? "" }
+        for (key, value) in pluginInfo.getOptionsValue() { env["SELECTED_OPTIONS_" + key.uppercased()] = value }
+        return env
+    }
+
     func generate(pluginInfo: PluginInfo, generic: GenericAction) -> PerformAction {
         return PerformAction(pluginInfo: pluginInfo, actionMeta: generic, complete: { ctx in
             guard let executable = self.command.first, let pluginPath = self.pluginPath else { return }
-            var env = ["SELECTED_TEXT": ctx.Text,
-                       "SELECTED_PLUGIN": pluginInfo.id,
-                       "SELECTED_PLUGIN_VERSION": pluginInfo.version ?? "",
-                       "SELECTED_EDITABLE": ctx.Editable.description,
-                       "SELECTED_BUNDLEID": ctx.BundleID,
-                       "SELECTED_ACTION": generic.identifier,
-                       "SELECTED_WEBPAGE_URL": ctx.WebPageURL,
-                       "SELECTED_URLS": ctx.URLs.joined(separator: "\n")]
-            for (key, value) in pluginInfo.getOptionsValue() {
-                env["SELECTED_OPTIONS_" + key.uppercased()] = value
-            }
-            let environment = env
+            let environment = self.environment(pluginInfo: pluginInfo, generic: generic, context: ctx)
             do {
                 let output = try await Task.detached {
                     try executeCommand(workdir: pluginPath, command: executable,
@@ -55,9 +58,10 @@ struct RunCommandAction: Codable {
                     else if generic.after == .xshow { WindowManager.shared.createTextWindow(output, editable: ctx.Editable) }
                 }
             } catch {
-                AppLogger.plugin.error("Command failed: \(error.localizedDescription)")
+                let message = PluginRedactor(info: pluginInfo, values: pluginInfo.getOptionsValue()).redact(error.localizedDescription)
+                AppLogger.plugin.error("Command failed: \(message)")
                 await MainActor.run {
-                    WindowManager.shared.createTextWindow("\(generic.title)：\(error.localizedDescription)", editable: false)
+                    WindowManager.shared.createTextWindow("\(generic.title)：\(message)", editable: false)
                 }
             }
         })
@@ -86,13 +90,23 @@ func pasteText(_ text: String) {
         ClipService.shared.resumeMonitor(id)
     }
     let pasteboard = NSPasteboard.general
-    let lastCopyText = pasteboard.string(forType: .string)
+    let previousItems: [NSPasteboardItem] = pasteboard.pasteboardItems?.map { item in
+        let saved = NSPasteboardItem()
+        for type in item.types {
+            if let data = item.data(forType: type) { saved.setData(data, forType: type) }
+        }
+        return saved
+    } ?? []
 
     pasteboard.clearContents()
     pasteboard.setString(text, forType: .string)
+    let temporaryChangeCount = pasteboard.changeCount
     PressPasteKey()
     usleep(100000)
-    pasteboard.setString(lastCopyText ?? "", forType: .string)
+    if pasteboard.changeCount == temporaryChangeCount {
+        pasteboard.clearContents()
+        pasteboard.writeObjects(previousItems)
+    }
 }
 
 func copyText(_ text: String) {
@@ -102,94 +116,53 @@ func copyText(_ text: String) {
 }
 
 public func executeCommand(
-    workdir: String, command: String, arguments: [String] = [], withEnv env: [String:String]) throws -> String? {
-        let process = Process()
-        process.qualityOfService = .default
-        let stdOutPipe = Pipe()
-        let stdErrPipe = Pipe()
-        var path: String?
-        if let p = ProcessInfo.processInfo.environment["PATH"] {
-            path = "/opt/homebrew/bin:/opt/homebrew/sbin:" + p
-        }
-
-        guard let executableURL = findExecutablePath(commandName: command,
-                                                     currentDirectoryURL: URL(fileURLWithPath: workdir), path: path) else {
-            throw NSError(domain: "Selected.Command", code: 127, userInfo: [
-                NSLocalizedDescriptionKey: String(localized: "Executable not found: \(command)")
-            ])
-        }
-        process.executableURL = executableURL
-        process.arguments = arguments
-        process.standardOutput = stdOutPipe
-        process.standardError = stdErrPipe
-        process.currentDirectoryURL = URL(fileURLWithPath: workdir)
-
-        var copiedEnv = env
-        copiedEnv["PATH"] = path
-        process.environment = copiedEnv
-
-        var stdOutData = Data()
-        var stdErrData = Data()
-
-        // Create a Dispatch group to handle reading from pipes asynchronously
-        let group = DispatchGroup()
-
-        // Asynchronously read stdout
-        group.enter()
-        stdOutPipe.fileHandleForReading.readabilityHandler = { handle in
-            let data = handle.availableData
-            if data.isEmpty {
-                stdOutPipe.fileHandleForReading.readabilityHandler = nil
-                group.leave()
-            } else {
-                stdOutData.append(data)
-            }
-        }
-
-        // Asynchronously read stderr
-        group.enter()
-        stdErrPipe.fileHandleForReading.readabilityHandler = { handle in
-            let data = handle.availableData
-            if data.isEmpty {
-                stdErrPipe.fileHandleForReading.readabilityHandler = nil
-                group.leave()
-            } else {
-                stdErrData.append(data)
-            }
-        }
-
-
-        let timeout: TimeInterval = 60 // 1 min
-        let timer = DispatchSource.makeTimerSource()
-        timer.schedule(deadline: .now() + timeout)
-        timer.setEventHandler {
-            if process.isRunning {
-                process.terminate()
-                logger.warning("Process terminated due to timeout.")
-            }
-            timer.cancel()
-        }
-
-        defer {
-            timer.cancel()
-            stdOutPipe.fileHandleForReading.readabilityHandler = nil
-            stdErrPipe.fileHandleForReading.readabilityHandler = nil
-        }
-        timer.activate()
-        try process.run()
-        process.waitUntilExit()
-
-        // Ensure all data has been read
-        group.wait()
-
-        guard process.terminationStatus == 0 else {
-            let message = String(data: stdErrData, encoding: .utf8) ?? ""
-            throw NSError(domain: "Selected.Command", code: Int(process.terminationStatus), userInfo: [
-                NSLocalizedDescriptionKey: String(localized: "Command exit code: \(process.terminationStatus)") + (message.isEmpty ? "" : "\n" + message)
-            ])
-        }
-        return String(data: stdOutData, encoding: .utf8)
+    workdir: String, command: String, arguments: [String] = [], withEnv env: [String: String]) throws -> String? {
+    let result = try executeCommandResult(workdir: workdir, command: command, arguments: arguments, withEnv: env)
+    guard result.exitCode == 0 else {
+        throw NSError(domain: "Selected.Command", code: Int(result.exitCode), userInfo: [
+            NSLocalizedDescriptionKey: String(localized: "Command exit code: \(result.exitCode)") + (result.diagnostics.isEmpty ? "" : "\n" + result.diagnostics)
+        ])
     }
+    return result.output
+}
+
+func executeCommandResult(workdir: String, command: String, arguments: [String] = [], withEnv env: [String: String],
+                          cancellation: CommandCancellation = CommandCancellation()) throws -> CommandResult {
+    let path = "/opt/homebrew/bin:/opt/homebrew/sbin:" + (ProcessInfo.processInfo.environment["PATH"] ?? "/usr/bin:/bin:/usr/sbin:/sbin")
+    guard let executable = findExecutablePath(commandName: command, currentDirectoryURL: URL(fileURLWithPath: workdir), path: path) else {
+        throw NSError(domain: "Selected.Command", code: 127, userInfo: [NSLocalizedDescriptionKey: String(localized: "Executable not found: \(command)")])
+    }
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent("Selected-Command-" + UUID().uuidString)
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let stdout = directory.appendingPathComponent("stdout")
+    let stderr = directory.appendingPathComponent("stderr")
+    FileManager.default.createFile(atPath: stdout.path, contents: nil, attributes: [.posixPermissions: 0o600])
+    FileManager.default.createFile(atPath: stderr.path, contents: nil, attributes: [.posixPermissions: 0o600])
+    let outputHandle = try FileHandle(forWritingTo: stdout)
+    let errorHandle = try FileHandle(forWritingTo: stderr)
+    defer { try? outputHandle.close(); try? errorHandle.close() }
+    let process = Process()
+    process.executableURL = executable
+    process.arguments = arguments
+    process.currentDirectoryURL = URL(fileURLWithPath: workdir)
+    process.environment = env.merging(["PATH": path]) { _, new in new }
+    process.standardInput = FileHandle.nullDevice
+    // Files avoid pipe deadlocks when a command spawns a background child.
+    process.standardOutput = outputHandle
+    process.standardError = errorHandle
+    try cancellation.start(process)
+    let timer = DispatchSource.makeTimerSource()
+    timer.schedule(deadline: .now() + 60)
+    timer.setEventHandler { cancellation.cancel(timedOut: true) }
+    timer.activate()
+    defer { timer.cancel() }
+    process.waitUntilExit()
+    try cancellation.check()
+    return CommandResult(output: String(decoding: try Data(contentsOf: stdout), as: UTF8.self),
+                         diagnostics: String(decoding: try Data(contentsOf: stderr), as: UTF8.self),
+                         exitCode: process.terminationStatus)
+}
 
 
 private func findExecutablePath(commandName: String, currentDirectoryURL: URL? = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first, path: String? = ProcessInfo.processInfo.environment["PATH"]) -> URL? {

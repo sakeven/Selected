@@ -45,5 +45,9 @@ struct PluginOptionEditorView: View {
             TextField("Explain what users should enter", text: $option.description.text, axis: .vertical)
                 .accessibilityLabel("Option Instructions")
         }
+        if option.type == .string || option.type == .secret {
+            Toggle("Required before running", isOn: Binding(get: { option.required == true }, set: { option.required = $0 }))
+                .toggleStyle(.switch).controlSize(.small)
+        }
     }
 }

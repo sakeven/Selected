@@ -215,10 +215,11 @@ class OpenAIProvider: AIProvider{
     func chatFollow(userMessage: UserMessage) -> AsyncThrowingStream<AIStreamEvent, Error>  {
         updateQuery(message: userMessage)
         return AsyncThrowingStream { continuation in
-            Task {
+            let task = Task {
                 var hasToolCall = false
                 do {
                     for _ in 0..<maxToolLoops {
+                        try Task.checkCancellation()
                         hasToolCall = try await chatOneRound(continuation: continuation)
                         if !hasToolCall {
                             continuation.yield(.done)
@@ -232,6 +233,7 @@ class OpenAIProvider: AIProvider{
                     continuation.finish(throwing: error)
                 }
             }
+            continuation.onTermination = { _ in task.cancel() }
         }
     }
 
