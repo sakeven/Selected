@@ -77,7 +77,7 @@ class BaseWindowController: NSWindowController, NSWindowDelegate, WindowCtr {
 
         window.alphaValue = alpha
         if alpha == 1.0 {
-            window.isOpaque = true
+            window.isOpaque = windowType != .popBar
             window.backgroundColor = .clear
         }
         pinnedModel = PinnedModel()
@@ -144,8 +144,8 @@ class BaseWindowController: NSWindowController, NSWindowDelegate, WindowCtr {
                     max(mouseLocation.x - windowWidth/2, screenFrame.minX))
 
         var y = mouseLocation.y + 18
-        if y > screenFrame.maxY {
-            y = mouseLocation.y - 30 - 18
+        if y + window.frame.height > screenFrame.maxY {
+            y = mouseLocation.y - window.frame.height - 18
         }
 
         window.setFrameOrigin(NSPoint(x: x, y: y))

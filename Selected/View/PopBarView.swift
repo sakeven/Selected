@@ -19,8 +19,7 @@ struct PopBarView: View {
     @Environment(\.openURL) var openURL
 
     var body: some View {
-        // spacing: 0， 让 button 紧邻，不要空隙
-        HStack(spacing: 0){
+        HStack(spacing: 2) {
             ForEach(actions) { action in
                 BarButton(icon: action.actionMeta.icon, title: action.actionMeta.title , clicked: {
                     $isLoading in
@@ -46,47 +45,62 @@ struct PopBarView: View {
                     }
                 })
             }
-            if showSharingButton{
+            if showSharingButton {
+                if !actions.isEmpty {
+                    Divider().frame(height: 16).padding(.horizontal, 3)
+                }
                 SharingButton(message: ctx.Text)
             }
             if let res = calculate(ctx.Text) {
+                if !actions.isEmpty || showSharingButton {
+                    Divider().frame(height: 16).padding(.horizontal, 3)
+                }
                 let v = valueFormatter.string(from: NSNumber(value: res))!
                 NumerberView(value: v)
             }
-        }.frame(height: 30)
-            .padding(.leading, 10).padding(.trailing, 10)
-            .background(.ultraThinMaterial)
-            .cornerRadius(5).fixedSize()
+        }
+        .padding(5)
+        .background(.regularMaterial, in: .rect(cornerRadius: 12))
+        .overlay {
+            RoundedRectangle(cornerRadius: 12)
+                .strokeBorder(.primary.opacity(0.10), lineWidth: 0.5)
+        }
+        .fixedSize()
     }
 }
 
 
 struct NumerberView: View {
     let value: String
-    @State private var isCopied = false // 用于控制动画效果
+    @State private var isCopied = false
 
     var body: some View {
-        Text(value)
-            .fontWeight(.bold)
-            .foregroundColor(isCopied ? .blue : .primary) // 颜色变化动画
-            .onTapGesture {
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.setString(value, forType: .string)
-
-                // 触发动画
-                withAnimation(.easeInOut(duration: 0.1)) {
-                    isCopied = true
-                }
-
-                // 动画结束后恢复默认状态
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    withAnimation(.easeInOut(duration: 0.1)) {
-                        isCopied = false
-                    }
-                }
+        Button {
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.setString(value, forType: .string)
+            isCopied = true
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: isCopied ? "checkmark" : "equal")
+                    .frame(width: 12)
+                    .accessibilityHidden(true)
+                Text(value).monospacedDigit()
             }
-
+            .font(.callout.weight(.semibold))
+            .padding(.horizontal, 8)
+            .frame(height: 32)
+        }
+        .buttonStyle(BarButtonStyle())
+        .help("Copy result")
+        .accessibilityLabel(Text("Copy result") + Text(": ") + Text(value))
+        .accessibilityValue(isCopied ? Text("Copied") : Text(value))
+        .task(id: isCopied) {
+            guard isCopied else { return }
+            do { try await Task.sleep(for: .milliseconds(800)) }
+            catch { return }
+            isCopied = false
+        }
     }
 }
 

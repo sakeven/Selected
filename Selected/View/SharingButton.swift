@@ -57,7 +57,7 @@ struct SharingButton: View {
 
     var message: String
     var body: some View {
-        BarButton(icon: "symbol:square.and.arrow.up", title: "share", clicked: {
+        BarButton(icon: "symbol:square.and.arrow.up", title: String(localized: "share"), clicked: {
             _ in
             model.showing = !model.showing
         })

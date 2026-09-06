@@ -19,9 +19,9 @@ struct BarButton: View {
     var title: String
     var clicked: ((_: Binding<Bool>) -> Void) /// use closure for callback
 
+    @State private var isLoading = false
     @State private var isHovering = false
     @State private var showTitle = false
-    @State private var isLoading = false
 
 
     var body: some View {
@@ -32,55 +32,54 @@ struct BarButton: View {
                 clicked($isLoading)
             }
         } label: {
-            ZStack {
-                HStack{
-                    Icon(icon)
-                }.frame(width: 40, height: 30).opacity(isLoading ? 0.5 : 1)
+            Group {
                 if isLoading {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .gray))
-                        .scaleEffect(0.5, anchor: .center) // 根据需要调整大小和位置
+                        .controlSize(.small)
+                } else {
+                    Icon(icon)
+                        .scaleEffect(0.85)
                 }
             }
-        }.frame(width: 40, height: 30)
+            .frame(width: 34, height: 32)
+        }
             .buttonStyle(BarButtonStyle())
             .disabled(isLoading)
-            .onHover { isHovering = $0 }
-            .task(id: isHovering) {
+            .background(BarButtonTooltip(title: title, isPresented: showTitle))
+            .onHover { hovering in
+                isHovering = hovering
+                if !hovering { showTitle = false }
+            }
+            .task(id: isHovering && !isLoading && !title.isEmpty) {
                 showTitle = false
-                guard isHovering, !title.isEmpty, !isLoading else { return }
+                guard isHovering, !isLoading, !title.isEmpty else { return }
                 do { try await Task.sleep(for: .milliseconds(600)) }
                 catch { return }
                 showTitle = true
             }
-            .popover(isPresented: $showTitle) {
-                Text(title).font(.headline).padding(5)
-                    // Keep a visible tooltip from consuming the action's first click.
-                    .interactiveDismissDisabled()
+            .onDisappear {
+                isHovering = false
+                showTitle = false
             }
-            .onDisappear { isHovering = false; showTitle = false }
             .accessibilityLabel(title)
+            .accessibilityValue(isLoading ? Text("Loading…") : Text(""))
     }
 }
 
-// BarButtonStyle: click、onHover 显示不同的颜色
 struct BarButtonStyle: ButtonStyle {
-    @State var isHover = false
-    @Environment(\.colorScheme) private var colorScheme
+    @State private var isHover = false
+    @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .background(getColor(isPressed: configuration.isPressed))
-            .foregroundColor(colorScheme == .dark ? .white: .black )
-            .onHover { hovering in
-                isHover = hovering
+            .foregroundStyle(isEnabled && (isHover || configuration.isPressed) ? Color.accentColor : Color.primary)
+            .background {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.accentColor.opacity(isEnabled ? (configuration.isPressed ? 0.18 : isHover ? 0.10 : 0) : 0))
             }
-    }
-
-    func getColor(isPressed: Bool) -> Color {
-        if isPressed {
-            return .blue.opacity(0.4)
-        }
-        return isHover ? .blue.opacity(0.25) : .clear
+            .contentShape(.rect(cornerRadius: 8))
+            .onHover { isHover = $0 }
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.12), value: isHover)
     }
 }

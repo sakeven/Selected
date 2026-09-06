@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		977D8D0897CC4A26A8D6D828 /* BarButtonTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1978AC3408CD46279F6AEDA5 /* BarButtonTooltip.swift */; };
 		00A07D2C433743F68CD6795B /* PluginLoadIssue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D30283055ABC4A51B4FE73E4 /* PluginLoadIssue.swift */; };
 		0E9416BFEE07434ABDED7243 /* CommandResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6240DD0F272D417A9B3871D2 /* CommandResult.swift */; };
 		1686361937064D51A26925A0 /* SettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9714AC339C842659535A30D /* SettingsSection.swift */; };
@@ -173,6 +174,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1978AC3408CD46279F6AEDA5 /* BarButtonTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarButtonTooltip.swift; sourceTree = "<group>"; };
 		03836078DBD6468FBBDCB7B1 /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
 		0E9AA0170CA341AD84132E31 /* ActionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionRequest.swift; sourceTree = "<group>"; };
 		116841626C9F4F0F8FBC81B4 /* ClipboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardSettingsView.swift; sourceTree = "<group>"; };
@@ -350,6 +352,7 @@
 			children = (
 				38049D622B9DF8EA00E02ECA /* FloatingPanel.swift */,
 				38230CA02B9F44FC002A52E9 /* BarButton.swift */,
+				1978AC3408CD46279F6AEDA5 /* BarButtonTooltip.swift */,
 				3888D8022BA8615900A7B75D /* IconImage.swift */,
 				388DABAE2BD147F6000B2739 /* TextView.swift */,
 				388DABB32BD54A03000B2739 /* ShortcutRecorderView.swift */,
@@ -877,6 +880,7 @@
 				38CC18B42B9C46CA0023DF18 /* SettingsView.swift in Sources */,
 				38AD8D872C1725C600EAFA5D /* AudioPlayerView.swift in Sources */,
 				38230CA12B9F44FC002A52E9 /* BarButton.swift in Sources */,
+				977D8D0897CC4A26A8D6D828 /* BarButtonTooltip.swift in Sources */,
 				386AD7572B90D867008C346D /* GetText.swift in Sources */,
 				3868D6DA2EEEF9A600B41E3A /* WindowPositionManager.swift in Sources */,
 				38D1CAC22D9179370091A332 /* TTSManager.swift in Sources */,

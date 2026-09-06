@@ -1,17 +1,19 @@
 import SwiftUI
 
 struct SettingsButtonStyle: ButtonStyle {
-    enum Emphasis { case primary, secondary, quiet, destructive }
+    enum Emphasis { case prominent, primary, secondary, quiet, destructive }
     var emphasis: Emphasis = .secondary
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.controlSize) private var controlSize
     @State private var isHovered = false
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.body.weight(.medium))
-            .padding(.horizontal, emphasis == .quiet ? 10 : 15)
-            .padding(.vertical, 9)
+            .font(controlSize == .small ? .callout.weight(.medium) : .body.weight(.medium))
+            .padding(.horizontal, controlSize == .small || emphasis == .quiet ? 10 : 15)
+            .padding(.vertical, controlSize == .small ? 6 : 9)
+            .frame(minHeight: controlSize == .small ? 30 : nil)
             .foregroundStyle(foreground)
             .background {
                 RoundedRectangle(cornerRadius: 9)
@@ -28,6 +30,7 @@ struct SettingsButtonStyle: ButtonStyle {
 
     private var foreground: Color {
         switch emphasis {
+        case .prominent: return .white
         case .primary: return Color.blue
         case .destructive: return .red
         case .secondary, .quiet: return .primary
@@ -36,6 +39,7 @@ struct SettingsButtonStyle: ButtonStyle {
 
     private var background: Color {
         switch emphasis {
+        case .prominent: return Color.accentColor.opacity(isHovered ? 0.85 : 1)
         case .primary: return Color.blue.opacity(colorScheme == .dark ? (isHovered ? 0.24 : 0.16) : (isHovered ? 0.18 : 0.10))
         case .secondary: return isHovered ? Color.primary.opacity(0.07) : Color(nsColor: .controlBackgroundColor)
         case .quiet: return Color.primary.opacity(isHovered ? 0.06 : 0)

@@ -55,7 +55,7 @@ struct ApplicationView: View {
     var body: some View {
         SettingsCard {
             DisclosureGroup {
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
                     Divider().opacity(0.5)
                     if app.actions.isEmpty {
                         Text(app.bundleID == "Default" ? String(localized: "No action restrictions. All available actions are shown.") : String(localized: "No custom actions. Using the default configuration."))
@@ -70,22 +70,32 @@ struct ApplicationView: View {
                                     .help("Drag to reorder").accessibilityHidden(true)
                                 Icon(action.actionMeta.icon)
                                     .foregroundStyle(.blue)
-                                    .frame(width: 30, height: 30)
-                                    .background(.blue.opacity(0.08), in: .rect(cornerRadius: 8))
+                                    .frame(width: 24, height: 24)
+                                    .background(.blue.opacity(0.06), in: .rect(cornerRadius: 6))
                                     .accessibilityHidden(true)
                                 Text(action.actionMeta.title).font(.subheadline)
                                 Spacer()
-                                Button("Move Up", systemImage: "arrow.up") { move(id, by: -1) }
-                                    .disabled(app.actions.first == id).help("Move Up")
-                                Button("Move Down", systemImage: "arrow.down") { move(id, by: 1) }
-                                    .disabled(app.actions.last == id).help("Move Down")
-                                Button("Delete Action", systemImage: "trash", role: .destructive) {
-                                    app.actions.removeAll { $0 == id }
-                                    save()
+                                Menu {
+                                    Button("Move Up", systemImage: "arrow.up") { move(id, by: -1) }
+                                        .disabled(app.actions.first == id)
+                                    Button("Move Down", systemImage: "arrow.down") { move(id, by: 1) }
+                                        .disabled(app.actions.last == id)
+                                    Divider()
+                                    Button("Delete Action", systemImage: "trash", role: .destructive) {
+                                        app.actions.removeAll { $0 == id }
+                                        save()
+                                    }
+                                } label: {
+                                    Label("Actions", systemImage: "ellipsis")
                                 }
-                                .buttonStyle(SettingsButtonStyle(emphasis: .destructive))
-                                .help("Delete Action")
+                                .menuStyle(.button)
+                                .menuIndicator(.hidden)
+                                .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                                .controlSize(.small)
+                                .help("Actions")
+                                .accessibilityLabel(Text("Actions") + Text(": ") + Text(action.actionMeta.title))
                             }
+                            .padding(.vertical, 3)
                             .labelStyle(.iconOnly)
                             .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
                             .contentShape(.rect)
@@ -112,7 +122,8 @@ struct ApplicationView: View {
                         Spacer()
                         if app.bundleID != "Default" {
                             Button("Remove App Configuration", systemImage: "trash", role: .destructive, action: removeApplication)
-                                .buttonStyle(SettingsButtonStyle(emphasis: .destructive))
+                                .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                                .controlSize(.small)
                         }
                     }
                 }.padding(.top, 12)

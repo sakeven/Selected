@@ -105,10 +105,6 @@ private extension ColorScheme {
         self == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)
     }
 
-    var clipDetailFill: Color {
-        self == .dark ? Color.black.opacity(0.12) : Color.white.opacity(0.6)
-    }
-
     var clipCardFill: Color {
         self == .dark ? Color.white.opacity(0.035) : Color.white.opacity(0.7)
     }
@@ -225,39 +221,35 @@ struct ClipView: View {
                 Spacer()
 
                 if let selected = localSelection {
-                    ClipActionBar(data: selected)
-
-                    Divider().frame(height: 16)
-
                     Button("clip.copy.short", systemImage: "doc.on.doc") {
                         ClipService.shared.restore(selected, paste: false)
                     }
-                    .buttonStyle(.bordered)
+                    .buttonStyle(SettingsButtonStyle())
                     .help("clip.copy")
 
-                    Button {
-                        togglePin(selected)
-                    } label: {
-                        Label(selected.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"), systemImage: selected.isPinned ? "pin.slash" : "pin")
-                    }
-                    .buttonStyle(.bordered)
-
-                    Button("clip.paste", systemImage: "return") {
-                        ClipService.shared.restore(selected, paste: true)
-                    }
-                    .buttonStyle(.borderedProminent)
-
-                    Menu {
-                        ClipActionsMenu(data: selected, onTogglePin: { togglePin(selected) }, onDelete: { delete(selected) }) { instruction, translation in
-                            requestAI(selected, instruction: instruction, translation: translation)
+                    HStack(spacing: 4) {
+                        Button("clip.paste", systemImage: "return") {
+                            ClipService.shared.restore(selected, paste: true)
                         }
-                    } label: {
-                        Label("clip.actions", systemImage: "ellipsis.circle")
+                        if let text = selected.plainText {
+                            Menu {
+                                Button("Paste plain text") {
+                                    ClipWindowManager.shared.forceCloseWindow()
+                                    pasteText(text)
+                                }
+                            } label: {
+                                Label("clip.pasteOptions", systemImage: "chevron.down")
+                            }
+                            .labelStyle(.iconOnly)
+                            .menuStyle(.button)
+                            .menuIndicator(.hidden)
+                            .help("clip.pasteOptions")
+                        }
                     }
-                    .menuStyle(.borderlessButton)
-                    .fixedSize()
+                    .buttonStyle(SettingsButtonStyle(emphasis: .prominent))
                 }
             }
+            .controlSize(.small)
             .font(.caption)
             .foregroundStyle(.secondary)
             .padding(.horizontal, 24)
@@ -361,7 +353,7 @@ struct ClipView: View {
     @ViewBuilder
     private var detailPane: some View {
         if let selected = localSelection {
-            ClipDataView(data: selected) { instruction, translation in
+            ClipDataView(data: selected, onTogglePin: { togglePin(selected) }, onDelete: { delete(selected) }) { instruction, translation in
                 requestAI(selected, instruction: instruction, translation: translation)
             }
         } else {
@@ -454,9 +446,9 @@ private struct ClipRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(clip.displayKind.tint.opacity(0.12))
-                .frame(width: 34, height: 34)
+            RoundedRectangle(cornerRadius: 8)
+                .fill(clip.displayKind.tint.opacity(0.06))
+                .frame(width: 28, height: 28)
                 .overlay {
                     if clip.displayKind == .image,
                        let imageData = clip.primaryItem?.data,
@@ -464,7 +456,7 @@ private struct ClipRowView: View {
                         Image(nsImage: image)
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 34, height: 34)
+                            .frame(width: 28, height: 28)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                     } else if clip.displayKind == .color, let color = clip.colorValue {
                         RoundedRectangle(cornerRadius: 8)
@@ -478,7 +470,7 @@ private struct ClipRowView: View {
 
             VStack(alignment: .leading, spacing: 5) {
                 Text(clip.rowTitle)
-                    .font(.body.weight(isSelected ? .semibold : .regular))
+                    .font(.body)
                     .foregroundStyle(.primary)
                     .lineLimit(1)
                     .multilineTextAlignment(.leading)
@@ -508,10 +500,6 @@ private struct ClipRowView: View {
             RoundedRectangle(cornerRadius: 12)
                 .fill(isSelected ? colorScheme.clipSelectedFill : (isHovered ? colorScheme.clipCardFill : .clear))
         }
-        .overlay {
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(isSelected ? colorScheme.clipSelectedStroke : .clear, lineWidth: 1)
-        }
         .contentShape(RoundedRectangle(cornerRadius: 12))
         .onHover { isHovered = $0 }
         .accessibilityElement(children: .combine)
@@ -540,36 +528,38 @@ struct ClipDataView: View {
     @ObservedObject var data: ClipHistoryData
     @Default(.aiService) private var aiService
     @State private var showActions = false
+    let onTogglePin: () -> Void
+    let onDelete: () -> Void
     let onAIRequest: (String, Bool) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 10) {
                 Label(data.contentTypeLabel, systemImage: data.displayKind.symbolName)
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(data.displayKind.tint)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(data.displayKind.tint.opacity(0.10), in: Capsule())
+                    .labelStyle(.titleAndIcon)
+                    .font(.callout.weight(.medium))
+                    .foregroundStyle(.secondary)
 
                 Spacer()
 
-                Button("Process content", systemImage: "wand.and.stars") { showActions = true }
-                    .buttonStyle(SettingsButtonStyle(emphasis: .primary))
-                    .tint(.blue)
-                    .popover(isPresented: $showActions) {
-                        ContentActionPicker(input: ActionInput(clip: data)) { request in
-                            showActions = false
-                            request.perform(input: ActionInput(clip: data), target: ClipWindowManager.shared.actionTarget ?? ActionTarget())
-                        }
-                    }
-
-                if data.isPinned {
-                    Label("clip.pinned", systemImage: "pin.fill")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                Button(action: onTogglePin) {
+                    Label(data.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"), systemImage: data.isPinned ? "pin.fill" : "pin")
+                        .foregroundStyle(data.isPinned ? Color.accentColor : .secondary)
                 }
+                .help(data.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"))
+
+                Menu {
+                    ClipActionsMenu(data: data, onTogglePin: onTogglePin, onDelete: onDelete, onAIRequest: onAIRequest)
+                } label: {
+                    Label("More", systemImage: "ellipsis")
+                }
+                .menuStyle(.button)
+                .menuIndicator(.hidden)
+                .help("More")
             }
+            .labelStyle(.iconOnly)
+            .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+            .controlSize(.small)
 
             ClipPreviewStage(data: data)
                 .id(data.MD5())
@@ -582,12 +572,11 @@ struct ClipDataView: View {
                 }
                 .clipped()
 
-            if let kind = data.aiContentKind(openAI: aiService == "OpenAI") {
-                HStack(spacing: 8) {
+            HStack(spacing: 2) {
+                if let kind = data.aiContentKind(openAI: aiService == "OpenAI") {
                     Button("clip.ai.ask", systemImage: "sparkles") {
                         onAIRequest("", false)
                     }
-                    .tint(.accentColor)
 
                     if kind == .text || kind == .document {
                         Button("clip.ai.summarize", systemImage: "list.bullet.rectangle") {
@@ -604,7 +593,7 @@ struct ClipDataView: View {
                             onAIRequest(String(localized: "clip.ai.prompt.extract"), false)
                         }
                     } else if kind == .text {
-                        Button("clip.ai.polish", systemImage: "pencil.line") {
+                        Button("clip.ai.polish.short", systemImage: "pencil.line") {
                             onAIRequest(String(localized: "clip.ai.prompt.polish"), false)
                         }
                     }
@@ -618,34 +607,81 @@ struct ClipDataView: View {
                                 onAIRequest(String(localized: "clip.ai.prompt.translateEnglish"), true)
                             }
                         } label: {
-                            Label("clip.ai.translate", systemImage: "character.bubble")
+                            HStack(spacing: 4) {
+                                Label("clip.ai.translate", systemImage: "character.bubble")
+                                Image(systemName: "chevron.down")
+                                    .font(.caption)
+                                    .accessibilityHidden(true)
+                            }
                         }
-                        .menuStyle(.borderlessButton)
+                        .menuStyle(.button)
                         .fixedSize()
                     }
-
-                    Spacer(minLength: 0)
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.regular)
-                .font(.callout)
+
+                ClipActionBar(data: data)
+
+                Spacer(minLength: 0)
+
+                Button("Plugins", systemImage: "puzzlepiece.extension") { showActions = true }
+                    .help("Process content")
+                    .popover(isPresented: $showActions) {
+                        ContentActionPicker(input: ActionInput(clip: data)) { request in
+                            showActions = false
+                            request.perform(input: ActionInput(clip: data), target: ClipWindowManager.shared.actionTarget ?? ActionTarget())
+                        }
+                    }
             }
+            .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+            .controlSize(.small)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(4)
+            .background(.primary.opacity(0.035), in: .rect(cornerRadius: 10))
 
             ClipMetadataCard(data: data)
 
         }
         .padding(18)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(colorScheme.clipDetailFill, in: RoundedRectangle(cornerRadius: 16))
         .padding(.leading, 12)
     }
 }
 
 private struct ClipMetadataCard: View {
-    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var data: ClipHistoryData
+    @State private var showDetails = false
 
     var body: some View {
+        HStack(spacing: 8) {
+            if let icon = data.appIcon {
+                Image(nsImage: icon)
+                    .resizable()
+                    .frame(width: 14, height: 14)
+                    .accessibilityHidden(true)
+            }
+            Text(data.appDisplayName)
+            Text("·").accessibilityHidden(true)
+            Text(data.lastCopiedText ?? data.firstCopiedText)
+                .accessibilityLabel(Text(LocalizedStringKey(data.lastCopiedText == nil ? "Date:" : "Last copied:")) + Text(" ") + Text(data.lastCopiedText ?? data.firstCopiedText))
+            Spacer(minLength: 0)
+            Label(data.copiesText, systemImage: "doc.on.doc")
+                .help("Copied:")
+                .accessibilityLabel(Text("Copied:") + Text(" ") + Text(data.copiesText))
+            Button("clip.details", systemImage: "info.circle") { showDetails = true }
+                .labelStyle(.iconOnly)
+                .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                .controlSize(.small)
+                .help("clip.details")
+                .popover(isPresented: $showDetails) {
+                    details.padding(20).frame(width: 380)
+                }
+        }
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .lineLimit(1)
+    }
+
+    private var details: some View {
         VStack(alignment: .leading, spacing: 12) {
             applicationRow
 
@@ -670,10 +706,6 @@ private struct ClipMetadataCard: View {
                         .textSelection(.enabled)
                 }
             }
-        }
-        .padding(.top, 16)
-        .overlay(alignment: .top) {
-            Rectangle().fill(colorScheme.clipDivider).frame(height: 1)
         }
     }
 
@@ -1077,22 +1109,11 @@ struct ClipActionBar: View {
     @ObservedObject var data: ClipHistoryData
 
     var body: some View {
-        HStack(spacing: 8) {
-            if data.isJSON {
-                Button("Prettify JSON") {
-                    prettifyJSON()
-                }
-                .buttonStyle(.bordered)
-            }
-
-            if data.plainText != nil {
-                Button("Paste plain text") {
-                    pastePlainText()
-                }
-                .buttonStyle(.bordered)
+        if data.isJSON {
+            Button("Prettify JSON", systemImage: "curlybraces") {
+                prettifyJSON()
             }
         }
-        .controlSize(.regular)
     }
 
     private func prettifyJSON() {
@@ -1108,11 +1129,6 @@ struct ClipActionBar: View {
         }
     }
 
-    private func pastePlainText() {
-        ClipWindowManager.shared.forceCloseWindow()
-        guard let text = data.plainText else { return }
-        pasteText(text)
-    }
 }
 
 extension String {

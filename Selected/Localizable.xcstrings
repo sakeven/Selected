@@ -4,6 +4,12 @@
     "" : {
       "shouldTranslate" : false
     },
+    " " : {
+
+    },
+    ": " : {
+
+    },
     "·" : {
       "shouldTranslate" : false
     },
@@ -1517,6 +1523,7 @@
       }
     },
     "clip.actions" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1691,6 +1698,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "润色文字"
+          }
+        }
+      }
+    },
+    "clip.ai.polish.short" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Polish"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "润色"
           }
         }
       }
@@ -1985,6 +2008,22 @@
         }
       }
     },
+    "clip.details" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item details"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "条目详情"
+          }
+        }
+      }
+    },
     "clip.dismiss" : {
       "localizations" : {
         "en" : {
@@ -2077,6 +2116,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "粘贴"
+          }
+        }
+      }
+    },
+    "clip.pasteOptions" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paste options"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "粘贴选项"
           }
         }
       }
@@ -2510,7 +2565,6 @@
       }
     },
     "Copied:" : {
-      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -2536,6 +2590,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "复制原文"
+          }
+        }
+      }
+    },
+    "Copy result" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制计算结果"
           }
         }
       }
@@ -3612,6 +3676,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "链接"
+          }
+        }
+      }
+    },
+    "Loading…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在加载…"
           }
         }
       }
