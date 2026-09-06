@@ -4,25 +4,25 @@ struct PluginActionEditorView: View {
     @Binding var action: Action
 
     var body: some View {
-        PluginField(title: "动作名称") {
+        SettingsField(title: "动作名称") {
             TextField("例如：总结内容", text: $action.meta.title).accessibilityLabel("动作名称")
         }
         PluginSegmentedControl(values: ActionKind.allCases, selection: Binding(get: { action.kind }, set: { action.setKind($0) }), title: { $0.title })
         switch action.kind {
         case .url:
-            PluginField(title: "链接模板") {
+            SettingsField(title: "链接模板") {
                 TextField("https://example.com/search?q={selected.text}", text: Binding(get: { action.url?.url ?? "" }, set: { action.url?.url = $0 }), axis: .vertical)
                     .accessibilityLabel("链接模板")
             }
             Text("{selected.text} 表示选中文字，{selected.options.标识} 表示选项值。")
                 .font(.caption).foregroundStyle(.secondary)
         case .service:
-            PluginField(title: "macOS 服务名称") {
+            SettingsField(title: "macOS 服务名称") {
                 TextField("Make Sticky", text: Binding(get: { action.service?.name ?? "" }, set: { action.service?.name = $0 }))
                     .accessibilityLabel("macOS 服务名称")
             }
         case .keycombo:
-            PluginField(title: "快捷键 · 每行一个组合") {
+            SettingsField(title: "快捷键 · 每行一个组合") {
                 TextEditor(text: Binding(get: {
                     action.keycombo?.keycombos?.joined(separator: "\n") ?? action.keycombo?.keycombo ?? ""
                 }, set: { value in
@@ -45,7 +45,7 @@ struct PluginActionEditorView: View {
                     .font(.caption).foregroundStyle(.secondary)
             }
         case .gpt:
-            PluginField(title: "提示词") {
+            SettingsField(title: "提示词") {
                 TextEditor(text: Binding(get: { action.gpt?.prompt ?? "" }, set: { action.gpt?.prompt = $0 }))
                     .font(.body).scrollContentBackground(.hidden)
                     .frame(minHeight: 120).accessibilityLabel("AI 提示词")
@@ -59,7 +59,7 @@ struct PluginActionEditorView: View {
                     .font(.caption).foregroundStyle(.secondary)
             }
         case .runCommand:
-            PluginField(title: "命令与参数") {
+            SettingsField(title: "命令与参数") {
                 TextEditor(text: Binding(get: { action.runCommand?.command.joined(separator: "\n") ?? "" }, set: {
                     action.runCommand?.command = $0.isEmpty ? [] : $0.components(separatedBy: "\n")
                 }))
@@ -70,7 +70,7 @@ struct PluginActionEditorView: View {
                 .font(.caption).foregroundStyle(.secondary)
         }
         if action.gpt != nil || action.runCommand != nil {
-            PluginMenuPicker(title: "结果处理", values: AfterAction.allCases,
+            SettingsMenuPicker(title: "结果处理", values: AfterAction.allCases,
                              selection: Binding<AfterAction>(get: { action.meta.after ?? AfterAction.none }, set: { action.meta.after = $0 }), label: resultTitle)
         }
         DisclosureGroup("显示条件") {
@@ -85,7 +85,7 @@ struct PluginActionEditorView: View {
                         action.meta.requirements = requirements.isEmpty ? nil : requirements
                     })).toggleStyle(.switch).controlSize(.small)
                 }
-                PluginField(title: "文本正则表达式 · 可选") {
+                SettingsField(title: "文本正则表达式 · 可选") {
                     TextField("不限制", text: $action.meta.regex.text).accessibilityLabel("文本正则表达式")
                 }
                 PluginStringListField(title: "仅在这些应用显示 · 逗号分隔 bundle ID", values: $action.meta.requiredApps)
@@ -96,15 +96,15 @@ struct PluginActionEditorView: View {
         }.font(.subheadline)
         DisclosureGroup("更多设置") {
             VStack(alignment: .leading, spacing: 16) {
-                PluginField(title: "动作标识") {
+                SettingsField(title: "动作标识") {
                     TextField("com.example.action", text: $action.meta.identifier).accessibilityLabel("动作标识")
                 }
                 Text("应用配置会引用此标识，发布后应保持稳定。")
                     .font(.caption).foregroundStyle(.secondary)
-                PluginField(title: "图标") {
+                SettingsField(title: "图标") {
                     TextField("symbol:bolt", text: $action.meta.icon).accessibilityLabel("动作图标")
                 }
-                PluginField(title: "说明") {
+                SettingsField(title: "说明") {
                     TextField("简短描述这个动作", text: $action.meta.description.text).accessibilityLabel("动作说明")
                 }
             }.padding(.top, 14)

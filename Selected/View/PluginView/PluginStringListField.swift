@@ -6,7 +6,7 @@ struct PluginStringListField: View {
     @State private var text = ""
 
     var body: some View {
-        PluginField(title: title) {
+        SettingsField(title: title) {
             TextField("", text: $text).accessibilityLabel(title)
         }
             .onAppear { text = values?.joined(separator: ", ") ?? "" }

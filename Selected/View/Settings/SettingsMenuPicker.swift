@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PluginMenuPicker<Selection: Hashable>: View {
+struct SettingsMenuPicker<Selection: Hashable>: View {
     let title: String
     let values: [Selection]
     @Binding var selection: Selection

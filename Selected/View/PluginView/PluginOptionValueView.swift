@@ -45,7 +45,7 @@ struct PluginOptionValueView: View {
                     Spacer()
                     if text != savedText {
                         Button("保存", systemImage: "checkmark") { update(text) }
-                            .buttonStyle(PluginButtonStyle(emphasis: .quiet))
+                            .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
                             .help(option.type == .secret ? "保存到系统钥匙串" : "保存此参数")
                     } else if didSave {
                         Label("已保存", systemImage: "checkmark.circle")

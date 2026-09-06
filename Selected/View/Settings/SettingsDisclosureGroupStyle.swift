@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PluginDisclosureGroupStyle: DisclosureGroupStyle {
+struct SettingsDisclosureGroupStyle: DisclosureGroupStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Button {

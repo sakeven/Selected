@@ -32,7 +32,7 @@ struct PluginDetailView: View {
                 }
                 HStack(spacing: 10) {
                     Button("编辑插件", systemImage: "slider.horizontal.3", action: edit)
-                        .buttonStyle(PluginButtonStyle(emphasis: .primary))
+                        .buttonStyle(SettingsButtonStyle(emphasis: .primary))
                     Menu {
                         Button("导出插件…", systemImage: "square.and.arrow.up", action: exportPlugin)
                         Button("在 Finder 中显示", systemImage: "folder") {
@@ -70,7 +70,7 @@ struct PluginDetailView: View {
                     }
                     VStack(alignment: .leading, spacing: 10) {
                         Text("配置").font(.headline)
-                        PluginCard {
+                        SettingsCard {
                             if plugin.info.options.isEmpty {
                                 Label("无需配置，可以直接使用。", systemImage: "checkmark.circle")
                                     .foregroundStyle(.secondary)
@@ -89,7 +89,7 @@ struct PluginDetailView: View {
                                 .padding(.horizontal, 7).padding(.vertical, 2)
                                 .background(.primary.opacity(0.05), in: .capsule)
                         }
-                        PluginCard {
+                        SettingsCard {
                             ForEach(plugin.actions) { action in
                                 HStack(spacing: 10) {
                                     Icon(action.meta.icon).foregroundStyle(Color.blue).accessibilityHidden(true)
@@ -126,9 +126,9 @@ struct PluginDetailView: View {
                 }.padding(24)
             }
         }
-        .background(Color("PluginBackground"))
+        .background(Color("SettingsBackground"))
         .tint(Color.blue)
-        .disclosureGroupStyle(PluginDisclosureGroupStyle())
+        .disclosureGroupStyle(SettingsDisclosureGroupStyle())
         .confirmationDialog("删除“\(plugin.info.name)”及其参数和历史版本？", isPresented: $confirmDelete, titleVisibility: .visible) {
             Button("删除插件", role: .destructive) { perform { try manager.remove(plugin) } }
         }

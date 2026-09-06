@@ -85,39 +85,39 @@ struct PluginEditorView: View {
                 }
                 HStack(spacing: 10) {
                     Button("检查配置", systemImage: "checkmark.shield") { validate() }
-                        .buttonStyle(PluginButtonStyle(emphasis: .quiet))
+                        .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
                     Spacer()
                     Button("取消", role: .cancel) { dismiss() }
-                        .buttonStyle(PluginButtonStyle()).keyboardShortcut(.cancelAction)
+                        .buttonStyle(SettingsButtonStyle()).keyboardShortcut(.cancelAction)
                     Button(session.existing == nil ? "创建插件" : "保存更改") { save() }
-                        .buttonStyle(PluginButtonStyle(emphasis: .primary)).keyboardShortcut(.defaultAction)
+                        .buttonStyle(SettingsButtonStyle(emphasis: .primary)).keyboardShortcut(.defaultAction)
                 }
             }.padding(.horizontal, 24).padding(.vertical, 16)
         }
         .tint(Color.blue)
-        .disclosureGroupStyle(PluginDisclosureGroupStyle())
-        .background(Color("PluginBackground"))
+        .disclosureGroupStyle(SettingsDisclosureGroupStyle())
+        .background(Color("SettingsBackground"))
         .frame(width: 760, height: 680)
         .interactiveDismissDisabled()
     }
 
     private var basicInfo: some View {
         VStack(alignment: .leading, spacing: 16) {
-            PluginCard {
-                PluginField(title: "插件名称") {
+            SettingsCard {
+                SettingsField(title: "插件名称") {
                     TextField("例如：阅读助手", text: $draft.info.name)
                         .disabled(session.existing != nil && draft.info.identifier == nil)
                         .accessibilityLabel("插件名称")
                 }
-                PluginField(title: "简介") {
+                SettingsField(title: "简介") {
                     TextField("这个插件可以帮你做什么？", text: $draft.info.description.text, axis: .vertical)
                         .lineLimit(2...3).accessibilityLabel("插件简介")
                 }
                 HStack(alignment: .top, spacing: 16) {
-                    PluginField(title: "版本") {
+                    SettingsField(title: "版本") {
                         TextField("1.0.0", text: $draft.info.version.text).accessibilityLabel("插件版本")
                     }.frame(maxWidth: 180)
-                    PluginField(title: "图标") {
+                    SettingsField(title: "图标") {
                         TextField("symbol:bolt", text: $draft.info.icon).accessibilityLabel("插件图标")
                     }
                 }
@@ -126,10 +126,10 @@ struct PluginEditorView: View {
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
-            PluginCard {
+            SettingsCard {
                 DisclosureGroup("高级设置") {
                     VStack(alignment: .leading, spacing: 16) {
-                        PluginField(title: "稳定标识") {
+                        SettingsField(title: "稳定标识") {
                             TextField("com.example.plugin", text: $draft.info.identifier.text)
                                 .disabled(session.existing != nil).accessibilityLabel("插件稳定标识")
                         }
@@ -137,7 +137,7 @@ struct PluginEditorView: View {
                             Text("旧插件使用名称作为标识，保持名称不变可以保留已有参数。")
                                 .font(.caption).foregroundStyle(.secondary)
                         }
-                        PluginField(title: "最低 Selected 版本 · 可选") {
+                        SettingsField(title: "最低 Selected 版本 · 可选") {
                             TextField("不限制", text: $draft.info.minSelectedVersion.text)
                                 .accessibilityLabel("最低 Selected 版本")
                         }
@@ -171,7 +171,7 @@ struct PluginEditorView: View {
                 }.menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
             }
             ForEach($draft.actions) { $action in
-                PluginCard {
+                SettingsCard {
                     DisclosureGroup(isExpanded: Binding(get: { expandedAction == action.id }, set: { expandedAction = $0 ? action.id : nil })) {
                         VStack(alignment: .leading, spacing: 18) {
                             Divider().opacity(0.5)
@@ -184,8 +184,8 @@ struct PluginEditorView: View {
                                     .disabled(draft.actions.last?.id == action.id)
                                 Spacer()
                                 Button("删除动作", systemImage: "trash", role: .destructive) { draft.actions.removeAll { $0.id == action.id } }
-                                    .buttonStyle(PluginButtonStyle(emphasis: .destructive))
-                            }.buttonStyle(PluginButtonStyle(emphasis: .quiet))
+                                    .buttonStyle(SettingsButtonStyle(emphasis: .destructive))
+                            }.buttonStyle(SettingsButtonStyle(emphasis: .quiet))
                         }.padding(.top, 14)
                     } label: {
                         HStack {
@@ -210,17 +210,17 @@ struct PluginEditorView: View {
                     let option = Option(identifier: "option_" + UUID().uuidString.prefix(8), type: .string)
                     draft.info.options.append(option)
                     expandedOption = option.id
-                }.buttonStyle(PluginButtonStyle())
+                }.buttonStyle(SettingsButtonStyle())
             }
             if draft.info.options.isEmpty {
-                PluginCard {
+                SettingsCard {
                     Label("还没有选项", systemImage: "slider.horizontal.3").font(.headline)
                     Text("可以添加语言选择、开关或密钥，让插件按需工作。")
                         .foregroundStyle(.secondary)
                 }
             }
             ForEach($draft.info.options) { $option in
-                PluginCard {
+                SettingsCard {
                     DisclosureGroup(isExpanded: Binding(get: { expandedOption == option.id }, set: { expandedOption = $0 ? option.id : nil })) {
                         VStack(alignment: .leading, spacing: 18) {
                             Divider().opacity(0.5)
@@ -228,7 +228,7 @@ struct PluginEditorView: View {
                             HStack {
                                 Spacer()
                                 Button("删除选项", systemImage: "trash", role: .destructive) { draft.info.options.removeAll { $0.id == option.id } }
-                                    .buttonStyle(PluginButtonStyle(emphasis: .destructive))
+                                    .buttonStyle(SettingsButtonStyle(emphasis: .destructive))
                             }
                         }.padding(.top, 14)
                     } label: {

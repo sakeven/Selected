@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PluginCard<Content: View>: View {
+struct SettingsCard<Content: View>: View {
     @ViewBuilder var content: Content
 
     var body: some View {

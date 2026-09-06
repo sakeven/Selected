@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PluginButtonStyle: ButtonStyle {
+struct SettingsButtonStyle: ButtonStyle {
     enum Emphasis { case primary, secondary, quiet, destructive }
     var emphasis: Emphasis = .secondary
     @Environment(\.isEnabled) private var isEnabled

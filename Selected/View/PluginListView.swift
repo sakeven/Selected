@@ -15,18 +15,13 @@ struct PluginListView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("插件").font(.title2.bold())
-                    Text("\(pluginMgr.plugins.count) 个已安装 · 让选中文字更有用")
-                        .font(.subheadline).foregroundStyle(.secondary)
-                }
-                Spacer()
+                SettingsPageHeader(title: "插件", subtitle: "\(pluginMgr.plugins.count) 个已安装 · 让选中文字更有用")
                 Button("导入…", systemImage: "square.and.arrow.down", action: importPlugin)
-                    .buttonStyle(PluginButtonStyle())
+                    .buttonStyle(SettingsButtonStyle())
                 Button("新建插件", systemImage: "plus") {
                     editor = PluginEditorSession(plugin: .new(), existing: nil)
                 }
-                .buttonStyle(PluginButtonStyle(emphasis: .primary))
+                .buttonStyle(SettingsButtonStyle(emphasis: .primary))
                 Menu {
                     Button("重新加载", systemImage: "arrow.clockwise") { pluginMgr.loadPlugins() }
                     Button("打开插件文件夹", systemImage: "folder") { NSWorkspace.shared.open(pluginMgr.extensionsDir) }
@@ -96,7 +91,7 @@ struct PluginListView: View {
                     } actions: {
                         Button("新建插件", systemImage: "plus") {
                             editor = PluginEditorSession(plugin: .new(), existing: nil)
-                        }.buttonStyle(PluginButtonStyle(emphasis: .primary))
+                        }.buttonStyle(SettingsButtonStyle(emphasis: .primary))
                     }
                         .frame(minWidth: 370, maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -111,9 +106,9 @@ struct PluginListView: View {
                 }.padding(12).foregroundStyle(.red)
             }
         }
-        .background(Color("PluginBackground"))
+        .background(Color("SettingsBackground"))
         .tint(Color.blue)
-        .disclosureGroupStyle(PluginDisclosureGroupStyle())
+        .disclosureGroupStyle(SettingsDisclosureGroupStyle())
         .frame(minWidth: 760, minHeight: 560)
         .onChange(of: pluginMgr.plugins.map(\.id), initial: true) {
             if !pluginMgr.plugins.contains(where: { $0.id == selection }) {
@@ -140,23 +135,5 @@ struct PluginListView: View {
             try pluginMgr.install(url: url)
             selection = try pluginMgr.readManifest(at: url).id
         } catch { errorMessage = error.localizedDescription }
-    }
-}
-
-struct ActionListView: View {
-    @ObservedObject private var pluginMgr = PluginManager.shared
-
-    var body: some View {
-        List(pluginMgr.allActions, id: \.actionMeta.identifier) { action in
-            HStack {
-                Icon(action.actionMeta.icon)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(action.actionMeta.title)
-                    if let description = action.actionMeta.description {
-                        Text(description).font(.caption).foregroundStyle(.secondary)
-                    }
-                }
-            }.padding(10)
-        }
     }
 }

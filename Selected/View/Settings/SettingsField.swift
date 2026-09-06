@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PluginField<Content: View>: View {
+struct SettingsField<Content: View>: View {
     @FocusState private var isFocused: Bool
     let title: String
     @ViewBuilder var content: Content
