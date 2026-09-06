@@ -11,8 +11,16 @@ struct SettingsMenuPicker<Selection: Hashable>: View {
             Text(title).font(.subheadline)
             Spacer()
             Menu {
-                Picker(title, selection: $selection) {
-                    ForEach(values, id: \.self) { value in Text(label(value)).tag(value) }
+                ForEach(values, id: \.self) { value in
+                    Button {
+                        selection = value
+                    } label: {
+                        if value == selection {
+                            Label(label(value), systemImage: "checkmark")
+                        } else {
+                            Text(label(value))
+                        }
+                    }
                 }
             } label: {
                 HStack(spacing: 14) {
@@ -25,6 +33,7 @@ struct SettingsMenuPicker<Selection: Hashable>: View {
             }
             .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
             .accessibilityLabel(title)
+            .accessibilityValue(label(selection))
         }
     }
 }

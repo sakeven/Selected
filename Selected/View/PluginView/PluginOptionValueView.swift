@@ -21,24 +21,8 @@ struct PluginOptionValueView: View {
                         .toggleStyle(.switch).labelsHidden().controlSize(.small)
                 }
             case .multiple:
-                HStack {
-                    Text(option.displayName)
-                    Spacer()
-                    Menu {
-                        Picker(option.displayName, selection: Binding(get: { text }, set: update)) {
-                            ForEach(option.values ?? [], id: \.self) { value in Text(label(for: value)).tag(value) }
-                        }
-                    } label: {
-                        HStack(spacing: 12) {
-                            Text(label(for: text))
-                            Image(systemName: "chevron.up.chevron.down").font(.caption)
-                        }
-                        .padding(.horizontal, 11).padding(.vertical, 8)
-                        .background(.primary.opacity(0.04), in: .rect(cornerRadius: 8))
-                    }
-                    .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
-                    .accessibilityLabel(option.displayName)
-                }
+                SettingsMenuPicker(title: option.displayName, values: option.values ?? [],
+                                   selection: Binding(get: { text }, set: update), label: label(for:))
             case .string, .secret:
                 HStack {
                     Text(option.displayName)
