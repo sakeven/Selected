@@ -1,69 +1,8 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "chat.addAttachments" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add files or images"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "添加文件或图片"
-          }
-        }
-      }
-    },
-    "chat.removeFile" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Remove file"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "移除文件"
-          }
-        }
-      }
-    },
-    "chat.preparingAttachments" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preparing attachments…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在准备附件…"
-          }
-        }
-      }
-    },
-    "chat.attachmentError" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unable to add attachment"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无法添加附件"
-          }
-        }
-      }
+    "" : {
+
     },
     "·" : {
 
@@ -77,6 +16,9 @@
           }
         }
       }
+    },
+    "{selected.text} 表示选中文字，{selected.options.标识} 表示选项值。" : {
+
     },
     "%@" : {
       "extractionState" : "stale",
@@ -99,6 +41,15 @@
         }
       }
     },
+    "%lld" : {
+
+    },
+    "%lld 个已安装 · 让选中文字更有用" : {
+
+    },
+    "%lld 个插件加载失败" : {
+
+    },
     "1 Year" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -109,6 +60,9 @@
           }
         }
       }
+    },
+    "1.0.0" : {
+
     },
     "1x" : {
       "localizations" : {
@@ -219,6 +173,9 @@
     "AI Chat" : {
 
     },
+    "AI 提示词" : {
+
+    },
     "AIService" : {
       "localizations" : {
         "zh-Hans" : {
@@ -321,6 +278,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在调用"
+          }
+        }
+      }
+    },
+    "chat.addAttachments" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add files or images"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加文件或图片"
+          }
+        }
+      }
+    },
+    "chat.attachmentError" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to add attachment"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法添加附件"
           }
         }
       }
@@ -581,6 +570,22 @@
         }
       }
     },
+    "chat.preparingAttachments" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing attachments…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在准备附件…"
+          }
+        }
+      }
+    },
     "chat.readAloud" : {
       "localizations" : {
         "en" : {
@@ -609,6 +614,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "思考过程"
+          }
+        }
+      }
+    },
+    "chat.removeFile" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove file"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除文件"
           }
         }
       }
@@ -1501,6 +1522,12 @@
         }
       }
     },
+    "com.example.action" : {
+
+    },
+    "com.example.plugin" : {
+
+    },
     "completed" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1705,6 +1732,9 @@
         }
       }
     },
+    "https://example.com/search?q={selected.text}" : {
+
+    },
     "Image" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1772,6 +1802,9 @@
         }
       }
     },
+    "language" : {
+
+    },
     "Last copied:" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1802,6 +1835,12 @@
           }
         }
       }
+    },
+    "macOS 服务名称" : {
+
+    },
+    "Make Sticky" : {
+
     },
     "Model" : {
       "localizations" : {
@@ -1845,6 +1884,7 @@
       }
     },
     "Options" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -2112,6 +2152,9 @@
         }
       }
     },
+    "symbol:bolt" : {
+
+    },
     "system" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2259,6 +2302,312 @@
           }
         }
       }
+    },
+    "上移" : {
+
+    },
+    "下移" : {
+
+    },
+    "不限制" : {
+
+    },
+    "使用 {{selected.text}} 插入选中文字，{{options.标识}} 插入选项值。" : {
+
+    },
+    "使用通用设置中的 AI 模型与服务" : {
+
+    },
+    "例如 cmd shift c。多个组合按顺序执行。" : {
+
+    },
+    "例如：总结内容" : {
+
+    },
+    "例如：输出语言" : {
+
+    },
+    "例如：阅读助手" : {
+
+    },
+    "保存" : {
+
+    },
+    "保存到系统钥匙串" : {
+
+    },
+    "保存更改" : {
+
+    },
+    "保存此参数" : {
+
+    },
+    "停用插件" : {
+
+    },
+    "允许多行输入" : {
+
+    },
+    "最低 Selected 版本" : {
+
+    },
+    "切回可视化会解析并校验；保存时重新排版，不保留注释。" : {
+
+    },
+    "创建你的插件" : {
+
+    },
+    "创建插件" : {
+
+    },
+    "创建自己的文字操作，或导入已有插件。" : {
+
+    },
+    "删除“%@”及其参数和历史版本？" : {
+
+    },
+    "删除动作" : {
+
+    },
+    "删除插件" : {
+
+    },
+    "删除插件…" : {
+
+    },
+    "删除选项" : {
+
+    },
+    "动作" : {
+
+    },
+    "动作名称" : {
+
+    },
+    "动作图标" : {
+
+    },
+    "动作标识" : {
+
+    },
+    "动作说明" : {
+
+    },
+    "协议版本" : {
+
+    },
+    "取消" : {
+
+    },
+    "可以添加语言选择、开关或密钥，让插件按需工作。" : {
+
+    },
+    "可运行本机命令" : {
+
+    },
+    "启用推理" : {
+
+    },
+    "启用插件" : {
+
+    },
+    "命令与参数" : {
+
+    },
+    "图标也支持文本图标和包内文件，例如 file://./icon.png。" : {
+
+    },
+    "在 Finder 中显示" : {
+
+    },
+    "在插件详情页填写，保存到系统钥匙串。" : {
+
+    },
+    "好" : {
+
+    },
+    "定义可配置的字段，参数值在详情页填写。" : {
+
+    },
+    "导入…" : {
+
+    },
+    "导出插件…" : {
+
+    },
+    "已保存" : {
+
+    },
+    "已保留 %lld 个 AI 工具，可在 YAML 中编辑。" : {
+
+    },
+    "已保留上一版本，可通过“更多”菜单恢复。" : {
+
+    },
+    "已停用" : {
+
+    },
+    "已启用" : {
+
+    },
+    "已安装" : {
+
+    },
+    "已展开" : {
+
+    },
+    "已折叠" : {
+
+    },
+    "已有的应用匹配规则会保留，可在 YAML 中修改。" : {
+
+    },
+    "帮助用户理解如何填写" : {
+
+    },
+    "应用配置会引用此标识，发布后应保持稳定。" : {
+
+    },
+    "开始使用插件" : {
+
+    },
+    "当前版本 %@，保存后可恢复上一版本。" : {
+
+    },
+    "快捷键组合" : {
+
+    },
+    "恢复上一版本" : {
+
+    },
+    "恢复上一版本？当前插件定义将被替换，个人参数保留。" : {
+
+    },
+    "所有条件须同时满足；动作接收完整选中文本。" : {
+
+    },
+    "打开插件文件夹" : {
+
+    },
+    "插件" : {
+
+    },
+    "插件 YAML 定义" : {
+
+    },
+    "插件信息" : {
+
+    },
+    "插件名称" : {
+
+    },
+    "插件图标" : {
+
+    },
+    "插件操作失败" : {
+
+    },
+    "插件版本" : {
+
+    },
+    "插件稳定标识" : {
+
+    },
+    "插件简介" : {
+
+    },
+    "文本正则表达式" : {
+
+    },
+    "新建插件" : {
+
+    },
+    "无需配置，可以直接使用。" : {
+
+    },
+    "旧插件使用名称作为标识，保持名称不变可以保留已有参数。" : {
+
+    },
+    "显示条件" : {
+
+    },
+    "更多" : {
+
+    },
+    "更多插件管理操作" : {
+
+    },
+    "更多设置" : {
+
+    },
+    "标识" : {
+
+    },
+    "检查配置" : {
+
+    },
+    "添加动作" : {
+
+    },
+    "添加选项" : {
+
+    },
+    "版本不兼容" : {
+
+    },
+    "留空则不设默认值" : {
+
+    },
+    "第一行是程序，之后每行一个参数。选中文字通过 SELECTED_TEXT 传入，工作目录为插件包。" : {
+
+    },
+    "简短描述这个动作" : {
+
+    },
+    "编辑或更新后会保留上一版本，个人参数独立保存。" : {
+
+    },
+    "编辑插件" : {
+
+    },
+    "输入%@" : {
+
+    },
+    "还没有选项" : {
+
+    },
+    "这个插件可以帮你做什么？" : {
+
+    },
+    "选择动作，定义选中文字后的操作。" : {
+
+    },
+    "选项填写说明" : {
+
+    },
+    "选项显示名称" : {
+
+    },
+    "选项标识" : {
+
+    },
+    "选项默认值" : {
+
+    },
+    "配置" : {
+
+    },
+    "重新加载" : {
+
+    },
+    "链接模板" : {
+
+    },
+    "高级设置" : {
+
+    },
+    "默认开启" : {
+
     }
   },
   "version" : "1.0"

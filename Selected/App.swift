@@ -100,7 +100,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         for url in urls {
             // 处理打开的文件
             logger.debug("\(url.path)")
-            PluginManager.shared.install(url: url)
+            do {
+                try PluginManager.shared.install(url: url)
+            } catch {
+                let alert = NSAlert()
+                alert.messageText = "插件安装失败"
+                alert.informativeText = error.localizedDescription
+                alert.runModal()
+            }
         }
     }
 

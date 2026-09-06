@@ -27,3 +27,7 @@
 具体可以用哪些以及如何自定义 action，请看内置操作与自定义插件。
 
 没有为应用配置 action 列表或者为应用配置的 action 列表为空时，将会显示所有可用操作。
+
+## 插件系统
+
+插件协议、PopClip 对比、版本管理及设置内编辑请参阅 [PluginSystem.md](PluginSystem.md)。

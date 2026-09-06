@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A493823BB994CCD878681DA /* ActionRequirement.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3B5199E39E3449799EC41A4 /* ActionRequirement.swift */; };
+		1E39E643095D4419BBC18503 /* PluginSecretStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880C98B63DEE445EB7739830 /* PluginSecretStore.swift */; };
+		30951D051E694133813749E2 /* PluginEditorSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE89D0382510477A9DE77669 /* PluginEditorSession.swift */; };
 		3801CA4E2BA522B6007D7868 /* Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3801CA4D2BA522B6007D7868 /* Actions.swift */; };
 		38049D632B9DF8EA00E02ECA /* FloatingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38049D622B9DF8EA00E02ECA /* FloatingPanel.swift */; };
 		3817BA822D8B0B9600A1C50F /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3817BA812D8B0B8800A1C50F /* SearchView.swift */; };
@@ -83,6 +86,23 @@
 		38E20A492BB5A3D80035A3AA /* SpeakAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E20A482BB5A3D80035A3AA /* SpeakAction.swift */; };
 		38F5E29C2B98ACB9002FEEFE /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E29B2B98ACB9002FEEFE /* OpenAI */; };
 		38F5E29F2B9AB332002FEEFE /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 38F5E29E2B9AB332002FEEFE /* MarkdownUI */; };
+		42ACE459D15C4218873E05E4 /* PluginActionEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8F6909FD9C4534B81D8F9D /* PluginActionEditorView.swift */; };
+		6179C7689485441EA0B919B9 /* PluginDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B3F278522AF48B7A9F8DBC2 /* PluginDetailView.swift */; };
+		6268025D991F4DDEACFECEBA /* PluginCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FDE51AD473429780BDEB1F /* PluginCard.swift */; };
+		6EA576AB618841E29952F252 /* PluginOptionValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC307B7D477482989B14AAF /* PluginOptionValueView.swift */; };
+		72958AC5B3F94EA58CF03552 /* PluginSegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72C7D800732F4978969D3A99 /* PluginSegmentedControl.swift */; };
+		76DA06000000000000000002 /* PluginStringListField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76DA06000000000000000001 /* PluginStringListField.swift */; };
+		85BAFC02B5464958894E6668 /* PluginField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E4A5B3BDA5C4326B80D2F67 /* PluginField.swift */; };
+		922F2718F295411C80835D23 /* PluginVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6367BB3F0A4AF9A6D23813 /* PluginVersion.swift */; };
+		979443F7BDF1477B9B713481 /* PluginEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42822BFF5AAD4271A7FE4769 /* PluginEditorView.swift */; };
+		BA48A9A919CE497E999CAF99 /* PluginValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B87CCAB8B53B4F8DA36FB885 /* PluginValidation.swift */; };
+		C3E43254ECC84D00AACDFBAE /* PluginOptionEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 230EA129E9304C449D9F73C0 /* PluginOptionEditorView.swift */; };
+		C4F0B95243464D5483EAB53A /* PluginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91E49DA10D4947A393D8F326 /* PluginManager.swift */; };
+		CC45612394B8473AB380B3B8 /* ActionKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6241264F4564445A8153D485 /* ActionKind.swift */; };
+		D4B5D838232441679E759550 /* PluginButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91221CF6B5543FA8184874A /* PluginButtonStyle.swift */; };
+		E1E4744DA5A64BC29E839829 /* PluginTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5A3260DBB6E44C388872A65 /* PluginTemplate.swift */; };
+		E333429D741D46E3ABE19BBF /* PluginMenuPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430884A71EC8400581081595 /* PluginMenuPicker.swift */; };
+		E8E71A002F4C91B000CB3170 /* PluginDisclosureGroupStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8E71A012F4C91B000CB3170 /* PluginDisclosureGroupStyle.swift */; };
 		FE0905260000000000000002 /* ClipAIMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0905260000000000000001 /* ClipAIMenu.swift */; };
 		FE0905260000000000000012 /* ClipActionsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0905260000000000000011 /* ClipActionsMenu.swift */; };
 		FE0905260000000000000022 /* AIFileAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0905260000000000000021 /* AIFileAttachment.swift */; };
@@ -124,6 +144,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		230EA129E9304C449D9F73C0 /* PluginOptionEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginOptionEditorView.swift; sourceTree = "<group>"; };
 		3801CA4C2BA47A09007D7868 /* icon.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = icon.md; sourceTree = "<group>"; };
 		3801CA4D2BA522B6007D7868 /* Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Actions.swift; sourceTree = "<group>"; };
 		38049D622B9DF8EA00E02ECA /* FloatingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanel.swift; sourceTree = "<group>"; };
@@ -192,6 +213,25 @@
 		38DF1D5A2BC2BFCA0063A879 /* PDFView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFView.swift; sourceTree = "<group>"; };
 		38E20A462BB44D5A0035A3AA /* SharingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingButton.swift; sourceTree = "<group>"; };
 		38E20A482BB5A3D80035A3AA /* SpeakAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeakAction.swift; sourceTree = "<group>"; };
+		42822BFF5AAD4271A7FE4769 /* PluginEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginEditorView.swift; sourceTree = "<group>"; };
+		430884A71EC8400581081595 /* PluginMenuPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginMenuPicker.swift; sourceTree = "<group>"; };
+		5DC307B7D477482989B14AAF /* PluginOptionValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginOptionValueView.swift; sourceTree = "<group>"; };
+		6241264F4564445A8153D485 /* ActionKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionKind.swift; sourceTree = "<group>"; };
+		6D8F6909FD9C4534B81D8F9D /* PluginActionEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginActionEditorView.swift; sourceTree = "<group>"; };
+		72C7D800732F4978969D3A99 /* PluginSegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginSegmentedControl.swift; sourceTree = "<group>"; };
+		76DA06000000000000000001 /* PluginStringListField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginStringListField.swift; sourceTree = "<group>"; };
+		7E4A5B3BDA5C4326B80D2F67 /* PluginField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginField.swift; sourceTree = "<group>"; };
+		880C98B63DEE445EB7739830 /* PluginSecretStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginSecretStore.swift; sourceTree = "<group>"; };
+		8B3F278522AF48B7A9F8DBC2 /* PluginDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginDetailView.swift; sourceTree = "<group>"; };
+		91E49DA10D4947A393D8F326 /* PluginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginManager.swift; sourceTree = "<group>"; };
+		A0FDE51AD473429780BDEB1F /* PluginCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginCard.swift; sourceTree = "<group>"; };
+		AE89D0382510477A9DE77669 /* PluginEditorSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginEditorSession.swift; sourceTree = "<group>"; };
+		B3B5199E39E3449799EC41A4 /* ActionRequirement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionRequirement.swift; sourceTree = "<group>"; };
+		B87CCAB8B53B4F8DA36FB885 /* PluginValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginValidation.swift; sourceTree = "<group>"; };
+		B91221CF6B5543FA8184874A /* PluginButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginButtonStyle.swift; sourceTree = "<group>"; };
+		D5A3260DBB6E44C388872A65 /* PluginTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginTemplate.swift; sourceTree = "<group>"; };
+		DF6367BB3F0A4AF9A6D23813 /* PluginVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginVersion.swift; sourceTree = "<group>"; };
+		E8E71A012F4C91B000CB3170 /* PluginDisclosureGroupStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginDisclosureGroupStyle.swift; sourceTree = "<group>"; };
 		FE0905260000000000000001 /* ClipAIMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipAIMenu.swift; sourceTree = "<group>"; };
 		FE0905260000000000000011 /* ClipActionsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipActionsMenu.swift; sourceTree = "<group>"; };
 		FE0905260000000000000021 /* AIFileAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIFileAttachment.swift; sourceTree = "<group>"; };
@@ -272,6 +312,13 @@
 		38230C9D2B9F3307002A52E9 /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
+				DF6367BB3F0A4AF9A6D23813 /* PluginVersion.swift */,
+				B87CCAB8B53B4F8DA36FB885 /* PluginValidation.swift */,
+				D5A3260DBB6E44C388872A65 /* PluginTemplate.swift */,
+				880C98B63DEE445EB7739830 /* PluginSecretStore.swift */,
+				91E49DA10D4947A393D8F326 /* PluginManager.swift */,
+				B3B5199E39E3449799EC41A4 /* ActionRequirement.swift */,
+				6241264F4564445A8153D485 /* ActionKind.swift */,
 				38230C9E2B9F332D002A52E9 /* PluginInfo.swift */,
 				3801CA4D2BA522B6007D7868 /* Actions.swift */,
 				38CC554B2BA9B6E900069553 /* RunCommandAction.swift */,
@@ -439,6 +486,19 @@
 		38DF1D4B2BB94DB40063A879 /* PluginView */ = {
 			isa = PBXGroup;
 			children = (
+				430884A71EC8400581081595 /* PluginMenuPicker.swift */,
+				72C7D800732F4978969D3A99 /* PluginSegmentedControl.swift */,
+				7E4A5B3BDA5C4326B80D2F67 /* PluginField.swift */,
+				A0FDE51AD473429780BDEB1F /* PluginCard.swift */,
+				B91221CF6B5543FA8184874A /* PluginButtonStyle.swift */,
+				E8E71A012F4C91B000CB3170 /* PluginDisclosureGroupStyle.swift */,
+				76DA06000000000000000001 /* PluginStringListField.swift */,
+				5DC307B7D477482989B14AAF /* PluginOptionValueView.swift */,
+				230EA129E9304C449D9F73C0 /* PluginOptionEditorView.swift */,
+				42822BFF5AAD4271A7FE4769 /* PluginEditorView.swift */,
+				AE89D0382510477A9DE77669 /* PluginEditorSession.swift */,
+				8B3F278522AF48B7A9F8DBC2 /* PluginDetailView.swift */,
+				6D8F6909FD9C4534B81D8F9D /* PluginActionEditorView.swift */,
 				38DF1D4C2BB94DCD0063A879 /* ApplicationSettingView.swift */,
 			);
 			path = PluginView;
@@ -647,6 +707,26 @@
 				3817BA822D8B0B9600A1C50F /* SearchView.swift in Sources */,
 				38049D632B9DF8EA00E02ECA /* FloatingPanel.swift in Sources */,
 				386AD74E2B8F7A16008C346D /* MenuItemView.swift in Sources */,
+				CC45612394B8473AB380B3B8 /* ActionKind.swift in Sources */,
+				1A493823BB994CCD878681DA /* ActionRequirement.swift in Sources */,
+				C4F0B95243464D5483EAB53A /* PluginManager.swift in Sources */,
+				1E39E643095D4419BBC18503 /* PluginSecretStore.swift in Sources */,
+				E1E4744DA5A64BC29E839829 /* PluginTemplate.swift in Sources */,
+				BA48A9A919CE497E999CAF99 /* PluginValidation.swift in Sources */,
+				922F2718F295411C80835D23 /* PluginVersion.swift in Sources */,
+				42ACE459D15C4218873E05E4 /* PluginActionEditorView.swift in Sources */,
+				6179C7689485441EA0B919B9 /* PluginDetailView.swift in Sources */,
+				30951D051E694133813749E2 /* PluginEditorSession.swift in Sources */,
+				979443F7BDF1477B9B713481 /* PluginEditorView.swift in Sources */,
+				C3E43254ECC84D00AACDFBAE /* PluginOptionEditorView.swift in Sources */,
+				6EA576AB618841E29952F252 /* PluginOptionValueView.swift in Sources */,
+				76DA06000000000000000002 /* PluginStringListField.swift in Sources */,
+				D4B5D838232441679E759550 /* PluginButtonStyle.swift in Sources */,
+				E8E71A002F4C91B000CB3170 /* PluginDisclosureGroupStyle.swift in Sources */,
+				6268025D991F4DDEACFECEBA /* PluginCard.swift in Sources */,
+				85BAFC02B5464958894E6668 /* PluginField.swift in Sources */,
+				72958AC5B3F94EA58CF03552 /* PluginSegmentedControl.swift in Sources */,
+				E333429D741D46E3ABE19BBF /* PluginMenuPicker.swift in Sources */,
 				38230C9F2B9F332D002A52E9 /* PluginInfo.swift in Sources */,
 				381BAD932F01232500E279E7 /* AppLogger.swift in Sources */,
 				38DF1D5B2BC2BFCA0063A879 /* PDFView.swift in Sources */,

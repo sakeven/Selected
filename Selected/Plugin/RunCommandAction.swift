@@ -9,7 +9,7 @@ import Foundation
 import AppKit
 
 
-class RunCommandAction: Decodable {
+struct RunCommandAction: Codable {
     var command: [String]
     var pluginPath: String? // we will execute command in pluginPath.
 
@@ -17,7 +17,7 @@ class RunCommandAction: Decodable {
         case command
     }
 
-    required init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         command = try values.decode([String].self, forKey: .command)
     }
@@ -28,50 +28,37 @@ class RunCommandAction: Decodable {
     }
 
     func generate(pluginInfo: PluginInfo, generic: GenericAction) -> PerformAction {
-        return PerformAction(actionMeta:
-                                generic, complete: { ctx in
-            guard self.command.count > 0 else {
-                return
-            }
-
-            guard let pluginPath = self.pluginPath else {
-                return
-            }
-
-
-            let joinedURLs = ctx.URLs.joined(separator: "\n")
-
+        return PerformAction(pluginInfo: pluginInfo, actionMeta: generic, complete: { ctx in
+            guard let executable = self.command.first, let pluginPath = self.pluginPath else { return }
             var env = ["SELECTED_TEXT": ctx.Text,
+                       "SELECTED_PLUGIN": pluginInfo.id,
+                       "SELECTED_PLUGIN_VERSION": pluginInfo.version ?? "",
+                       "SELECTED_EDITABLE": ctx.Editable.description,
                        "SELECTED_BUNDLEID": ctx.BundleID,
                        "SELECTED_ACTION": generic.identifier,
                        "SELECTED_WEBPAGE_URL": ctx.WebPageURL,
-                       "SELECTED_URLS": joinedURLs]
-            let optionVals = pluginInfo.getOptionsValue()
-            optionVals.forEach{ (key: String, value: String) in
-                env["SELECTED_OPTIONS_"+key.uppercased()] = value
+                       "SELECTED_URLS": ctx.URLs.joined(separator: "\n")]
+            for (key, value) in pluginInfo.getOptionsValue() {
+                env["SELECTED_OPTIONS_" + key.uppercased()] = value
             }
-            if let path = ProcessInfo.processInfo.environment["PATH"] {
-                env["PATH"] = "/opt/homebrew/bin:/opt/homebrew/sbin:" + path
-            }
-
+            let environment = env
             do {
-                if let output = try executeCommand(
-                    workdir: pluginPath,
-                    command: self.command[0],
-                    arguments: [String](self.command[1...]),
-                    withEnv: env) {
-                    if ctx.Editable && generic.after == .paste {
-                        pasteText(output)
-                    } else if generic.after == .copy {
-                        copyText(output)
-                    } else if generic.after == .show {
-                        WindowManager.shared.createTextWindow(output, editable: false)
-                    } else if generic.after == .xshow {
-                        WindowManager.shared.createTextWindow(output, editable: ctx.Editable)
-                    }
+                let output = try await Task.detached {
+                    try executeCommand(workdir: pluginPath, command: executable,
+                                       arguments: Array(self.command.dropFirst()), withEnv: environment)
+                }.value
+                guard let output else { return }
+                await MainActor.run {
+                    if ctx.Editable && generic.after == .paste { pasteText(output) }
+                    else if generic.after == .copy { copyText(output) }
+                    else if generic.after == .show { WindowManager.shared.createTextWindow(output, editable: false) }
+                    else if generic.after == .xshow { WindowManager.shared.createTextWindow(output, editable: ctx.Editable) }
                 }
             } catch {
-                AppLogger.plugin.error("executeCommand: \(error)")
+                AppLogger.plugin.error("Command failed: \(error.localizedDescription)")
+                await MainActor.run {
+                    WindowManager.shared.createTextWindow("\(generic.title)：\(error.localizedDescription)", editable: false)
+                }
             }
         })
     }
@@ -125,10 +112,12 @@ public func executeCommand(
             path = "/opt/homebrew/bin:/opt/homebrew/sbin:" + p
         }
 
-        let executableURL = findExecutablePath(commandName: command,
-                                               currentDirectoryURL:  URL(fileURLWithPath: workdir),
-                                               path: path)
-
+        guard let executableURL = findExecutablePath(commandName: command,
+                                                     currentDirectoryURL: URL(fileURLWithPath: workdir), path: path) else {
+            throw NSError(domain: "Selected.Command", code: 127, userInfo: [
+                NSLocalizedDescriptionKey: "找不到可执行命令：\(command)"
+            ])
+        }
         process.executableURL = executableURL
         process.arguments = arguments
         process.standardOutput = stdOutPipe
@@ -181,17 +170,25 @@ public func executeCommand(
             timer.cancel()
         }
 
-        var output: String? = nil
-
-        try process.run()
+        defer {
+            timer.cancel()
+            stdOutPipe.fileHandleForReading.readabilityHandler = nil
+            stdErrPipe.fileHandleForReading.readabilityHandler = nil
+        }
         timer.activate()
+        try process.run()
         process.waitUntilExit()
 
         // Ensure all data has been read
         group.wait()
 
-        output = String(data: stdOutData + stdErrData, encoding: .utf8)
-        return output
+        guard process.terminationStatus == 0 else {
+            let message = String(data: stdErrData, encoding: .utf8) ?? ""
+            throw NSError(domain: "Selected.Command", code: Int(process.terminationStatus), userInfo: [
+                NSLocalizedDescriptionKey: "命令退出码 \(process.terminationStatus)\(message.isEmpty ? "" : "：" + message)"
+            ])
+        }
+        return String(data: stdOutData, encoding: .utf8)
     }
 
 
@@ -199,7 +196,7 @@ private func findExecutablePath(commandName: String, currentDirectoryURL: URL? =
     let fileManager = FileManager.default
     // 先检查是否是绝对路径
     let executableURL = URL(fileURLWithPath: commandName)
-    if executableURL.isFileURL, fileManager.isExecutableFile(atPath: executableURL.path) {
+    if (commandName as NSString).isAbsolutePath, fileManager.isExecutableFile(atPath: executableURL.path) {
         return executableURL
     }
 

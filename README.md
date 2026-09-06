@@ -56,61 +56,13 @@ This can be configured in "Settings - Applications".
 | Share | (none) | Share the selected text by macOS share extension. | 📤 |
 | Calculator | (none) | Auto calculate the expression like 1+2/3*4-5 when you selected it. | (none) |
 
-## Custom Extentions
+## Custom Extensions
 
-The extension is placed in the `Library/Application Support/Selected/Extensions` directory, with one directory per extension.
+Open **Settings → Extensions** to create, import, configure, and visually edit plugins. The editor supports URL, macOS Service, keyboard shortcut, AI prompt, and command actions, with a YAML view for advanced configuration.
 
-Inside the extension directory, there must be a `config.yaml` file that describes the relevant information about the extension.
+Plugins are `.selectedext` folders containing `config.yaml` and optional icons/scripts, installed in `~/Library/Application Support/Selected/Extensions`. Updates match a stable plugin identifier and require a higher version. The previous complete package can be restored from Settings; user parameters and Keychain secrets are stored separately.
 
-Example：
-
-```yam
-info:
-  icon: file://./go-logo-white.svg
-  name: Go Search
-  enabled: true
-actions:
-- meta:
-    title: GoSearch
-    icon: file://./go-logo-white.svg
-    identifier: selected.gosearch
-    after: ""
-  url:
-    url: https://pkg.go.dev/search?limit=25&m=symbol&q={text}
-```
-
-| Fields                | Type | Description                                  |
-| -------------------------- | ------ | ------------------------------------------------------------ |
-| info                       | object | Base information of the extension.         |
-| info.icon                  | string | Icon. The icon size should be 30*30. It supports specifying files with `file://`. `file://./go-logo-white.svg` is an example of loading the icon from the extension directory. It also supports direct configuration of sf symbols, such as `magnifyingglass` (🔍). The icon will be displayed in the configured extension list. |
-| info.name                  | string | Extension name                |
-| enabled                    | boolean | Whether activate this extension or not. |
-| actions                    | list | Action List                                |
-| action.meta                | object | Meta information of the Action                    |
-| action.meta.title          | string | Action title. Used to display the name of the operation when the mouse hovers over the toolbar. |
-| action.meta.icon           | string | The setup is the same as info.icon. It is used for display on the toolbar. |
-| action.meta.identifier     | string  | action's id, unique identifier.      |
-| action.meta.after     | string | Handling after the action is executed. Required. Supports configuration of empty (`""`), `paste`, `copy`, `show`. |
-| action.meta.regex | string | Regular expressions, used to match selected text, only display action when a match occurs. Optional values. |
-| action.url                 | object | Action of URL type. |
-| action.url.url             | string | A link that, upon clicking (action), will open this link. It supports schemes to open other apps. For example, `https://www.google.com.hk/search?q={selected.text} `for conducting a Google search. Or open `things:///add?title={selected.text}&show-quick-entry=true` to add a task in Things3. `{selected.text}` is used to replace the selected text. |
-| action.service             | object | Action of service type.                  |
-| action.service.name | string | Service Name。For example, `Make Sticky` creates a new note (note application). |
-| action.keycombo            | object | Shortcut key type action. |
-| action.keycombo.keycombo   | string | Shortcut keys, such as "cmd i", etc. Support for function keys like "cmd", "shift", "ctrl", "option", "fn", "caps", as well as lowercase letters, numbers, symbols, and other key positions. Key positioning support is not yet complete, pending further testing and improvement. |
-| action.keycombo.keycombos   | string list | A list of Shortcut keys. Only one of keycombo or keycombos can be set in action.keycombo.|
-| action.gpt                 | object | To interact with GPT, such as OpenAI (3.5 turbo model) or Gemini, you need to configure the relevant API key in the settings. |
-| action.gpt.prompt          | string | GPT prompt words, such as `enriching and refining the following content. The content reads: {selected.text}.` Use `{selected.text}` to replace the selected text. |
-| action.gpt.tools          | tool list | GPT function calling definition. A list of tool. |
-| tool.name          | string | GPT function name. |
-| tool.description| string | GPT function description. |
-| tool.parameters| string | JSON schema of GPT function parameters.|
-| tool.command| string list | When call the function, run the command. |
-| tool.showResult| boolean | Whether show function result in GUI window. |
-| action.runCommand | object | Execute a command. |
-| action.runCommand.command | string | Command and parameter list. The working directory during command execution is the plugin directory. The environment variables currently provided include: `SELECTED_TEXT` and `SELECTED_BUNDLEID`, which represent the currently selected text and the current application, respectively. |
-
-Each action can and must be configured with only one of the following: action.url, action.service, action.keycombo, action.gpt, or action.runCommand.
+See [Plugin system and configuration reference](PluginSystem.md) for the schema, version rules, action semantics, options, examples, and the comparison with PopClip.
 
 # Official Extensions
 

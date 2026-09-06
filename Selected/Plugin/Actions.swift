@@ -11,7 +11,7 @@ import Yams
 import AppKit
 import Defaults
 
-enum AfterAction: String, Decodable {
+enum AfterAction: String, Codable, CaseIterable {
     case none = ""
     case paste
     case copy
@@ -20,13 +20,16 @@ enum AfterAction: String, Decodable {
 }
 
 
-struct GenericAction: Decodable {
+struct GenericAction: Codable {
     var title: String
     var icon: String
     var after: AfterAction?
     var identifier: String
     var regex: String?
     var description: String?
+    var requirements: [ActionRequirement]?
+    var requiredApps: [String]?
+    var excludedApps: [String]?
     
     init(title: String, icon: String, after: AfterAction? = nil , identifier: String) {
         self.title = title
@@ -48,7 +51,7 @@ struct GenericAction: Decodable {
     }
 }
 
-class URLAction: Decodable {
+struct URLAction: Codable {
     var url: String
     
     init(url: String) {
@@ -60,7 +63,7 @@ class URLAction: Decodable {
         return PerformAction(
             actionMeta: generic, complete: { ctx in
                 
-                let urlString = replaceOptions(content: self.url, selectedText: ctx.Text, options: pluginInfo.getOptionsValue())
+                let urlString = PluginTemplate.render(self.url, context: ctx, options: pluginInfo.getOptionsValue(), urlEncoded: true)
                 guard let url = URL(string: urlString) else {
                     return
                 }
@@ -204,7 +207,7 @@ class MapAction {
     }
 }
 
-class ServiceAction: Decodable {
+struct ServiceAction: Codable {
     var name: String
     
     init(name: String) {
@@ -219,9 +222,8 @@ class ServiceAction: Decodable {
     }
 }
 
-class KeycomboAction: Decodable {
-    // TODO validate keycombo
-    var keycombo: String
+struct KeycomboAction: Codable {
+    var keycombo: String = ""
     var keycombos: [String]?
     
     var supported: Supported? // supported urls or apps
@@ -237,8 +239,15 @@ class KeycomboAction: Decodable {
         self.keycombo = ""
     }
     
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        keycombo = try values.decodeIfPresent(String.self, forKey: .keycombo) ?? ""
+        keycombos = try values.decodeIfPresent([String].self, forKey: .keycombos)
+        supported = try values.decodeIfPresent(Supported.self, forKey: .supported)
+    }
+
     func pressKeycombo(keycombo: String ){
-        let list = self.keycombo.split(separator: " ")
+        let list = keycombo.split(separator: " ")
         var flags = CGEventFlags(rawValue: 0)
         var keycode = UInt16(0)
         list.forEach { sub in
@@ -310,7 +319,11 @@ class TranslationAction: Decodable {
 }
 
 
-struct Action: Decodable{
+struct Action: Codable, Identifiable {
+    var id = UUID()
+    enum CodingKeys: String, CodingKey {
+        case meta, url, service, keycombo, gpt, runCommand
+    }
     var meta: GenericAction
     var url: URLAction?
     var service: ServiceAction?
@@ -356,6 +369,7 @@ class PerformAction: Identifiable,Hashable {
     init(pluginInfo: PluginInfo, actionMeta: GenericAction, complete: @escaping (_: SelectedTextContext) async -> Void) {
         self.actionMeta = actionMeta
         self.completeAsync = complete
+        self.pluginInfo = pluginInfo
     }
 }
 
@@ -409,6 +423,7 @@ func FilterActions(_ ctx: SelectedTextContext, list: [PerformAction] ) -> [Perfo
             }
         }
         
+        if !action.actionMeta.matches(ctx) { continue }
         if !ctx.Editable && action.actionMeta.after == .paste {
             continue
         }

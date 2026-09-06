@@ -1,0 +1,108 @@
+import SwiftUI
+
+struct PluginOptionValueView: View {
+    let pluginID: String
+    let option: Option
+    @ObservedObject var manager: PluginManager
+    @FocusState private var isFocused: Bool
+    @State private var text = ""
+    @State private var savedText = ""
+    @State private var didSave = false
+    @State private var errorMessage: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            switch option.type {
+            case .boolean:
+                HStack {
+                    Text(option.displayName)
+                    Spacer()
+                    Toggle(option.displayName, isOn: Binding(get: { text == "true" }, set: { update($0.description) }))
+                        .toggleStyle(.switch).labelsHidden().controlSize(.small)
+                }
+            case .multiple:
+                HStack {
+                    Text(option.displayName)
+                    Spacer()
+                    Menu {
+                        Picker(option.displayName, selection: Binding(get: { text }, set: update)) {
+                            ForEach(option.values ?? [], id: \.self) { value in Text(label(for: value)).tag(value) }
+                        }
+                    } label: {
+                        HStack(spacing: 12) {
+                            Text(label(for: text))
+                            Image(systemName: "chevron.up.chevron.down").font(.caption)
+                        }
+                        .padding(.horizontal, 11).padding(.vertical, 8)
+                        .background(.primary.opacity(0.04), in: .rect(cornerRadius: 8))
+                    }
+                    .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
+                    .accessibilityLabel(option.displayName)
+                }
+            case .string, .secret:
+                HStack {
+                    Text(option.displayName)
+                    Spacer()
+                    if text != savedText {
+                        Button("保存", systemImage: "checkmark") { update(text) }
+                            .buttonStyle(PluginButtonStyle(emphasis: .quiet))
+                            .help(option.type == .secret ? "保存到系统钥匙串" : "保存此参数")
+                    } else if didSave {
+                        Label("已保存", systemImage: "checkmark.circle")
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
+                }.frame(minHeight: 24)
+                if option.type == .secret {
+                    SecureField("输入\(option.displayName)", text: $text)
+                        .focused($isFocused)
+                        .textFieldStyle(.plain).padding(10)
+                        .background(.primary.opacity(0.035), in: .rect(cornerRadius: 8))
+                        .overlay { RoundedRectangle(cornerRadius: 8).strokeBorder(isFocused ? Color.blue.opacity(0.6) : .primary.opacity(0.07), lineWidth: isFocused ? 1.5 : 1) }
+                        .onSubmit { update(text) }
+                        .accessibilityLabel(option.displayName)
+                } else if option.multiline == true {
+                    TextEditor(text: $text)
+                        .focused($isFocused)
+                        .scrollContentBackground(.hidden)
+                        .padding(8)
+                        .frame(minHeight: 90, maxHeight: 150)
+                        .background(.primary.opacity(0.035), in: .rect(cornerRadius: 8))
+                        .overlay { RoundedRectangle(cornerRadius: 8).strokeBorder(isFocused ? Color.blue.opacity(0.6) : .primary.opacity(0.07), lineWidth: isFocused ? 1.5 : 1) }
+                        .accessibilityLabel(option.displayName)
+                } else {
+                    TextField("输入\(option.displayName)", text: $text)
+                        .focused($isFocused)
+                        .textFieldStyle(.plain).padding(10)
+                        .background(.primary.opacity(0.035), in: .rect(cornerRadius: 8))
+                        .overlay { RoundedRectangle(cornerRadius: 8).strokeBorder(isFocused ? Color.blue.opacity(0.6) : .primary.opacity(0.07), lineWidth: isFocused ? 1.5 : 1) }
+                        .onSubmit { update(text) }
+                        .accessibilityLabel(option.displayName)
+                }
+            }
+            if let description = option.description { Text(description).font(.caption).foregroundStyle(.secondary) }
+            if let errorMessage {
+                Label(errorMessage, systemImage: "exclamationmark.circle").font(.caption).foregroundStyle(.red)
+            }
+        }
+        .onAppear {
+            text = option.value(pluginID: pluginID)
+            savedText = text
+        }
+    }
+
+    private func label(for value: String) -> String {
+        guard let index = option.values?.firstIndex(of: value), let labels = option.valueLabels, labels.indices.contains(index) else { return value }
+        return labels[index]
+    }
+
+    private func update(_ value: String) {
+        do {
+            try option.save(value, pluginID: pluginID)
+            text = value
+            savedText = value
+            didSave = true
+            errorMessage = nil
+            manager.optionValueChangeCnt += 1
+        } catch { errorMessage = error.localizedDescription }
+    }
+}
