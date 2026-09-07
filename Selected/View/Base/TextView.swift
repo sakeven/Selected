@@ -30,6 +30,7 @@ struct TextView: NSViewRepresentable {
         textView.translatesAutoresizingMaskIntoConstraints = true
         textView.string = text
         textView.font = font
+        textView.textColor = .labelColor
         
         return scrollView
     }
@@ -40,5 +41,6 @@ struct TextView: NSViewRepresentable {
             textView.string = text
         }
         textView.font = font
+        textView.textColor = .labelColor
     }
 }

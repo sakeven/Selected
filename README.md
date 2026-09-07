@@ -111,14 +111,17 @@ Clipboard history is **off by default**. Open **Settings → Clipboard**, enable
 After enabling history, copy content normally, then press **⌥Space** to open it:
 
 - Search saved content and select an item to preview its text, link, image, or file. Use the arrow keys to navigate the list.
+- For links, choose **Open in Browser** in the preview to open the address in your default browser.
 - Use **Copy** to restore an item to the clipboard, or **Paste** to insert it into the original app. Open the arrow next to **Paste** for **Paste plain text**, which removes formatting when text is available.
 - Pin frequently used items with the pin button above the preview. Pinned items are kept when older history is cleaned up.
 - Use **Prettify JSON** when the selected text is valid JSON.
 - Use the toolbar below the preview for AI actions and **Plugins**. Available AI actions include summarizing, explaining, polishing, extracting text, and translating, depending on the content.
-- Open **…** above the preview or right-click an item for more actions, including deletion. The information button beside the item's source and date shows its full metadata.
+- Use the trash button above the preview to delete an item, or right-click an item for the full action menu. The information button beside the item's source and date shows its full metadata.
 - Press **Esc** to dismiss the panel.
 
-<img src="DocImages/Clipboard.png" alt="Clipboard history preview with fictional snippets, a pinned text item, and its content preview" width="960" />
+<img src="DocImages/Clipboard.png" alt="Clipboard history with colored type icons, a text preview, and pin and delete buttons" width="960" />
+
+<img src="DocImages/Clipboard-Link.png" alt="Clipboard link preview showing the domain, full address, and Open in Browser button" width="960" />
 
 ## Custom extensions
 

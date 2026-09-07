@@ -64,9 +64,9 @@ private enum ClipDisplayKind {
         case .color: return .green
         case .file: return .blue
         case .image: return .orange
-        case .link: return .blue
+        case .link: return .teal
         case .text: return .blue
-        case .richText: return .purple
+        case .richText: return .cyan
         case .html: return .mint
         case .unknown: return .gray
         }
@@ -82,6 +82,18 @@ private enum ClipDisplayKind {
         case .richText: return "doc.richtext"
         case .html: return "circle.dashed.rectangle"
         case .unknown: return "doc"
+        }
+    }
+
+    var imageName: String {
+        switch self {
+        case .color: return "ClipboardColor"
+        case .file, .unknown: return "ClipboardFile"
+        case .image: return "ClipboardImage"
+        case .link: return "ClipboardLink"
+        case .text: return "ClipboardText"
+        case .richText: return "ClipboardRichText"
+        case .html: return "ClipboardHTML"
         }
     }
 }
@@ -109,8 +121,14 @@ private extension ColorScheme {
         self == .dark ? Color.white.opacity(0.035) : Color.white.opacity(0.7)
     }
 
-    var clipPreviewFill: Color {
-        Color(nsColor: .textBackgroundColor)
+    var clipPreviewFill: LinearGradient {
+        LinearGradient(
+            colors: self == .dark
+                ? [Color.white.opacity(0.055), Color.white.opacity(0.025)]
+                : [Color.white.opacity(0.36), Color.white.opacity(0.16)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
     }
 
     var clipSelectedFill: Color {
@@ -446,9 +464,16 @@ private struct ClipRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(clip.displayKind.tint.opacity(0.06))
-                .frame(width: 28, height: 28)
+            RoundedRectangle(cornerRadius: 10)
+                .fill(LinearGradient(
+                    colors: [
+                        clip.displayKind.tint.opacity(colorScheme == .dark ? 0.25 : 0.13),
+                        clip.displayKind.tint.opacity(colorScheme == .dark ? 0.12 : 0.05)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ))
+                .frame(width: 34, height: 36)
                 .overlay {
                     if clip.displayKind == .image,
                        let imageData = clip.primaryItem?.data,
@@ -456,15 +481,19 @@ private struct ClipRowView: View {
                         Image(nsImage: image)
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 28, height: 28)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .frame(width: 34, height: 36)
+                            .clipShape(.rect(cornerRadius: 10))
                     } else if clip.displayKind == .color, let color = clip.colorValue {
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: 7)
                             .fill(Color(nsColor: color))
                             .padding(3)
                     } else {
                         ClipKindIcon(kind: clip.displayKind)
                     }
+                }
+                .overlay {
+                    RoundedRectangle(cornerRadius: 10)
+                        .strokeBorder(clip.displayKind.tint.opacity(0.12), lineWidth: 0.5)
                 }
                 .accessibilityHidden(true)
 
@@ -508,18 +537,16 @@ private struct ClipRowView: View {
 }
 
 private struct ClipKindIcon: View {
+    @Environment(\.colorScheme) private var colorScheme
     let kind: ClipDisplayKind
 
     var body: some View {
-        if kind == .color {
-            Circle()
-                .fill(kind.tint)
-                .frame(width: 12, height: 12)
-        } else {
-            Image(systemName: kind.symbolName)
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(kind.tint)
-        }
+        Image(kind.imageName)
+            .resizable()
+            .scaledToFit()
+            .frame(width: 22, height: 22)
+            .foregroundStyle(kind.tint)
+            .brightness(colorScheme == .dark ? 0.16 : 0)
     }
 }
 
@@ -548,14 +575,11 @@ struct ClipDataView: View {
                 }
                 .help(data.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"))
 
-                Menu {
-                    ClipActionsMenu(data: data, onTogglePin: onTogglePin, onDelete: onDelete, onAIRequest: onAIRequest)
-                } label: {
-                    Label("More", systemImage: "ellipsis")
+                Button(role: .destructive, action: onDelete) {
+                    Label("Delete", systemImage: "trash")
+                        .foregroundStyle(.secondary)
                 }
-                .menuStyle(.button)
-                .menuIndicator(.hidden)
-                .help("More")
+                .help("Delete")
             }
             .labelStyle(.iconOnly)
             .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
@@ -563,7 +587,7 @@ struct ClipDataView: View {
 
             ClipPreviewStage(data: data)
                 .id(data.MD5())
-                .padding(18)
+                .padding(24)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(colorScheme.clipPreviewFill, in: RoundedRectangle(cornerRadius: 14))
                 .overlay {
@@ -842,42 +866,55 @@ private struct ClipImagePreview: View {
 }
 
 private struct ClipLinkPreview: View {
-    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var data: ClipHistoryData
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(data.detailTitle)
-                .font(.title2.weight(.semibold))
-                .foregroundStyle(colorScheme.clipPrimaryText)
-                .lineLimit(2)
-
-            if let previewText = data.cleanedPreviewText,
-               previewText != data.displayURLString {
-                Text(previewText)
-                    .font(.body)
-                    .foregroundStyle(colorScheme.clipPrimaryText.opacity(0.9))
-                    .lineLimit(4)
-            }
-
-            Spacer(minLength: 0)
-
+        VStack(alignment: .leading, spacing: 18) {
             if let urlString = data.displayURLString,
                let url = URL(string: urlString),
                isValidHttpUrl(urlString) {
-                Link(destination: url) {
-                    Text(urlString)
-                        .font(.callout)
-                        .foregroundStyle(colorScheme.clipSecondaryText)
-                        .lineLimit(1)
+                HStack(spacing: 12) {
+                    Image(systemName: "globe")
+                        .font(.title2)
+                        .foregroundStyle(.teal)
+                        .frame(width: 44, height: 44)
+                        .background(.teal.opacity(0.1), in: .rect(cornerRadius: 12))
+                        .accessibilityHidden(true)
+
+                    Text(url.host() ?? data.detailTitle)
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(.primary)
+                        .lineLimit(2)
+                        .textSelection(.enabled)
                 }
-            } else if let urlString = data.displayURLString {
+
                 Text(urlString)
                     .font(.callout)
-                    .foregroundStyle(colorScheme.clipSecondaryText)
-                    .lineLimit(1)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(4)
+                    .textSelection(.enabled)
+
+                if let previewText = data.cleanedPreviewText,
+                   previewText != urlString {
+                    Text(previewText)
+                        .font(.body)
+                        .foregroundStyle(.primary)
+                        .lineLimit(4)
+                }
+
+                Link(destination: url) {
+                    Label("clip.link.open", systemImage: "arrow.up.right")
+                }
+                .buttonStyle(SettingsButtonStyle(emphasis: .primary))
+                .help(urlString)
+            } else {
+                Text(data.displayURLString ?? data.detailTitle)
+                    .font(.body)
+                    .foregroundStyle(.primary)
                     .textSelection(.enabled)
             }
+
+            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
