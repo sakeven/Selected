@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		977D8D0897CC4A26A8D6D828 /* BarButtonTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1978AC3408CD46279F6AEDA5 /* BarButtonTooltip.swift */; };
 		00A07D2C433743F68CD6795B /* PluginLoadIssue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D30283055ABC4A51B4FE73E4 /* PluginLoadIssue.swift */; };
 		0E9416BFEE07434ABDED7243 /* CommandResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6240DD0F272D417A9B3871D2 /* CommandResult.swift */; };
 		1686361937064D51A26925A0 /* SettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9714AC339C842659535A30D /* SettingsSection.swift */; };
@@ -108,8 +107,10 @@
 		6EA576AB618841E29952F252 /* PluginOptionValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC307B7D477482989B14AAF /* PluginOptionValueView.swift */; };
 		72958AC5B3F94EA58CF03552 /* PluginSegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72C7D800732F4978969D3A99 /* PluginSegmentedControl.swift */; };
 		76DA06000000000000000002 /* PluginStringListField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76DA06000000000000000001 /* PluginStringListField.swift */; };
+		76DA08000000000000000002 /* HTMLView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76DA08000000000000000001 /* HTMLView.swift */; };
 		85BAFC02B5464958894E6668 /* SettingsField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E4A5B3BDA5C4326B80D2F67 /* SettingsField.swift */; };
 		922F2718F295411C80835D23 /* PluginVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6367BB3F0A4AF9A6D23813 /* PluginVersion.swift */; };
+		977D8D0897CC4A26A8D6D828 /* BarButtonTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1978AC3408CD46279F6AEDA5 /* BarButtonTooltip.swift */; };
 		979443F7BDF1477B9B713481 /* PluginEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42822BFF5AAD4271A7FE4769 /* PluginEditorView.swift */; };
 		A36A677B7C4E48E787BA1962 /* CommandCancellation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 213215CB5047482683FEECC0 /* CommandCancellation.swift */; };
 		B1A87FDB656647C3B04BAD72 /* ClipboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116841626C9F4F0F8FBC81B4 /* ClipboardSettingsView.swift */; };
@@ -174,11 +175,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1978AC3408CD46279F6AEDA5 /* BarButtonTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarButtonTooltip.swift; sourceTree = "<group>"; };
 		03836078DBD6468FBBDCB7B1 /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
 		0E9AA0170CA341AD84132E31 /* ActionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionRequest.swift; sourceTree = "<group>"; };
 		116841626C9F4F0F8FBC81B4 /* ClipboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardSettingsView.swift; sourceTree = "<group>"; };
 		1479F286FFE64B4E8A016871 /* ContentActionsMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentActionsMenu.swift; sourceTree = "<group>"; };
+		1978AC3408CD46279F6AEDA5 /* BarButtonTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarButtonTooltip.swift; sourceTree = "<group>"; };
 		1A311529281E40B8933304CA /* PopClipImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopClipImportView.swift; sourceTree = "<group>"; };
 		213215CB5047482683FEECC0 /* CommandCancellation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandCancellation.swift; sourceTree = "<group>"; };
 		230EA129E9304C449D9F73C0 /* PluginOptionEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginOptionEditorView.swift; sourceTree = "<group>"; };
@@ -264,6 +265,7 @@
 		6D8F6909FD9C4534B81D8F9D /* PluginActionEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginActionEditorView.swift; sourceTree = "<group>"; };
 		72C7D800732F4978969D3A99 /* PluginSegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginSegmentedControl.swift; sourceTree = "<group>"; };
 		76DA06000000000000000001 /* PluginStringListField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginStringListField.swift; sourceTree = "<group>"; };
+		76DA08000000000000000001 /* HTMLView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLView.swift; sourceTree = "<group>"; };
 		7E4A5B3BDA5C4326B80D2F67 /* SettingsField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsField.swift; sourceTree = "<group>"; };
 		833C971006FB4BF7A23B60BA /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
 		84200344899C470FA5F8D315 /* ActionSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSession.swift; sourceTree = "<group>"; };
@@ -593,6 +595,7 @@
 				FE0905260000000000000041 /* ClipAIPromptView.swift */,
 				38DF1D562BC2BC120063A879 /* QuickLookView.swift */,
 				38DF1D582BC2BF9F0063A879 /* RTFView.swift */,
+				76DA08000000000000000001 /* HTMLView.swift */,
 				38DF1D5A2BC2BFCA0063A879 /* PDFView.swift */,
 			);
 			path = ClipView;
@@ -869,6 +872,7 @@
 				386AD7472B8F6FCE008C346D /* Defaults.swift in Sources */,
 				38DEBE392B9DDD0500CD2A35 /* AI.swift in Sources */,
 				38DF1D592BC2BF9F0063A879 /* RTFView.swift in Sources */,
+				76DA08000000000000000002 /* HTMLView.swift in Sources */,
 				388DABBB2BEA5B3C000B2739 /* StarDict.swift in Sources */,
 				386AD7552B90CF97008C346D /* CommandView.swift in Sources */,
 				384A03732BC4173B00916303 /* ClipHistory.xcdatamodeld in Sources */,

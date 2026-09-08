@@ -382,7 +382,7 @@ func GetAllActions() -> [PerformAction] {
 }
 
 // GetActions 根据上下文获得当前支持的 action 列表。比如根据当前窗口的应用选择 action 列表。
-func GetActions(ctx: SelectedTextContext) -> [PerformAction] {
+func GetActions(ctx: SelectedTextContext, from actionList: [PerformAction] = GetAllActions()) -> [PerformAction] {
     var actions = [ActionID]()
     if let condition = ConfigurationManager.shared.getAppCondition(bundleID: ctx.BundleID) {
         actions = condition.actions
@@ -393,7 +393,6 @@ func GetActions(ctx: SelectedTextContext) -> [PerformAction] {
         }
     }
     
-    let actionList = GetAllActions()
     if actions.isEmpty {
         return FilterActions(ctx, list: actionList)
     }

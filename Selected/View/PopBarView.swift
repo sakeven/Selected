@@ -12,6 +12,7 @@ struct PopBarView: View {
     var actions:  [PerformAction]
     let ctx: SelectedTextContext
     let target: ActionTarget = ActionTarget()
+    private let resultPosition = NSEvent.mouseLocation
 
     var showSharingButton = true
     var onClick: (() -> Void)?
@@ -30,7 +31,8 @@ struct PopBarView: View {
                     if let pluginID = action.pluginInfo?.id,
                        let plugin = PluginManager.shared.plugins.first(where: { $0.id == pluginID }),
                        let definition = plugin.actions.first(where: { $0.meta.identifier == action.actionMeta.identifier }) {
-                        ActionRequest.plugin(plugin, definition).perform(input: ActionInput(context: ctx), target: target)
+                        ActionRequest.plugin(plugin, definition).perform(input: ActionInput(context: ctx), target: target,
+                                                                       resultPosition: resultPosition)
                         isLoading = false
                         return
                     }

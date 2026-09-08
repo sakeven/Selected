@@ -2,7 +2,10 @@ import AppKit
 import Defaults
 
 struct ActionInput {
+    enum Source { case text, clipboard }
+
     var context: SelectedTextContext
+    private(set) var source: Source = .text
     var items: [ClipItem] = []
     var reference: String? { context.ClipboardText }
 
@@ -11,6 +14,7 @@ struct ActionInput {
     }
 
     init(clip: ClipHistoryData) {
+        source = .clipboard
         context = Self.textContext(clip.plainText ?? "", bundleID: clip.application ?? "", webPageURL: clip.hasAIAttachment ? "" : clip.url ?? "")
         items = clip.getItems().compactMap {
             guard let type = $0.type, let data = $0.data else { return nil }
@@ -34,7 +38,9 @@ struct ActionInput {
     }
 
     func replacingText(_ text: String) -> ActionInput {
-        ActionInput(context: Self.textContext(text, bundleID: context.BundleID, webPageURL: context.WebPageURL))
+        var next = ActionInput(context: Self.textContext(text, bundleID: context.BundleID, webPageURL: context.WebPageURL))
+        next.source = source
+        return next
     }
 
     static func textContext(_ text: String, bundleID: String = "", webPageURL: String = "") -> SelectedTextContext {

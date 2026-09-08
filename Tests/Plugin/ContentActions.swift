@@ -5,6 +5,16 @@ import Yams
 @testable import Selected
 
 struct ContentActionsTests {
+    @Test @MainActor func spotlightMatchesCurrentInputUsingCapturedActions() {
+        let configuration = ConfigurationManager.shared.userConfiguration
+        ConfigurationManager.shared.userConfiguration = UserConfiguration(defaultActions: [], appConditions: [], urlConditions: [])
+        defer { ConfigurationManager.shared.userConfiguration = configuration }
+        let action = PerformAction(actionMeta: GenericAction(title: "Code action", icon: "symbol:code", identifier: "test.code", regex: "^code:")) { _ in }
+        #expect(GetActions(ctx: ActionInput.textContext("A note"), from: [action]).isEmpty)
+        #expect(GetActions(ctx: ActionInput.textContext("code: sample"), from: [action]).map(\.actionMeta.identifier) == ["test.code"])
+        #expect(GetActions(ctx: ActionInput.textContext("https://example.com"), from: [action]).contains { $0.actionMeta.identifier == "selected.openlinks" })
+    }
+
     @Test func pluginControlsItsOutputBehavior() {
         let plugin = Plugin.new()
         for kind in [ActionKind.gpt, .runCommand] {

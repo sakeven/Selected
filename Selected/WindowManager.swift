@@ -19,7 +19,7 @@ enum WindowType {
 // MARK: - 窗口位置策略
 enum WindowPositionStrategy {
     case centerScreen
-    case nearMouse
+    case nearPoint(NSPoint)
     case centerScreenOffset(CGFloat) // 允许垂直偏移，比如 3/4 位置
 }
 
@@ -77,7 +77,7 @@ class BaseWindowController: NSWindowController, NSWindowDelegate, WindowCtr {
 
         window.alphaValue = alpha
         if alpha == 1.0 {
-            window.isOpaque = windowType != .popBar
+            window.isOpaque = windowType != .popBar && windowType != .text
             window.backgroundColor = .clear
         }
         pinnedModel = PinnedModel()
@@ -86,7 +86,9 @@ class BaseWindowController: NSWindowController, NSWindowDelegate, WindowCtr {
 
         window.level = .screenSaver
         let view = rootView.environmentObject(pinnedModel).environmentObject(showingSharingPicker)
-        window.contentView = NSHostingView(rootView: view)
+        let contentView = NSHostingView(rootView: view)
+        window.contentView = contentView
+        if size == .zero { window.setContentSize(contentView.fittingSize) }
         window.delegate = self
         // 根据策略定位窗口
         positionWindow(using: positionStrategy, windowSize: size)
@@ -102,8 +104,8 @@ class BaseWindowController: NSWindowController, NSWindowDelegate, WindowCtr {
         switch strategy {
             case .centerScreen:
                 centerWindowOnScreen(size: windowSize)
-            case .nearMouse:
-                positionWindowNearMouse()
+            case .nearPoint(let point):
+                positionWindow(near: point)
             case .centerScreenOffset(let verticalFactor):
                 centerWindowOnScreen(size: windowSize, verticalFactor: verticalFactor)
         }
@@ -128,11 +130,10 @@ class BaseWindowController: NSWindowController, NSWindowDelegate, WindowCtr {
         window.setFrameOrigin(NSPoint(x: x, y: y))
     }
 
-    private func positionWindowNearMouse() {
+    private func positionWindow(near point: NSPoint) {
         guard let window = self.window else { return }
 
-        let mouseLocation = NSEvent.mouseLocation
-        guard let screen = NSScreen.screens.first(where: { NSMouseInRect(mouseLocation, $0.frame, false) }) else {
+        guard let screen = NSScreen.screens.first(where: { NSMouseInRect(point, $0.frame, false) }) else {
             return
         }
 
@@ -141,12 +142,13 @@ class BaseWindowController: NSWindowController, NSWindowDelegate, WindowCtr {
 
         // 确保窗口不会超出屏幕边缘
         let x = min(screenFrame.maxX - windowWidth,
-                    max(mouseLocation.x - windowWidth/2, screenFrame.minX))
+                    max(point.x - windowWidth/2, screenFrame.minX))
 
-        var y = mouseLocation.y + 18
+        var y = point.y + 18
         if y + window.frame.height > screenFrame.maxY {
-            y = mouseLocation.y - window.frame.height - 18
+            y = point.y - window.frame.height - 18
         }
+        y = max(screenFrame.minY, min(y, screenFrame.maxY - window.frame.height))
 
         window.setFrameOrigin(NSPoint(x: x, y: y))
     }
@@ -170,7 +172,7 @@ class BaseWindowController: NSWindowController, NSWindowDelegate, WindowCtr {
 // MARK: - 特化的窗口控制器
 class PopBarWindowController: BaseWindowController {
     init(rootView: AnyView) {
-        super.init(rootView: rootView, windowType: .popBar, positionStrategy: .nearMouse, size: .zero)
+        super.init(rootView: rootView, windowType: .popBar, positionStrategy: .nearPoint(NSEvent.mouseLocation), size: .zero)
     }
 
     required init?(coder: NSCoder) {
@@ -203,9 +205,11 @@ class TTSWindowController: BaseWindowController {
 }
 
 class TextWindowController: BaseWindowController {
-    init(text: String, editable: Bool) {
-        let view = PopResultView(text: text, editable: editable)
-        super.init(rootView: AnyView(view), windowType: .text, positionStrategy: .nearMouse, size: .zero)
+    init(text: String, editable: Bool, at point: NSPoint = NSEvent.mouseLocation) {
+        let screen = NSScreen.screens.first { $0.frame.contains(point) } ?? NSScreen.main
+        let view = PopResultView(text: text, editable: editable, maximumHeight: min(320, (screen?.visibleFrame.height ?? 600) - 80))
+        super.init(rootView: AnyView(view), windowType: .text, positionStrategy: .nearPoint(point), size: .zero, isKey: true)
+        window?.styleMask.remove(.resizable)
     }
 
     required init?(coder: NSCoder) {
@@ -255,8 +259,8 @@ class WindowManager {
         createWindow(windowController)
     }
 
-    func createTextWindow(_ text: String, editable: Bool) {
-        createWindow(TextWindowController(text: text, editable: editable))
+    func createTextWindow(_ text: String, editable: Bool, at point: NSPoint = NSEvent.mouseLocation) {
+        createWindow(TextWindowController(text: text, editable: editable, at: point))
     }
 
     func closeOnlyPopbarWindows(_ mode: CloseWindowMode) -> Bool {

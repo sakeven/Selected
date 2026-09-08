@@ -920,12 +920,21 @@ private struct ClipLinkPreview: View {
     }
 }
 
-private struct ClipTextPreview: View {
+struct ClipTextPreview: View {
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var data: ClipHistoryData
 
+    private var rtfText: NSAttributedString? {
+        guard let rtfData = data.rtfData else { return nil }
+        return try? NSAttributedString(data: rtfData, options: [.documentType: NSAttributedString.DocumentType.rtf], documentAttributes: nil)
+    }
+
     var body: some View {
-        if let plainText = data.plainText, !plainText.isEmpty {
+        if let htmlData = data.htmlData {
+            HTMLView(htmlData: htmlData, baseURL: data.url.flatMap(URL.init(string:)))
+        } else if let rtfText {
+            RTFView(text: rtfText)
+        } else if let plainText = data.plainText, !plainText.isEmpty {
             TextView(text: plainText, font: data.isJSON ? .monospacedSystemFont(ofSize: 14, weight: .regular) : .systemFont(ofSize: 14))
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         } else {
@@ -961,6 +970,14 @@ private struct ClipMetadataRow<Content: View>: View {
 }
 
 private extension ClipHistoryData {
+    var htmlData: Data? {
+        getItems().first { $0.type == NSPasteboard.PasteboardType.html.rawValue }?.data
+    }
+
+    var rtfData: Data? {
+        getItems().first { $0.type == NSPasteboard.PasteboardType.rtf.rawValue }?.data
+    }
+
     var primaryItem: ClipHistoryItem? {
         getItems().first
     }
@@ -985,13 +1002,11 @@ private extension ClipHistoryData {
             return .image
         case .fileURL:
             return .file
-        case .rtf:
-            return .richText
-        case .html:
-            return .html
         case .URL:
             return .link
-        case .string:
+        case .string, .rtf, .html, NSPasteboard.PasteboardType("org.chromium.source-url"):
+            if htmlData != nil { return .html }
+            if rtfData != nil { return .richText }
             if let plainText = plainText, isValidHttpUrl(plainText) {
                 return .link
             }

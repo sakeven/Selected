@@ -31,7 +31,7 @@ class SpotlightHotKeyManager {
         }
         hotkey = HotKey(key: .init(carbonKeyCode: Defaults[.spotlightShortcut].carbonKeyCode)!, modifiers:  Defaults[.spotlightShortcut].modifierFlags)
         hotkey?.keyDownHandler = {
-            SpotlightWindowManager.shared.createWindow()
+            Task { @MainActor in SpotlightWindowManager.shared.createWindow() }
         }
     }
 
@@ -50,13 +50,18 @@ class SpotlightWindowManager {
     private var lock = NSLock()
     private var windowCtr: WindowController?
 
-    fileprivate func createWindow() {
+    var resultPosition: NSPoint {
+        guard let frame = windowCtr?.window?.frame else { return NSEvent.mouseLocation }
+        return NSPoint(x: frame.midX, y: frame.minY)
+    }
+
+    @MainActor fileprivate func createWindow() {
         lock.lock()
         defer {
             lock.unlock()
         }
         windowCtr?.close()
-        let view = SpotlightView()
+        let view = SpotlightView(target: ActionTarget(), bundleID: getBundleID(), allActions: GetAllActions())
         let window = WindowController(rootView: AnyView(view))
         windowCtr = window
         window.showWindow(nil)
@@ -119,6 +124,7 @@ private class WindowController: NSWindowController, NSWindowDelegate {
     init(rootView: AnyView) {
         let window = FloatingPanel(
             contentRect: .zero,
+            styleMask: [.nonactivatingPanel, .closable, .fullSizeContentView],
             backing: .buffered,
             defer: false,
             key: true // 成为 key 和 main window 就可以用一些快捷键，比如方向键，以及可以文本编辑。
@@ -126,19 +132,21 @@ private class WindowController: NSWindowController, NSWindowDelegate {
 
         super.init(window: window)
 
-        window.center()
         window.level = .screenSaver
-        window.contentView = NSHostingView(rootView: rootView.environmentObject(showingSharingPicker))
+        window.title = "Spotlight"
+        let contentView = NSHostingView(rootView: rootView.environmentObject(showingSharingPicker))
+        window.contentView = contentView
+        window.setContentSize(contentView.fittingSize)
         window.delegate = self // 设置代理为自己来监听窗口事件
         window.makeKeyAndOrderFront(nil)
         window.backgroundColor = .clear
         window.isOpaque = false
         if windowPositionManager.restorePosition(for: window) {
-            logger.debug("restorePosition")
+            window.setContentSize(contentView.fittingSize)
             return
         }
 
-        let screenFrame = NSScreen.main?.visibleFrame ?? .zero
+        let screenFrame = (NSScreen.screens.first { $0.frame.contains(NSEvent.mouseLocation) } ?? NSScreen.main)?.visibleFrame ?? .zero
         let windowFrame = window.frame
 
         let x = screenFrame.midX - windowFrame.width / 2
@@ -165,9 +173,6 @@ private class WindowController: NSWindowController, NSWindowDelegate {
         super.showWindow(sender)
     }
 
-    func windowWillClose(_ notification: Notification) {
-        ClipViewModel.shared.selectedItem = nil
-    }
 }
 
 private let windowPositionManager = WindowPositionManager(key: "SpotlightWindowPosition")

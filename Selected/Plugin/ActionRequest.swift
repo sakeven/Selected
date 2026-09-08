@@ -41,18 +41,22 @@ enum ActionRequest {
         return result
     }
 
-    @MainActor func perform(input: ActionInput, target: ActionTarget, original: ActionInput? = nil, originalContent: ClipAIContent? = nil) {
+    @MainActor func perform(input: ActionInput, target: ActionTarget, original: ActionInput? = nil, originalContent: ClipAIContent? = nil,
+                            resultPosition: NSPoint = NSEvent.mouseLocation) {
         let session = ActionSession(input: captureInput(input), request: self, target: target, original: original, originalContent: originalContent)
         ClipWindowManager.shared.forceCloseWindow()
         _ = WindowManager.shared.closeOnlyPopbarWindows(.force)
-        if output == .show || output == .xshow {
+        if output == .xshow || (output == .show && input.source == .clipboard) {
             ActionResultWindow.shared.show(session)
         } else {
             Task {
                 await session.run().value
                 if session.failed {
                     let message = session.output.isEmpty ? session.message : session.message + "\n\n" + session.output
-                    WindowManager.shared.createTextWindow(message, editable: false)
+                    WindowManager.shared.createTextWindow(message, editable: false, at: resultPosition)
+                } else if output == .show {
+                    WindowManager.shared.createTextWindow(session.output.isEmpty ? session.message : session.output,
+                                                          editable: false, at: resultPosition)
                 }
             }
         }
