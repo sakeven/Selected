@@ -18,6 +18,7 @@ class SpotlightHotKeyManager {
     private var hotkey: HotKey?
 
     init(){
+        guard AppRuntimeMode.current == .normal else { return }
         NSEvent.addGlobalMonitorForEvents(matching:
                                             [.leftMouseDown, .rightMouseDown, .otherMouseDown]
         ) { (event) in
@@ -26,6 +27,7 @@ class SpotlightHotKeyManager {
     }
 
     func registerHotKey() {
+        guard AppRuntimeMode.current == .normal else { return }
         if hotkey != nil {
             return
         }

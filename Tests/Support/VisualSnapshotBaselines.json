@@ -1,0 +1,125 @@
+{
+  "environment" : "Version 15.7.4 (Build 24G517); arm64; 2x; English\/US",
+  "images" : {
+    "application-assistant-dark" : {
+      "height" : 800,
+      "sha256" : "bc521026dbe63fc7c2b369128d796c874fca9e6bdb1d0f61dc56eda9d1f0ca0a",
+      "width" : 1400
+    },
+    "application-assistant-light" : {
+      "height" : 800,
+      "sha256" : "171ce50906fcf8966017fb35c633e0d42b992b7494e5b707d035f25adec3bac2",
+      "width" : 1400
+    },
+    "application-chat-dark" : {
+      "height" : 1440,
+      "sha256" : "678594856dd31c80f79681b5ada9ea68e28348e4606d8aea27a8c07d7fabf2d9",
+      "width" : 1560
+    },
+    "application-chat-light" : {
+      "height" : 1440,
+      "sha256" : "3a10c78b521d8db92884d2c51bf569400a74ad7c3522e6ffbd21af94c884bf63",
+      "width" : 1560
+    },
+    "application-composer-dark" : {
+      "height" : 360,
+      "sha256" : "4bcbf3f382a8625efcfb6182919439d93d2743bdcc7c55dfefa0999037488f6f",
+      "width" : 1400
+    },
+    "application-composer-light" : {
+      "height" : 360,
+      "sha256" : "26288a6da94e99f7baa5c8a8fe5b71b642380b6b8a4e64cb413bcd04d278d38a",
+      "width" : 1400
+    },
+    "application-failure-dark" : {
+      "height" : 320,
+      "sha256" : "525f0e56c0cc91e59d7ce12648292742d35e75f31b95f5d3b158112727fc699b",
+      "width" : 1400
+    },
+    "application-failure-light" : {
+      "height" : 320,
+      "sha256" : "355476d1151ce93cdf52611d43ff9ae40faf248a9385887aa9086211acdac8b0",
+      "width" : 1400
+    },
+    "application-plugin-editor-dark" : {
+      "height" : 1520,
+      "sha256" : "54f012136a105ffd957dcf6e6656165e327df1fe94428805a8be71889012452a",
+      "width" : 1800
+    },
+    "application-plugin-editor-light" : {
+      "height" : 1520,
+      "sha256" : "a5f442b3b86b87bed77a65d4934cce17d2e0b4a2bf9df0247815d7552be7ace9",
+      "width" : 1800
+    },
+    "application-popbar-dark" : {
+      "height" : 120,
+      "sha256" : "c405a2318c824a5c8d15463b442d305bde05baf6cb48026fddc480d645315dea",
+      "width" : 560
+    },
+    "application-popbar-light" : {
+      "height" : 120,
+      "sha256" : "413cb2a1d5e1a7c888977393b1bf3b368746baead92328cf37f2e337e1ce14ea",
+      "width" : 560
+    },
+    "application-spotlight-dark" : {
+      "height" : 216,
+      "sha256" : "8f4dac8936f68d0667fe578591ea8fd2cd5210390e60517c0f7b53ba4ab65f28",
+      "width" : 1040
+    },
+    "application-spotlight-light" : {
+      "height" : 216,
+      "sha256" : "7412ccd6a1874e3b29f76030e47bf677eee2e7ae275739f0a6a55a19fd8a0f4d",
+      "width" : 1040
+    },
+    "application-user-dark" : {
+      "height" : 360,
+      "sha256" : "d07878b9fe26a661f469f37b2aad3712c5290abaf065b4b74fcf500285c67797",
+      "width" : 1400
+    },
+    "application-user-light" : {
+      "height" : 360,
+      "sha256" : "e45ca780efe29c58c8bf8d33231b3c0bdef1d2f00fa7719fc89d9644c10a5252",
+      "width" : 1400
+    },
+    "clipboard-empty-dark" : {
+      "height" : 1200,
+      "sha256" : "dbf2f484c1841a80278f3d322cbe22175f1315b1e3b256b93cc66171077498d2",
+      "width" : 1920
+    },
+    "clipboard-empty-light" : {
+      "height" : 1200,
+      "sha256" : "3773f068111b92ed4ffdb65c9e4a500b605297beaf75bb8999d2778cbe419b58",
+      "width" : 1920
+    },
+    "clipboard-json-dark" : {
+      "height" : 1200,
+      "sha256" : "b14bcaa3e69811e153f476bb11ea013bda222e1bde2dbd7ee7f475b5a88220e0",
+      "width" : 1920
+    },
+    "clipboard-json-light" : {
+      "height" : 1200,
+      "sha256" : "15c80c0942c22b54ee105b2da9759b8ec03d36413bf79f11213f5ea22b399902",
+      "width" : 1920
+    },
+    "clipboard-link-dark" : {
+      "height" : 1200,
+      "sha256" : "f7e96bde0e36c3c10dae67fcf4da69fc851aeadcd352c79a9c580cea9f1a2156",
+      "width" : 1920
+    },
+    "clipboard-link-light" : {
+      "height" : 1200,
+      "sha256" : "bb0c68b0737418826a2a7250447731bf76ca3a5a5c70e0501fd4974d0ba7990d",
+      "width" : 1920
+    },
+    "clipboard-text-dark" : {
+      "height" : 1200,
+      "sha256" : "99d2a9527fcbf542dfdfdc615d1a30ed6f948f384afda111f573c2f0287fe1bb",
+      "width" : 1920
+    },
+    "clipboard-text-light" : {
+      "height" : 1200,
+      "sha256" : "84ce23c463c5ec67a0be254f0cc516e7b2cacf771a72018259ca5a8461abe564",
+      "width" : 1920
+    }
+  }
+}

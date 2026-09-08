@@ -130,7 +130,7 @@ struct SpotlightView: View {
         if let pluginID = action.pluginInfo?.id,
            let plugin = PluginManager.shared.plugins.first(where: { $0.id == pluginID }),
            let definition = plugin.actions.first(where: { $0.meta.identifier == action.actionMeta.identifier }) {
-            ActionRequest.plugin(plugin, definition).perform(input: ActionInput(context: input), target: target, resultPosition: position)
+            ActionCoordinator.perform(.plugin(plugin, definition), input: ActionInput(context: input), target: target, resultPosition: position)
         } else if let complete = action.complete {
             complete(input)
         } else if let complete = action.completeAsync {

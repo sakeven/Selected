@@ -51,3 +51,14 @@ func renderChatContent(content: String, chatCtx: ChatContext, options: [String:S
 
     return renderTemplate(templateString: content, with: ctx)
 }
+
+func replaceOptions(content: String, selectedText: String, options: [String:String]? = nil) -> String {
+    var message = content
+    message.replace("{selected.text}", with: selectedText)
+    if let options = options {
+        for option in options {
+            message.replace("{selected.options."+option.key+"}", with: option.value)
+        }
+    }
+    return message
+}

@@ -45,39 +45,21 @@ class ChatWindowManager {
             return false
         }
 
-        switch mode {
-            case .expanded:
-                guard let window = windowCtr.window else {
-                    return false
-                }
-                let frame =  window.frame
-                let expandedFrame = NSRect(x: frame.origin.x - kExpandedLength,
-                                           y: frame.origin.y - kExpandedLength,
-                                           width: frame.size.width + kExpandedLength * 2,
-                                           height: frame.size.height + kExpandedLength * 2)
-                if !expandedFrame.contains(NSEvent.mouseLocation){
-                    windowCtr.close()
-                    return true
-                }
-
-            case .original:
-                if let window =  windowCtr.window{
-                    if !window.frame.contains(NSEvent.mouseLocation){
-                        windowCtr.close()
-                        return true
-                    }
-                }
-
-            case .force:
-                windowCtr.close()
-                return true
+        if case .force = mode {
+            windowCtr.close()
+            return true
         }
-        return false
+        guard let window = windowCtr.window,
+              mode.shouldClose(frame: window.frame, mouseLocation: NSEvent.mouseLocation) else {
+            return false
+        }
+        windowCtr.close()
+        return true
     }
 
 }
 
-private class ChatWindowController: NSWindowController, NSWindowDelegate {
+class ChatWindowController: NSWindowController, NSWindowDelegate {
     var resultWindow: Bool
     var onClose: (()->Void)?
 

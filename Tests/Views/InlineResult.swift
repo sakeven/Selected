@@ -57,7 +57,7 @@ final class InlineResultTests: XCTestCase {
 
         for (input, isCompact) in [(textInput, true), (clipboardInput, false), (clipboardInput.replacingText("Next result"), false)] {
             let existingWindows = Set(NSApp.windows.map(\.windowNumber))
-            request.perform(input: input, target: target, resultPosition: position)
+            ActionCoordinator.perform(request, input: input, target: target, resultPosition: position)
             var result: NSWindow?
             for _ in 0..<100 {
                 result = NSApp.windows.first { $0.isVisible && !existingWindows.contains($0.windowNumber) }

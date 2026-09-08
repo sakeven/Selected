@@ -236,39 +236,15 @@ class PluginManager: ObservableObject {
         icon.hasPrefix("file://./") ? "file://" + directory.appendingPathComponent(String(icon.dropFirst(9))).path : icon
     }
 
+    var availablePlugins: [Plugin] {
+        plugins.filter { $0.info.enabled && $0.compatibilityIssue(hostVersion: hostVersion) == nil && $0.info.missingOptions().isEmpty }
+    }
+
     var allActions: [PerformAction] {
         var result = [WebSearchAction().generate(generic: GenericAction(title: String(localized: "Search"), icon: "symbol:magnifyingglass", identifier: "selected.websearch"))]
-        for plugin in plugins where plugin.info.enabled && plugin.compatibilityIssue(hostVersion: hostVersion) == nil && plugin.info.missingOptions().isEmpty {
+        for plugin in availablePlugins {
             for action in plugin.actions {
-                var generic = action.meta
-                generic.title = PluginTemplate.render(generic.title, context: SelectedTextContext(), options: plugin.info.getOptionsValue())
-                let generated: PerformAction?
-                switch action.kind {
-                case .url: generated = action.url?.generate(pluginInfo: plugin.info, generic: generic, popclip: action.popclip)
-                case .service: generated = action.service?.generate(generic: generic)
-                case .keycombo: generated = action.keycombo?.generate(pluginInfo: plugin.info, generic: generic, popclip: action.popclip)
-                case .gpt: generated = action.gpt?.generate(pluginInfo: plugin.info, generic: generic)
-                case .runCommand: generated = action.runCommand?.generate(pluginInfo: plugin.info, generic: generic)
-                }
-                if let generated {
-                    generated.pluginInfo = plugin.info
-                    let values = plugin.info.getOptionsValue()
-                    let options = action.popclip == nil ? values : PopClipAction.optionValues(plugin.info, values: values)
-                    generated.supported = { (try? action.prepareContext($0, options: options)) != nil }
-                    if let complete = generated.complete {
-                        generated.complete = { context in
-                            let context = MainActor.assumeIsolated { action.captureContext(context) }
-                            guard let prepared = try? action.prepareContext(context, options: options) else { return }
-                            complete(prepared)
-                        }
-                    }
-                    if let complete = generated.completeAsync {
-                        generated.completeAsync = { context in
-                            let context = await MainActor.run { action.captureContext(context) }
-                            guard let prepared = try? action.prepareContext(context, options: options) else { return }
-                            await complete(prepared)
-                        }
-                    }
+                if let generated = action.generate(pluginInfo: plugin.info) {
                     result.append(generated)
                 }
             }

@@ -21,7 +21,6 @@ extension Defaults.Keys {
     static let aiService = Key<String>("AIService", default: "OpenAI")
     
     // OpenAI
-    static let openAIAPIKey = Key<String>("OpenAIAPIKey", default: "")
     static let openAIAPIHost = Key<String>("OpenAIAPIHost",default: "api.openai.com")
     static let openAIModel = Key<OpenAIModel>("OpenAIModel", default: .gpt5_6_sol)
     static let openAIModelReasoningEffort = Key<OpenAIModelReasoningEffort>("openAIModelReasoningEffort", default: .medium)
@@ -33,11 +32,7 @@ extension Defaults.Keys {
     static let openAITTSInstructions = Key<String>("OpenAITTSInstructions", default: "")
 
     
-    // Gemini
-    static let geminiAPIKey = Key<String>("GeminiAPIKey", default: "")
-
     // Claude
-    static let claudeAPIKey = Key<String>("ClaudeAPIKey", default: "")
     static let claudeAPIHost = Key<String>("ClaudeAPIHost", default: "https://api.anthropic.com")
     static let claudeModel = Key<ClaudeModel>("ClaudeModel", default: .claude_sonnet_4_5)
 

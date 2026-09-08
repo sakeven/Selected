@@ -16,8 +16,8 @@ class PersistenceController {
 
     let container: NSPersistentContainer
 
-    init() {
-        container = NSPersistentContainer(name: "ClipHistory")
+    init(container: NSPersistentContainer = NSPersistentContainer(name: "ClipHistory")) {
+        self.container = container
         container.loadPersistentStores { (storeDescription, error) in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
@@ -42,50 +42,54 @@ class PersistenceController {
     }
 
     func store(_ clipData: ClipData) {
-        let backgroundContext = PersistenceController.shared.container.newBackgroundContext()
+        let backgroundContext = container.newBackgroundContext()
         backgroundContext.perform {
-            let clipHistoryData = ClipHistoryData(context: backgroundContext)
+            self.store(clipData, in: backgroundContext)
+        }
+    }
 
-            clipHistoryData.application = clipData.appBundleID
-            clipHistoryData.firstCopiedAt = Date(timeIntervalSince1970: Double(clipData.timeStamp)/1000)
-            clipHistoryData.lastCopiedAt = clipHistoryData.firstCopiedAt
-            clipHistoryData.numberOfCopies = 1
-            clipHistoryData.plainText = clipData.plainText
-            clipHistoryData.url = clipData.url
-            clipHistoryData.isPinned = false
-            for item in clipData.items {
-                let clipHistoryItem = ClipHistoryItem(context: backgroundContext)
+    func store(_ clipData: ClipData, in backgroundContext: NSManagedObjectContext) {
+        let clipHistoryData = ClipHistoryData(context: backgroundContext)
 
-                clipHistoryItem.data = item.data
-                clipHistoryItem.type = item.type.rawValue
-                clipHistoryItem.refer = clipHistoryData
-                clipHistoryData.addToItems(clipHistoryItem)
+        clipHistoryData.application = clipData.appBundleID
+        clipHistoryData.firstCopiedAt = Date(timeIntervalSince1970: Double(clipData.timeStamp)/1000)
+        clipHistoryData.lastCopiedAt = clipHistoryData.firstCopiedAt
+        clipHistoryData.numberOfCopies = 1
+        clipHistoryData.plainText = clipData.plainText
+        clipHistoryData.url = clipData.url
+        clipHistoryData.isPinned = false
+        for item in clipData.items {
+            let clipHistoryItem = ClipHistoryItem(context: backgroundContext)
+
+            clipHistoryItem.data = item.data
+            clipHistoryItem.type = item.type.rawValue
+            clipHistoryItem.refer = clipHistoryData
+            clipHistoryData.addToItems(clipHistoryItem)
+        }
+        clipHistoryData.md5 = clipHistoryData.MD5()
+
+        let shouldScheduleOcr = clipData.plainText == nil && clipData.ocrImage != nil
+        let ocrImage = clipData.ocrImage
+        let md5 = clipHistoryData.md5
+
+        if let got = self.get(byMD5: clipHistoryData.md5!, context: backgroundContext) {
+            if got != clipHistoryData {
+                clipHistoryData.firstCopiedAt = got.firstCopiedAt
+                clipHistoryData.numberOfCopies = got.numberOfCopies + 1
+                clipHistoryData.isPinned = got.isPinned
+                backgroundContext.delete(got)
+                AppLogger.clipboard.debug("saved \(clipHistoryData.firstCopiedAt!) \(String(describing: got.firstCopiedAt))")
             }
-            clipHistoryData.md5 = clipHistoryData.MD5()
+        }
 
-            let shouldScheduleOcr = clipData.plainText == nil && clipData.ocrImage != nil
-            let ocrImage = clipData.ocrImage
-            let md5 = clipHistoryData.md5
-
-            if let got = self.get(byMD5: clipHistoryData.md5!, context: backgroundContext) {
-                if got != clipHistoryData {
-                    clipHistoryData.firstCopiedAt = got.firstCopiedAt
-                    clipHistoryData.numberOfCopies = got.numberOfCopies + 1
-                    clipHistoryData.isPinned = got.isPinned
-                    backgroundContext.delete(got)
-                    AppLogger.clipboard.debug("saved \(clipHistoryData.firstCopiedAt!) \(String(describing: got.firstCopiedAt))")
-                }
+        do {
+            try backgroundContext.save()
+            AppLogger.clipboard.debug("saved \(clipHistoryData.md5!)")
+            if let md5 = md5, let ocrImage = ocrImage, shouldScheduleOcr {
+                self.scheduleImageOcr(for: md5, image: ocrImage)
             }
-
-            do {
-                try backgroundContext.save()
-                AppLogger.clipboard.debug("saved \(clipHistoryData.md5!)")
-                if let md5 = md5, let ocrImage = ocrImage, shouldScheduleOcr {
-                    self.scheduleImageOcr(for: md5, image: ocrImage)
-                }
-            } catch {
-                AppLogger.clipboard.error("saved: \(error)")
-            }
+        } catch {
+            AppLogger.clipboard.error("saved: \(error)")
         }
     }
 
@@ -126,7 +130,7 @@ class PersistenceController {
     }
 
     func delete(item: ClipHistoryData) {
-        let ctx = PersistenceController.shared.container.viewContext
+        let ctx = container.viewContext
         ctx.performAndWait {
             do{
                 ctx.delete(item)
@@ -141,7 +145,7 @@ class PersistenceController {
         let fetchRequest = NSFetchRequest<ClipHistoryData>(entityName: "ClipHistoryData")
         fetchRequest.predicate = NSPredicate(format: "lastCopiedAt < %@", date as NSDate)
         fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: true)]
-        let ctx = PersistenceController.shared.container.viewContext
+        let ctx = container.viewContext
 
         ctx.performAndWait {
             do{
@@ -170,55 +174,6 @@ class PersistenceController {
     }
 
     @objc func cleanTask() {
-        var ago: Date
-        switch Defaults[.clipboardHistoryTime] {
-            case .OneDay:
-                ago = Calendar.current.date(byAdding: .hour, value: -24, to: Date())!
-            case .SevenDays:
-                ago = Calendar.current.date(byAdding: .day, value: -7, to: Date())!
-            case .ThirtyDays:
-                ago = Calendar.current.date(byAdding: .day, value: -30, to: Date())!
-            case .ThreeMonths:
-                ago = Calendar.current.date(byAdding: .month, value: -3, to: Date())!
-            case .SixMonths:
-                ago = Calendar.current.date(byAdding: .month, value: -6, to: Date())!
-            case .OneYear:
-                ago = Calendar.current.date(byAdding: .year, value: -1, to: Date())!
-        }
-        deleteBefore(byDate: ago)
-    }
-}
-
-
-import CryptoKit
-
-
-func MD5(string: String) -> String {
-    var md5 = Insecure.MD5()
-    md5.update(data: Data(string.utf8))
-    let digest = md5.finalize()
-    return digest.map {
-        String(format: "%02hhx", $0)
-    }.joined()
-}
-
-
-extension ClipHistoryData {
-    func getItems() -> [ClipHistoryItem] {
-        if let items = items {
-            return items.array as! [ClipHistoryItem]
-        }
-        return []
-    }
-
-    func MD5() -> String {
-        var md5 = Insecure.MD5()
-        for item in getItems(){
-            md5.update(data: item.data!)
-        }
-        let digest = md5.finalize()
-        return digest.map {
-            String(format: "%02hhx", $0)
-        }.joined()
+        deleteBefore(byDate: Defaults[.clipboardHistoryTime].cutoffDate(relativeTo: Date(), calendar: .current))
     }
 }

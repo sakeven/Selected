@@ -10,10 +10,10 @@ struct ClipActionsMenu: View {
 
     var body: some View {
         Button("clip.pasteOriginal", systemImage: "return") {
-            ClipService.shared.restore(data, paste: true)
+            ClipWindowManager.shared.restore(data, paste: true)
         }
         Button("clip.copy", systemImage: "doc.on.doc") {
-            ClipService.shared.restore(data, paste: false)
+            ClipWindowManager.shared.restore(data, paste: false)
         }
 
         if let kind = data.aiContentKind(openAI: aiService == "OpenAI") {

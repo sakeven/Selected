@@ -46,55 +46,12 @@ class MessageViewModel: ObservableObject {
                     case .begin(_):
                         self.messages[idx].status = .updating
                         break
-                    case .textDelta(let txt):
-                        self.messages[idx].message += txt
-                    case .textDone(let txt):
-                        self.messages[idx].message = txt
-                        self.messages[idx].status = .finished
-                    case .toolCallStarted(let toolStartStatus):
-                        self.messages[idx].tools[toolStartStatus.id] = AIToolCall(
-                            name: toolStartStatus.name,
-                            ret: toolStartStatus.message,
-                            status: .calling,
-                            arguments: toolStartStatus.arguments,
-                            command: toolStartStatus.command,
-                            workdir: toolStartStatus.workdir,
-                            sourceLinks: toolStartStatus.sourceLinks
-                        )
-                    case .toolCallFinished(let result):
-                        let currentTool = self.messages[idx].tools[result.id]
-                        self.messages[idx].tools[result.id] = AIToolCall(
-                            name: result.name,
-                            ret: result.ret,
-                            status: .success,
-                            arguments: result.arguments ?? currentTool?.arguments,
-                            command: result.command ?? currentTool?.command,
-                            workdir: result.workdir ?? currentTool?.workdir,
-                            sourceLinks: mergedSourceLinks(currentTool?.sourceLinks ?? [], result.sourceLinks)
-                        )
-                    case .toolCallUpdated(let update):
-                        if let currentTool = self.messages[idx].tools[update.id] {
-                            self.messages[idx].tools[update.id] = AIToolCall(
-                                name: currentTool.name,
-                                ret: currentTool.ret,
-                                status: currentTool.status,
-                                arguments: currentTool.arguments,
-                                command: currentTool.command,
-                                workdir: currentTool.workdir,
-                                sourceLinks: mergedSourceLinks(currentTool.sourceLinks, update.sourceLinks)
-                            )
-                        }
-                    case .reasoningDelta(let reasoningDelta):
-                        self.messages[idx].summary += reasoningDelta
-                    case .reasoningDone(_):
-                        // only part of reasoning context done.
-                        self.messages[idx].summary +=  "\n\n"
                     case .error(let err):
                         self.messages[idx].role = .system
                         self.messages[idx].status = .failure
                         self.messages[idx].message = err
                     default:
-                        break
+                        self.messages[idx].applyContentEvent(event)
                 }
             }
         } catch {
@@ -127,55 +84,12 @@ class MessageViewModel: ObservableObject {
                         self.messages[idx].message = ""
                         self.messages[idx].status = .updating
                         break
-                    case .textDelta(let txt):
-                        self.messages[idx].message += txt
-                    case .textDone(let txt):
-                        self.messages[idx].message = txt
-                        self.messages[idx].status = .finished
-                    case .toolCallStarted(let toolStartStatus):
-                        self.messages[idx].tools[toolStartStatus.id] = AIToolCall(
-                            name: toolStartStatus.name,
-                            ret: toolStartStatus.message,
-                            status: .calling,
-                            arguments: toolStartStatus.arguments,
-                            command: toolStartStatus.command,
-                            workdir: toolStartStatus.workdir,
-                            sourceLinks: toolStartStatus.sourceLinks
-                        )
-                    case .toolCallFinished(let result):
-                        let currentTool = self.messages[idx].tools[result.id]
-                        self.messages[idx].tools[result.id] = AIToolCall(
-                            name: result.name,
-                            ret: result.ret,
-                            status: .success,
-                            arguments: result.arguments ?? currentTool?.arguments,
-                            command: result.command ?? currentTool?.command,
-                            workdir: result.workdir ?? currentTool?.workdir,
-                            sourceLinks: mergedSourceLinks(currentTool?.sourceLinks ?? [], result.sourceLinks)
-                        )
-                    case .toolCallUpdated(let update):
-                        if let currentTool = self.messages[idx].tools[update.id] {
-                            self.messages[idx].tools[update.id] = AIToolCall(
-                                name: currentTool.name,
-                                ret: currentTool.ret,
-                                status: currentTool.status,
-                                arguments: currentTool.arguments,
-                                command: currentTool.command,
-                                workdir: currentTool.workdir,
-                                sourceLinks: mergedSourceLinks(currentTool.sourceLinks, update.sourceLinks)
-                            )
-                        }
                     case .error(let err):
                         self.messages[idx].status = .failure
                         self.messages[idx].role = .system
                         self.messages[idx].message = err
-                    case .reasoningDelta(let reasoningDelta):
-                        self.messages[idx].summary += reasoningDelta
-                    case .reasoningDone(_):
-                        // only part of reasoning context done.
-                        self.messages[idx].summary +=  "\n\n"
                     default:
-                        break
+                        self.messages[idx].applyContentEvent(event)
                 }
             }
             if self.messages[idx].role == .assistant {
@@ -192,10 +106,4 @@ class MessageViewModel: ObservableObject {
         }
     }
 
-    private func mergedSourceLinks(_ current: [AIToolSourceLink], _ incoming: [AIToolSourceLink]) -> [AIToolSourceLink] {
-        var seen = Set<String>()
-        return (current + incoming).filter { link in
-            seen.insert(link.id).inserted
-        }
-    }
 }

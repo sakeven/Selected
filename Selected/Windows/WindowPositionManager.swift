@@ -25,19 +25,7 @@ class WindowPositionManager {
 
     func storePosition(of window: NSWindow) {
         guard let screen = window.screen else { return }
-        let vf = screen.visibleFrame
-        let wf = window.frame
-
-        let center = CGPoint(x: wf.midX, y: wf.midY)
-        let rx = (center.x - vf.minX) / vf.width
-        let ry = (center.y - vf.minY) / vf.height
-
-        let saved = Saved(
-            sizeW: wf.width,
-            sizeH: wf.height,
-            centerRX: rx,
-            centerRY: ry
-        )
+        let saved = Saved(frame: window.frame, screenFrame: screen.visibleFrame)
 
         if let data = try? JSONEncoder().encode(saved) {
             UserDefaults.standard.set(data, forKey: key)
@@ -55,26 +43,7 @@ class WindowPositionManager {
         let targetScreen = Self.screenContainingMouse() ?? NSScreen.main
         guard let screen = targetScreen else { return false }
 
-        let vf = screen.visibleFrame
-
-        // 恢复 size
-        let size = NSSize(
-            width: saved.sizeW,
-            height:saved.sizeH,
-        )
-
-        // 把相对中心点映射回目标屏幕
-        let cx = vf.minX + vf.width  * saved.centerRX
-        let cy = vf.minY + vf.height * saved.centerRY
-
-        var origin = NSPoint(x: cx - size.width / 2, y: cy - size.height / 2)
-
-        // clamp：确保窗口完全落在 visibleFrame 内
-        origin.x = min(max(origin.x, vf.minX), vf.maxX - size.width)
-        origin.y = min(max(origin.y, vf.minY), vf.maxY - size.height)
-
-        let frame = NSRect(origin: origin, size: size)
-        window.setFrame(frame, display: true)
+        window.setFrame(saved.frame(in: screen.visibleFrame), display: true)
 
         return true
     }
@@ -83,5 +52,23 @@ class WindowPositionManager {
         // 全局坐标（左下角为原点）
         let mouse = NSEvent.mouseLocation
         return NSScreen.screens.first(where: { $0.frame.contains(mouse) })
+    }
+}
+
+extension WindowPositionManager.Saved {
+    init(frame: NSRect, screenFrame: NSRect) {
+        sizeW = frame.width
+        sizeH = frame.height
+        centerRX = (frame.midX - screenFrame.minX) / screenFrame.width
+        centerRY = (frame.midY - screenFrame.minY) / screenFrame.height
+    }
+
+    func frame(in screenFrame: NSRect) -> NSRect {
+        let size = NSSize(width: sizeW, height: sizeH)
+        let center = NSPoint(x: screenFrame.minX + screenFrame.width * centerRX,
+                             y: screenFrame.minY + screenFrame.height * centerRY)
+        let origin = NSPoint(x: min(max(center.x - size.width / 2, screenFrame.minX), screenFrame.maxX - size.width),
+                             y: min(max(center.y - size.height / 2, screenFrame.minY), screenFrame.maxY - size.height))
+        return NSRect(origin: origin, size: size)
     }
 }

@@ -24,7 +24,7 @@ struct MenuItemView: View {
     private let updaterController: SPUStandardUpdaterController?
 
     init() {
-        if isPreview {
+        if AppRuntimeMode.current != .normal {
             updaterController = nil
         } else {
             updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)

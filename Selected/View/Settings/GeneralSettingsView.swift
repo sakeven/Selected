@@ -5,7 +5,7 @@ import OpenAI
 
 struct GeneralSettingsView: View {
     @Default(.aiService) private var aiService
-    @Default(.openAIAPIKey) private var openAIAPIKey
+    @State private var openAIAPIKey = APIKeyStore.shared.value(for: .openAI)
     @Default(.openAIAPIHost) private var openAIAPIHost
     @Default(.openAIModel) private var openAIModel
     @Default(.openAIModelReasoningEffort) private var openAIModelReasoningEffort
@@ -13,13 +13,14 @@ struct GeneralSettingsView: View {
     @Default(.openAITTSModel) private var openAITTSModel
     @Default(.openAITTSInstructions) private var openAITTSInstructions
     @Default(.openAITranslationModel) private var openAITranslationModel
-    @Default(.claudeAPIKey) private var claudeAPIKey
+    @State private var claudeAPIKey = APIKeyStore.shared.value(for: .claude)
     @Default(.claudeAPIHost) private var claudeAPIHost
     @Default(.claudeModel) private var claudeModel
     @Default(.search) private var searchURL
     @State private var launchAtLogin: Bool
     @State private var selectedOpenAIModel: String
     @State private var customOpenAIModel: String
+    @State private var credentialError: String?
 
     init() {
         launchAtLogin = SMAppService.mainApp.status == .enabled
@@ -68,6 +69,11 @@ struct GeneralSettingsView: View {
                 SettingsMenuPicker(title: String(localized: "Model"), values: ClaudeModel.allCases, selection: $claudeModel, label: { $0 })
             }
         }
+        .onChange(of: openAIAPIKey) { saveAPIKey(openAIAPIKey, for: .openAI) }
+        .onChange(of: claudeAPIKey) { saveAPIKey(claudeAPIKey, for: .claude) }
+        .alert("Unable to Save API Key", isPresented: Binding(get: { credentialError != nil }, set: { if !$0 { credentialError = nil } })) {
+            Button("OK", role: .cancel) { credentialError = nil }
+        } message: { Text(credentialError ?? "") }
     }
 
     private var openAISettings: some View {
@@ -127,6 +133,11 @@ struct GeneralSettingsView: View {
                 }
             }
         }
+    }
+
+    private func saveAPIKey(_ value: String, for provider: APIKeyStore.Provider) {
+        do { try APIKeyStore.shared.save(value, for: provider) }
+        catch { credentialError = error.localizedDescription }
     }
 
     private func updateReasoningEffort(for model: String) {
