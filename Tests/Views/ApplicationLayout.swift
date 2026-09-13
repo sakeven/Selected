@@ -24,7 +24,7 @@ final class ApplicationLayoutTests: XCTestCase {
             ("assistant", NSSize(width: 700, height: 400), { AnyView(MessageView(message: response)) }),
             ("user", NSSize(width: 700, height: 180), { AnyView(MessageView(message: user)) }),
             ("failure", NSSize(width: 700, height: 160), { AnyView(MessageView(message: failure)) }),
-            ("spotlight", NSSize(width: 520, height: 108), { AnyView(SpotlightView(target: ActionTarget(application: nil), bundleID: "", allActions: [])) }),
+            ("spotlight", NSSize(width: 520, height: 140), { AnyView(SpotlightView(target: ActionTarget(application: nil), bundleID: "", allActions: [])) }),
             ("popbar", NSSize(width: 280, height: 60), { AnyView(PopBarView(actions: [], ctx: SelectedTextContext(Text: "1 + 2"), showSharingButton: false)) }),
             ("plugin-editor", NSSize(width: 900, height: 760), { AnyView(PluginEditorView(session: session, manager: manager, didSave: { _ in })) })
         ]

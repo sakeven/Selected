@@ -143,6 +143,61 @@ final class SpotlightViewTests: XCTestCase {
         XCTAssertEqual(received, ["5:Actual input"])
     }
 
+    func testCategoryShortcutsKeepQueryAndRunOnlyTheVisibleSelection() async throws {
+        var received: [String] = []
+        let actions = (1...6).map { index in
+            let action = PerformAction(actionMeta: GenericAction(title: "Spotlight Category Fixture \(index)", icon: "symbol:star", identifier: "category.\(index)"),
+                                       complete: { received.append("\(index):" + $0.Text) })
+            action.actionMeta.requirements = [.text]
+            return action
+        }
+        let host = NSHostingView(rootView: SpotlightView(target: ActionTarget(application: nil), bundleID: "selected.tests.unknown-app", allActions: actions))
+        let window = FloatingPanel(contentRect: .zero, backing: .buffered, defer: false, key: true)
+        window.contentView = host
+        window.setContentSize(host.fittingSize)
+        window.makeKeyAndOrderFront(nil)
+        defer { window.close() }
+        try await Task.sleep(for: .milliseconds(150))
+        let field = try XCTUnwrap(textField(in: host))
+        window.makeFirstResponder(field)
+        let editor = try XCTUnwrap(field.currentEditor() as? NSTextView)
+        let query = "Spotlight Category Fixture"
+        editor.insertText(query, replacementRange: NSRange(location: 0, length: 0))
+        try await Task.sleep(for: .milliseconds(200))
+        for (key, code) in [("1", UInt16(18)), ("3", 20), ("4", 21)] {
+            XCTAssertTrue(sendShortcut(key, code: code, to: window))
+            try await Task.sleep(for: .milliseconds(100))
+            sendKey("\r", code: 36, to: window)
+            XCTAssertEqual(field.stringValue, query)
+            XCTAssertNotNil(field.currentEditor())
+        }
+        XCTAssertTrue(sendShortcut("0", code: 29, to: window))
+        try await Task.sleep(for: .milliseconds(100))
+        try attach(host, name: "spotlight-category-all")
+        sendKey("\r", code: 36, to: window)
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(field.stringValue, "")
+        sendKey("\u{1b}", code: 53, to: window)
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(field.stringValue, query)
+        XCTAssertTrue(sendShortcut("2", code: 19, to: window))
+        try await Task.sleep(for: .milliseconds(100))
+        for _ in 0..<4 {
+            sendKey("\u{f701}", code: 125, to: window)
+            try await Task.sleep(for: .milliseconds(30))
+        }
+        try attach(host, name: "spotlight-category-actions")
+        sendKey("\r", code: 36, to: window)
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(field.stringValue, "")
+        XCTAssertFalse(sendShortcut("4", code: 21, to: window))
+        let inputEditor = try XCTUnwrap(field.currentEditor() as? NSTextView)
+        inputEditor.insertText("Category input 原始内容", replacementRange: NSRange(location: 0, length: 0))
+        sendKey("\r", code: 36, to: window)
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(received, ["5:Category input 原始内容"])
+    }
+
     func testMarkedTextKeepsArrowAndReturnCommandsWithTheInputMethod() {
         var moves: [Int] = []
         var submissions = 0
@@ -180,6 +235,13 @@ final class SpotlightViewTests: XCTestCase {
                                     windowNumber: window.windowNumber, context: nil, characters: characters,
                                     charactersIgnoringModifiers: characters, isARepeat: false, keyCode: code)!
         window.sendEvent(event)
+    }
+
+    private func sendShortcut(_ characters: String, code: UInt16, to window: NSWindow) -> Bool {
+        let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: .command, timestamp: ProcessInfo.processInfo.systemUptime,
+                                    windowNumber: window.windowNumber, context: nil, characters: characters,
+                                    charactersIgnoringModifiers: characters, isARepeat: false, keyCode: code)!
+        return window.performKeyEquivalent(with: event)
     }
 
     private func attach(_ host: NSView, name: String, snapshotName: String? = nil) throws {

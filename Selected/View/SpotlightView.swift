@@ -14,14 +14,12 @@ struct SpotlightView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if !search.isSearchMode || search.searchGroup != nil {
+            if !search.isSearchMode {
                 HStack(spacing: 8) {
                     Button("Back to Search", systemImage: "chevron.left") { search.backToSearch(); isFocused = true }
                         .labelStyle(.iconOnly).buttonStyle(.plain).help("Back to Search")
                     if case .action(let action) = search.mode {
                         Text(action.actionMeta.title).lineLimit(1)
-                    } else if search.isSearchMode, let group = search.searchGroup {
-                        Text(group.title)
                     } else {
                         Text("Actions for Input Text")
                     }
@@ -46,7 +44,20 @@ struct SpotlightView: View {
                 Button("Close", systemImage: "xmark") { SpotlightWindowManager.shared.forceCloseWindow() }
                     .labelStyle(.iconOnly).buttonStyle(.plain).foregroundStyle(.tertiary).help("Close")
             }
-            .padding(20)
+            .padding(.horizontal, 20).padding(.top, 20)
+            .padding(.bottom, search.isSearchMode ? 12 : 20)
+
+            if search.isSearchMode {
+                HStack(spacing: 4) {
+                    categoryButton(nil, title: "All", shortcut: "0")
+                    categoryButton(.applications, title: "Applications", shortcut: "1")
+                    categoryButton(.actions, title: "Actions", shortcut: "2")
+                    categoryButton(.files, title: "Files", shortcut: "3")
+                    categoryButton(.clipboard, title: "Clipboard", shortcut: "4")
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 16).padding(.bottom, 12)
+            }
 
             if !search.results.isEmpty {
                 Divider().padding(.horizontal, 16)
@@ -133,6 +144,32 @@ struct SpotlightView: View {
         } message: { Text(openError ?? "") }
     }
 
+    private func categoryButton(_ group: SpotlightItem.Group?, title: LocalizedStringKey, shortcut: KeyEquivalent) -> some View {
+        let isSelected = search.searchGroup == group
+        return Button { chooseGroup(group) } label: {
+            HStack(alignment: .firstTextBaseline, spacing: 5) {
+                Text(title).font(.callout.weight(.medium))
+                Text(verbatim: "⌘\(shortcut.character)")
+                    .font(.caption.monospaced()).foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
+            }
+            .padding(.horizontal, 10).frame(height: 28)
+            .foregroundStyle(isSelected ? Color.accentColor : .secondary)
+            .background(isSelected ? Color.accentColor.opacity(0.12) : .clear, in: .rect(cornerRadius: 6))
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .keyboardShortcut(shortcut, modifiers: .command)
+        .help(Text(title) + Text(verbatim: " (⌘\(shortcut.character))"))
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityIdentifier("spotlight-category-\(group?.rawValue ?? "all")")
+    }
+
+    private func chooseGroup(_ group: SpotlightItem.Group?) {
+        search.chooseGroup(group)
+        isFocused = true
+    }
+
     private func dismissOrBack() {
         if previewURL != nil { previewURL = nil }
         else if search.isSearchMode && search.searchGroup == nil { SpotlightWindowManager.shared.forceCloseWindow() }
@@ -151,8 +188,7 @@ struct SpotlightView: View {
             search.chooseTextActions()
             isFocused = true
         case .more(let group):
-            search.chooseGroup(group)
-            isFocused = true
+            chooseGroup(group)
         case .clipboard(let clip):
             Task {
                 do {

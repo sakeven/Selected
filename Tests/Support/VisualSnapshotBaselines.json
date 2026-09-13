@@ -62,8 +62,8 @@
       "width" : 560
     },
     "application-spotlight-dark" : {
-      "height" : 216,
-      "sha256" : "1d0227a26a4143806e0ff0119478a13c8842c076faa194cd27cf5b3d007784b3",
+      "height" : 280,
+      "sha256" : "97b3bc6c847b4cbf20491dbb35b4facdd91f9bee9f88491ba0ce827f25304be5",
       "width" : 1040
     },
     "application-spotlight-grouped-clipboard-dark" : {
@@ -107,8 +107,8 @@
       "width" : 1040
     },
     "application-spotlight-light" : {
-      "height" : 216,
-      "sha256" : "6088b77315beb4842d9a4cfd25544e6e9777e18982dc372ce8bdafa9c35d37d9",
+      "height" : 280,
+      "sha256" : "0450ea4306368d2bb1adada15c70b420eb5386d31944969ee16bd4d285834353",
       "width" : 1040
     },
     "application-user-dark" : {

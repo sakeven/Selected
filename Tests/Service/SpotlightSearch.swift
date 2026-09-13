@@ -240,6 +240,34 @@ final class SpotlightSearchTests: XCTestCase {
         XCTAssertEqual(search.results.map(\.id), ["action:Overflow 6", "text-actions"])
     }
 
+    func testSwitchingCategoriesKeepsQueryAndResetsSelectionToVisibleResults() {
+        let actions = (1...6).map { makeAction("Category Fixture \($0)") }
+        let search = makeSearch(actions)
+        defer { search.stop() }
+        search.chooseGroup(.clipboard)
+        XCTAssertTrue(search.results.isEmpty)
+        search.text = "  Category Fixture  "
+        search.chooseGroup(.actions)
+        XCTAssertEqual(search.results.count, 6)
+        search.moveSelection(4)
+        XCTAssertEqual(search.selectedResult?.id, "action:Category Fixture 5")
+        for group in [SpotlightItem.Group.applications, .files, .clipboard] {
+            search.chooseGroup(group)
+            XCTAssertEqual(search.text, "  Category Fixture  ")
+            XCTAssertEqual(search.searchGroup, group)
+            XCTAssertTrue(search.results.isEmpty)
+            XCTAssertNil(search.selectedResult)
+        }
+        search.chooseGroup(.actions)
+        XCTAssertEqual(search.selectedResult?.id, "action:Category Fixture 1")
+        search.moveSelection(4)
+        search.chooseGroup(nil)
+        XCTAssertEqual(search.text, "  Category Fixture  ")
+        XCTAssertNil(search.searchGroup)
+        XCTAssertEqual(search.results.map(\.id), ["action:Category Fixture 1", "action:Category Fixture 2", "action:Category Fixture 3", "more:actions", "text-actions"])
+        XCTAssertEqual(search.selectedResult?.id, "action:Category Fixture 1")
+    }
+
     func testScopedSearchKeepsItsScopeAndHandlesLongOrUnmatchedQueries() {
         let title = String(repeating: "Long action name ", count: 6)
         let search = makeSearch([makeAction(title)])

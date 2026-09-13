@@ -66,7 +66,7 @@ import Observation
         refresh()
     }
 
-    func chooseGroup(_ group: SpotlightItem.Group) {
+    func chooseGroup(_ group: SpotlightItem.Group?) {
         searchGroup = group
         selectedID = nil
         rebuildResults()

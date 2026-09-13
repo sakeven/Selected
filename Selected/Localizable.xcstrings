@@ -699,6 +699,16 @@
         }
       }
     },
+    "All" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部"
+          }
+        }
+      }
+    },
     "All conditions must match. The action receives the full selected text." : {
       "localizations" : {
         "zh-Hans" : {
@@ -3323,6 +3333,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "文件搜索暂不可用"
+          }
+        }
+      }
+    },
+    "Files" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件"
           }
         }
       }
