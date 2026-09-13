@@ -11,10 +11,11 @@ struct SelectedApp: App {
             Label {
                 Text("Selected")
             } icon: {
-                Image(systemName: "pencil.and.scribble")
+                Image("SelectedMenuBar")
                     .resizable()
                     .renderingMode(.template)
                     .scaledToFit()
+                    .frame(width: 18, height: 18)
             }
             .help("Selected")
         }
