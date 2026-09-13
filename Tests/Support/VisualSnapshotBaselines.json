@@ -63,12 +63,52 @@
     },
     "application-spotlight-dark" : {
       "height" : 216,
-      "sha256" : "8f4dac8936f68d0667fe578591ea8fd2cd5210390e60517c0f7b53ba4ab65f28",
+      "sha256" : "1d0227a26a4143806e0ff0119478a13c8842c076faa194cd27cf5b3d007784b3",
+      "width" : 1040
+    },
+    "application-spotlight-grouped-clipboard-dark" : {
+      "height" : 514,
+      "sha256" : "bec70940ead988ae9529f77e7da7d8069ae2b471b35c867b0f10e214d5ea194e",
+      "width" : 1040
+    },
+    "application-spotlight-grouped-clipboard-light" : {
+      "height" : 514,
+      "sha256" : "222ea40cd2277227b8ee7f1fb43a9aad520ba5e0c47d544a1ad646bdab325d11",
+      "width" : 1040
+    },
+    "application-spotlight-grouped-files-collapsed-dark" : {
+      "height" : 678,
+      "sha256" : "303c24e48988ac1bf30653130082b7408a852748e9c25c000a7cbd5c0996f5d7",
+      "width" : 1040
+    },
+    "application-spotlight-grouped-files-collapsed-light" : {
+      "height" : 678,
+      "sha256" : "27e4e7c650d97d8c5dc3a984fcda3680cef5b88ba627cf997d91a1e2ac3e0d1d",
+      "width" : 1040
+    },
+    "application-spotlight-grouped-actions-dark" : {
+      "height" : 342,
+      "sha256" : "4ac453dd369b3b87c56f7d4d71cfd11f2258fb3f34a8b8b35f601611763669f8",
+      "width" : 1040
+    },
+    "application-spotlight-grouped-actions-light" : {
+      "height" : 342,
+      "sha256" : "132e831bf0f22676831bd511c4d13c9f77ec7339c8e4741d6239a1adc32de8dd",
+      "width" : 1040
+    },
+    "application-spotlight-grouped-all-dark" : {
+      "height" : 686,
+      "sha256" : "c3f99cfd26a4c64c2c55c4b8b5fd1e27973379cbd41cbd54f91f5425b6ad1d1b",
+      "width" : 1040
+    },
+    "application-spotlight-grouped-all-light" : {
+      "height" : 686,
+      "sha256" : "b31bba310f3176e4f3e1e4610e5399472fe0ccfbc1098e0b83ca9af58cd5b433",
       "width" : 1040
     },
     "application-spotlight-light" : {
       "height" : 216,
-      "sha256" : "7412ccd6a1874e3b29f76030e47bf677eee2e7ae275739f0a6a55a19fd8a0f4d",
+      "sha256" : "6088b77315beb4842d9a4cfd25544e6e9777e18982dc372ce8bdafa9c35d37d9",
       "width" : 1040
     },
     "application-user-dark" : {

@@ -359,6 +359,16 @@
         }
       }
     },
+    "↑ ↓ Choose   ↩ Paste" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "↑ ↓ 选择   ↩ 粘贴"
+          }
+        }
+      }
+    },
     "↑ ↓ Choose   ↩ Run" : {
       "localizations" : {
         "zh-Hans" : {
@@ -368,6 +378,9 @@
           }
         }
       }
+    },
+    "⇥" : {
+
     },
     "1 Year" : {
       "extractionState" : "manual",
@@ -554,6 +567,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "动作  ·  %lld"
+          }
+        }
+      }
+    },
+    "Actions for Input Text" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "对输入文字执行动作"
           }
         }
       }
@@ -816,6 +839,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "附件内容"
+          }
+        }
+      }
+    },
+    "Back to Search" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "返回搜索"
           }
         }
       }
@@ -2330,6 +2363,16 @@
         }
       }
     },
+    "Clipboard search is unavailable" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剪贴板搜索暂不可用"
+          }
+        }
+      }
+    },
     "Close" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2620,6 +2663,26 @@
         }
       }
     },
+    "Copy Path" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制路径"
+          }
+        }
+      }
+    },
+    "Copy Path (⌘⇧C)" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制路径 (⌘⇧C)"
+          }
+        }
+      }
+    },
     "Copy result" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2646,6 +2709,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "复制到剪贴板"
+          }
+        }
+      }
+    },
+    "Could Not Complete Action" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法完成操作"
           }
         }
       }
@@ -3060,6 +3133,16 @@
         }
       }
     },
+    "Enter text to use this action" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "输入文字以使用此动作"
+          }
+        }
+      }
+    },
     "Enter text, then choose an action" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3230,6 +3313,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "文件"
+          }
+        }
+      }
+    },
+    "File search is unavailable" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件搜索暂不可用"
+          }
+        }
+      }
+    },
+    "Files and Folders" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件与文件夹"
+          }
+        }
+      }
+    },
+    "Apps, actions, files, and clipboard" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用、动作、文件和剪贴板"
           }
         }
       }
@@ -3893,6 +4006,16 @@
         }
       }
     },
+    "More Results…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多结果…"
+          }
+        }
+      }
+    },
     "More Settings" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3993,6 +4116,16 @@
         }
       }
     },
+    "No actions available for this text in the current app" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前应用中没有适用于这段文字的动作"
+          }
+        }
+      }
+    },
     "No apps available to add" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4043,6 +4176,16 @@
         }
       }
     },
+    "No results in this category" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此分类中没有匹配结果"
+          }
+        }
+      }
+    },
     "No results found" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4083,6 +4226,9 @@
           }
         }
       }
+    },
+    "Open" : {
+
     },
     "Open Chat" : {
       "localizations" : {
@@ -4580,6 +4726,26 @@
         }
       }
     },
+    "Quick Look" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快速查看"
+          }
+        }
+      }
+    },
+    "Quick Look (⌘Y)" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快速查看 (⌘Y)"
+          }
+        }
+      }
+    },
     "Quit" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4957,12 +5123,42 @@
         }
       }
     },
+    "Search apps, files, and more…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索应用、文件等内容…"
+          }
+        }
+      }
+    },
+    "Search in this category" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在此分类中搜索"
+          }
+        }
+      }
+    },
     "Search URL" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "搜索地址"
+          }
+        }
+      }
+    },
+    "Searching files…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在搜索文件…"
           }
         }
       }
@@ -5005,6 +5201,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Selected"
+          }
+        }
+      }
+    },
+    "Selected action" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected 动作"
           }
         }
       }
@@ -5056,6 +5262,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在 Finder 中显示"
+          }
+        }
+      }
+    },
+    "Show in Finder (⌘↩)" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 Finder 中显示 (⌘↩)"
           }
         }
       }
@@ -5403,6 +5619,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "安装目录已被其他插件占用：%@。"
+          }
+        }
+      }
+    },
+    "The item may have moved or is no longer accessible." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "项目可能已移动或无法访问。"
           }
         }
       }
