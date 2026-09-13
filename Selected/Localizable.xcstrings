@@ -3788,17 +3788,6 @@
         }
       }
     },
-    "Unable to Save API Key" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无法保存 API 密钥"
-          }
-        }
-      }
-    },
     "Keychain access failed" : {
       "localizations" : {
         "zh-Hans" : {
@@ -6003,6 +5992,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "输入或粘贴文本…"
+          }
+        }
+      }
+    },
+    "Unable to Save API Key" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法保存 API 密钥"
           }
         }
       }
