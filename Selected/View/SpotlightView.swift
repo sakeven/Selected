@@ -17,7 +17,7 @@ struct SpotlightView: View {
             if !search.isSearchMode {
                 HStack(spacing: 8) {
                     Button("Back to Search", systemImage: "chevron.left") { search.backToSearch(); isFocused = true }
-                        .labelStyle(.iconOnly).buttonStyle(.plain).help("Back to Search")
+                        .buttonStyle(AppIconButtonStyle()).help("Back to Search")
                     if case .action(let action) = search.mode {
                         Text(action.actionMeta.title).lineLimit(1)
                     } else {
@@ -42,10 +42,10 @@ struct SpotlightView: View {
                                          return true
                                      }, cancel: dismissOrBack)
                 Button("Close", systemImage: "xmark") { SpotlightWindowManager.shared.forceCloseWindow() }
-                    .labelStyle(.iconOnly).buttonStyle(.plain).foregroundStyle(.tertiary).help("Close")
+                    .buttonStyle(AppIconButtonStyle()).help("Close")
             }
-            .padding(.horizontal, 20).padding(.top, 20)
-            .padding(.bottom, search.isSearchMode ? 12 : 20)
+            .padding(.horizontal, 20).padding(.top, 16)
+            .padding(.bottom, search.isSearchMode ? 10 : 20)
 
             if search.isSearchMode {
                 HStack(spacing: 4) {
@@ -56,7 +56,7 @@ struct SpotlightView: View {
                     categoryButton(.clipboard, title: "Clipboard", shortcut: "4")
                     Spacer(minLength: 0)
                 }
-                .padding(.horizontal, 16).padding(.bottom, 12)
+                .padding(.horizontal, 16).padding(.bottom, 10)
             }
 
             if !search.results.isEmpty {
@@ -94,13 +94,13 @@ struct SpotlightView: View {
                 Spacer(minLength: 4)
                 if case .file(let url) = search.selectedResult?.content {
                     Button("Quick Look", systemImage: "eye") { previewURL = url }
-                        .labelStyle(.iconOnly).buttonStyle(.plain).help("Quick Look (⌘Y)")
+                        .buttonStyle(AppIconButtonStyle()).help("Quick Look (⌘Y)")
                         .keyboardShortcut("y", modifiers: .command)
                     Button("Show in Finder", systemImage: "folder") { reveal(url) }
-                        .labelStyle(.iconOnly).buttonStyle(.plain).help("Show in Finder (⌘↩)")
+                        .buttonStyle(AppIconButtonStyle()).help("Show in Finder (⌘↩)")
                         .keyboardShortcut(.return, modifiers: .command)
                     Button("Copy Path", systemImage: "doc.on.doc") { copyText(url.path) }
-                        .labelStyle(.iconOnly).buttonStyle(.plain).help("Copy Path (⌘⇧C)")
+                        .buttonStyle(AppIconButtonStyle()).help("Copy Path (⌘⇧C)")
                         .keyboardShortcut("c", modifiers: [.command, .shift])
                 } else if case .clipboard(let clip) = search.selectedResult?.content {
                     Button("clip.copy.short", systemImage: "doc.on.doc") {
@@ -109,18 +109,15 @@ struct SpotlightView: View {
                     .buttonStyle(.plain).help("clip.copy")
                     .keyboardShortcut(.return, modifiers: .command)
                 }
-                Text("esc").font(.caption.monospaced()).foregroundStyle(.tertiary)
+                ShortcutHint(keys: "esc")
             }
             .font(.caption).foregroundStyle(.secondary)
             .padding(.horizontal, 20).frame(height: 42)
-            .background(.primary.opacity(0.025))
+            .background(AppTheme.canvas)
+            .overlay(alignment: .top) { Rectangle().fill(AppTheme.border).frame(height: 1) }
         }
         .frame(width: 520)
-        .background(.regularMaterial, in: .rect(cornerRadius: 16))
-        .clipShape(.rect(cornerRadius: 16))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16).strokeBorder(.primary.opacity(0.10), lineWidth: 0.5)
-        }
+        .modifier(AppPanel())
         .fixedSize(horizontal: false, vertical: true)
         .onAppear { isFocused = true }
         .task { await search.loadApplications() }
@@ -147,18 +144,12 @@ struct SpotlightView: View {
     private func categoryButton(_ group: SpotlightItem.Group?, title: LocalizedStringKey, shortcut: KeyEquivalent) -> some View {
         let isSelected = search.searchGroup == group
         return Button { chooseGroup(group) } label: {
-            HStack(alignment: .firstTextBaseline, spacing: 5) {
-                Text(title).font(.callout.weight(.medium))
-                Text(verbatim: "⌘\(shortcut.character)")
-                    .font(.caption.monospaced()).foregroundStyle(.secondary)
-                    .accessibilityHidden(true)
-            }
-            .padding(.horizontal, 10).frame(height: 28)
+            Text(title)
+                .font(.callout.weight(isSelected ? .semibold : .regular))
+                .padding(.horizontal, 12).frame(height: 28)
             .foregroundStyle(isSelected ? Color.accentColor : .secondary)
-            .background(isSelected ? Color.accentColor.opacity(0.12) : .clear, in: .rect(cornerRadius: 6))
-            .contentShape(.rect)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(AppSelectionStyle(isSelected: isSelected))
         .keyboardShortcut(shortcut, modifiers: .command)
         .help(Text(title) + Text(verbatim: " (⌘\(shortcut.character))"))
         .accessibilityAddTraits(isSelected ? .isSelected : [])

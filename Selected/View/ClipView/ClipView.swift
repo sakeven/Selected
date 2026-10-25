@@ -14,7 +14,6 @@ import SwiftUI
 
 struct ClipView: View {
     @Environment(\.managedObjectContext) private var viewContext
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @FetchRequest(
@@ -27,7 +26,7 @@ struct ClipView: View {
     private var clips: FetchedResults<ClipHistoryData>
 
     @ObservedObject var viewModel = ClipViewModel.shared
-    @FocusState private var isFocused: Bool
+    @State private var isFocused = true
 
     @State private var searchText = ""
     @State private var localSelection: ClipHistoryData?
@@ -43,25 +42,37 @@ struct ClipView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 16) {
-                Label("Clipboard", systemImage: "clipboard")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-
-                SearchBarView(searchText: $searchText, onArrowKey: handleArrowKey)
+            HStack(spacing: 12) {
+                Image(systemName: "clipboard")
+                    .font(.title2)
+                    .foregroundStyle(AppTheme.accent)
+                    .frame(width: 40, height: 40)
+                    .background(AppTheme.selection, in: .rect(cornerRadius: 11))
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Clipboard").font(.title2.weight(.semibold))
+                    Text("clip.workspace.subtitle").font(.callout).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button("Close", systemImage: "xmark") {
+                    ClipWindowManager.shared.forceCloseWindow()
+                }
+                .buttonStyle(AppIconButtonStyle())
+                .help("clip.dismiss.shortcut")
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 18)
+            .background(AppTheme.surface)
             .overlay(alignment: .bottom) {
-                Rectangle().fill(colorScheme.clipDivider).frame(height: 1)
+                Rectangle().fill(AppTheme.border).frame(height: 1)
             }
 
             HStack(spacing: 0) {
                 sidebar
-                    .frame(width: 320)
+                    .frame(width: 300)
 
                 Rectangle()
-                    .fill(colorScheme.clipDivider)
+                    .fill(AppTheme.border)
                     .frame(width: 1)
 
                 detailPane
@@ -71,15 +82,11 @@ struct ClipView: View {
             .padding(.vertical, 10)
 
             HStack(spacing: 16) {
-                Label("clip.navigate", systemImage: "arrow.up.arrow.down")
+                ShortcutHint(keys: "↑ ↓", title: "clip.navigate")
                 Button {
                     ClipWindowManager.shared.forceCloseWindow()
                 } label: {
-                    HStack(spacing: 6) {
-                        Text(verbatim: "Esc")
-                            .monospaced()
-                        Text("clip.dismiss")
-                    }
+                    ShortcutHint(keys: "esc", title: "clip.dismiss")
                 }
                 .buttonStyle(.plain)
                 .help("clip.dismiss.shortcut")
@@ -89,12 +96,17 @@ struct ClipView: View {
                     Button("clip.copy.short", systemImage: "doc.on.doc") {
                         ClipWindowManager.shared.restore(selected, paste: false)
                     }
-                    .buttonStyle(SettingsButtonStyle())
+                    .buttonStyle(AppButtonStyle())
                     .help("clip.copy")
 
                     HStack(spacing: 4) {
-                        Button("clip.paste", systemImage: "return") {
+                        Button {
                             ClipWindowManager.shared.restore(selected, paste: true)
+                        } label: {
+                            HStack(spacing: 16) {
+                                Text("clip.paste")
+                                Image(systemName: "return").accessibilityHidden(true)
+                            }
                         }
                         if let text = selected.plainText {
                             Menu {
@@ -111,7 +123,7 @@ struct ClipView: View {
                             .help("clip.pasteOptions")
                         }
                     }
-                    .buttonStyle(SettingsButtonStyle(emphasis: .prominent))
+                    .buttonStyle(AppButtonStyle(emphasis: .prominent))
                 }
             }
             .controlSize(.small)
@@ -119,42 +131,30 @@ struct ClipView: View {
             .foregroundStyle(.secondary)
             .padding(.horizontal, 24)
             .padding(.vertical, 12)
-            .background(colorScheme.clipPanelFill)
+            .background(AppTheme.surface)
             .overlay(alignment: .top) {
-                Rectangle().fill(colorScheme.clipDivider).frame(height: 1)
+                Rectangle().fill(AppTheme.border).frame(height: 1)
             }
         }
         .frame(width: 960, height: 600)
         .sheet(item: $aiRequest) { request in
             ClipAIPromptView(data: request.data, instruction: request.instruction, translation: request.translation)
         }
-        .background {
-            LinearGradient(
-                colors: colorScheme.clipBackdropColors,
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 24))
-        .overlay {
-            RoundedRectangle(cornerRadius: 24)
-                .strokeBorder(colorScheme.clipShellStroke, lineWidth: 1)
-        }
+        .background(AppTheme.canvas)
+        .modifier(AppPanel())
         .onAppear {
             localSelection = clips.first
             viewModel.selectedItem = localSelection
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                isFocused = true
-            }
+            isFocused = true
         }
         .onChange(of: localSelection) { _, newValue in
             viewModel.selectedItem = newValue
         }
-        .focused($isFocused)
     }
 
     private var sidebar: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 14) {
+            SearchBarView(searchText: $searchText, isFocused: $isFocused, onArrowKey: handleArrowKey)
             HStack {
                 Text("Clipboard History")
                 Spacer()
@@ -186,7 +186,7 @@ struct ClipView: View {
                                         isSelected: localSelection?.objectID == clipData.objectID
                                     )
                                 }
-                                .buttonStyle(.plain)
+                                .buttonStyle(AppSelectionStyle(isSelected: localSelection?.objectID == clipData.objectID))
                                 .id(clipData.objectID)
                                 .contextMenu {
                                     ClipActionsMenu(data: clipData, onTogglePin: { togglePin(clipData) }, onDelete: { delete(clipData) }) { instruction, translation in

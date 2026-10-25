@@ -100,6 +100,40 @@ final class ClipboardLayoutTests: XCTestCase {
         }
     }
 
+    func testSearchReceivesFocusWhenClipboardOpens() async throws {
+        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: PersistenceController.shared.container.managedObjectModel)
+        try coordinator.addPersistentStore(ofType: NSInMemoryStoreType, configurationName: nil, at: nil)
+        let context = NSManagedObjectContext(.mainQueue)
+        context.persistentStoreCoordinator = coordinator
+        let host = NSHostingView(rootView: ClipView().environment(\.managedObjectContext, context))
+        let window = FloatingPanel(contentRect: .zero, backing: .buffered, defer: false, key: true)
+        window.contentView = host
+        window.setContentSize(host.fittingSize)
+        window.makeKeyAndOrderFront(nil)
+        defer { window.close() }
+        try await Task.sleep(for: .milliseconds(200))
+        let field = try XCTUnwrap(searchField(in: host))
+        XCTAssertNotNil(field.currentEditor())
+    }
+
+    func testSearchArrowsDoNotInterruptChineseComposition() {
+        var moves: [CustomSearchField.ArrowDirection] = []
+        let search = CustomSearchField(text: .constant(""), isFocused: .constant(true), onArrowKey: { moves.append($0) },
+                                       textColor: .labelColor, placeholderColor: .secondaryLabelColor)
+        let coordinator = search.makeCoordinator()
+        let field = NSTextField()
+        let editor = NSTextView()
+        editor.setMarkedText("内容", selectedRange: NSRange(location: 2, length: 0),
+                             replacementRange: NSRange(location: NSNotFound, length: 0))
+        for selector in [#selector(NSResponder.moveUp(_:)), #selector(NSResponder.moveDown(_:))] {
+            XCTAssertFalse(coordinator.control(field, textView: editor, doCommandBy: selector))
+        }
+        XCTAssertTrue(moves.isEmpty)
+        editor.unmarkText()
+        XCTAssertTrue(coordinator.control(field, textView: editor, doCommandBy: #selector(NSResponder.moveDown(_:))))
+        XCTAssertEqual(moves.count, 1)
+    }
+
     private func searchField(in view: NSView) -> NSTextField? {
         if let field = view as? NSTextField, field.delegate is CustomSearchField.Coordinator { return field }
         return view.subviews.lazy.compactMap { self.searchField(in: $0) }.first

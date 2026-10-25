@@ -38,7 +38,7 @@ struct SpotlightResultsView: View {
                         }
                         .padding(8)
                     }
-                    .frame(height: min(CGFloat(listItems.count) * 56 + CGFloat(isSearchMode ? groups.count : 0) * 30 + 14, 350))
+                    .frame(height: min(CGFloat(listItems.count) * 60 + CGFloat(isSearchMode ? groups.count : 0) * 30 + 14, 350))
                     .scrollBounceBehavior(.basedOnSize)
                     .onChange(of: selectedID) { _, id in
                         if let id, listItems.contains(where: { $0.id == id }) { proxy.scrollTo(id) }

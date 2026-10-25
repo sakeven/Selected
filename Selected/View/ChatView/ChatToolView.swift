@@ -167,7 +167,7 @@ struct ToolRowView: View {
 
     private var statusColor: Color {
         switch tool.status {
-            case .calling: return .blue
+            case .calling: return AppTheme.accent
             case .success: return .green
             case .failure: return .red
         }

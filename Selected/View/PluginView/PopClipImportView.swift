@@ -29,14 +29,14 @@ struct PopClipImportView: View {
                         HStack(spacing: 12) {
                             if let icon = draft?.info.icon {
                                 Icon(icon.hasPrefix("file://./") ? "file://" + session.directory.appendingPathComponent(String(icon.dropFirst(9))).path : icon)
-                                    .foregroundStyle(.blue).frame(width: 42, height: 42)
-                                    .background(Color.blue.opacity(0.09), in: .rect(cornerRadius: 10))
+                                    .foregroundStyle(AppTheme.accent).frame(width: 42, height: 42)
+                                    .background(AppTheme.accent.opacity(0.09), in: .rect(cornerRadius: 10))
                                     .accessibilityHidden(true)
                             }
                             Text(draft?.info.name ?? session.sourceName).font(.title2.bold())
                         }
                         if let draft {
-                            Label("Compatible with this import", systemImage: "checkmark.circle").foregroundStyle(.blue)
+                            Label("Compatible with this import", systemImage: "checkmark.circle").foregroundStyle(AppTheme.accent)
                             if let description = draft.info.description { Text(description).foregroundStyle(.secondary) }
                             ForEach(draft.actions) { action in
                                 HStack {
@@ -81,9 +81,9 @@ struct PopClipImportView: View {
             HStack {
                 Button("View Original Source", systemImage: "folder") {
                     NSWorkspace.shared.open(session.directory.appendingPathComponent("PopClip Source"))
-                }.buttonStyle(SettingsButtonStyle())
+                }.buttonStyle(AppButtonStyle())
                 Spacer()
-                Button("Cancel", role: .cancel) { dismiss() }.buttonStyle(SettingsButtonStyle()).keyboardShortcut(.cancelAction)
+                Button("Cancel", role: .cancel) { dismiss() }.buttonStyle(AppButtonStyle()).keyboardShortcut(.cancelAction)
                 Button("Import into Selected", systemImage: "square.and.arrow.down") {
                     guard let draft else { return }
                     do {
@@ -91,10 +91,10 @@ struct PopClipImportView: View {
                         didSave(draft.id)
                         dismiss()
                     } catch { errorMessage = error.localizedDescription }
-                }.buttonStyle(SettingsButtonStyle(emphasis: .primary)).disabled(draft == nil || !session.issues.isEmpty)
+                }.buttonStyle(AppButtonStyle(emphasis: .primary)).disabled(draft == nil || !session.issues.isEmpty)
             }.padding(20)
         }
         .frame(width: 680, height: 640)
-        .background(Color("SettingsBackground")).tint(.blue)
+        .background(AppTheme.canvas).tint(AppTheme.accent)
     }
 }

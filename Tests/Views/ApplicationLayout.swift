@@ -8,6 +8,9 @@ final class ApplicationLayoutTests: XCTestCase {
     func testApplicationScreensInLightAndDarkAppearance() async throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("layout-plugins-\(UUID())")
         let manager = PluginManager(extensionsDir: folder, hostVersion: "1.0.0")
+        let configuration = ConfigurationManager.shared.userConfiguration
+        ConfigurationManager.shared.userConfiguration = UserConfiguration(defaultActions: [], appConditions: [], urlConditions: [])
+        defer { ConfigurationManager.shared.userConfiguration = configuration }
         let context = ChatContext(text: "Original text 原始内容", webPageURL: "https://example.com", bundleID: "selected.tests.unknown-app")
         let user = ResponseMessage(message: "请解释这段内容。", files: [AIFileAttachment(filename: "notes.txt", data: Data("fixture".utf8), mimeType: "text/plain")], role: .user, status: .finished)
         let response = ResponseMessage(message: "**重点。**后续\n\n- First item\n- 第二项\n\n`code` and [link](https://example.com)", role: .assistant, status: .finished)
@@ -19,6 +22,10 @@ final class ApplicationLayoutTests: XCTestCase {
         plugin.info.name = "Fixture Plugin"
         let session = PluginEditorSession(plugin: plugin, existing: nil)
         let screens: [(String, NSSize, () -> AnyView)] = [
+            ("settings", NSSize(width: 1080, height: 760), { AnyView(SettingsView()) }),
+            ("clipboard-settings", NSSize(width: 780, height: 640), { AnyView(ClipboardSettingsView()) }),
+            ("plugins", NSSize(width: 780, height: 640), { AnyView(PluginListView(manager: manager)) }),
+            ("applications", NSSize(width: 780, height: 640), { AnyView(ApplicationActionListView()) }),
             ("chat", NSSize(width: 780, height: 720), { AnyView(ChatTextView(ctx: context, viewModel: MessageViewModel(chatService: LayoutAIProvider())).environmentObject(PinnedModel())) }),
             ("composer", NSSize(width: 700, height: 180), { AnyView(ChatInputView(viewModel: MessageViewModel(chatService: LayoutAIProvider()))) }),
             ("assistant", NSSize(width: 700, height: 400), { AnyView(MessageView(message: response)) }),

@@ -22,7 +22,7 @@ struct ClipMetadataCard: View {
                 .accessibilityLabel(Text("Copied:") + Text(" ") + Text(data.copiesText))
             Button("clip.details", systemImage: "info.circle") { showDetails = true }
                 .labelStyle(.iconOnly)
-                .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                .buttonStyle(AppButtonStyle(emphasis: .quiet))
                 .controlSize(.small)
                 .help("clip.details")
                 .popover(isPresented: $showDetails) {
@@ -81,7 +81,6 @@ struct ClipMetadataCard: View {
 }
 
 private struct ClipMetadataRow<Content: View>: View {
-    @Environment(\.colorScheme) private var colorScheme
     let title: String
     @ViewBuilder var content: Content
 
@@ -96,7 +95,7 @@ private struct ClipMetadataRow<Content: View>: View {
 
             content
                 .font(.body)
-                .foregroundStyle(colorScheme.clipPrimaryText)
+                .foregroundStyle(Color.primary)
                 .multilineTextAlignment(.trailing)
         }
         .accessibilityElement(children: .combine)

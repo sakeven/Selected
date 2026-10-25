@@ -34,7 +34,7 @@ struct MessageView: View {
                             .padding(.top, -4)
                     }
                 }
-                .background(.primary.opacity(0.025), in: .rect(cornerRadius: 10))
+                .background(AppTheme.inset.opacity(0.6), in: .rect(cornerRadius: 10))
             }
 
             if !message.tools.isEmpty {
@@ -90,9 +90,9 @@ struct MessageView: View {
         }
         .padding(message.role == .assistant ? 0 : 14)
         .frame(maxWidth: message.role == .user ? 540 : .infinity, alignment: .leading)
-        .background(background, in: .rect(cornerRadius: 16))
+        .background(background, in: .rect(cornerRadius: AppTheme.cardRadius))
         .overlay {
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: AppTheme.cardRadius)
                 .strokeBorder(message.role == .assistant ? .clear : Color.primary.opacity(0.05), lineWidth: 1)
         }
         .frame(maxWidth: .infinity, alignment: message.role == .user ? .trailing : .leading)
@@ -108,10 +108,10 @@ struct MessageView: View {
         HStack(spacing: 8) {
             if message.role == .assistant {
                 Image(systemName: "sparkles")
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(AppTheme.accent)
                     .accessibilityHidden(true)
             }
-            Text(LocalizedStringKey(message.role == .user ? "chat.you" : message.role.rawValue))
+            Text(LocalizedStringKey(message.role == .user ? "chat.you" : message.role == .assistant ? "Selected" : message.role.rawValue))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
 
@@ -137,7 +137,7 @@ struct MessageView: View {
                         .frame(width: 26, height: 26)
                         .contentShape(.rect)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(AppIconButtonStyle())
                 .help(isCopied ? "chat.copied" : "chat.copy")
 
                 if message.role == .assistant {
@@ -149,7 +149,7 @@ struct MessageView: View {
                             .frame(width: 26, height: 26)
                             .contentShape(.rect)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(AppIconButtonStyle())
                     .help("chat.readAloud")
                 }
             }
@@ -161,7 +161,7 @@ struct MessageView: View {
     private var background: Color {
         switch message.role {
         case .assistant: .clear
-        case .user: .primary.opacity(0.045)
+        case .user: AppTheme.selection
         case .system: message.status == .failure ? .red.opacity(0.06) : .primary.opacity(0.025)
         }
     }

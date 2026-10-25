@@ -54,21 +54,19 @@ struct PopResultView: View {
                 }
             }
             .labelStyle(.iconOnly)
-            .buttonStyle(.borderless)
+            .buttonStyle(AppIconButtonStyle())
             .controlSize(.small)
             .foregroundStyle(.secondary)
         }
         .padding(14)
-        .background(.regularMaterial, in: .rect(cornerRadius: 12))
-        .overlay {
-            RoundedRectangle(cornerRadius: 12).strokeBorder(.primary.opacity(0.10), lineWidth: 0.5)
-        }
+        .modifier(AppPanel(cornerRadius: AppTheme.cardRadius))
         .fixedSize(horizontal: false, vertical: true)
     }
 
     private var content: some View {
         Text(text.trimmingCharacters(in: .whitespacesAndNewlines.union(.controlCharacters)))
             .font(.body)
+            .lineSpacing(4)
             .multilineTextAlignment(.leading)
             .frame(width: 360, alignment: .leading)
             .fixedSize(horizontal: false, vertical: true)

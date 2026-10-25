@@ -7,7 +7,7 @@ struct SettingsCard<Content: View>: View {
         VStack(alignment: .leading, spacing: 16) { content }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(20)
-            .background(Color(nsColor: .controlBackgroundColor), in: .rect(cornerRadius: 14))
-            .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(.primary.opacity(0.06)) }
+            .background(AppTheme.surface, in: .rect(cornerRadius: AppTheme.cardRadius))
+            .overlay { RoundedRectangle(cornerRadius: AppTheme.cardRadius).strokeBorder(AppTheme.border.opacity(0.7)) }
     }
 }

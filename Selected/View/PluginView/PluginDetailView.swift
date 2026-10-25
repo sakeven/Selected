@@ -14,9 +14,9 @@ struct PluginDetailView: View {
             VStack(alignment: .leading, spacing: 16) {
                 HStack(alignment: .top, spacing: 12) {
                     Icon(plugin.info.icon)
-                        .foregroundStyle(Color.blue)
+                        .foregroundStyle(AppTheme.accent)
                         .frame(width: 48, height: 48)
-                        .background(Color.blue.opacity(0.10), in: .rect(cornerRadius: 12))
+                        .background(AppTheme.accent.opacity(0.10), in: .rect(cornerRadius: 12))
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 5) {
                         Text(plugin.info.name).font(.title2.bold())
@@ -33,9 +33,9 @@ struct PluginDetailView: View {
                 }
                 HStack(spacing: 10) {
                     Button("Edit Plugin", systemImage: "slider.horizontal.3", action: edit)
-                        .buttonStyle(SettingsButtonStyle(emphasis: .primary))
+                        .buttonStyle(AppButtonStyle(emphasis: .primary))
                     Button("Test", systemImage: "play") { trialAction = plugin.actions.first }
-                        .buttonStyle(SettingsButtonStyle())
+                        .buttonStyle(AppButtonStyle())
                         .disabled(plugin.compatibilityIssue(hostVersion: manager.hostVersion) != nil)
                     Menu {
                         Button("Export Plugin…", systemImage: "square.and.arrow.up", action: exportPlugin)
@@ -100,11 +100,11 @@ struct PluginDetailView: View {
                         SettingsCard {
                             ForEach(plugin.actions) { action in
                                 HStack(spacing: 10) {
-                                    Icon(action.meta.icon).foregroundStyle(Color.blue).accessibilityHidden(true)
+                                    Icon(action.meta.icon).foregroundStyle(AppTheme.accent).accessibilityHidden(true)
                                     VStack(alignment: .leading, spacing: 3) {
                                         Text(action.meta.title).font(.subheadline.weight(.medium))
                                         if action.meta.includeClipboard == true {
-                                            Label("Includes clipboard text", systemImage: "clipboard").font(.caption).foregroundStyle(.blue)
+                                            Label("Includes clipboard text", systemImage: "clipboard").font(.caption).foregroundStyle(AppTheme.accent)
                                         }
                                         if let description = action.meta.description, !description.isEmpty {
                                             Text(description).font(.caption).foregroundStyle(.secondary)
@@ -113,7 +113,7 @@ struct PluginDetailView: View {
                                     Spacer()
                                     Text(action.kind.title).font(.caption).foregroundStyle(.secondary)
                                     Button("Test Action", systemImage: "play") { trialAction = action }
-                                        .labelStyle(.iconOnly).buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                                        .labelStyle(.iconOnly).buttonStyle(AppButtonStyle(emphasis: .quiet))
                                         .disabled(plugin.compatibilityIssue(hostVersion: manager.hostVersion) != nil)
                                 }
                                 if action.id != plugin.actions.last?.id { Divider().opacity(0.5) }
@@ -134,7 +134,7 @@ struct PluginDetailView: View {
                                 LabeledContent("Imported from PopClip", value: source)
                                 Button("View Original Source", systemImage: "folder") {
                                     NSWorkspace.shared.open(manager.directory(for: plugin).appendingPathComponent("PopClip Source"))
-                                }.buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                                }.buttonStyle(AppButtonStyle(emphasis: .quiet))
                             }
                             if let minimum = plugin.info.minSelectedVersion { LabeledContent("Minimum Selected Version", value: minimum) }
                             Text(manager.hasPreviousVersion(plugin) ? String(localized: "The previous version is saved. Restore it from the More menu.") : String(localized: "The previous version is kept after editing or updating. Your settings are saved separately."))
@@ -146,8 +146,8 @@ struct PluginDetailView: View {
                 }.padding(24)
             }
         }
-        .background(Color("SettingsBackground"))
-        .tint(Color.blue)
+        .background(AppTheme.canvas)
+        .tint(AppTheme.accent)
         .disclosureGroupStyle(SettingsDisclosureGroupStyle())
         .sheet(item: $trialAction) { action in
             PluginTrialView(plugin: plugin, directory: manager.directory(for: plugin), actionID: action.meta.identifier)

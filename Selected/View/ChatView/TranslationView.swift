@@ -19,7 +19,6 @@ struct TranslationView: View {
     var to: String = "cn"
 
     @EnvironmentObject var pinned: PinnedModel
-    @Environment(\.colorScheme) private var colorScheme
 
     @State private var word: Word?
 
@@ -39,8 +38,7 @@ struct TranslationView: View {
             }
             Spacer()
         }.frame(width: 320, height: 400)
-            .background(.ultraThinMaterial)
-            .cornerRadius(12)
+            .modifier(AppPanel())
             .task {
                 if isPreview {
                     return
@@ -71,55 +69,39 @@ struct TranslationView: View {
     }
 
     @State private var isCopied = false
-    private var header: some View{
-        HStack{
-            Text("Translation").font(.title).bold()
-            Spacer()
-
-            if !isWord(str: text){
-                Button {
-                    showText = !showText
-                } label: {
-                    Image(systemName: showText ? "text.page.slash" : "text.page")
-                }.foregroundColor(Color.white)
-                    .cornerRadius(5)
+    private var header: some View {
+        HStack(spacing: 4) {
+            Text("Translation").font(.title3.weight(.semibold))
+            Spacer(minLength: 4)
+            if !isWord(str: text) {
+                Button("Original content", systemImage: "text.quote") { showText.toggle() }
+                    .buttonStyle(AppIconButtonStyle(isSelected: showText))
+                    .help("Original content")
             }
-
-            Button(action: {
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                let painText  = MarkdownContent(self.transText).renderPlainText()
-                pasteboard.setString(painText, forType: .string)
+            Button(isCopied ? "Copied" : "Copy", systemImage: isCopied ? "checkmark" : "doc.on.doc") {
+                copyText(MarkdownContent(transText).renderPlainText())
                 isCopied = true
-                DispatchQueue.main.asyncAfter(deadline: .now()+0.2){
-                    isCopied = false
-                }
-            }, label: {
-                Image(systemName: "doc.on.clipboard.fill").foregroundColor(isCopied ? .green: .primary)
-            })
-            .foregroundColor(Color.white)
-            .cornerRadius(5)
-
-            Button {
-                Task{
-                    await TTSManager.speak(self.text, view: false)
-                }
-            } label: {
-                Image(systemName: "play.circle")
-            }.foregroundColor(Color.white)
-                .cornerRadius(5)
-            Button {
-                pinned.pinned = !pinned.pinned
-            } label: {
-                if pinned.pinned {
-                    Image(systemName: "pin.slash")
-                } else {
-                    Image(systemName: "pin")
-                }
             }
+            .disabled(!hasRep)
+            .help("Copy")
+            Button("chat.readAloud", systemImage: "speaker.wave.2") {
+                Task { await TTSManager.speak(text, view: false) }
+            }
+            .help("chat.readAloud")
+            Button(pinned.pinned ? "chat.unpin" : "chat.pin", systemImage: pinned.pinned ? "pin.fill" : "pin") {
+                pinned.pinned.toggle()
+            }
+            .buttonStyle(AppIconButtonStyle(isSelected: pinned.pinned))
+            .help(pinned.pinned ? "chat.unpin" : "chat.pin")
         }
-        .padding([.horizontal, .top], 12)
-        .padding(.bottom, 8)
+        .buttonStyle(AppIconButtonStyle())
+        .padding(16)
+        .task(id: isCopied) {
+            guard isCopied else { return }
+            try? await Task.sleep(for: .seconds(1.5))
+            guard !Task.isCancelled else { return }
+            isCopied = false
+        }
     }
 
     private var wordView: some View{

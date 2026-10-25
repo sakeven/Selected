@@ -5,7 +5,6 @@ struct ChatTextView: View {
     let ctx: ChatContext
     @ObservedObject var viewModel: MessageViewModel
     @EnvironmentObject var pinned: PinnedModel
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var task: Task<Void, Never>?
     @State private var hostWindow: NSWindow?
@@ -20,7 +19,7 @@ struct ChatTextView: View {
         ZStack(alignment: .topLeading) {
             VStack(spacing: 0) {
                 headerView
-                Divider().opacity(0.6)
+                Rectangle().fill(AppTheme.border).frame(height: 1)
                 transcriptView
                 ChatInputView(viewModel: viewModel, onCancel: { task?.cancel() })
                     .padding(.horizontal, 22)
@@ -28,12 +27,8 @@ struct ChatTextView: View {
                     .padding(.bottom, 18)
             }
             .frame(minWidth: 620, maxWidth: .infinity, minHeight: 520, maxHeight: .infinity)
-            .background(colorScheme == .dark ? Color(red: 0.105, green: 0.102, blue: 0.095) : Color(red: 0.996, green: 0.996, blue: 0.992))
-            .clipShape(.rect(cornerRadius: 20))
-            .overlay {
-                RoundedRectangle(cornerRadius: 20)
-                    .strokeBorder(.primary.opacity(0.1), lineWidth: 1)
-            }
+            .background(AppTheme.canvas)
+            .modifier(AppPanel())
             .frame(width: isCollapsed ? expandedFrame?.width : nil, height: isCollapsed ? expandedFrame?.height : nil)
             .opacity(isCollapsed ? 0 : 1)
             .allowsHitTesting(!isCollapsed)
@@ -65,12 +60,15 @@ struct ChatTextView: View {
         HStack(spacing: 10) {
             Image(systemName: "sparkles")
                 .font(.system(size: 17, weight: .semibold))
-                .frame(width: 30, height: 30)
+                .foregroundStyle(AppTheme.accent)
+                .frame(width: 38, height: 38)
+                .background(AppTheme.selection, in: .rect(cornerRadius: 11))
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("AI Chat")
-                    .font(.headline)
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(.primary)
                 if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: ctx.bundleID) {
                     Text(FileManager.default.displayName(atPath: url.path))
                         .font(.caption)
@@ -81,12 +79,8 @@ struct ChatTextView: View {
             Button { pinned.pinned.toggle() } label: {
                 Label(pinned.pinned ? "chat.unpin" : "chat.pin", systemImage: pinned.pinned ? "pin.fill" : "pin")
                     .labelStyle(.iconOnly)
-                    .frame(width: 30, height: 30)
-                    .foregroundStyle(pinned.pinned ? Color.accentColor : .secondary)
-                    .background(pinned.pinned ? Color.accentColor.opacity(0.08) : .clear, in: .rect(cornerRadius: 8))
-                    .contentShape(.rect)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(AppIconButtonStyle(isSelected: pinned.pinned))
             .help(pinned.pinned ? "chat.unpin" : "chat.pin")
 
             Button {
@@ -96,24 +90,21 @@ struct ChatTextView: View {
             } label: {
                 Label("chat.collapse", systemImage: "minus")
                     .labelStyle(.iconOnly)
-                    .frame(width: 30, height: 30)
-                    .contentShape(.rect)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(AppIconButtonStyle())
             .help("chat.collapse")
 
             Button { hostWindow?.close() } label: {
                 Label("chat.close", systemImage: "xmark")
                     .labelStyle(.iconOnly)
-                    .frame(width: 30, height: 30)
-                    .contentShape(.rect)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(AppIconButtonStyle())
             .help("chat.close")
         }
         .foregroundStyle(.secondary)
         .padding(.horizontal, 20)
-        .padding(.vertical, 12)
+        .padding(.vertical, 16)
+        .background(AppTheme.surface)
     }
 
     private var transcriptView: some View {
@@ -155,8 +146,8 @@ struct ChatTextView: View {
                             .font(.caption.weight(.medium))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 8)
-                            .background(.regularMaterial, in: Capsule())
-                            .overlay(Capsule().strokeBorder(.primary.opacity(0.08), lineWidth: 1))
+                            .background(AppTheme.surface, in: Capsule())
+                            .overlay(Capsule().strokeBorder(AppTheme.border, lineWidth: 1))
                             .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)

@@ -61,12 +61,8 @@ struct PopBarView: View {
                 NumerberView(value: v)
             }
         }
-        .padding(5)
-        .background(.regularMaterial, in: .rect(cornerRadius: 12))
-        .overlay {
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(.primary.opacity(0.10), lineWidth: 0.5)
-        }
+        .padding(6)
+        .modifier(AppPanel(cornerRadius: AppTheme.cardRadius))
         .fixedSize()
     }
 }

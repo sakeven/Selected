@@ -60,7 +60,7 @@ struct PluginTrialView: View {
                                     Button("Choose App…", systemImage: "app") {
                                         applications = Application.available()
                                         chooseApp = true
-                                    }.buttonStyle(SettingsButtonStyle())
+                                    }.buttonStyle(AppButtonStyle())
                                         .popover(isPresented: $chooseApp) {
                                             ApplicationPickerView(applications: applications) { app in bundleID = app.id; chooseApp = false }
                                         }
@@ -90,7 +90,7 @@ struct PluginTrialView: View {
                         SettingsCard {
                             HStack {
                                 Label(trial.status, systemImage: trial.failed ? "exclamationmark.circle" : "info.circle")
-                                    .foregroundStyle(trial.failed ? Color.red : .blue)
+                                    .foregroundStyle(trial.failed ? Color.red : AppTheme.accent)
                                 Spacer()
                                 if let duration = trial.duration { Text("\(duration, specifier: "%.2f") s").font(.caption).foregroundStyle(.secondary) }
                             }
@@ -108,18 +108,18 @@ struct PluginTrialView: View {
                 if let action, action.gpt != nil || action.runCommand != nil {
                     Button(action.gpt != nil ? String(localized: "Run AI") : String(localized: "Run Command"), systemImage: "play.fill") {
                         trial.run(action, plugin: plugin, context: context, directory: directory)
-                    }.buttonStyle(SettingsButtonStyle(emphasis: .primary)).disabled(trial.isRunning)
+                    }.buttonStyle(AppButtonStyle(emphasis: .primary)).disabled(trial.isRunning)
                     if trial.isRunning {
                         ProgressView().controlSize(.small)
-                        Button("Cancel Run", action: trial.cancel).buttonStyle(SettingsButtonStyle())
+                        Button("Cancel Run", action: trial.cancel).buttonStyle(AppButtonStyle())
                     }
                 }
                 Spacer()
-                Button("Done") { trial.cancel(); dismiss() }.buttonStyle(SettingsButtonStyle()).keyboardShortcut(.cancelAction)
+                Button("Done") { trial.cancel(); dismiss() }.buttonStyle(AppButtonStyle()).keyboardShortcut(.cancelAction)
             }.padding(16)
         }
         .frame(width: 720, height: 740)
-        .background(Color("SettingsBackground")).tint(.blue)
+        .background(AppTheme.canvas).tint(AppTheme.accent)
         .disclosureGroupStyle(SettingsDisclosureGroupStyle())
         .onDisappear { trial.cancel() }
     }
@@ -129,7 +129,7 @@ struct PluginTrialView: View {
         SettingsCard {
             switch result {
             case .success(let preview):
-                Label("Input matches · Preview", systemImage: "checkmark.circle").foregroundStyle(.blue)
+                Label("Input matches · Preview", systemImage: "checkmark.circle").foregroundStyle(AppTheme.accent)
                 Text(preview.isEmpty ? String(localized: "Empty input") : preview)
                     .font(.system(.body, design: .monospaced)).textSelection(.enabled)
                     .frame(maxWidth: .infinity, alignment: .leading)

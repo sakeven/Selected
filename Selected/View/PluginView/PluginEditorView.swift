@@ -32,9 +32,9 @@ struct PluginEditorView: View {
         VStack(spacing: 0) {
             HStack(spacing: 14) {
                 Image(systemName: "puzzlepiece.extension")
-                    .font(.title2).foregroundStyle(Color.blue)
+                    .font(.title2).foregroundStyle(AppTheme.accent)
                     .frame(width: 44, height: 44)
-                    .background(Color.blue.opacity(0.09), in: .rect(cornerRadius: 12))
+                    .background(AppTheme.accent.opacity(0.09), in: .rect(cornerRadius: 12))
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(session.existing == nil ? String(localized: "Create Your Plugin") : String(localized: "Edit Plugin")).font(.title3.bold())
@@ -44,7 +44,7 @@ struct PluginEditorView: View {
                 Spacer(minLength: 16)
                 PluginSegmentedControl(values: ["Visual", "YAML"], selection: Binding(get: { mode }, set: switchMode), title: { $0 == "Visual" ? String(localized: "Visual") : $0 })
                     .frame(width: 170)
-            }.padding(24)
+            }.padding(24).background(AppTheme.surface)
             Divider().opacity(0.5)
             if mode == "YAML" {
                 VStack(alignment: .leading, spacing: 12) {
@@ -53,7 +53,7 @@ struct PluginEditorView: View {
                     TextEditor(text: $source)
                         .font(.system(.body, design: .monospaced)).autocorrectionDisabled()
                         .scrollContentBackground(.hidden).padding(14)
-                        .background(Color(nsColor: .controlBackgroundColor), in: .rect(cornerRadius: 12))
+                        .background(AppTheme.surface, in: .rect(cornerRadius: 12))
                         .overlay { RoundedRectangle(cornerRadius: 12).strokeBorder(.primary.opacity(0.08)) }
                         .accessibilityLabel("Plugin YAML Definition")
                 }.padding(24)
@@ -86,21 +86,21 @@ struct PluginEditorView: View {
                 }
                 HStack(spacing: 10) {
                     Button("Check Configuration", systemImage: "checkmark.shield") { validate() }
-                        .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                        .buttonStyle(AppButtonStyle(emphasis: .quiet))
                     Button("Test", systemImage: "play") {
                         do { trialPlugin = try currentDraft() } catch { show(error) }
-                    }.buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                    }.buttonStyle(AppButtonStyle(emphasis: .quiet))
                     Spacer()
                     Button("Cancel", role: .cancel) { dismiss() }
-                        .buttonStyle(SettingsButtonStyle()).keyboardShortcut(.cancelAction)
+                        .buttonStyle(AppButtonStyle()).keyboardShortcut(.cancelAction)
                     Button(session.existing == nil ? String(localized: "Create Plugin") : String(localized: "Save Changes")) { save() }
-                        .buttonStyle(SettingsButtonStyle(emphasis: .primary)).keyboardShortcut(.defaultAction)
+                        .buttonStyle(AppButtonStyle(emphasis: .prominent)).keyboardShortcut(.defaultAction)
                 }
-            }.padding(.horizontal, 24).padding(.vertical, 16)
+            }.padding(.horizontal, 24).padding(.vertical, 16).background(AppTheme.surface)
         }
-        .tint(Color.blue)
+        .tint(AppTheme.accent)
         .disclosureGroupStyle(SettingsDisclosureGroupStyle())
-        .background(Color("SettingsBackground"))
+        .background(AppTheme.canvas)
         .frame(width: 760, height: 680)
         .interactiveDismissDisabled()
         .sheet(item: $trialPlugin) { plugin in
@@ -172,9 +172,9 @@ struct PluginEditorView: View {
                     }
                 } label: {
                     Label("Add Action", systemImage: "plus")
-                        .font(.subheadline.weight(.semibold)).foregroundStyle(Color.blue)
+                        .font(.subheadline.weight(.semibold)).foregroundStyle(AppTheme.accent)
                         .padding(.horizontal, 12).padding(.vertical, 8)
-                        .background(Color.blue.opacity(0.08), in: .rect(cornerRadius: 9))
+                        .background(AppTheme.accent.opacity(0.08), in: .rect(cornerRadius: 9))
                 }.menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
             }
             ForEach($draft.actions) { $action in
@@ -191,8 +191,8 @@ struct PluginEditorView: View {
                                     .disabled(draft.actions.last?.id == action.id)
                                 Spacer()
                                 Button("Delete Action", systemImage: "trash", role: .destructive) { draft.actions.removeAll { $0.id == action.id } }
-                                    .buttonStyle(SettingsButtonStyle(emphasis: .destructive))
-                            }.buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                                    .buttonStyle(AppButtonStyle(emphasis: .destructive))
+                            }.buttonStyle(AppButtonStyle(emphasis: .quiet))
                         }.padding(.top, 14)
                     } label: {
                         HStack {
@@ -217,7 +217,7 @@ struct PluginEditorView: View {
                     let option = Option(identifier: "option_" + UUID().uuidString.prefix(8), type: .string)
                     draft.info.options.append(option)
                     expandedOption = option.id
-                }.buttonStyle(SettingsButtonStyle())
+                }.buttonStyle(AppButtonStyle())
             }
             if draft.info.options.isEmpty {
                 SettingsCard {
@@ -235,7 +235,7 @@ struct PluginEditorView: View {
                             HStack {
                                 Spacer()
                                 Button("Delete Option", systemImage: "trash", role: .destructive) { draft.info.options.removeAll { $0.id == option.id } }
-                                    .buttonStyle(SettingsButtonStyle(emphasis: .destructive))
+                                    .buttonStyle(AppButtonStyle(emphasis: .destructive))
                             }
                         }.padding(.top, 14)
                     } label: {

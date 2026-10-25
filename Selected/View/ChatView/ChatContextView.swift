@@ -70,8 +70,8 @@ struct ChatContextView: View {
                         .padding(.top, -4)
                     }
                 }
-                .background(.primary.opacity(0.025), in: .rect(cornerRadius: 12))
-                .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(.primary.opacity(0.06), lineWidth: 1))
+                .background(AppTheme.surface, in: .rect(cornerRadius: AppTheme.cardRadius))
+                .overlay(RoundedRectangle(cornerRadius: AppTheme.cardRadius).strokeBorder(AppTheme.border, lineWidth: 1))
             }
 
             if let request = ctx.request, !request.isEmpty {
@@ -79,7 +79,7 @@ struct ChatContextView: View {
                     .textSelection(.enabled)
                     .padding(14)
                     .frame(maxWidth: 540, alignment: .leading)
-                    .background(.primary.opacity(0.045), in: .rect(cornerRadius: 16))
+                    .background(AppTheme.selection, in: .rect(cornerRadius: AppTheme.cardRadius))
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }

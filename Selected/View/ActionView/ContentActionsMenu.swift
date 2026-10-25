@@ -21,7 +21,7 @@ struct ContentActionsMenu: View {
         }
         .menuStyle(.borderlessButton)
         .fixedSize()
-        .tint(.blue)
+        .tint(AppTheme.accent)
         .help("Process content")
         .accessibilityLabel("Process content")
     }

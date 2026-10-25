@@ -25,9 +25,11 @@ struct SpotlightResultRow: View {
                     }
                 }
                 .frame(width: 28, height: 28)
+                .padding(6)
+                .background(AppTheme.inset.opacity(0.6), in: .rect(cornerRadius: 10))
                 .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(item.title).lineLimit(1)
+                    Text(item.title).font(.body.weight(.medium)).lineLimit(1)
                     Text(item.subtitle).font(.caption).foregroundStyle(.secondary)
                         .lineLimit(1).truncationMode(.middle)
                 }
@@ -39,11 +41,9 @@ struct SpotlightResultRow: View {
                     .opacity(isSelected ? 1 : 0).accessibilityHidden(true)
             }
             .padding(.horizontal, 12)
-            .frame(height: 54)
-            .background(isSelected ? Color.accentColor.opacity(0.12) : .clear, in: .rect(cornerRadius: 8))
-            .contentShape(.rect)
+            .frame(height: 58)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(AppSelectionStyle(isSelected: isSelected))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .contextMenu {
             if let url = item.url {

@@ -70,6 +70,7 @@ struct ChatWindowStyleSync: NSViewRepresentable {
 struct CollapsedBubble: View {
     @Binding var isCollapsed: Bool
     let window: NSWindow?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var dragStartOrigin: CGPoint?
     @State private var dragStartMouseLocation: CGPoint?
@@ -79,20 +80,20 @@ struct CollapsedBubble: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(Color(nsColor: .windowBackgroundColor).opacity(0.96))
+                .fill(AppTheme.surface)
                 .overlay(
                     Circle()
-                        .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+                        .stroke(AppTheme.border, lineWidth: 1)
                 )
                 .shadow(color: Color.black.opacity(0.14), radius: 18, y: 10)
 
             Button {
                 guard !suppressExpand else { return }
-                withAnimation { isCollapsed = false }
+                withAnimation(reduceMotion ? nil : .easeOut(duration: 0.15)) { isCollapsed = false }
             } label: {
                 Image(systemName: "bubble.left.and.text.bubble.right.fill")
                     .font(.system(size: 18))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(AppTheme.accent)
                     .frame(width: 52, height: 52)
                     .contentShape(Circle())
             }

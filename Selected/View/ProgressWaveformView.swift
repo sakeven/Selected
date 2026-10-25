@@ -8,9 +8,11 @@ struct ProgressWaveformView: View {
     var body: some View {
         GeometryReader { geometry in
             WaveformView(audioURL: audioURL) { shape in
-                shape.fill(.clear)
-                shape.fill(.blue).mask(alignment: .leading) {
-                    Rectangle().frame(width: geometry.size.width * progress.wrappedValue)
+                ZStack {
+                    shape.fill(AppTheme.border)
+                    shape.fill(AppTheme.accent).mask(alignment: .leading) {
+                        Rectangle().frame(width: geometry.size.width * progress.wrappedValue)
+                    }
                 }
             }
         }

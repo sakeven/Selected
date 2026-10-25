@@ -29,7 +29,7 @@ struct PluginOptionValueView: View {
                     Spacer()
                     if text != savedText {
                         Button("Save", systemImage: "checkmark") { update(text) }
-                            .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                            .buttonStyle(AppButtonStyle(emphasis: .quiet))
                             .help(option.type == .secret ? String(localized: "Save to Keychain") : String(localized: "Save this value"))
                     } else if didSave {
                         Label("Saved", systemImage: "checkmark.circle")
@@ -40,8 +40,8 @@ struct PluginOptionValueView: View {
                     SecureField("Enter \(option.displayName)", text: $text)
                         .focused($isFocused)
                         .textFieldStyle(.plain).padding(10)
-                        .background(.primary.opacity(0.035), in: .rect(cornerRadius: 8))
-                        .overlay { RoundedRectangle(cornerRadius: 8).strokeBorder(isFocused ? Color.blue.opacity(0.6) : .primary.opacity(0.07), lineWidth: isFocused ? 1.5 : 1) }
+                        .background(AppTheme.inset.opacity(0.65), in: .rect(cornerRadius: 8))
+                        .overlay { RoundedRectangle(cornerRadius: 8).strokeBorder(isFocused ? AppTheme.accent : AppTheme.border, lineWidth: isFocused ? 1.5 : 1) }
                         .onSubmit { update(text) }
                         .accessibilityLabel(option.displayName)
                 } else if option.multiline == true {
@@ -50,15 +50,15 @@ struct PluginOptionValueView: View {
                         .scrollContentBackground(.hidden)
                         .padding(8)
                         .frame(minHeight: 90, maxHeight: 150)
-                        .background(.primary.opacity(0.035), in: .rect(cornerRadius: 8))
-                        .overlay { RoundedRectangle(cornerRadius: 8).strokeBorder(isFocused ? Color.blue.opacity(0.6) : .primary.opacity(0.07), lineWidth: isFocused ? 1.5 : 1) }
+                        .background(AppTheme.inset.opacity(0.65), in: .rect(cornerRadius: 8))
+                        .overlay { RoundedRectangle(cornerRadius: 8).strokeBorder(isFocused ? AppTheme.accent : AppTheme.border, lineWidth: isFocused ? 1.5 : 1) }
                         .accessibilityLabel(option.displayName)
                 } else {
                     TextField("Enter \(option.displayName)", text: $text)
                         .focused($isFocused)
                         .textFieldStyle(.plain).padding(10)
-                        .background(.primary.opacity(0.035), in: .rect(cornerRadius: 8))
-                        .overlay { RoundedRectangle(cornerRadius: 8).strokeBorder(isFocused ? Color.blue.opacity(0.6) : .primary.opacity(0.07), lineWidth: isFocused ? 1.5 : 1) }
+                        .background(AppTheme.inset.opacity(0.65), in: .rect(cornerRadius: 8))
+                        .overlay { RoundedRectangle(cornerRadius: 8).strokeBorder(isFocused ? AppTheme.accent : AppTheme.border, lineWidth: isFocused ? 1.5 : 1) }
                         .onSubmit { update(text) }
                         .accessibilityLabel(option.displayName)
                 }

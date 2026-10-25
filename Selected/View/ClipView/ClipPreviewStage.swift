@@ -24,7 +24,6 @@ struct ClipPreviewStage: View {
 }
 
 private struct ClipColorPreview: View {
-    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var data: ClipHistoryData
 
     var body: some View {
@@ -38,7 +37,7 @@ private struct ClipColorPreview: View {
                     .frame(width: diameter, height: diameter)
                     .overlay(
                         Circle()
-                            .stroke(colorScheme.clipSelectedStroke, lineWidth: 1)
+                            .stroke(AppTheme.border, lineWidth: 1)
                     )
                 Spacer()
             }
@@ -48,7 +47,6 @@ private struct ClipColorPreview: View {
 }
 
 private struct ClipFilePreview: View {
-    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var data: ClipHistoryData
 
     var body: some View {
@@ -66,13 +64,13 @@ private struct ClipFilePreview: View {
 
                 Text(data.detailTitle)
                     .font(.title2.weight(.semibold))
-                    .foregroundStyle(colorScheme.clipPrimaryText)
+                    .foregroundStyle(Color.primary)
                     .lineLimit(2)
 
                 if let locationInfo = data.locationInfo {
                     Text(locationInfo.value)
                         .font(.body)
-                        .foregroundStyle(colorScheme.clipSecondaryText)
+                        .foregroundStyle(Color.secondary)
                         .lineLimit(3)
                 }
 
@@ -84,7 +82,6 @@ private struct ClipFilePreview: View {
 }
 
 private struct ClipImagePreview: View {
-    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var data: ClipHistoryData
 
     var body: some View {
@@ -97,17 +94,17 @@ private struct ClipImagePreview: View {
             VStack(spacing: 14) {
                 Image(systemName: "photo.on.rectangle.angled")
                     .font(.largeTitle)
-                    .foregroundStyle(colorScheme.clipPrimaryText.opacity(0.84))
+                    .foregroundStyle(Color.primary.opacity(0.84))
 
                 Text(data.detailTitle)
                     .font(.title3.weight(.semibold))
-                    .foregroundStyle(colorScheme.clipPrimaryText)
+                    .foregroundStyle(Color.primary)
                     .lineLimit(2)
 
                 if let locationInfo = data.locationInfo {
                     Text(locationInfo.value)
                         .font(.body)
-                        .foregroundStyle(colorScheme.clipSecondaryText)
+                        .foregroundStyle(Color.secondary)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -155,7 +152,7 @@ private struct ClipLinkPreview: View {
                 Link(destination: url) {
                     Label("clip.link.open", systemImage: "arrow.up.right")
                 }
-                .buttonStyle(SettingsButtonStyle(emphasis: .primary))
+                .buttonStyle(AppButtonStyle(emphasis: .primary))
                 .help(urlString)
             } else {
                 Text(data.displayURLString ?? data.detailTitle)
@@ -171,7 +168,6 @@ private struct ClipLinkPreview: View {
 }
 
 struct ClipTextPreview: View {
-    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var data: ClipHistoryData
 
     private var rtfText: NSAttributedString? {
@@ -190,7 +186,7 @@ struct ClipTextPreview: View {
         } else {
             Text(data.detailTitle)
                 .font(.title3.weight(.semibold))
-                .foregroundStyle(colorScheme.clipSecondaryText)
+                .foregroundStyle(Color.secondary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }

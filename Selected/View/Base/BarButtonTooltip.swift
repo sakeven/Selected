@@ -35,11 +35,7 @@ struct BarButtonTooltip: NSViewRepresentable {
                 .padding(.vertical, 5)
                 .frame(maxWidth: 260)
                 .fixedSize()
-                .background(.regularMaterial, in: .rect(cornerRadius: 6))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 6)
-                        .strokeBorder(.primary.opacity(0.10), lineWidth: 0.5)
-                }
+                .modifier(AppPanel(cornerRadius: 6))
                 .accessibilityHidden(true)
             let content = NSHostingView(rootView: label)
             let size = content.fittingSize

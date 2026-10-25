@@ -27,9 +27,11 @@ struct SettingsMenuPicker<Selection: Hashable>: View {
                     Text(label(selection))
                     Image(systemName: "chevron.up.chevron.down").font(.caption)
                 }
-                .font(.subheadline)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.primary)
                 .padding(.horizontal, 12).padding(.vertical, 9)
-                .background(.primary.opacity(0.04), in: .rect(cornerRadius: 8))
+                .background(AppTheme.inset.opacity(0.65), in: .rect(cornerRadius: AppTheme.controlRadius))
+                .overlay { RoundedRectangle(cornerRadius: AppTheme.controlRadius).strokeBorder(AppTheme.border) }
             }
             .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
             .accessibilityLabel(title)

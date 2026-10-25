@@ -8,31 +8,10 @@
 import AppKit
 import SwiftUI
 
-private extension ColorScheme {
-    var clipSearchFill: Color {
-        Color(nsColor: .textBackgroundColor).opacity(self == .dark ? 0.65 : 0.9)
-    }
-
-    var clipSearchStroke: Color {
-        self == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.08)
-    }
-
-    var clipSearchIcon: Color {
-        .secondary
-    }
-
-    var clipSearchTextColor: NSColor {
-        .labelColor
-    }
-
-    var clipSearchPlaceholderColor: NSColor {
-        .secondaryLabelColor
-    }
-}
-
 // MARK: - 自定义搜索框（基于 NSTextField，可以捕获方向键事件）
 struct CustomSearchField: NSViewRepresentable {
     @Binding var text: String
+    @Binding var isFocused: Bool
     var placeholder: String = "Search"
     var onArrowKey: (ArrowDirection) -> Void
     var textColor: NSColor
@@ -55,7 +34,18 @@ struct CustomSearchField: NSViewRepresentable {
             }
         }
 
+        func controlTextDidBeginEditing(_ notification: Notification) { updateFocus(true) }
+        func controlTextDidEndEditing(_ notification: Notification) { updateFocus(false) }
+
+        private func updateFocus(_ focused: Bool) {
+            DispatchQueue.main.async { [weak self] in
+                guard let self, parent.isFocused != focused else { return }
+                parent.isFocused = focused
+            }
+        }
+
         func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
+            guard !textView.hasMarkedText() else { return false }
             if commandSelector == #selector(NSResponder.moveUp(_:)) {
                 parent.onArrowKey(.up)
                 return true
@@ -82,6 +72,7 @@ struct CustomSearchField: NSViewRepresentable {
         textField.focusRingType = .none
         textField.textColor = textColor
         textField.font = .systemFont(ofSize: 14)
+        textField.cell?.isScrollable = true
         textField.setAccessibilityLabel(placeholder)
         return textField
     }
@@ -96,28 +87,36 @@ struct CustomSearchField: NSViewRepresentable {
             string: placeholder,
             attributes: [.foregroundColor: placeholderColor]
         )
+        if isFocused, nsView.currentEditor() == nil {
+            let coordinator = context.coordinator
+            DispatchQueue.main.async { [weak nsView] in
+                guard let nsView, coordinator.parent.isFocused, nsView.window?.isKeyWindow == true else { return }
+                nsView.window?.makeFirstResponder(nsView)
+            }
+        }
     }
 }
 
 // MARK: - 搜索框外层样式封装
 struct SearchBarView: View {
-    @Environment(\.colorScheme) private var colorScheme
     @Binding var searchText: String
+    @Binding var isFocused: Bool
     var onArrowKey: (CustomSearchField.ArrowDirection) -> Void
 
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
                 .font(.body.weight(.semibold))
-                .foregroundStyle(colorScheme.clipSearchIcon)
+                .foregroundStyle(isFocused ? AppTheme.accent : .secondary)
                 .accessibilityHidden(true)
 
             CustomSearchField(
                 text: $searchText,
+                isFocused: $isFocused,
                 placeholder: String(localized: "clip.search"),
                 onArrowKey: onArrowKey,
-                textColor: colorScheme.clipSearchTextColor,
-                placeholderColor: colorScheme.clipSearchPlaceholderColor
+                textColor: .labelColor,
+                placeholderColor: .secondaryLabelColor
             )
                 .frame(height: 20)
 
@@ -129,19 +128,19 @@ struct SearchBarView: View {
                         .labelStyle(.iconOnly)
                         .foregroundStyle(.secondary)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(AppIconButtonStyle())
                 .help(Text("clip.search.clear"))
             }
         }
-        .padding(.horizontal, 14)
+        .padding(.horizontal, 10)
         .frame(height: 40)
         .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(colorScheme.clipSearchFill)
+            RoundedRectangle(cornerRadius: AppTheme.controlRadius)
+                .fill(AppTheme.surface)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(colorScheme.clipSearchStroke, lineWidth: 1)
+            RoundedRectangle(cornerRadius: AppTheme.controlRadius)
+                .strokeBorder(isFocused ? AppTheme.accent : AppTheme.border, lineWidth: isFocused ? 1.5 : 1)
         )
     }
 }

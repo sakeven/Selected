@@ -16,25 +16,25 @@ struct PluginRepairView: View {
             Text(issue.message).font(.caption).foregroundStyle(.orange).textSelection(.enabled).lineLimit(5)
             TextEditor(text: $source)
                 .font(.system(.body, design: .monospaced)).autocorrectionDisabled().scrollContentBackground(.hidden)
-                .padding(12).background(Color(nsColor: .controlBackgroundColor), in: .rect(cornerRadius: 12))
+                .padding(12).background(AppTheme.surface, in: .rect(cornerRadius: 12))
                 .accessibilityLabel("Plugin YAML Definition")
             if let errorMessage { Text(errorMessage).font(.caption).foregroundStyle(.red).textSelection(.enabled).lineLimit(5) }
             HStack {
                 Button("Show in Finder", systemImage: "folder") { NSWorkspace.shared.activateFileViewerSelecting([issue.directory]) }
-                    .buttonStyle(SettingsButtonStyle())
+                    .buttonStyle(AppButtonStyle())
                 Spacer()
-                Button("Cancel", role: .cancel) { dismiss() }.buttonStyle(SettingsButtonStyle()).keyboardShortcut(.cancelAction)
+                Button("Cancel", role: .cancel) { dismiss() }.buttonStyle(AppButtonStyle()).keyboardShortcut(.cancelAction)
                 Button("Save and Reload", systemImage: "checkmark") {
                     guard let original else { return }
                     do {
                         didSave(try manager.repair(source, issue: issue, original: original))
                         dismiss()
                     } catch { errorMessage = error.localizedDescription }
-                }.buttonStyle(SettingsButtonStyle(emphasis: .primary)).disabled(original == nil)
+                }.buttonStyle(AppButtonStyle(emphasis: .primary)).disabled(original == nil)
             }
         }
         .padding(24).frame(width: 720, height: 640)
-        .background(Color("SettingsBackground")).tint(.blue)
+        .background(AppTheme.canvas).tint(AppTheme.accent)
         .interactiveDismissDisabled()
         .onAppear {
             do {

@@ -7,18 +7,21 @@ struct SettingsPage<Content: View>: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            SettingsPageHeader(title: title, subtitle: subtitle).padding(20)
-            Divider()
+            SettingsPageHeader(title: title, subtitle: subtitle)
+                .padding(AppTheme.pageInset)
+                .background(AppTheme.surface)
+            Rectangle().fill(AppTheme.border).frame(height: 1)
             ScrollView {
-                VStack(alignment: .leading, spacing: 22) {
+                VStack(alignment: .leading, spacing: 26) {
                     content
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(24)
+                .frame(maxWidth: 780, alignment: .leading)
+                .padding(AppTheme.pageInset)
+                .frame(maxWidth: .infinity, alignment: .top)
             }
         }
-        .background(Color("SettingsBackground"))
-        .tint(.blue)
+        .background(AppTheme.canvas)
+        .tint(AppTheme.accent)
         .toggleStyle(.switch)
         .disclosureGroupStyle(SettingsDisclosureGroupStyle())
     }

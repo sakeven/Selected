@@ -1,164 +1,204 @@
 {
-  "environment" : "Version 15.7.4 (Build 24G517); arm64; 2x; English\/US",
+  "environment" : "Recorded on Version 27.0.1 (Build 26A434); English\/US test scheme",
   "images" : {
+    "application-applications-dark" : {
+      "height" : 1280,
+      "sha256" : "e022b7b5ab8c30e3ab688a646bc9c6b64f1eb99bb22ca4ae9f7a49589b4c705f",
+      "width" : 1560
+    },
+    "application-applications-light" : {
+      "height" : 1280,
+      "sha256" : "d563dc94d1d2c2e5bd1e08029fca132b551ea1cdaa0ad6b1bf638d9d15a862b7",
+      "width" : 1560
+    },
     "application-assistant-dark" : {
       "height" : 800,
-      "sha256" : "bc521026dbe63fc7c2b369128d796c874fca9e6bdb1d0f61dc56eda9d1f0ca0a",
+      "sha256" : "35aa40b453cb478d9036af7df72de1e39453aba48e0c55cee5739e8b7edfdb21",
       "width" : 1400
     },
     "application-assistant-light" : {
       "height" : 800,
-      "sha256" : "171ce50906fcf8966017fb35c633e0d42b992b7494e5b707d035f25adec3bac2",
+      "sha256" : "203db5a61d8c2da77674c23a19404c98645a321c227e83a0698cb555476994b2",
       "width" : 1400
     },
     "application-chat-dark" : {
       "height" : 1440,
-      "sha256" : "678594856dd31c80f79681b5ada9ea68e28348e4606d8aea27a8c07d7fabf2d9",
+      "sha256" : "26e20ed5b47aeeeb249d8a300677ee16c4995d8e54ff015f58455bf2a0ce6ca0",
       "width" : 1560
     },
     "application-chat-light" : {
       "height" : 1440,
-      "sha256" : "3a10c78b521d8db92884d2c51bf569400a74ad7c3522e6ffbd21af94c884bf63",
+      "sha256" : "f1b53c25a20c4dd2b33d31e33a5eab7a3efad7c5265999e70db8437bcc12bd6e",
+      "width" : 1560
+    },
+    "application-clipboard-settings-dark" : {
+      "height" : 1280,
+      "sha256" : "d310110da26eabaa14808d4532011846261e3646930abfa39f5751b6187b75bf",
+      "width" : 1560
+    },
+    "application-clipboard-settings-light" : {
+      "height" : 1280,
+      "sha256" : "78f1eab4789557b43bc1e6b763ce2a00217237e610b89a608645b3507918ca42",
       "width" : 1560
     },
     "application-composer-dark" : {
       "height" : 360,
-      "sha256" : "4bcbf3f382a8625efcfb6182919439d93d2743bdcc7c55dfefa0999037488f6f",
+      "sha256" : "bc9c93d4d4d36c81a28d55caa30bee88fa9492239ab2ca80d788323d566598bb",
       "width" : 1400
     },
     "application-composer-light" : {
       "height" : 360,
-      "sha256" : "26288a6da94e99f7baa5c8a8fe5b71b642380b6b8a4e64cb413bcd04d278d38a",
+      "sha256" : "bb9c7bbc2d773a34d83b02b32725c807c5c70405ae982301a18b99ab47321bdf",
       "width" : 1400
     },
     "application-failure-dark" : {
       "height" : 320,
-      "sha256" : "525f0e56c0cc91e59d7ce12648292742d35e75f31b95f5d3b158112727fc699b",
+      "sha256" : "ee88d9f0a1fea46c5f1f4a45ce0b1f42121775bd7f3f48331d83168a7d4228f3",
       "width" : 1400
     },
     "application-failure-light" : {
       "height" : 320,
-      "sha256" : "355476d1151ce93cdf52611d43ff9ae40faf248a9385887aa9086211acdac8b0",
+      "sha256" : "acb10f8d9117eabe979f6dbca7d488486667808dd9c918d4a766910aa811883d",
       "width" : 1400
     },
     "application-plugin-editor-dark" : {
       "height" : 1520,
-      "sha256" : "54f012136a105ffd957dcf6e6656165e327df1fe94428805a8be71889012452a",
+      "sha256" : "4e9df5920e99d9e7bba2d4457c6ca2004653765c237434d7a1208715aa60c959",
       "width" : 1800
     },
     "application-plugin-editor-light" : {
       "height" : 1520,
-      "sha256" : "a5f442b3b86b87bed77a65d4934cce17d2e0b4a2bf9df0247815d7552be7ace9",
+      "sha256" : "067b57411ab4f31f22b5c635e91c033c3f2a6fdc98317c89e99a37ac92723e19",
       "width" : 1800
+    },
+    "application-plugins-dark" : {
+      "height" : 1280,
+      "sha256" : "300a9387b659714a55d64d00ec8a58ab221f6ad7c8e3c68ed1ab4eaf1258aff1",
+      "width" : 1560
+    },
+    "application-plugins-light" : {
+      "height" : 1280,
+      "sha256" : "989702ebd16cf54da8073519197a3ad9f264cbc285a4e4a74ec4b51a2321b065",
+      "width" : 1560
     },
     "application-popbar-dark" : {
       "height" : 120,
-      "sha256" : "c405a2318c824a5c8d15463b442d305bde05baf6cb48026fddc480d645315dea",
+      "sha256" : "a661ab54f3c36d21ca32c2ce12a6a41c551ac3232c8a9f502317e34b71bf022e",
       "width" : 560
     },
     "application-popbar-light" : {
       "height" : 120,
-      "sha256" : "413cb2a1d5e1a7c888977393b1bf3b368746baead92328cf37f2e337e1ce14ea",
+      "sha256" : "71678ae43b571fab0ed8e1e0373edbe0a6aff58ecb23d504169165a9ad851ca9",
       "width" : 560
+    },
+    "application-settings-dark" : {
+      "height" : 1520,
+      "sha256" : "0ba79a3f3e204822a6edb9c702ef491e57b8e2d26184777668c6ca870aa653d5",
+      "width" : 2160
+    },
+    "application-settings-light" : {
+      "height" : 1520,
+      "sha256" : "76199ed6541f5b3a3b6d7c4ca5862a99b8a598c6219cf05cc305bf2594a2d5e0",
+      "width" : 2160
     },
     "application-spotlight-dark" : {
       "height" : 280,
-      "sha256" : "97b3bc6c847b4cbf20491dbb35b4facdd91f9bee9f88491ba0ce827f25304be5",
-      "width" : 1040
-    },
-    "application-spotlight-grouped-clipboard-dark" : {
-      "height" : 514,
-      "sha256" : "bec70940ead988ae9529f77e7da7d8069ae2b471b35c867b0f10e214d5ea194e",
-      "width" : 1040
-    },
-    "application-spotlight-grouped-clipboard-light" : {
-      "height" : 514,
-      "sha256" : "222ea40cd2277227b8ee7f1fb43a9aad520ba5e0c47d544a1ad646bdab325d11",
-      "width" : 1040
-    },
-    "application-spotlight-grouped-files-collapsed-dark" : {
-      "height" : 678,
-      "sha256" : "303c24e48988ac1bf30653130082b7408a852748e9c25c000a7cbd5c0996f5d7",
-      "width" : 1040
-    },
-    "application-spotlight-grouped-files-collapsed-light" : {
-      "height" : 678,
-      "sha256" : "27e4e7c650d97d8c5dc3a984fcda3680cef5b88ba627cf997d91a1e2ac3e0d1d",
+      "sha256" : "9262ab31fe200e7bbe8a7d888fad563431e9a022a50590299a91e7a833f251dc",
       "width" : 1040
     },
     "application-spotlight-grouped-actions-dark" : {
-      "height" : 342,
-      "sha256" : "4ac453dd369b3b87c56f7d4d71cfd11f2258fb3f34a8b8b35f601611763669f8",
+      "height" : 358,
+      "sha256" : "5d8adbc89f953e063b02a35290661b1da09b83dd577a359e24e57f4fb77480b2",
       "width" : 1040
     },
     "application-spotlight-grouped-actions-light" : {
-      "height" : 342,
-      "sha256" : "132e831bf0f22676831bd511c4d13c9f77ec7339c8e4741d6239a1adc32de8dd",
+      "height" : 358,
+      "sha256" : "cce81af10d3421fc3644f663ca618a91e63c932d771655645f73b06a97d261a1",
       "width" : 1040
     },
     "application-spotlight-grouped-all-dark" : {
-      "height" : 686,
-      "sha256" : "c3f99cfd26a4c64c2c55c4b8b5fd1e27973379cbd41cbd54f91f5425b6ad1d1b",
+      "height" : 718,
+      "sha256" : "f86b0d8c169ef5d13b0ae970a7f0ea190971f9a2ae3845dbfa03f3a99ec3a9ec",
       "width" : 1040
     },
     "application-spotlight-grouped-all-light" : {
-      "height" : 686,
-      "sha256" : "b31bba310f3176e4f3e1e4610e5399472fe0ccfbc1098e0b83ca9af58cd5b433",
+      "height" : 718,
+      "sha256" : "355a26f65ec50e7669e5e389c97308e6748fa99332d9936674c29b9a55cd9fbd",
+      "width" : 1040
+    },
+    "application-spotlight-grouped-clipboard-dark" : {
+      "height" : 538,
+      "sha256" : "dd99ba97003b70a6c84c1997babd6bc13785986a3ca7edf6aeeea015d193954d",
+      "width" : 1040
+    },
+    "application-spotlight-grouped-clipboard-light" : {
+      "height" : 538,
+      "sha256" : "0ee9757040f99b6b6cc6ca5bceb3fca41928eb5619fc5404dd82ee765df4bb7f",
+      "width" : 1040
+    },
+    "application-spotlight-grouped-files-collapsed-dark" : {
+      "height" : 718,
+      "sha256" : "bf705106786c46328c664ec993985d68304c69f01989e3f25dd5d72096b8b0d3",
+      "width" : 1040
+    },
+    "application-spotlight-grouped-files-collapsed-light" : {
+      "height" : 718,
+      "sha256" : "aecc042b3f7c3fbdf6ad2e2587a78488819fcb26694dcf0c5f031d7bc52bb92d",
       "width" : 1040
     },
     "application-spotlight-light" : {
       "height" : 280,
-      "sha256" : "0450ea4306368d2bb1adada15c70b420eb5386d31944969ee16bd4d285834353",
+      "sha256" : "93317b974f1908207001e6926afafbf2dbcf7a5a96edcc4638bdc0d1fc477a28",
       "width" : 1040
     },
     "application-user-dark" : {
       "height" : 360,
-      "sha256" : "d07878b9fe26a661f469f37b2aad3712c5290abaf065b4b74fcf500285c67797",
+      "sha256" : "4652cc3c57068886b842313851bf6c0bdf8e9f78b85bc0c82273c3bb795c0da8",
       "width" : 1400
     },
     "application-user-light" : {
       "height" : 360,
-      "sha256" : "e45ca780efe29c58c8bf8d33231b3c0bdef1d2f00fa7719fc89d9644c10a5252",
+      "sha256" : "7622c97d375e4d1ea79f286d2176ac306a345f48862e466b4420ec9dcb80d6b1",
       "width" : 1400
     },
     "clipboard-empty-dark" : {
       "height" : 1200,
-      "sha256" : "dbf2f484c1841a80278f3d322cbe22175f1315b1e3b256b93cc66171077498d2",
+      "sha256" : "a226d14f8fadd31ff8153d4ed28aacbb757e08b415a66414295fbce01ef4e39e",
       "width" : 1920
     },
     "clipboard-empty-light" : {
       "height" : 1200,
-      "sha256" : "3773f068111b92ed4ffdb65c9e4a500b605297beaf75bb8999d2778cbe419b58",
+      "sha256" : "761599deadee6e8ddd07f4b1845b59b7098f020f9e3eba5591190489c57f4bf8",
       "width" : 1920
     },
     "clipboard-json-dark" : {
       "height" : 1200,
-      "sha256" : "b14bcaa3e69811e153f476bb11ea013bda222e1bde2dbd7ee7f475b5a88220e0",
+      "sha256" : "21806c2c1ee5e87f09fba9befce39735dd1bc072b84b92f6b1fe483ec4404356",
       "width" : 1920
     },
     "clipboard-json-light" : {
       "height" : 1200,
-      "sha256" : "15c80c0942c22b54ee105b2da9759b8ec03d36413bf79f11213f5ea22b399902",
+      "sha256" : "4d25d1a4705197329f46e257850fa1689ccea9665efc5ebeb562565a53e20247",
       "width" : 1920
     },
     "clipboard-link-dark" : {
       "height" : 1200,
-      "sha256" : "f7e96bde0e36c3c10dae67fcf4da69fc851aeadcd352c79a9c580cea9f1a2156",
+      "sha256" : "786b94a2a3f984a8faaffbdb2d4bfd6f48f8ae2cb087968651cd8e35b79aa624",
       "width" : 1920
     },
     "clipboard-link-light" : {
       "height" : 1200,
-      "sha256" : "bb0c68b0737418826a2a7250447731bf76ca3a5a5c70e0501fd4974d0ba7990d",
+      "sha256" : "072b19799d93974c187dd2c21a6ee10d7289c9eacc39e31efdb487ffcb05fefa",
       "width" : 1920
     },
     "clipboard-text-dark" : {
       "height" : 1200,
-      "sha256" : "99d2a9527fcbf542dfdfdc615d1a30ed6f948f384afda111f573c2f0287fe1bb",
+      "sha256" : "ce91a12353ce6bc381f13b13c0be52ab965a7518cdc539fa89081a4823f65605",
       "width" : 1920
     },
     "clipboard-text-light" : {
       "height" : 1200,
-      "sha256" : "84ce23c463c5ec67a0be254f0cc516e7b2cacf771a72018259ca5a8461abe564",
+      "sha256" : "7ea131285aaaa0bf340f05b28867a7e89eb7602efcd9c6f9873373a774c2be65",
       "width" : 1920
     }
   }

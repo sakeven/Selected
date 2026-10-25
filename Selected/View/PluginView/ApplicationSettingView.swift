@@ -14,7 +14,7 @@ struct ApplicationActionListView: View {
                     availableApplications = Application.available(excluding: Set(cfg.appConditions.map(\.bundleID)))
                     isAddingApplication = true
                 }
-                .buttonStyle(SettingsButtonStyle(emphasis: .primary))
+                .buttonStyle(AppButtonStyle(emphasis: .prominent))
                 .popover(isPresented: $isAddingApplication, arrowEdge: .bottom) {
                     ApplicationPickerView(applications: availableApplications) { app in
                         isAddingApplication = false
@@ -23,8 +23,10 @@ struct ApplicationActionListView: View {
                         ConfigurationManager.shared.saveConfiguration()
                     }
                 }
-            }.padding(20)
-            Divider()
+            }
+            .padding(AppTheme.pageInset)
+            .background(AppTheme.surface)
+            Rectangle().fill(AppTheme.border).frame(height: 1)
             List {
                 ApplicationView(cfg: $cfg, app: $defaultAppCondition)
                 ForEach($cfg.appConditions, id: \.bundleID) { $app in
@@ -35,8 +37,8 @@ struct ApplicationActionListView: View {
             .scrollContentBackground(.hidden)
             .contentMargins(.vertical, 16, for: .scrollContent)
         }
-        .background(Color("SettingsBackground"))
-        .tint(.blue)
+        .background(AppTheme.canvas)
+        .tint(AppTheme.accent)
         .disclosureGroupStyle(SettingsDisclosureGroupStyle())
     }
 
@@ -69,9 +71,9 @@ struct ApplicationView: View {
                                     .font(.caption).foregroundStyle(.tertiary)
                                     .help("Drag to reorder").accessibilityHidden(true)
                                 Icon(action.actionMeta.icon)
-                                    .foregroundStyle(.blue)
+                                    .foregroundStyle(AppTheme.accent)
                                     .frame(width: 24, height: 24)
-                                    .background(.blue.opacity(0.06), in: .rect(cornerRadius: 6))
+                                    .background(AppTheme.accent.opacity(0.06), in: .rect(cornerRadius: 6))
                                     .accessibilityHidden(true)
                                 Text(action.actionMeta.title).font(.subheadline)
                                 Spacer()
@@ -90,16 +92,16 @@ struct ApplicationView: View {
                                 }
                                 .menuStyle(.button)
                                 .menuIndicator(.hidden)
-                                .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                                .buttonStyle(AppButtonStyle(emphasis: .quiet))
                                 .controlSize(.small)
                                 .help("Actions")
                                 .accessibilityLabel(Text("Actions") + Text(": ") + Text(action.actionMeta.title))
                             }
                             .padding(.vertical, 3)
                             .labelStyle(.iconOnly)
-                            .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                            .buttonStyle(AppButtonStyle(emphasis: .quiet))
                             .contentShape(.rect)
-                            .background(dropTarget == id ? Color.blue.opacity(0.08) : .clear, in: .rect(cornerRadius: 8))
+                            .background(dropTarget == id ? AppTheme.accent.opacity(0.08) : .clear, in: .rect(cornerRadius: 8))
                             .draggable(id)
                             .dropDestination(for: String.self) { identifiers, _ in
                                 guard identifiers.count == 1,
@@ -122,7 +124,7 @@ struct ApplicationView: View {
                         Spacer()
                         if app.bundleID != "Default" {
                             Button("Remove App Configuration", systemImage: "trash", role: .destructive, action: removeApplication)
-                                .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                                .buttonStyle(AppButtonStyle(emphasis: .quiet))
                                 .controlSize(.small)
                         }
                     }
@@ -182,9 +184,9 @@ struct ApplicationView: View {
 
     @ViewBuilder private func getIcon(_ bundleID: String) -> some View {
         if bundleID == "Default" {
-            Image(systemName: "app.gift").font(.title2).foregroundStyle(.blue)
+            Image(systemName: "app.gift").font(.title2).foregroundStyle(AppTheme.accent)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(.blue.opacity(0.10), in: .rect(cornerRadius: 9))
+                .background(AppTheme.accent.opacity(0.10), in: .rect(cornerRadius: 9))
         } else {
             let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)!
             Image(nsImage: NSWorkspace.shared.icon(forFile: bundleURL.path))
@@ -242,9 +244,9 @@ struct OnePicker: View {
             }
         } label: {
             Label("Add Action", systemImage: "plus")
-                .font(.subheadline.weight(.medium)).foregroundStyle(.blue)
+                .font(.subheadline.weight(.medium)).foregroundStyle(AppTheme.accent)
                 .padding(.horizontal, 12).padding(.vertical, 9)
-                .background(.blue.opacity(0.10), in: .rect(cornerRadius: 9))
+                .background(AppTheme.accent.opacity(0.10), in: .rect(cornerRadius: 9))
         }
         .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
     }

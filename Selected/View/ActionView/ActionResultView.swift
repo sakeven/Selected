@@ -6,7 +6,6 @@ struct ActionResultView: View {
     @State private var showOriginal = false
     @State private var showActions = false
     @State private var isPasting = false
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -47,8 +46,8 @@ struct ActionResultView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background(colorScheme == .dark ? Color.white.opacity(0.035) : .white.opacity(0.85), in: RoundedRectangle(cornerRadius: 14))
-            .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(.blue.opacity(0.12)) }
+            .background(AppTheme.surface, in: RoundedRectangle(cornerRadius: 14))
+            .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(AppTheme.border) }
 
             if !session.message.isEmpty && (session.completed || session.isRunning || showOriginal) {
                 Text(session.message).font(.caption).foregroundStyle(session.failed ? .red : .secondary)
@@ -58,14 +57,14 @@ struct ActionResultView: View {
         }
         .padding(20)
         .frame(minWidth: 560, idealWidth: 620, minHeight: 410, idealHeight: 480)
-        .background(colorScheme == .dark ? Color(red: 0.10, green: 0.12, blue: 0.16) : Color(red: 0.95, green: 0.97, blue: 1))
-        .tint(.blue)
+        .background(AppTheme.canvas)
+        .tint(AppTheme.accent)
     }
 
     private var header: some View {
         HStack(spacing: 12) {
-            Image(systemName: "wand.and.stars").font(.title3).foregroundStyle(.blue)
-                .frame(width: 38, height: 38).background(.blue.opacity(0.10), in: RoundedRectangle(cornerRadius: 11))
+            Image(systemName: "wand.and.stars").font(.title3).foregroundStyle(AppTheme.accent)
+                .frame(width: 38, height: 38).background(AppTheme.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: 11))
             VStack(alignment: .leading, spacing: 3) {
                 Text(session.request.title).font(.headline).lineLimit(1)
                 if session.request.output == .xshow, let app = session.target.application {
@@ -77,7 +76,7 @@ struct ActionResultView: View {
             }
             Spacer(minLength: 8)
             Button("Close", systemImage: "xmark", action: onClose)
-                .labelStyle(.iconOnly).buttonStyle(.plain).padding(8).keyboardShortcut(.cancelAction)
+                .buttonStyle(AppIconButtonStyle()).keyboardShortcut(.cancelAction)
         }
     }
 
@@ -95,12 +94,12 @@ struct ActionResultView: View {
                 }
                 if let reference = session.original.reference {
                     Divider()
-                    Label("Clipboard reference", systemImage: "clipboard").font(.headline).foregroundStyle(.blue)
+                    Label("Clipboard reference", systemImage: "clipboard").font(.headline).foregroundStyle(AppTheme.accent)
                     Text(reference).textSelection(.enabled)
                 }
                 if session.input.context.Text != session.original.context.Text {
                     Divider()
-                    Label("Input for this step", systemImage: "arrow.right.circle").font(.headline).foregroundStyle(.blue)
+                    Label("Input for this step", systemImage: "arrow.right.circle").font(.headline).foregroundStyle(AppTheme.accent)
                     Text(session.input.context.Text).textSelection(.enabled)
                     Button("Copy this step's input", systemImage: "doc.on.doc") { copyText(session.input.context.Text) }
                 }
@@ -147,14 +146,14 @@ struct ActionResultView: View {
                     Button(session.target.canReplace ? String(localized: "Replace original selection") : String(localized: "Paste"), systemImage: "return") {
                         paste(replacing: session.target.canReplace)
                     }
-                        .buttonStyle(SettingsButtonStyle(emphasis: .primary))
+                        .buttonStyle(AppButtonStyle(emphasis: .prominent))
                         .keyboardShortcut(.return, modifiers: .command)
                         .disabled(!session.target.isAvailable || isPasting)
                         .help(String(localized: "Paste to \(session.target.name)"))
                 }
             }
         }
-        .buttonStyle(SettingsButtonStyle())
+        .buttonStyle(AppButtonStyle())
         .controlSize(.regular)
         .disabled(isPasting)
     }

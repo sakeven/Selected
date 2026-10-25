@@ -5,19 +5,10 @@ struct ClipRowView: View {
     @ObservedObject var clip: ClipHistoryData
     let isSelected: Bool
 
-    @State private var isHovered = false
-
     var body: some View {
         HStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 10)
-                .fill(LinearGradient(
-                    colors: [
-                        clip.displayKind.tint.opacity(colorScheme == .dark ? 0.25 : 0.13),
-                        clip.displayKind.tint.opacity(colorScheme == .dark ? 0.12 : 0.05)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ))
+                .fill(clip.displayKind.tint.opacity(colorScheme == .dark ? 0.18 : 0.08))
                 .frame(width: 34, height: 36)
                 .overlay {
                     if clip.displayKind == .image,
@@ -70,12 +61,6 @@ struct ClipRowView: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 9)
         .frame(minHeight: 58)
-        .background {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(isSelected ? colorScheme.clipSelectedFill : (isHovered ? colorScheme.clipCardFill : .clear))
-        }
-        .contentShape(RoundedRectangle(cornerRadius: 12))
-        .onHover { isHovered = $0 }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
     }

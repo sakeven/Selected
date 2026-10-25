@@ -24,7 +24,6 @@ struct ChatInputView: View {
     var onCancel: (() -> Void)?
 
     @FocusState private var isInputFocused: Bool
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -68,7 +67,7 @@ struct ChatInputView: View {
                 PhotosPicker(selection: $selectedPickerItems, maxSelectionCount: 5, matching: .images) {
                     composerAccessoryButton(title: "chat.photos", systemImage: "photo")
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(AppIconButtonStyle())
                 .disabled(viewModel.inProgress || isImporting)
                 .help("chat.photos")
                 .onChange(of: selectedPickerItems) { _, items in
@@ -79,24 +78,24 @@ struct ChatInputView: View {
                 Button { showFileImporter = true } label: {
                     composerAccessoryButton(title: "chat.addAttachments", systemImage: "paperclip")
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(AppIconButtonStyle())
                 .disabled(viewModel.inProgress || isImporting)
                 .help("chat.addAttachments")
 
                 Spacer()
                 Text("chat.sendHint")
                     .font(.caption)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(.secondary)
                 Button {
                     if viewModel.inProgress { cancel() } else { submitMessage() }
                 } label: {
                     Label(viewModel.inProgress ? "chat.stop" : "chat.send", systemImage: viewModel.inProgress ? "stop.fill" : "arrow.up")
                         .labelStyle(.iconOnly)
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(colorScheme == .dark ? Color.black : .white)
-                        .frame(width: 34, height: 34)
-                        .background(primaryActionDisabled ? Color.secondary.opacity(0.25) : Color.primary, in: Circle())
-                        .contentShape(Circle())
+                        .foregroundStyle(primaryActionDisabled ? Color.secondary : AppTheme.onAccent)
+                        .frame(width: 36, height: 36)
+                        .background(primaryActionDisabled ? AppTheme.inset : AppTheme.accent, in: .rect(cornerRadius: 10))
+                        .contentShape(.rect(cornerRadius: 10))
                 }
                 .buttonStyle(.plain)
                 .disabled(primaryActionDisabled)
@@ -104,12 +103,12 @@ struct ChatInputView: View {
             }
         }
         .padding(14)
-        .background(Color(nsColor: .textBackgroundColor), in: .rect(cornerRadius: 20))
+        .background(AppTheme.surface, in: .rect(cornerRadius: AppTheme.cardRadius))
         .overlay {
-            RoundedRectangle(cornerRadius: 20)
-                .strokeBorder(.primary.opacity(isInputFocused ? 0.2 : 0.1), lineWidth: 1)
+            RoundedRectangle(cornerRadius: AppTheme.cardRadius)
+                .strokeBorder(isInputFocused ? AppTheme.accent : AppTheme.border, lineWidth: isInputFocused ? 1.5 : 1)
         }
-        .shadow(color: .black.opacity(0.04), radius: 12, y: 4)
+        .shadow(color: .black.opacity(0.025), radius: 8, y: 3)
         .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.data], allowsMultipleSelection: true) { result in
             switch result {
             case .success(let urls): loadFiles(urls)

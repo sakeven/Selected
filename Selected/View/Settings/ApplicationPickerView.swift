@@ -21,7 +21,7 @@ struct ApplicationPickerView: View {
             }
         }
         .frame(width: 320)
-        .background(Color("SettingsBackground"))
+        .background(AppTheme.canvas)
     }
 
     @ViewBuilder private func applicationSection(_ title: LocalizedStringKey, applications: [Application]) -> some View {
@@ -38,7 +38,7 @@ struct ApplicationPickerView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
-                    .buttonStyle(SettingsButtonStyle(emphasis: .quiet))
+                    .buttonStyle(AppButtonStyle(emphasis: .quiet))
                 }
             }
         }

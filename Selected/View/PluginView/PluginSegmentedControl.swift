@@ -19,7 +19,7 @@ struct PluginSegmentedControl<Selection: Hashable>: View {
                         .background {
                             if selection == value {
                                 RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color(nsColor: .controlBackgroundColor))
+                                    .fill(AppTheme.surface)
                                     .shadow(color: .black.opacity(0.06), radius: 2, y: 1)
                             }
                         }
@@ -30,6 +30,6 @@ struct PluginSegmentedControl<Selection: Hashable>: View {
             }
         }
         .padding(4)
-        .background(.primary.opacity(0.045), in: .rect(cornerRadius: 11))
+        .background(AppTheme.inset, in: .rect(cornerRadius: 11))
     }
 }

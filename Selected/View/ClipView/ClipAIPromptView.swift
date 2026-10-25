@@ -64,7 +64,7 @@ struct ClipAIPromptView: View {
                 }
                 .padding(14)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.primary.opacity(0.04), in: .rect(cornerRadius: 12))
+                .background(AppTheme.inset, in: .rect(cornerRadius: 12))
             } else if error == nil {
                 ProgressView("clip.ai.loading")
             }
@@ -73,7 +73,7 @@ struct ClipAIPromptView: View {
                 .lineLimit(4...7)
                 .textFieldStyle(.plain)
                 .padding(14)
-                .background(Color(nsColor: .textBackgroundColor), in: .rect(cornerRadius: 12))
+                .background(AppTheme.surface, in: .rect(cornerRadius: 12))
                 .overlay {
                     RoundedRectangle(cornerRadius: 12)
                         .strokeBorder(Color.accentColor.opacity(promptFocused ? 0.55 : 0.15), lineWidth: 1)
@@ -96,12 +96,15 @@ struct ClipAIPromptView: View {
                 Button("clip.ai.cancel") { dismiss() }
                     .keyboardShortcut(.cancelAction)
                 Button("clip.ai.send", systemImage: "arrow.up") { send() }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(AppButtonStyle(emphasis: .prominent))
                     .keyboardShortcut(.return, modifiers: .command)
                     .disabled(content == nil || instruction.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
         }
         .padding(24)
+        .buttonStyle(AppButtonStyle())
+        .background(AppTheme.canvas)
+        .tint(AppTheme.accent)
         .frame(width: 540)
         .task {
             promptFocused = true

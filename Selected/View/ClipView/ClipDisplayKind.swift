@@ -26,10 +26,10 @@ enum ClipDisplayKind {
     var tint: Color {
         switch self {
         case .color: return .green
-        case .file: return .blue
+        case .file: return AppTheme.accent
         case .image: return .orange
         case .link: return .teal
-        case .text: return .blue
+        case .text: return AppTheme.accent
         case .richText: return .cyan
         case .html: return .mint
         case .unknown: return .gray

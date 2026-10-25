@@ -20,13 +20,13 @@ struct PluginListView: View {
             HStack(spacing: 12) {
                 SettingsPageHeader(title: "Plugins", subtitle: "\(pluginMgr.plugins.count) installed · Do more with selected text")
                 Button("Import…", systemImage: "square.and.arrow.down", action: importPlugin)
-                    .buttonStyle(SettingsButtonStyle())
+                    .buttonStyle(AppButtonStyle())
                     .disabled(isImporting)
                 if isImporting { ProgressView().controlSize(.small) }
                 Button("New Plugin", systemImage: "plus") {
                     editor = PluginEditorSession(plugin: .new(), existing: nil)
                 }
-                .buttonStyle(SettingsButtonStyle(emphasis: .primary))
+                .buttonStyle(AppButtonStyle(emphasis: .prominent))
                 Menu {
                     Button("Reload", systemImage: "arrow.clockwise") { pluginMgr.loadPlugins() }
                     Button("Open Plugins Folder", systemImage: "folder") { NSWorkspace.shared.open(pluginMgr.extensionsDir) }
@@ -40,9 +40,10 @@ struct PluginListView: View {
                 .fixedSize()
                 .help("More plugin management actions")
             }
-            .controlSize(.large)
-            .padding(20)
-            Divider()
+            .controlSize(.regular)
+            .padding(AppTheme.pageInset)
+            .background(AppTheme.surface)
+            Rectangle().fill(AppTheme.border).frame(height: 1)
             HSplitView {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 8) {
@@ -54,9 +55,9 @@ struct PluginListView: View {
                             } label: {
                                 HStack(spacing: 10) {
                                     Icon(plugin.info.icon)
-                                        .foregroundStyle(selection == plugin.id ? Color.blue : .secondary)
+                                        .foregroundStyle(selection == plugin.id ? AppTheme.accent : .secondary)
                                         .frame(width: 38, height: 38)
-                                        .background(Color(nsColor: .controlBackgroundColor), in: .rect(cornerRadius: 10))
+                                        .background(AppTheme.surface, in: .rect(cornerRadius: 10))
                                         .accessibilityHidden(true)
                                     VStack(alignment: .leading, spacing: 5) {
                                         Text(plugin.info.name).font(.subheadline.weight(.semibold)).lineLimit(1)
@@ -73,16 +74,14 @@ struct PluginListView: View {
                                 }
                                 .padding(10)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(selection == plugin.id ? Color.blue.opacity(0.09) : .clear, in: .rect(cornerRadius: 12))
-                                .overlay { RoundedRectangle(cornerRadius: 12).strokeBorder(selection == plugin.id ? Color.blue.opacity(0.15) : .clear) }
-                                .contentShape(.rect(cornerRadius: 12))
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(AppSelectionStyle(isSelected: selection == plugin.id))
                             .accessibilityAddTraits(selection == plugin.id ? .isSelected : [])
                         }
                     }.padding(12)
                 }
-                .frame(minWidth: 220, idealWidth: 240, maxWidth: 280)
+                .frame(minWidth: 200, idealWidth: 220, maxWidth: 260)
+                .background(AppTheme.canvas)
                 if let plugin = selectedPlugin {
                     PluginDetailView(plugin: plugin, manager: pluginMgr, edit: {
                         do { editor = PluginEditorSession(plugin: try pluginMgr.manifest(for: plugin), existing: plugin) }
@@ -98,7 +97,7 @@ struct PluginListView: View {
                     } actions: {
                         Button("New Plugin", systemImage: "plus") {
                             editor = PluginEditorSession(plugin: .new(), existing: nil)
-                        }.buttonStyle(SettingsButtonStyle(emphasis: .primary))
+                        }.buttonStyle(AppButtonStyle(emphasis: .primary))
                     }
                         .frame(minWidth: 370, maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -115,7 +114,7 @@ struct PluginListView: View {
                                         Text(issue.message).textSelection(.enabled)
                                     }.frame(maxWidth: .infinity, alignment: .leading)
                                     Button("Repair…", systemImage: "wrench") { repairIssue = issue }
-                                        .buttonStyle(SettingsButtonStyle())
+                                        .buttonStyle(AppButtonStyle())
                                 }
                             }
                         }.font(.caption)
@@ -123,10 +122,10 @@ struct PluginListView: View {
                 }.padding(12).foregroundStyle(.red)
             }
         }
-        .background(Color("SettingsBackground"))
-        .tint(Color.blue)
+        .background(AppTheme.canvas)
+        .tint(AppTheme.accent)
         .disclosureGroupStyle(SettingsDisclosureGroupStyle())
-        .frame(minWidth: 760, minHeight: 560)
+        .frame(minWidth: 720, minHeight: 560)
         .onChange(of: pluginMgr.plugins.map(\.id), initial: true) {
             if !pluginMgr.plugins.contains(where: { $0.id == selection }) {
                 selection = pluginMgr.plugins.first?.id

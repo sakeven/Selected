@@ -397,6 +397,7 @@
       "shouldTranslate" : false
     },
     "1x" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -812,6 +813,16 @@
         }
       }
     },
+    "Apps, actions, files, and clipboard" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用、动作、文件和剪贴板"
+          }
+        }
+      }
+    },
     "Arguments" : {
       "localizations" : {
         "zh-Hans" : {
@@ -849,6 +860,91 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "附件内容"
+          }
+        }
+      }
+    },
+    "audio.pause" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂停"
+          }
+        }
+      }
+    },
+    "audio.play" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放"
+          }
+        }
+      }
+    },
+    "audio.position" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playback position"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放进度"
+          }
+        }
+      }
+    },
+    "audio.save" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save audio"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存音频"
+          }
+        }
+      }
+    },
+    "audio.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read aloud"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "朗读"
           }
         }
       }
@@ -2333,6 +2429,23 @@
         }
       }
     },
+    "clip.workspace.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find it. Preview it. Use it again."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查找、预览，让内容再次派上用场。"
+          }
+        }
+      }
+    },
     "Clipboard" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3183,9 +3296,6 @@
         }
       }
     },
-    "esc" : {
-
-    },
     "exchange" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3353,16 +3463,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "文件与文件夹"
-          }
-        }
-      }
-    },
-    "Apps, actions, files, and clipboard" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "应用、动作、文件和剪贴板"
           }
         }
       }
@@ -3709,6 +3809,7 @@
       }
     },
     "Instructions" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -4056,6 +4157,7 @@
       }
     },
     "mp3" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -4185,16 +4287,6 @@
         }
       }
     },
-    "No results in this category" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此分类中没有匹配结果"
-          }
-        }
-      }
-    },
     "No results found" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4202,6 +4294,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无结果"
+          }
+        }
+      }
+    },
+    "No results in this category" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此分类中没有匹配结果"
           }
         }
       }
@@ -5240,6 +5342,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置"
+          }
+        }
+      }
+    },
+    "settings.navigationHint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Switch sections"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换设置页面"
           }
         }
       }
