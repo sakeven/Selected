@@ -9,6 +9,8 @@ import Observation
     let request: ActionRequest
     var output = ""
     private(set) var isRunning = false
+    private(set) var isCancelling = false
+    private(set) var isApplyingResult = false
     private(set) var completed = false
     private(set) var message = ""
     private(set) var failed = false
@@ -16,6 +18,8 @@ import Observation
     private(set) var originalContent: ClipAIContent?
     @ObservationIgnored private var task: Task<Void, Never>?
     @ObservationIgnored private var content: ClipAIContent?
+
+    var canCancel: Bool { isRunning && !isCancelling && !isApplyingResult }
 
     init(input: ActionInput, request: ActionRequest, target: ActionTarget, original: ActionInput? = nil, originalContent: ClipAIContent? = nil) {
         self.original = original ?? input
@@ -28,12 +32,14 @@ import Observation
     @discardableResult func run() -> Task<Void, Never> {
         if let task { return task }
         isRunning = true
+        isCancelling = false
+        isApplyingResult = false
         completed = false
         failed = false
         output = ""
         message = String(localized: "Running…")
         let operation = Task {
-            defer { isRunning = false; task = nil }
+            defer { isRunning = false; isCancelling = false; isApplyingResult = false; task = nil }
             let redactor: PluginRedactor
             if case .plugin(let plugin, _) = request {
                 redactor = PluginRedactor(info: plugin.info, values: plugin.info.getOptionsValue())
@@ -45,7 +51,13 @@ import Observation
                 message = output.isEmpty ? String(localized: "Completed without text output") : String(localized: "Completed")
                 if !output.isEmpty {
                     if request.output == .copy { copyText(output); message = String(localized: "Copied") }
-                    if request.output == .paste { try await target.paste(output, replacing: target.canReplace); canRestore = target.canRestore; message = String(localized: "Pasted") }
+                    if request.output == .paste {
+                        isApplyingResult = true
+                        message = target.canReplace ? String(localized: "Replacing selected text…") : String(localized: "Pasting…")
+                        try await target.paste(output, replacing: target.canReplace)
+                        canRestore = target.canRestore
+                        message = target.canReplace ? String(localized: "Replaced selected text") : String(localized: "Pasted")
+                    }
                 }
                 completed = true
             } catch {
@@ -57,7 +69,12 @@ import Observation
         return operation
     }
 
-    func cancel() { task?.cancel() }
+    func cancel() {
+        guard canCancel else { return }
+        isCancelling = true
+        message = String(localized: "Cancelling…")
+        task?.cancel()
+    }
 
     func copy() { copyText(output); message = String(localized: "Copied") }
 
@@ -170,10 +187,23 @@ import Observation
             return ""
         }
         var response = ""
+        message = String(localized: "Waiting for AI response…")
         for try await event in service.chat(ctx: context) {
             try Task.checkCancellation()
-            if case .textDelta(let delta) = event { response += delta }
-            if case .error(let error) = event { throw PluginValidationError(messages: [error]) }
+            switch event {
+            case .textDelta(let delta):
+                message = String(localized: "Generating result…")
+                response += delta
+            case .reasoningDelta:
+                message = String(localized: "AI is thinking…")
+            case .toolCallStarted:
+                message = String(localized: "AI is using tools…")
+            case .toolCallFinished:
+                message = String(localized: "Waiting for AI response…")
+            case .error(let error):
+                throw PluginValidationError(messages: [error])
+            default: break
+            }
         }
         return response
     }

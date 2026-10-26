@@ -115,6 +115,7 @@ struct ActionResultView: View {
         HStack(spacing: 8) {
             if session.isRunning {
                 Button("Cancel", systemImage: "stop.circle") { session.cancel() }
+                    .disabled(!session.canCancel)
             } else {
                 Button("Retry", systemImage: "arrow.clockwise") { showOriginal = false; session.run() }
                 if session.completed && !session.output.isEmpty {

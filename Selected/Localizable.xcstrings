@@ -664,6 +664,26 @@
         }
       }
     },
+    "AI is thinking…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 正在思考…"
+          }
+        }
+      }
+    },
+    "AI is using tools…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AI 正在调用工具…"
+          }
+        }
+      }
+    },
     "AI Prompt" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1069,6 +1089,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已取消"
+          }
+        }
+      }
+    },
+    "Cancelling…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在取消…"
           }
         }
       }
@@ -3528,6 +3558,16 @@
         }
       }
     },
+    "Generating result…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在生成结果…"
+          }
+        }
+      }
+    },
     "Get Started with Plugins" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4572,6 +4612,16 @@
         }
       }
     },
+    "Pasting…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在粘贴…"
+          }
+        }
+      }
+    },
     "Path:" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -4959,6 +5009,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "替换已安装插件"
+          }
+        }
+      }
+    },
+    "Replaced selected text" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已替换选中文本"
+          }
+        }
+      }
+    },
+    "Replacing selected text…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在替换选中文本…"
           }
         }
       }
@@ -6376,6 +6446,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "等待中"
+          }
+        }
+      }
+    },
+    "Waiting for AI response…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在等待 AI 回复…"
           }
         }
       }

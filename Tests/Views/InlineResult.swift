@@ -60,7 +60,10 @@ final class InlineResultTests: XCTestCase {
             ActionCoordinator.perform(request, input: input, target: target, resultPosition: position)
             var result: NSWindow?
             for _ in 0..<100 {
-                result = NSApp.windows.first { $0.isVisible && !existingWindows.contains($0.windowNumber) }
+                result = NSApp.windows.first {
+                    $0.isVisible && !existingWindows.contains($0.windowNumber)
+                        && !($0.windowController is ActionProgressWindowController)
+                }
                 if result != nil { break }
                 try await Task.sleep(for: .milliseconds(20))
             }
