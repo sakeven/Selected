@@ -92,9 +92,9 @@ struct ChatInputView: View {
                     Label(viewModel.inProgress ? "chat.stop" : "chat.send", systemImage: viewModel.inProgress ? "stop.fill" : "arrow.up")
                         .labelStyle(.iconOnly)
                         .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(primaryActionDisabled ? Color.secondary : AppTheme.onAccent)
+                        .foregroundStyle(primaryActionDisabled ? Color.secondary : AppTheme.onPrimaryAction)
                         .frame(width: 36, height: 36)
-                        .background(primaryActionDisabled ? AppTheme.inset : AppTheme.accent, in: .rect(cornerRadius: 10))
+                        .background(primaryActionDisabled ? AppTheme.inset : AppTheme.primaryAction, in: .rect(cornerRadius: 10))
                         .contentShape(.rect(cornerRadius: 10))
                 }
                 .buttonStyle(.plain)

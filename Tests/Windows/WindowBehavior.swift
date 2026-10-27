@@ -100,6 +100,40 @@ final class WindowBehaviorTests: XCTestCase {
         XCTAssertFalse(try XCTUnwrap(text.window).isVisible)
     }
 
+    func testSpeechPanelPreservesSourceWindowAndOnlyStopsOnExplicitClose() async throws {
+        let manager = WindowManager()
+        let source = try createdController { manager.createTextWindow("Source", editable: false) }
+        let session = SpeechSession()
+        defer {
+            manager.closeSpeechWindow()
+            source.close()
+        }
+        session.start(text: "Read this", voice: "Sage") {
+            try await Task.sleep(for: .seconds(30))
+            return Data()
+        }
+        let keyWindow = NSApp.keyWindow
+        let controller = try XCTUnwrap(try createdController { manager.showSpeechWindow(session: session) } as? TTSWindowController)
+        let window = try XCTUnwrap(controller.window)
+        XCTAssertEqual(window.frame.width, 440)
+        XCTAssertLessThan(window.frame.height, 210)
+        XCTAssertFalse(window.isOpaque)
+        XCTAssertFalse(window.styleMask.contains(.resizable))
+        XCTAssertFalse(window.hidesOnDeactivate)
+        XCTAssertTrue(window.hasShadow)
+        XCTAssertTrue(NSApp.keyWindow === keyWindow)
+        XCTAssertTrue(try XCTUnwrap(source.window).isVisible)
+        manager.closeAllWindows(.force)
+        controller.windowDidResignActive(Notification(name: NSApplication.didResignActiveNotification))
+        XCTAssertTrue(window.isVisible)
+        XCTAssertEqual(session.phase, .generating)
+        manager.showSpeechWindow(session: session)
+        XCTAssertEqual(NSApp.windows.filter { $0.windowController is TTSWindowController && $0.isVisible }.count, 1)
+        manager.closeSpeechWindow()
+        XCTAssertFalse(window.isVisible)
+        XCTAssertEqual(session.phase, .idle)
+    }
+
     private func createdController(_ create: () -> Void) throws -> BaseWindowController {
         let existing = Set(NSApp.windows.map(ObjectIdentifier.init))
         create()

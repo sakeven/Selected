@@ -8,6 +8,8 @@ enum AppTheme {
     static let accent = Color.accentColor
     static let onAccent = Color("AppOnAccent")
     static let selection = Color("AppSelection")
+    static let primaryAction = Color("AppPrimaryAction")
+    static let onPrimaryAction = Color("AppOnPrimaryAction")
 
     static let controlRadius: CGFloat = 8
     static let cardRadius: CGFloat = 14

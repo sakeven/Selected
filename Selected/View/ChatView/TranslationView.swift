@@ -84,10 +84,7 @@ struct TranslationView: View {
             }
             .disabled(!hasRep)
             .help("Copy")
-            Button("chat.readAloud", systemImage: "speaker.wave.2") {
-                Task { await TTSManager.speak(text, view: false) }
-            }
-            .help("chat.readAloud")
+            ReadAloudButton(text: text)
             Button(pinned.pinned ? "chat.unpin" : "chat.pin", systemImage: pinned.pinned ? "pin.fill" : "pin") {
                 pinned.pinned.toggle()
             }

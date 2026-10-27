@@ -141,16 +141,7 @@ struct MessageView: View {
                 .help(isCopied ? "chat.copied" : "chat.copy")
 
                 if message.role == .assistant {
-                    Button {
-                        Task { await TTSManager.speak(MarkdownContent(message.message).renderPlainText(), view: false) }
-                    } label: {
-                        Label("chat.readAloud", systemImage: "speaker.wave.2")
-                            .labelStyle(.iconOnly)
-                            .frame(width: 26, height: 26)
-                            .contentShape(.rect)
-                    }
-                    .buttonStyle(AppIconButtonStyle())
-                    .help("chat.readAloud")
+                    ReadAloudButton(text: MarkdownContent(message.message).renderPlainText())
                 }
             }
         }

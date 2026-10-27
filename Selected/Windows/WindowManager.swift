@@ -136,12 +136,28 @@ class TranslationWindowController: BaseWindowController {
 }
 
 class TTSWindowController: BaseWindowController {
-    init(rootView: AnyView) {
-        super.init(rootView: rootView, windowType: .tts, positionStrategy: .centerScreen, size: .init(width: 600, height: 150))
+    private let session: SpeechSession
+
+    init(session: SpeechSession, onClose: @escaping () -> Void) {
+        self.session = session
+        let view = AudioPlayerView(session: session, onClose: onClose)
+        super.init(rootView: AnyView(view), windowType: .tts, positionStrategy: .centerScreen, size: .zero)
+        window?.styleMask = [.borderless, .nonactivatingPanel]
+        window?.isOpaque = false
+        window?.hasShadow = true
+        window?.hidesOnDeactivate = false
+        (window as? FloatingPanel)?.key = true
     }
 
-    isolated deinit {
-        TTSManager.stopSpeak()
+    override func canClose() -> Bool { false }
+
+    override func close() {
+        session.stop()
+        super.close()
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        session.stop()
     }
 
     required init?(coder: NSCoder) {
@@ -169,6 +185,7 @@ class WindowManager {
     //
     private var lock = NSLock()
     private var windowCtrs = [WindowCtr]()
+    private var speechWindowController: TTSWindowController?
 
 
     // MARK: - Public API
@@ -185,23 +202,18 @@ class WindowManager {
         createWindow(windowController)
     }
 
-    func createAudioPlayerWindow(_ audio: Data) {
-        guard let url = createTemporaryURLForData(audio, fileName: "selected-tmptts.wav") else {
-            return
+    func showSpeechWindow(session: SpeechSession) {
+        _ = closeOnlyPopbarWindows(.force)
+        if speechWindowController == nil {
+            let controller = TTSWindowController(session: session) { [weak self] in self?.closeSpeechWindow() }
+            controller.onClose = { [weak self] in self?.speechWindowController = nil }
+            speechWindowController = controller
         }
+        speechWindowController?.window?.orderFrontRegardless()
+    }
 
-        let contentView = AudioPlayerView(audioURL: url)
-        let windowController = TTSWindowController(rootView: AnyView(contentView))
-
-        windowController.onClose = {
-            do {
-                try FileManager.default.removeItem(at: url)
-            } catch {
-                print("Error removing temporary file: \(error)")
-            }
-        }
-
-        createWindow(windowController)
+    func closeSpeechWindow() {
+        speechWindowController?.close()
     }
 
     func createTextWindow(_ text: String, editable: Bool, at point: NSPoint = NSEvent.mouseLocation) {

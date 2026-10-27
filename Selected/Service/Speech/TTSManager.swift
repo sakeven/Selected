@@ -1,100 +1,35 @@
-//
-//  TTSManager.swift
-//  Selected
-//
-//  Created by sake on 20/3/25.
-//
-
-
-import Foundation
-import AVFoundation
 import Defaults
-import SwiftUI
+import Foundation
 
 @MainActor
 public enum TTSManager {
-
-    // MARK: - 属性
-
-    /// 系统语音合成器，用于当 OpenAI APIKey 为空时调用系统 TTS
-    private static let speechSynthesizer = AVSpeechSynthesizer()
-
-    /// OpenAI 语音合成播放使用的音频播放器
-    private static var audioPlayer: AVAudioPlayer?
-
+    static let session = SpeechSession()
     private static let audioLoader = TTSAudioLoader()
 
-    // MARK: - 系统 TTS
-
-    /// 使用系统语音合成（AVSpeechSynthesizer）朗读文本
-    private static func systemSpeak(_ text: String) {
-        speechSynthesizer.stopSpeaking(at: .word)
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.pitchMultiplier = 0.8
-        utterance.postUtteranceDelay = 0.2
-        utterance.volume = 0.8
-        speechSynthesizer.speak(utterance)
-    }
-
-    // MARK: - OpenAI TTS 调用
-
-    /// 通过 OpenAI API 调用语音合成，并直接播放生成的语音
-    private static func play(text: String) async {
-        guard let data = await fetchTTSData(text: text) else { return }
-        audioPlayer?.stop()
-        do {
-            audioPlayer = try AVAudioPlayer(data: data)
-            audioPlayer?.play()
-        } catch {
-            logger.error("Audio player error: \(error)")
-        }
-    }
-
-    /// 通过 OpenAI API 获取 TTS 音频数据，适用于需要自定义播放方式（例如在新窗口中播放）的场景
-    private static func fetchTTSData(text: String) async -> Data? {
-        do {
-            return try await audioLoader.data(for: text) {
-                let speech = OpenAISpeech(host: Defaults[.openAIAPIHost],
-                                            model: Defaults[.openAITTSModel],
-                                            voice: Defaults[.openAIVoice],
-                                            instructions: Defaults[.openAITTSInstructions])
-                return try await speech.audio(for: text, token: APIKeyStore.shared.value(for: .openAI))
+    public static func speak(_ text: String) async {
+        if session.text == text, session.phase != .idle {
+            if session.phase == .generating {
+                WindowManager.shared.closeSpeechWindow()
+                return
             }
-        } catch {
-            logger.error("Speech generation error: \(error)")
-            return nil
-        }
-    }
-
-    // MARK: - 综合调用入口
-
-    /// 综合 TTS 播放函数，根据 OpenAI APIKey 和文本内容决定调用系统 TTS 还是 OpenAI TTS
-    ///
-    /// - Parameters:
-    ///   - text: 待朗读文本
-    ///   - view: 是否以视图窗口方式播放（适用于多句文本）；默认为 true
-    ///
-    /// 如果 OpenAI APIKey 为空，则调用系统 TTS，否则：
-    /// - 当文本为单词或 view 为 false 时直接播放语音；
-    /// - 否则，获取 TTS 数据后在新窗口中播放（需 WindowManager 实现相关方法）。
-    public static func speak(_ text: String, view: Bool = true) async {
-        // 如果未配置 OpenAI APIKey，则调用系统语音
-        if APIKeyStore.shared.value(for: .openAI).isEmpty {
-            systemSpeak(text)
+            session.togglePlayback()
         } else {
-            if isWord(str: text) || !view {
-                await play(text: text)
+            let token = APIKeyStore.shared.value(for: .openAI)
+            if token.isEmpty {
+                session.start(text: text, voice: String(localized: "audio.systemVoice"), generateAudio: nil)
             } else {
-                if let data = await fetchTTSData(text: text) {
-                    WindowManager.shared.createAudioPlayerWindow(data)
+                let speech = OpenAISpeech(host: Defaults[.openAIAPIHost],
+                                          model: Defaults[.openAITTSModel],
+                                          voice: Defaults[.openAIVoice],
+                                          instructions: Defaults[.openAITTSInstructions])
+                let cacheKey = [speech.host, speech.model, speech.voice.rawValue, speech.instructions, text].joined(separator: "\0")
+                session.start(text: text, voice: speech.voice.rawValue.capitalized) {
+                    try await audioLoader.data(for: cacheKey) {
+                        try await speech.audio(for: text, token: token)
+                    }
                 }
             }
         }
-    }
-
-    /// 停止所有正在进行的语音合成播放，包括系统 TTS 与 OpenAI TTS
-    public static func stopSpeak() {
-        speechSynthesizer.stopSpeaking(at: .word)
-        audioPlayer?.stop()
+        WindowManager.shared.showSpeechWindow(session: session)
     }
 }
