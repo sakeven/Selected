@@ -19,10 +19,7 @@ struct ClipAIPromptView: View {
     @State private var error: String?
 
     private var modelName: String {
-        if Defaults[.aiService] == "OpenAI" {
-            return translation ? Defaults[.openAITranslationModel] : Defaults[.openAIModel]
-        }
-        return translation ? "claude-haiku-4-5" : Defaults[.claudeModel]
+        translation ? Defaults[.openAITranslationModel] : Defaults[.openAIModel]
     }
 
     var body: some View {
@@ -113,10 +110,9 @@ struct ClipAIPromptView: View {
                 return ClipItem(type: NSPasteboard.PasteboardType(type), data: data)
             }
             let plainText = data.plainText
-            let openAI = Defaults[.aiService] == "OpenAI"
             do {
                 content = try await Task.detached(priority: .userInitiated) {
-                    try ClipAIContent.load(items: items, plainText: plainText, openAI: openAI)
+                    try ClipAIContent.load(items: items, plainText: plainText)
                 }.value
             } catch {
                 self.error = error.localizedDescription
@@ -132,10 +128,9 @@ struct ClipAIPromptView: View {
         {selected.text}
         </clipboard>
         """
-        let service: AIProvider? = translation
-            ? Translation.TranslateService(prompt: prompt)?.chatService
+        let service: AIProvider = translation
+            ? Translation.TranslateService(prompt: prompt).chatService
             : ChatService(prompt: prompt, options: [:])
-        guard let service else { return }
         let context = ChatContext(text: content.text, webPageURL: data.hasAIAttachment ? "" : data.url ?? "", bundleID: data.application ?? "", images: content.images, files: content.files, request: instruction.trimmingCharacters(in: .whitespacesAndNewlines))
         dismiss()
         ClipWindowManager.shared.forceCloseWindow()

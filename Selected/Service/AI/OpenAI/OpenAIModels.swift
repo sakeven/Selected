@@ -4,15 +4,19 @@ typealias OpenAIModel = Model
 
 extension Model {
     static let gpt6_astra = "gpt-6-astra"
+    static let gpt6_1_sol = "gpt-6.1-sol"
+    static let gpt6_sol = "gpt-6-sol"
+    static let gpt6_luna = "gpt-6-luna"
     static let gpt5_6_sol = "gpt-5.6-sol"
     static let gpt5_6_terra = "gpt-5.6-terra"
     static let gpt5_6_luna = "gpt-5.6-luna"
+    static let gpt_audio_1_5 = "gpt-audio-1.5"
 }
 
-let OpenAIModels: [Model] = [.gpt6_astra, .gpt5_6_sol, .gpt5_6_terra, .gpt5_6_luna]
-let OpenAITTSModels: [Model] = [.gpt_4o_mini_tts, .tts_1, .tts_1_hd]
+let OpenAIModels: [Model] = [.gpt6_1_sol, .gpt6_astra, .gpt6_luna, .gpt6_sol, .gpt5_6_sol, .gpt5_6_terra, .gpt5_6_luna]
+let OpenAITTSModels: [Model] = [.gpt_audio_1_5]
 let OpenAITranslationModels: [Model] = [
-    .gpt5_6_luna, .gpt5_6_terra, .gpt5_6_sol, .gpt6_astra
+    .gpt6_luna, .gpt6_1_sol, .gpt6_astra, .gpt6_sol, .gpt5_6_luna, .gpt5_6_terra, .gpt5_6_sol
 ]
 
 typealias OpenAIModelReasoningEffort = Components.Schemas.ReasoningEffort
@@ -26,9 +30,9 @@ func isReasoningModel(_ model: Model) -> Bool {
 extension OpenAIModel {
     var supportedReasoningEfforts: [OpenAIModelReasoningEffort] {
         switch self {
-        case .gpt6_astra:
+        case .gpt6_astra, .gpt6_1_sol:
             return [.low, .medium, .high, .xhigh]
-        case .gpt5_6_sol, .gpt5_6_terra, .gpt5_6_luna, "gpt-5.6":
+        case .gpt6_sol, .gpt6_luna, .gpt5_6_sol, .gpt5_6_terra, .gpt5_6_luna, "gpt-5.6":
             return [.none, .low, .medium, .high, .xhigh]
         default:
             return []

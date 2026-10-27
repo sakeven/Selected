@@ -1,6 +1,5 @@
 import Foundation
 import OpenAI
-import SwiftAnthropic
 import Testing
 @testable import Selected
 
@@ -63,53 +62,6 @@ struct AIResponseStreamsTests {
         #expect(updates.count == 1)
         #expect(updates.first?.id == "search-2")
         #expect(updates.first?.sourceLinks == [.init(title: "Source", url: "https://example.com/source")])
-    }
-
-    @Test func claudeCombinesFragmentedToolArgumentsAndSignedReasoning() async throws {
-        var state = ClaudeResponseState()
-        let stream = AsyncThrowingStream<AIStreamEvent, Error>.makeStream()
-        let events = [
-            #"{"type":"content_block_delta","index":0,"delta":{"type":"thinking_delta","thinking":"Think"}}"#,
-            #"{"type":"content_block_delta","index":0,"delta":{"type":"signature_delta","signature":"signed"}}"#,
-            #"{"type":"content_block_delta","index":1,"delta":{"type":"text_delta","text":"Answer"}}"#,
-            #"{"type":"content_block_start","index":2,"content_block":{"type":"tool_use","id":"tool-1","name":"lookup","input":{}}}"#,
-            #"{"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"{\"query\":"}}"#,
-            #"{"type":"content_block_delta","index":2,"delta":{"type":"input_json_delta","partial_json":"\"世界\"}"}}"#,
-            #"{"type":"content_block_stop","index":2}"#,
-            #"{"type":"content_block_start","index":3,"content_block":{"type":"tool_use","id":"tool-2","name":"next","input":{}}}"#,
-            #"{"type":"content_block_delta","index":3,"delta":{"type":"input_json_delta","partial_json":"{}"}}"#,
-            #"{"type":"content_block_stop","index":3}"#
-        ]
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        for json in events {
-            try state.consume(decoder.decode(MessageStreamResponse.self, from: Data(json.utf8)), continuation: stream.continuation)
-        }
-        let message = try state.finish(continuation: stream.continuation)
-        stream.continuation.finish()
-        #expect(try await descriptions(stream.stream) == ["reasoning:Think", "text:Answer", "reasoningDone:Think", "textDone:Answer"])
-        #expect(state.toolUseList.map(\.id) == ["tool-1", "tool-2"])
-        let encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-        let json = try #require(JSONSerialization.jsonObject(with: encoder.encode(message)) as? [String: Any])
-        let content = try #require(json["content"] as? [[String: Any]])
-        #expect(content.compactMap { $0["type"] as? String } == ["thinking", "text", "tool_use", "tool_use"])
-        #expect(content[0]["thinking"] as? String == "Think")
-        #expect(content[0]["signature"] as? String == "signed")
-        #expect((content[2]["input"] as? [String: Any])?["query"] as? String == "世界")
-        #expect((content[3]["input"] as? [String: Any])?.isEmpty == true)
-    }
-
-    @Test func claudeEmptyResponsesStillFinishReasoningAndAppendTextContent() async throws {
-        let state = ClaudeResponseState()
-        let stream = AsyncThrowingStream<AIStreamEvent, Error>.makeStream()
-        let message = try state.finish(continuation: stream.continuation)
-        stream.continuation.finish()
-        #expect(try await descriptions(stream.stream) == ["reasoningDone:"])
-        let json = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(message)) as? [String: Any])
-        let content = try #require(json["content"] as? [[String: Any]])
-        #expect(content.count == 1)
-        #expect(content[0]["text"] as? String == "")
     }
 
     private func descriptions(_ stream: AsyncThrowingStream<AIStreamEvent, Error>) async throws -> [String] {

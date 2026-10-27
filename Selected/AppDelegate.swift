@@ -31,8 +31,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let model = OpenAIModelMigration.chatReplacement(for: Defaults[.openAIModel]) {
             Defaults[.openAIModel] = model
         }
+        let supportedEfforts = Defaults[.openAIModel].supportedReasoningEfforts
+        if !supportedEfforts.isEmpty, !supportedEfforts.contains(Defaults[.openAIModelReasoningEffort]) {
+            Defaults[.openAIModelReasoningEffort] = .medium
+        }
         if let model = OpenAIModelMigration.translationReplacement(for: Defaults[.openAITranslationModel]) {
             Defaults[.openAITranslationModel] = model
+        }
+        if let model = OpenAIModelMigration.speechReplacement(for: Defaults[.openAITTSModel]) {
+            Defaults[.openAITTSModel] = model
         }
 
         setDefaultAppForCustomFileType()

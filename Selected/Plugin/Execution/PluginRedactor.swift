@@ -8,7 +8,7 @@ struct PluginRedactor {
 
     init(info: PluginInfo, values: [String: String]) {
         secrets = info.options.filter { $0.type == .secret }.compactMap { values[$0.identifier] }
-            + [APIKeyStore.shared.value(for: .openAI), APIKeyStore.shared.value(for: .claude)]
+            + [APIKeyStore.shared.value(for: .openAI)]
     }
 
     func redact(_ text: String) -> String {

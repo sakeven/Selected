@@ -3,7 +3,6 @@ import Defaults
 
 struct ClipDataView: View {
     @ObservedObject var data: ClipHistoryData
-    @Default(.aiService) private var aiService
     @State private var showActions = false
     let onTogglePin: () -> Void
     let onDelete: () -> Void
@@ -46,7 +45,7 @@ struct ClipDataView: View {
                 .clipped()
 
             HStack(spacing: 2) {
-                if let kind = data.aiContentKind(openAI: aiService == "OpenAI") {
+                if let kind = data.aiContentKind() {
                     Button("clip.ai.ask", systemImage: "sparkles") {
                         onAIRequest("", false)
                     }

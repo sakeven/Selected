@@ -14,8 +14,8 @@ struct GptAction: Codable {
         if let after = generic.after, after != .none {
             return PerformAction(pluginInfo: pluginInfo, actionMeta: generic, complete: { ctx in
                 let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID, clipboardText: ctx.ClipboardText ?? "")
-                guard let chatService = ChatService(prompt: self.prompt, tools: self.tools,
-                                                    options: pluginInfo.getOptionsValue(), reasoning: self.reasoning ?? false) else { return }
+                let chatService = ChatService(prompt: self.prompt, tools: self.tools,
+                                                    options: pluginInfo.getOptionsValue(), reasoning: self.reasoning ?? false)
                 do {
                     var output = ""
                     for try await event in chatService.chat(ctx: chatCtx) {
@@ -43,8 +43,8 @@ struct GptAction: Codable {
             })
         }
         return PerformAction(pluginInfo: pluginInfo, actionMeta: generic, complete: { ctx in
-            guard let chatService = ChatService(prompt: self.prompt, tools: self.tools,
-                                                options: pluginInfo.getOptionsValue(), reasoning: self.reasoning ?? true) else { return }
+            let chatService = ChatService(prompt: self.prompt, tools: self.tools,
+                                                options: pluginInfo.getOptionsValue(), reasoning: self.reasoning ?? true)
             let chatCtx = ChatContext(text: ctx.Text, webPageURL: ctx.WebPageURL, bundleID: ctx.BundleID, clipboardText: ctx.ClipboardText ?? "")
             _ = WindowManager.shared.closeOnlyPopbarWindows(.force)
             ChatWindowManager.shared.createChatWindow(chatService: chatService, withContext: chatCtx)

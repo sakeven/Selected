@@ -186,7 +186,7 @@ class WindowManager {
     }
 
     func createAudioPlayerWindow(_ audio: Data) {
-        guard let url = createTemporaryURLForData(audio, fileName: "selected-tmptts.mp3") else {
+        guard let url = createTemporaryURLForData(audio, fileName: "selected-tmptts.wav") else {
             return
         }
 

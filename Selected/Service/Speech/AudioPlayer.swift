@@ -62,7 +62,7 @@ class AudioPlayer: ObservableObject {
             return
         }
         let unixTime = Int(Date().timeIntervalSince1970)
-        let tts = documentsDirectory.appending(path: "Selected/tts-\(unixTime).mp3")
+        let tts = documentsDirectory.appending(path: "Selected/tts-\(unixTime).\(audioURL.pathExtension)")
         do{
             try FileManager.default.createDirectory(at: tts.deletingLastPathComponent(), withIntermediateDirectories: true)
             try FileManager.default.moveItem(at: audioURL, to: tts)

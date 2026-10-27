@@ -21,10 +21,7 @@ struct Translation {
         if isWord(str: content) {
             prompt = "翻译以下单词到中文，详细说明单词的不同意思，并且给出原语言的例句与翻译。使用 markdown 的格式回复，要求第一行标题为单词。单词为：{selected.text}"
         }
-        guard let translator = TranslateService(prompt: prompt) else {
-            completion("no model \(Defaults[.aiService])")
-            return
-        }
+        let translator = TranslateService(prompt: prompt)
         do {
             let stream = translator.chatOnce(selectedText: content)
             for try await event in stream {
@@ -40,10 +37,7 @@ struct Translation {
 
     private func contentTrans2English(content: String, completion: @escaping (_: String) -> Void)  async -> Void{
         let prompt = "You are a professional translator proficient in English. Translate the following content into English. Rule: reply with the translated content directly. The content is：{selected.text}"
-        guard let translator = TranslateService(prompt: prompt) else {
-            completion("no model \(Defaults[.aiService])")
-            return
-        }
+        let translator = TranslateService(prompt: prompt)
         do {
             let stream = translator.chatOnce(selectedText: content)
             for try await event in stream {
@@ -60,15 +54,8 @@ struct Translation {
     struct TranslateService{
         var chatService: AIProvider
 
-        init?(prompt: String){
-            switch Defaults[.aiService] {
-                case "OpenAI":
-                    chatService = OpenAIProvider(prompt: prompt, model: Defaults[.openAITranslationModel], reasoning: false)
-                case "Claude":
-                    chatService = ClaudeAIProvider(prompt: prompt, model: .claude_haiku_4_5)
-                default:
-                    return nil
-            }
+        init(prompt: String){
+            chatService = OpenAIProvider(prompt: prompt, model: Defaults[.openAITranslationModel], reasoning: false)
         }
 
         func chatOnce(selectedText: String) -> AsyncThrowingStream<AIStreamEvent, Error> {

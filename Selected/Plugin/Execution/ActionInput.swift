@@ -23,7 +23,7 @@ struct ActionInput {
     }
 
     var kind: ClipAIContent.Kind? {
-        ClipAIContent.kind(items: items, plainText: context.Text, openAI: Defaults[.aiService] == "OpenAI")
+        ClipAIContent.kind(items: items, plainText: context.Text)
     }
 
     var hasAttachment: Bool {
@@ -31,9 +31,9 @@ struct ActionInput {
     }
 
     func loadContent() async throws -> ClipAIContent {
-        let items = items, text = context.Text, openAI = Defaults[.aiService] == "OpenAI"
+        let items = items, text = context.Text
         return try await Task.detached {
-            try ClipAIContent.load(items: items, plainText: text, openAI: openAI)
+            try ClipAIContent.load(items: items, plainText: text)
         }.value
     }
 

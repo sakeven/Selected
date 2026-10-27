@@ -62,11 +62,6 @@ class MessageViewModel: ObservableObject {
         }
     }
 
-    var usesOpenAIFileInputs: Bool {
-        let provider = (chatService as? ChatService)?.chatService ?? chatService
-        return provider is OpenAIProvider
-    }
-
     // 开启第一条对话
     func fetchMessages(ctx: ChatContext) async -> Void{
         self.inProgress = true

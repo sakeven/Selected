@@ -141,14 +141,7 @@ struct ChatMessagesTests {
         #expect(!model.inProgress)
     }
 
-    @Test func claudeEncodesImportedTextFilesAsText() throws {
-        let file = AIFileAttachment(filename: "notes.txt", data: Data("notes.txt\n\nHello 世界".utf8), mimeType: "text/plain")
-        let content = try ClaudeAIProvider.messageContent(UserMessage(text: "Summarize", files: [file]))
-        let json = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(content)) as? [[String: Any]])
-        #expect(json[0]["type"] as? String == "text")
-        #expect(json[0]["text"] as? String == "notes.txt\n\nHello 世界")
-        #expect(json[1]["text"] as? String == "Summarize")
-    }
+
 }
 
 private final class ChatTestProvider: AIProvider {

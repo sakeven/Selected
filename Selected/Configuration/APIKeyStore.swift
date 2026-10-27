@@ -3,7 +3,6 @@ import Foundation
 struct APIKeyStore {
     enum Provider: String, CaseIterable {
         case openAI = "OpenAIAPIKey"
-        case claude = "ClaudeAPIKey"
         case gemini = "GeminiAPIKey"
     }
 

@@ -69,15 +69,13 @@ import Stencil
                     failed = result.exitCode != 0
                     status = String(localized: "Command exit code: \(result.exitCode)")
                 } else if let ai = action.gpt {
-                    let key = Defaults[.aiService] == "OpenAI" ? APIKeyStore.shared.value(for: .openAI) : APIKeyStore.shared.value(for: .claude)
+                    let key = APIKeyStore.shared.value(for: .openAI)
                     guard !key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                        throw PluginValidationError(messages: [String(localized: "Set up your AI provider and API key in General settings first.")])
+                        throw PluginValidationError(messages: [String(localized: "Set up your OpenAI API key in General settings first.")])
                     }
                     var tools = ai.tools
                     for index in tools?.indices ?? 0..<0 { tools?[index].workdir = directory.path }
-                    guard let service = ChatService(prompt: ai.prompt, tools: tools, options: values, reasoning: ai.reasoning ?? (action.meta.after == nil || action.meta.after == AfterAction.none)) else {
-                        throw PluginValidationError(messages: [String(localized: "Set up your AI provider and API key in General settings first.")])
-                    }
+                    let service = ChatService(prompt: ai.prompt, tools: tools, options: values, reasoning: ai.reasoning ?? (action.meta.after == nil || action.meta.after == AfterAction.none))
                     var response = ""
                     let context = ChatContext(text: prepared.Text, webPageURL: prepared.WebPageURL, bundleID: prepared.BundleID, clipboardText: prepared.ClipboardText ?? "")
                     for try await event in service.chat(ctx: context) {

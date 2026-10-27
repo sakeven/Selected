@@ -18,23 +18,16 @@ extension Defaults.Keys {
     
     static let search = Key<String>("SearchURL", default: "https://www.google.com/search?q={selected.text}")
     
-    static let aiService = Key<String>("AIService", default: "OpenAI")
-    
     // OpenAI
     static let openAIAPIHost = Key<String>("OpenAIAPIHost",default: "api.openai.com")
-    static let openAIModel = Key<OpenAIModel>("OpenAIModel", default: .gpt5_6_sol)
+    static let openAIModel = Key<OpenAIModel>("OpenAIModel", default: .gpt6_1_sol)
     static let openAIModelReasoningEffort = Key<OpenAIModelReasoningEffort>("openAIModelReasoningEffort", default: .medium)
 
-    static let openAITranslationModel = Key<OpenAIModel>("OpenAITranslationModel", default: .gpt5_6_luna)
+    static let openAITranslationModel = Key<OpenAIModel>("OpenAITranslationModel", default: .gpt6_luna)
 
-    static let openAIVoice = Key<AudioSpeechQuery.AudioSpeechVoice>("OpenAIVoice", default: .shimmer)
-    static let openAITTSModel = Key<OpenAIModel>("OpenAITTSModel", default: .gpt_4o_mini_tts)
+    static let openAIVoice = Key<ChatQuery.AudioOptions.AudioOptionsSpeechVoice>("OpenAIVoice", default: .shimmer)
+    static let openAITTSModel = Key<OpenAIModel>("OpenAITTSModel", default: .gpt_audio_1_5)
     static let openAITTSInstructions = Key<String>("OpenAITTSInstructions", default: "")
-
-    
-    // Claude
-    static let claudeAPIHost = Key<String>("ClaudeAPIHost", default: "https://api.anthropic.com")
-    static let claudeModel = Key<ClaudeModel>("ClaudeModel", default: .claude_sonnet_4_5)
 
     // clipboard
     static let enableClipboard = Key<Bool>("EnableClipboard", default: false)
@@ -59,7 +52,7 @@ extension ChatQuery.ReasoningEffort: Defaults.Serializable, @retroactive CaseIte
 }
 
 
-extension AudioSpeechQuery.AudioSpeechVoice: Defaults.Serializable{}
+extension ChatQuery.AudioOptions.AudioOptionsSpeechVoice: Defaults.Serializable{}
 
 extension OpenAIModelReasoningEffort: Defaults.Serializable{}
 

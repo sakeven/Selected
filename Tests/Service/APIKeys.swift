@@ -44,13 +44,13 @@ struct APIKeyStoreTests {
 
     @Test func editingAndClearingUseOnlySecureStorage() throws {
         let fixture = CredentialFixture()
-        fixture.defaults.set("legacy", forKey: APIKeyStore.Provider.claude.rawValue)
-        try fixture.store.save("new", for: .claude)
-        #expect(fixture.store.value(for: .claude) == "new")
-        #expect(fixture.defaults.object(forKey: APIKeyStore.Provider.claude.rawValue) == nil)
-        try fixture.store.save("", for: .claude)
+        fixture.defaults.set("legacy", forKey: APIKeyStore.Provider.openAI.rawValue)
+        try fixture.store.save("new", for: .openAI)
+        #expect(fixture.store.value(for: .openAI) == "new")
+        #expect(fixture.defaults.object(forKey: APIKeyStore.Provider.openAI.rawValue) == nil)
+        try fixture.store.save("", for: .openAI)
         #expect(fixture.storage.values.isEmpty)
-        #expect(fixture.store.value(for: .claude).isEmpty)
+        #expect(fixture.store.value(for: .openAI).isEmpty)
     }
 
     @Test(arguments: [StorageOperation.write, .remove])

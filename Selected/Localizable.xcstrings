@@ -704,22 +704,6 @@
         }
       }
     },
-    "AIService" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AI Service"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "AI 服务"
-          }
-        }
-      }
-    },
     "All" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1028,6 +1012,7 @@
     },
     "calling_tool" : {
       "comment" : "tool message",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1691,16 +1676,6 @@
         }
       }
     },
-    "Claude" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claude"
-          }
-        }
-      }
-    },
     "clip.actions" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2079,13 +2054,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The attachment exceeds the size limit. OpenAI documents must be under 50 MB. For Claude, use files under 23 MB and images under 5 MB."
+            "value" : "The attachment exceeds the size limit. Keep the combined attachment size under 50 MB."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "附件超过大小限制。OpenAI 文档需小于 50 MB；Claude 文件需小于 23 MB，图片小于 5 MB。"
+            "value" : "附件超过大小限制。附件总大小需小于 50 MB。"
           }
         }
       }
@@ -5396,12 +5371,12 @@
         }
       }
     },
-    "Set up your AI provider and API key in General settings first." : {
+    "Set up your OpenAI API key in General settings first." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请先在通用设置中配置 AI 服务和 API 密钥。"
+            "value" : "请先在通用设置中配置 OpenAI API 密钥。"
           }
         }
       }
@@ -5520,6 +5495,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "朗读"
+          }
+        }
+      }
+    },
+    "Speech generation did not complete." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "语音生成未完成。"
+          }
+        }
+      }
+    },
+    "Speech generation failed." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "语音生成失败。"
           }
         }
       }

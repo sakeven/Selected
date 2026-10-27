@@ -1,10 +1,14 @@
 import Foundation
 import OpenAI
-import SwiftAnthropic
 import Testing
 @testable import Selected
 
 struct AIRequestsTests {
+    @Test func chatAndTranslationUseOpenAI() {
+        #expect(ChatService(prompt: "", options: [:]).chatService is OpenAIProvider)
+        #expect(Translation.TranslateService(prompt: "").chatService is OpenAIProvider)
+    }
+
     @Test func initialPromptPreservesTemplateOrderAndAttachments() {
         let image = Data([0x89, 0x50, 0x4E, 0x47])
         let file = AIFileAttachment(filename: "notes.txt", data: Data("File text".utf8), mimeType: "text/plain")
@@ -37,28 +41,6 @@ struct AIRequestsTests {
         #expect(json["text"] == nil)
         #expect(original.previousResponseId == "old-id")
         #expect(original.continuing(with: original.input, previousResponseID: nil).previousResponseId == nil)
-    }
-
-    @Test(arguments: [false, true])
-    func claudeHistoryPreservesOrderingAndSettings(reasoning: Bool) throws {
-        var query = ClaudeQuery(model: .other("custom-claude"), systemPrompt: "System", tools: [svgToolClaudeDef], reasoning: reasoning)
-        query.update(with: .init(role: .user, content: .text("First")))
-        query.update(with: [.init(role: .assistant, content: .text("Answer")), .init(role: .user, content: .text("Follow up"))])
-        let encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-        let json = try #require(JSONSerialization.jsonObject(with: encoder.encode(query.query)) as? [String: Any])
-        #expect(json["model"] as? String == "custom-claude")
-        #expect(json["max_tokens"] as? Int == 4096)
-        #expect(json["system"] as? String == "System")
-        let messages = try #require(json["messages"] as? [[String: Any]])
-        #expect(messages.compactMap { $0["role"] as? String } == ["user", "assistant", "user"])
-        #expect(messages.compactMap { $0["content"] as? String } == ["First", "Answer", "Follow up"])
-        #expect((json["tools"] as? [[String: Any]])?.first?["name"] as? String == "display_svg")
-        if reasoning {
-            #expect((json["thinking"] as? [String: Any])?["budget_tokens"] as? Int == 2048)
-        } else {
-            #expect(json["thinking"] == nil)
-        }
     }
 
     @Test(arguments: ["", "word", "well-known", "中文", "café", "---"])

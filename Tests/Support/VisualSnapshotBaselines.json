@@ -93,12 +93,12 @@
     },
     "application-settings-dark" : {
       "height" : 1520,
-      "sha256" : "0ba79a3f3e204822a6edb9c702ef491e57b8e2d26184777668c6ca870aa653d5",
+      "sha256" : "eaf9883d5ba83881864304d365fc597670d74d3d835c121fb4f1131e453023df",
       "width" : 2160
     },
     "application-settings-light" : {
       "height" : 1520,
-      "sha256" : "76199ed6541f5b3a3b6d7c4ca5862a99b8a598c6219cf05cc305bf2594a2d5e0",
+      "sha256" : "27e42afceab5c21f1bf873067dbd0ca5984af392f09954ad983ed581b5d5a15b",
       "width" : 2160
     },
     "application-spotlight-dark" : {

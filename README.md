@@ -66,7 +66,7 @@ Press **⌥X** to open Selected's **Spotlight** input panel. Type or paste text,
 
 ## AI configuration and chat
 
-Open **Settings → General** and choose **OpenAI** or **Claude** as the **AI Service**. Enter the key for that provider and select a model.
+Open **Settings → General → OpenAI**, enter your API key, and select a model. Chat defaults to **GPT-6.1 Sol** and built-in translation to **GPT-6 Luna**. The model lists also include GPT-6 Astra, GPT-6 Sol, and the supported GPT-5.6 models.
 
 | Setting | How to configure it |
 | --- | --- |
@@ -74,11 +74,7 @@ Open **Settings → General** and choose **OpenAI** or **Claude** as the **AI Se
 | OpenAI Model | Choose a listed model, or select **Custom** and enter a model identifier supported by your provider. |
 | Reasoning Effort | Shown for recognized reasoning models. The available levels depend on the model. |
 | Translation | Selects the OpenAI model used for built-in translation. |
-| Voice / TTS Model | Controls OpenAI speech output. **TTS Instructions** is available for the supported instruction-based TTS model. Speech uses the OpenAI configuration even when Claude is selected for chat. |
-| Claude API Host | The default is `https://api.anthropic.com`. This field takes a base URL including the scheme. |
-| Claude Model | Selects the Claude chat model. Built-in Claude translation uses a separate model chosen by the app. |
-
-<img src="DocImages/General-Settings.png" alt="General settings preview showing search, shortcut, AI provider, and OpenAI configuration with an empty API key" width="760" />
+| Voice / TTS Model | Speech uses `gpt-audio-1.5` over HTTPS. Custom hosts must support audio output through `/v1/chat/completions`. The model is instructed to read the selected text verbatim; **TTS Instructions** controls delivery. Generated audio is played and saved as WAV. |
 
 To start a conversation, create or install an **AI Prompt** plugin with **Open Chat** output handling, then invoke it from the toolbar. You can also open **AI → Ask AI** from a supported clipboard item. Built-in translation opens a translation result; plugin actions use their own output settings.
 
@@ -197,7 +193,7 @@ Plugins are installed in `~/Library/Application Support/Selected/Extensions`. Ap
 | No main window appears after launch | Selected is a menu bar app. Open Settings from its menu bar icon. |
 | The toolbar does not appear | Check Accessibility permission, make sure Selected is not paused, and select text in another app. Try the quick input panel to confirm actions are available. |
 | Selection works in an editor but not a browser | Check the browser's Apple Events setting and Selected's Automation permission. |
-| Translation or AI produces no result | Check the selected provider, its key, host format, model access, and network connection. OpenAI and Claude use different host formats. |
+| Translation or AI produces no result | Check your OpenAI API key, host format, model access, and network connection. |
 | A plugin action is missing | Check that the plugin is enabled, required options are filled, its minimum Selected version is met, and the action is included in the app's list. Matching rules and editable-text requirements can also hide actions. |
 | A plugin fails to load | Expand the load errors at the bottom of Extensions and use **Repair…** to inspect and fix its YAML. Check for duplicate identifiers and unsupported configuration. |
 | Clipboard history is empty or its shortcut does nothing | Enable Clipboard History first, then copy an item. Check whether another app is using the same shortcut. |

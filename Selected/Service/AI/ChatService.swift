@@ -1,18 +1,10 @@
-import Defaults
 import Foundation
 
 struct ChatService: AIProvider{
     var chatService: AIProvider
 
-    init?(prompt: String, tools: [FunctionDefinition]? = nil, options: [String:String], reasoning: Bool = true){
-        switch Defaults[.aiService] {
-            case "OpenAI":
-                chatService = OpenAIProvider(prompt: prompt, tools: tools, options: options, reasoning: reasoning)
-            case "Claude":
-                chatService = ClaudeAIProvider(prompt: prompt, tools: tools, options: options, reasoning: reasoning)
-            default:
-                return nil
-        }
+    init(prompt: String, tools: [FunctionDefinition]? = nil, options: [String:String], reasoning: Bool = true){
+        chatService = OpenAIProvider(prompt: prompt, tools: tools, options: options, reasoning: reasoning)
     }
 
 

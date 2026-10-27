@@ -21,7 +21,7 @@ struct ClipAIContent: Sendable {
         var errorDescription: String? { NSLocalizedString(rawValue, comment: "") }
     }
 
-    static func load(items: [ClipItem], plainText: String?, openAI: Bool) throws -> ClipAIContent {
+    static func load(items: [ClipItem], plainText: String?) throws -> ClipAIContent {
         if let item = items.first(where: { $0.type == .fileURL }) {
             guard let value = String(data: item.data, encoding: .utf8),
                   let url = URL(string: value), url.isFileURL else {
@@ -29,43 +29,32 @@ struct ClipAIContent: Sendable {
             }
             let resource = try url.resourceValues(forKeys: [.fileSizeKey, .isRegularFileKey, .contentTypeKey])
             guard resource.isRegularFile == true else { throw ContentError.unsupported }
-            guard (resource.fileSize ?? 0) < (openAI ? 50_000_000 : 23_000_000) else { throw ContentError.tooLarge }
-            guard let kind = fileKind(url: url, contentType: resource.contentType, openAI: openAI) else {
+            guard (resource.fileSize ?? 0) < 50_000_000 else { throw ContentError.tooLarge }
+            guard let kind = fileKind(url: url, contentType: resource.contentType) else {
                 throw ContentError.unsupported
             }
             let data = try Data(contentsOf: url)
             if resource.contentType?.conforms(to: .pdf) == true {
-                return try pdf(data, filename: url.lastPathComponent, openAI: openAI)
+                return try pdf(data, filename: url.lastPathComponent)
             }
             if kind == .image {
-                return try image(data, name: url.lastPathComponent, openAI: openAI)
+                return try image(data, name: url.lastPathComponent)
             }
-            if openAI {
-                let mimeType = resource.contentType?.preferredMIMEType ?? "application/octet-stream"
-                return ClipAIContent(text: url.lastPathComponent, files: [AIFileAttachment(filename: url.lastPathComponent, data: data, mimeType: mimeType)])
-            }
-            let text: String?
-            if data.starts(with: [0xFF, 0xFE]) || data.starts(with: [0xFE, 0xFF]) {
-                text = String(data: data, encoding: .utf16)
-            } else {
-                text = String(data: data, encoding: .utf8)
-            }
-            guard let text, !text.contains("\0") else { throw ContentError.unsupported }
-            guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw ContentError.empty }
-            return ClipAIContent(text: "\(url.lastPathComponent)\n\n\(text)")
+            let mimeType = resource.contentType?.preferredMIMEType ?? "application/octet-stream"
+            return ClipAIContent(text: url.lastPathComponent, files: [AIFileAttachment(filename: url.lastPathComponent, data: data, mimeType: mimeType)])
         }
         if let item = items.first(where: { $0.type == .pdf }) {
-            return try pdf(item.data, filename: "Clipboard.pdf", openAI: openAI)
+            return try pdf(item.data, filename: "Clipboard.pdf")
         }
         if let item = items.first(where: { $0.type == .png }) ?? items.first(where: { $0.type == .tiff }) {
-            return try image(item.data, name: String(localized: "Image"), openAI: openAI)
+            return try image(item.data, name: String(localized: "Image"))
         }
         let text = plainText ?? items.first(where: { $0.type == .URL }).flatMap { String(data: $0.data, encoding: .utf8) } ?? ""
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw ContentError.empty }
         return ClipAIContent(text: text)
     }
 
-    static func kind(items: [ClipItem], plainText: String?, openAI: Bool) -> Kind? {
+    static func kind(items: [ClipItem], plainText: String?) -> Kind? {
         if let item = items.first(where: { $0.type == .fileURL }) {
             guard let value = String(data: item.data, encoding: .utf8),
                   let url = URL(string: value), url.isFileURL,
@@ -73,8 +62,8 @@ struct ClipAIContent: Sendable {
                   resource.isRegularFile == true,
                   FileManager.default.isReadableFile(atPath: url.path),
                   let size = resource.fileSize, size > 0,
-                  size < (openAI ? 50_000_000 : 23_000_000) else { return nil }
-            return fileKind(url: url, contentType: resource.contentType, openAI: openAI)
+                  size < 50_000_000 else { return nil }
+            return fileKind(url: url, contentType: resource.contentType)
         }
         if let item = items.first(where: { $0.type == .pdf }) {
             return item.data.isEmpty ? nil : .document
@@ -94,7 +83,7 @@ struct ClipAIContent: Sendable {
         return .text
     }
 
-    private static func fileKind(url: URL, contentType: UTType?, openAI: Bool) -> Kind? {
+    private static func fileKind(url: URL, contentType: UTType?) -> Kind? {
         let ext = url.pathExtension.lowercased()
         if ["png", "jpg", "jpeg", "webp", "gif", "tif", "tiff", "bmp", "heic", "heif"].contains(ext) {
             return .image
@@ -104,7 +93,7 @@ struct ClipAIContent: Sendable {
 
         // OpenAI file inputs: https://developers.openai.com/api/docs/guides/file-inputs
         let documentExtensions = Set("doc docx dot odt rtf pages pot ppa pps ppt pptx pwz wiz key xla xlb xlc xlm xls xlsx xlt xlw".split(separator: " ").map(String.init))
-        if documentExtensions.contains(ext) { return openAI ? .document : nil }
+        if documentExtensions.contains(ext) { return .document }
 
         let codeExtensions = Set("asm bat c cc conf cpp css cxx def h hh htm html in js json ksh mjs pl py s sql xml ts tsx jsx swift rs go java kt kts rb sh bash zsh ps1 r jl lua php cs m mm scala dart ex exs erl hs clj groovy awk tex diff patch cmake ini properties proto sass scss less hcl tf toml graphql gql ndjson json5 yaml yml astro handlebars hbs mustache ejs jinja jinja2 liquid erb twig pug jade tmpl gradle".split(separator: " ").map(String.init))
         if codeExtensions.contains(ext) || contentType?.conforms(to: .sourceCode) == true
@@ -116,15 +105,15 @@ struct ClipAIContent: Sendable {
         return nil
     }
 
-    private static func pdf(_ data: Data, filename: String, openAI: Bool) throws -> ClipAIContent {
-        guard data.count < (openAI ? 50_000_000 : 23_000_000) else { throw ContentError.tooLarge }
+    private static func pdf(_ data: Data, filename: String) throws -> ClipAIContent {
+        guard data.count < 50_000_000 else { throw ContentError.tooLarge }
         guard let document = PDFDocument(data: data), !document.isLocked, document.pageCount > 0 else {
             throw ContentError.invalidPDF
         }
         return ClipAIContent(text: filename, files: [AIFileAttachment(filename: filename, data: data)])
     }
 
-    private static func image(_ data: Data, name: String, openAI: Bool) throws -> ClipAIContent {
+    private static func image(_ data: Data, name: String) throws -> ClipAIContent {
         guard let bitmap = NSBitmapImageRep(data: data) else {
             throw ContentError.invalidImage
         }
@@ -135,19 +124,19 @@ struct ClipAIContent: Sendable {
             guard let png = bitmap.representation(using: .png, properties: [:]) else { throw ContentError.invalidImage }
             encoded = png
         }
-        guard encoded.count < (openAI ? 50_000_000 : 5_000_000) else { throw ContentError.tooLarge }
+        guard encoded.count < 50_000_000 else { throw ContentError.tooLarge }
         return ClipAIContent(text: name, images: [encoded])
     }
 
 }
 
 extension ClipHistoryData {
-    func aiContentKind(openAI: Bool) -> ClipAIContent.Kind? {
+    func aiContentKind() -> ClipAIContent.Kind? {
         let items = getItems().compactMap { item -> ClipItem? in
             guard let type = item.type, let data = item.data else { return nil }
             return ClipItem(type: NSPasteboard.PasteboardType(type), data: data)
         }
-        return ClipAIContent.kind(items: items, plainText: plainText, openAI: openAI)
+        return ClipAIContent.kind(items: items, plainText: plainText)
     }
 
     var hasAIAttachment: Bool {

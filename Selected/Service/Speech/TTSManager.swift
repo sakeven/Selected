@@ -10,7 +10,6 @@ import Foundation
 import AVFoundation
 import Defaults
 import SwiftUI
-import OpenAI
 
 @MainActor
 public enum TTSManager {
@@ -55,23 +54,14 @@ public enum TTSManager {
     private static func fetchTTSData(text: String) async -> Data? {
         do {
             return try await audioLoader.data(for: text) {
-                let configuration = OpenAI.Configuration(token: APIKeyStore.shared.value(for: .openAI),
-                                                         host: Defaults[.openAIAPIHost],
-                                                         timeoutInterval: 60.0)
-                let openAI = OpenAI(configuration: configuration)
-                let model = Defaults[.openAITTSModel]
-                let instructions = model == .gpt_4o_mini_tts ? Defaults[.openAITTSInstructions] : ""
-                let query = AudioSpeechQuery(model: model,
-                                             input: text,
-                                             voice: Defaults[.openAIVoice],
-                                             instructions: instructions,
-                                             responseFormat: .mp3,
-                                             speed: 1.0)
-                let result = try await openAI.audioCreateSpeech(query: query)
-                return result.audio
+                let speech = OpenAISpeech(host: Defaults[.openAIAPIHost],
+                                            model: Defaults[.openAITTSModel],
+                                            voice: Defaults[.openAIVoice],
+                                            instructions: Defaults[.openAITTSInstructions])
+                return try await speech.audio(for: text, token: APIKeyStore.shared.value(for: .openAI))
             }
         } catch {
-            logger.error("audioCreateSpeech error: \(error)")
+            logger.error("Speech generation error: \(error)")
             return nil
         }
     }

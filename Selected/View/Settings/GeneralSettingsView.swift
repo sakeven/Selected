@@ -4,7 +4,6 @@ import ServiceManagement
 import OpenAI
 
 struct GeneralSettingsView: View {
-    @Default(.aiService) private var aiService
     @State private var openAIAPIKey = APIKeyStore.shared.value(for: .openAI)
     @Default(.openAIAPIHost) private var openAIAPIHost
     @Default(.openAIModel) private var openAIModel
@@ -13,9 +12,6 @@ struct GeneralSettingsView: View {
     @Default(.openAITTSModel) private var openAITTSModel
     @Default(.openAITTSInstructions) private var openAITTSInstructions
     @Default(.openAITranslationModel) private var openAITranslationModel
-    @State private var claudeAPIKey = APIKeyStore.shared.value(for: .claude)
-    @Default(.claudeAPIHost) private var claudeAPIHost
-    @Default(.claudeModel) private var claudeModel
     @Default(.search) private var searchURL
     @State private var launchAtLogin: Bool
     @State private var selectedOpenAIModel: String
@@ -54,23 +50,9 @@ struct GeneralSettingsView: View {
                 Divider().opacity(0.5)
                 SpotlightShortcutView()
             }
-            SettingsSection(title: "AIService") {
-                SettingsMenuPicker(title: String(localized: "AIService"), values: ["OpenAI", "Claude"], selection: $aiService, label: { $0 })
-            }
             openAISettings
-            SettingsSection(title: "Claude") {
-                SettingsField(title: String(localized: "APIKey")) {
-                    SecureField("APIKey", text: $claudeAPIKey)
-                }
-                SettingsField(title: String(localized: "APIHost")) {
-                    TextField("APIHost", text: $claudeAPIHost)
-                }
-                Divider().opacity(0.5)
-                SettingsMenuPicker(title: String(localized: "Model"), values: ClaudeModel.allCases, selection: $claudeModel, label: { $0 })
-            }
         }
         .onChange(of: openAIAPIKey) { saveAPIKey(openAIAPIKey, for: .openAI) }
-        .onChange(of: claudeAPIKey) { saveAPIKey(claudeAPIKey, for: .claude) }
         .alert("Unable to Save API Key", isPresented: Binding(get: { credentialError != nil }, set: { if !$0 { credentialError = nil } })) {
             Button("OK", role: .cancel) { credentialError = nil }
         } message: { Text(credentialError ?? "") }
@@ -124,13 +106,11 @@ struct GeneralSettingsView: View {
             }
             SettingsMenuPicker(title: String(localized: "Translation"), values: OpenAITranslationModels, selection: $openAITranslationModel, label: { $0 })
             Divider().opacity(0.5)
-            SettingsMenuPicker(title: String(localized: "Voice"), values: AudioSpeechQuery.AudioSpeechVoice.allCases, selection: $openAIVoice, label: { $0.rawValue })
+            SettingsMenuPicker(title: String(localized: "Voice"), values: ChatQuery.AudioOptions.AudioOptionsSpeechVoice.allCases, selection: $openAIVoice, label: { $0.rawValue })
             SettingsMenuPicker(title: String(localized: "TTSModel"), values: OpenAITTSModels, selection: $openAITTSModel, label: { $0 })
-            if openAITTSModel == .gpt_4o_mini_tts {
-                SettingsField(title: String(localized: "TTSInstructions")) {
-                    TextField("TTSInstructions", text: $openAITTSInstructions, axis: .vertical)
-                        .lineLimit(2...4)
-                }
+            SettingsField(title: String(localized: "TTSInstructions")) {
+                TextField("TTSInstructions", text: $openAITTSInstructions, axis: .vertical)
+                    .lineLimit(2...4)
             }
         }
     }

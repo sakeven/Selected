@@ -128,7 +128,6 @@ struct ChatInputView: View {
 
     private func loadFiles(_ urls: [URL]) {
         guard !urls.isEmpty else { return }
-        let openAI = viewModel.usesOpenAIFileInputs
         isImporting = true
         Task {
             defer { isImporting = false }
@@ -138,9 +137,9 @@ struct ChatInputView: View {
                     let content = try await Task.detached(priority: .userInitiated) {
                         let access = url.startAccessingSecurityScopedResource()
                         defer { if access { url.stopAccessingSecurityScopedResource() } }
-                        return try ClipAIContent.load(items: [ClipItem(type: .fileURL, data: Data(url.absoluteString.utf8))], plainText: nil, openAI: openAI)
+                        return try ClipAIContent.load(items: [ClipItem(type: .fileURL, data: Data(url.absoluteString.utf8))], plainText: nil)
                     }.value
-                    try attachmentSelection.append(content, filename: url.lastPathComponent, openAI: openAI)
+                    try attachmentSelection.append(content, filename: url.lastPathComponent)
                 } catch {
                     errors.append("\(url.lastPathComponent): \(error.localizedDescription)")
                 }
@@ -164,7 +163,7 @@ struct ChatInputView: View {
                           let jpegData = nsImage.openAIReadyImageData() else {
                         throw ClipAIContent.ContentError.invalidImage
                     }
-                    try attachmentSelection.appendImage(jpegData, openAI: viewModel.usesOpenAIFileInputs)
+                    try attachmentSelection.appendImage(jpegData)
                 } catch {
                     importError = error.localizedDescription
                     showImportError = true

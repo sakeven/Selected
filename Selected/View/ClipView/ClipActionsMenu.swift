@@ -3,7 +3,6 @@ import SwiftUI
 
 struct ClipActionsMenu: View {
     @ObservedObject var data: ClipHistoryData
-    @Default(.aiService) private var aiService
     let onTogglePin: () -> Void
     let onDelete: () -> Void
     let onAIRequest: (String, Bool) -> Void
@@ -16,7 +15,7 @@ struct ClipActionsMenu: View {
             ClipWindowManager.shared.restore(data, paste: false)
         }
 
-        if let kind = data.aiContentKind(openAI: aiService == "OpenAI") {
+        if let kind = data.aiContentKind() {
             Divider()
             ClipAIMenu(kind: kind, onRequest: onAIRequest)
         }
