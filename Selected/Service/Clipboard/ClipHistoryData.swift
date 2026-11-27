@@ -1,5 +1,4 @@
 import Foundation
-import CryptoKit
 
 extension ClipHistoryData {
     func getItems() -> [ClipHistoryItem] {
@@ -9,14 +8,7 @@ extension ClipHistoryData {
         return []
     }
 
-    func MD5() -> String {
-        var md5 = Insecure.MD5()
-        for item in getItems(){
-            md5.update(data: item.data!)
-        }
-        let digest = md5.finalize()
-        return digest.map {
-            String(format: "%02hhx", $0)
-        }.joined()
+    var contentDigest: String {
+        MD5(chunks: getItems().compactMap(\.data))
     }
 }

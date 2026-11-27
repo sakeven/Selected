@@ -14,14 +14,16 @@ class ClipService {
 
     private var eventMonitor: Any?
     private let pasteboard: NSPasteboard
+    private let persistence: PersistenceController
+    private let monitorQueue = DispatchQueue(label: "Selected.ClipboardMonitor", qos: .utility)
 
-    //
-    private var lock = NSLock()
+    private let lock = NSLock()
     private var changeCount: Int = 0
     private var skip = false
 
-    init(pasteboard: NSPasteboard = .general) {
+    init(pasteboard: NSPasteboard = .general, persistence: PersistenceController = .shared) {
         self.pasteboard = pasteboard
+        self.persistence = persistence
         changeCount = pasteboard.changeCount
     }
 
@@ -31,18 +33,9 @@ class ClipService {
             guard let self = self else { return }
             guard Defaults[.enableClipboard] else { return }
 
-            //            AppLogger.clipboard.debug("pasteboard event \(eventTypeMap[event.type]!)")
-
-            if skip {
-                return
-            }
-
-            let eventType = event.type
-            DispatchQueue.global(qos: .background).async {
-                if eventType == .leftMouseUp {
-                    // 如果是鼠标右键菜单栏里左键点击复制的话，需要等半秒才能从 pasteboard 里获取到复制的数据。
-                    usleep(500000)
-                }
+            // A menu click may arrive before its Copy action has populated the pasteboard.
+            let delay: DispatchTimeInterval = event.type == .leftMouseUp ? .milliseconds(500) : .milliseconds(0)
+            monitorQueue.asyncAfter(deadline: .now() + delay) {
                 self.checkPasteboard()
             }
         }
@@ -64,52 +57,38 @@ class ClipService {
     }
 
     func restore(_ item: ClipHistoryData, completing: () -> Void) {
+        let restored = NSPasteboardItem()
+        for content in item.getItems() {
+            guard let type = content.type, let data = content.data else { continue }
+            restored.setData(data, forType: NSPasteboard.PasteboardType(type))
+        }
+        guard !restored.types.isEmpty else { return }
+
         let id = UUID().uuidString
         pauseMonitor(id)
         defer { resumeMonitor(id) }
 
         pasteboard.clearContents()
-        for content in item.getItems() {
-            pasteboard.setData(content.data, forType: NSPasteboard.PasteboardType(rawValue: content.type!))
-        }
-        PersistenceController.shared.updateClipHistoryData(item)
+        guard pasteboard.writeObjects([restored]) else { return }
+        persistence.updateClipHistoryData(item)
 
         completing()
     }
 
-    private func checkPasteboard() {
-        lock.lock()
-        defer {
-            lock.unlock()
+    func checkPasteboard() {
+        let countToRead: Int? = lock.withLock {
+            let count = pasteboard.changeCount
+            guard !skip, changeCount != count else { return nil }
+            changeCount = count
+            return count
         }
+        guard let countToRead, let clipData = ClipData(pasteboard: pasteboard),
+              !clipData.items.isEmpty, !filterClipData(clipData) else { return }
 
-        let currentChangeCount = pasteboard.changeCount
-        if changeCount == currentChangeCount {
-            return
+        lock.withLock {
+            guard !skip, changeCount == countToRead, pasteboard.changeCount == countToRead else { return }
+            persistence.store(clipData)
         }
-        changeCount = currentChangeCount
-        AppLogger.clipboard.debug("pasteboard changeCount \(self.changeCount)")
-
-        guard pasteboard.types != nil else {
-            return
-        }
-
-        // 剪贴板内容发生变化，处理变化
-        AppLogger.clipboard.debug("pasteboard \(String(describing: self.pasteboard.types))")
-        guard let clipData = ClipData(pasteboard: pasteboard) else {
-            return
-        }
-
-        if skip {
-            return
-        }
-        if clipData.types.isEmpty {
-            return
-        }
-        if filterClipData(clipData) {
-            return
-        }
-        PersistenceController.shared.store(clipData)
     }
 }
 

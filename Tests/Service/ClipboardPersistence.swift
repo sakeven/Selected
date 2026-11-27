@@ -1,6 +1,7 @@
 import AppKit
 import CoreData
 import Testing
+import XCTest
 @testable import Selected
 
 @MainActor
@@ -41,12 +42,41 @@ struct ClipboardPersistenceTests {
         controller.store(second, in: controller.container.viewContext)
         let stored = try clips(controller)
         #expect(stored.count == 1)
+        #expect(stored.first?.objectID == original.objectID)
         #expect(stored.first?.firstCopiedAt == Date(timeIntervalSince1970: 1000))
         #expect(stored.first?.lastCopiedAt == Date(timeIntervalSince1970: 2000))
         #expect(stored.first?.numberOfCopies == 2)
         #expect(stored.first?.isPinned == true)
         #expect(stored.first?.application == "new.app")
         #expect(try controller.container.viewContext.count(for: NSFetchRequest<NSFetchRequestResult>(entityName: "ClipHistoryItem")) == 1)
+    }
+
+    @Test func rapidRepeatedCopiesKeepOneHistoryEntryWithEveryCopyCounted() async throws {
+        let controller = try controller()
+        let pasteboard = NSPasteboard.withUniqueName()
+        defer { pasteboard.releaseGlobally() }
+        let monitor = ClipService(pasteboard: pasteboard, persistence: controller)
+        let count = 24
+        let saves = XCTestExpectation(description: "Each copy saved")
+        saves.expectedFulfillmentCount = count
+        let coordinator = controller.container.persistentStoreCoordinator
+        let observer = NotificationCenter.default.addObserver(forName: .NSManagedObjectContextDidSave,
+                                                               object: nil, queue: nil) { note in
+            guard let context = note.object as? NSManagedObjectContext,
+                  context.persistentStoreCoordinator === coordinator else { return }
+            saves.fulfill()
+        }
+        defer { NotificationCenter.default.removeObserver(observer) }
+        for _ in 0..<count {
+            pasteboard.clearContents()
+            pasteboard.setString("Repeated copy", forType: .string)
+            monitor.checkPasteboard()
+        }
+        let result = await XCTWaiter.fulfillment(of: [saves], timeout: 5)
+        #expect(result == .completed)
+        let stored = try clips(controller)
+        #expect(stored.count == 1)
+        #expect(stored.first?.numberOfCopies == Int32(count))
     }
 
     @Test func retentionKeepsPinnedAndBoundaryRecords() throws {

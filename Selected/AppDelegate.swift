@@ -25,6 +25,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
+        logger.notice("Selected launched")
         do { try APIKeyStore.shared.migrateLegacyValues() }
         catch { logger.error("API credential migration failed: \(error.localizedDescription)") }
 
@@ -73,6 +74,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                                                           selector: #selector(spaceDidChange),
                                                           name: NSWorkspace.activeSpaceDidChangeNotification,
                                                           object: nil)
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        guard AppRuntimeMode.current == .normal else { return }
+        logger.notice("Selected received applicationWillTerminate")
     }
 
     @objc func spaceDidChange() {

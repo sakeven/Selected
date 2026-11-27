@@ -98,4 +98,23 @@ struct ClipDataTests {
         #expect(abs(restored.blueComponent - 0.6) < 0.001)
         #expect(abs(restored.alphaComponent - 0.8) < 0.001)
     }
+
+    @Test func namedAndPatternColorsSurviveCopyAndRestore() throws {
+        let pattern = NSImage(size: NSSize(width: 4, height: 4), flipped: false) { rect in
+            NSColor.cyan.setFill()
+            rect.fill()
+            return true
+        }
+        let pasteboard = NSPasteboard.withUniqueName()
+        defer { pasteboard.releaseGlobally() }
+        for color in [NSColor.systemBlue, NSColor(patternImage: pattern)] {
+            pasteboard.clearContents()
+            pasteboard.setData(try #require(colorToData(color: color)), forType: .color)
+            let snapshot = try #require(ClipData(pasteboard: pasteboard))
+            let history = try makeClipboardFixture(representations: snapshot.items.map { ($0.type, $0.data) })
+            ClipService(pasteboard: pasteboard).restore(history) {}
+            let restored = try #require(NSColor(from: pasteboard))
+            #expect(restored.type == color.type)
+        }
+    }
 }

@@ -97,14 +97,14 @@ func getBundleID() -> String {
     let result = AXUIElementCopyAttributeValue(systemWideElement,
                                                kAXFocusedApplicationAttribute as CFString,
                                                &focusedApp)
-    guard result == .success, let axfocusedApp = focusedApp as! AXUIElement? else {
+    guard result == .success, let axfocusedApp = focusedApp as! AXUIElement?,
+          let focusedPid = pidForElement(element: axfocusedApp),
+          let bundleID = NSRunningApplication(processIdentifier: focusedPid)?.bundleIdentifier else {
         // chrome or vscode will return AXError(-25212)
         return NSWorkspace.shared.frontmostApplication?.bundleIdentifier ?? ""
     }
 
-    let focusedPid = pidForElement(element: axfocusedApp)
-    let runningApp = NSRunningApplication(processIdentifier: focusedPid!)
-    return runningApp?.bundleIdentifier ?? ""
+    return bundleID
 }
 
 func pidForElement(element: AXUIElement) -> pid_t? {

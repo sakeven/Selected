@@ -15,6 +15,7 @@ class PersistenceController {
     static let shared = PersistenceController()
 
     let container: NSPersistentContainer
+    private let historyWriter: NSManagedObjectContext
 
     init(container: NSPersistentContainer = NSPersistentContainer(name: "ClipHistory")) {
         self.container = container
@@ -24,15 +25,17 @@ class PersistenceController {
             }
         }
         container.viewContext.automaticallyMergesChangesFromParent = true
+        historyWriter = container.newBackgroundContext()
+        historyWriter.automaticallyMergesChangesFromParent = true
     }
 
     func updateClipHistoryData(_ clipData: ClipHistoryData, updateCount: Bool = true) {
         let ctx = container.viewContext
-        if updateCount {
-            clipData.lastCopiedAt = Date()
-            clipData.numberOfCopies += 1
-        }
         ctx.performAndWait {
+            if updateCount {
+                clipData.lastCopiedAt = Date()
+                clipData.numberOfCopies += 1
+            }
             do {
                 try ctx.save()
             } catch {
@@ -42,53 +45,43 @@ class PersistenceController {
     }
 
     func store(_ clipData: ClipData) {
-        let backgroundContext = container.newBackgroundContext()
-        backgroundContext.perform {
-            self.store(clipData, in: backgroundContext)
+        historyWriter.perform {
+            self.store(clipData, in: self.historyWriter)
         }
     }
 
     func store(_ clipData: ClipData, in backgroundContext: NSManagedObjectContext) {
-        let clipHistoryData = ClipHistoryData(context: backgroundContext)
-
-        clipHistoryData.application = clipData.appBundleID
-        clipHistoryData.firstCopiedAt = Date(timeIntervalSince1970: Double(clipData.timeStamp)/1000)
-        clipHistoryData.lastCopiedAt = clipHistoryData.firstCopiedAt
-        clipHistoryData.numberOfCopies = 1
-        clipHistoryData.plainText = clipData.plainText
-        clipHistoryData.url = clipData.url
-        clipHistoryData.isPinned = false
-        for item in clipData.items {
-            let clipHistoryItem = ClipHistoryItem(context: backgroundContext)
-
-            clipHistoryItem.data = item.data
-            clipHistoryItem.type = item.type.rawValue
-            clipHistoryItem.refer = clipHistoryData
-            clipHistoryData.addToItems(clipHistoryItem)
-        }
-        clipHistoryData.md5 = clipHistoryData.MD5()
-
-        let shouldScheduleOcr = clipData.plainText == nil && clipData.ocrImage != nil
-        let ocrImage = clipData.ocrImage
-        let md5 = clipHistoryData.md5
-
-        if let got = self.get(byMD5: clipHistoryData.md5!, context: backgroundContext) {
-            if got != clipHistoryData {
-                clipHistoryData.firstCopiedAt = got.firstCopiedAt
-                clipHistoryData.numberOfCopies = got.numberOfCopies + 1
-                clipHistoryData.isPinned = got.isPinned
-                backgroundContext.delete(got)
-                AppLogger.clipboard.debug("saved \(clipHistoryData.firstCopiedAt!) \(String(describing: got.firstCopiedAt))")
-            }
-        }
-
+        let md5 = MD5(chunks: clipData.items.map(\.data))
+        let copiedAt = Date(timeIntervalSince1970: Double(clipData.timeStamp) / 1000)
         do {
+            let clip = try get(byMD5: md5, context: backgroundContext) ?? ClipHistoryData(context: backgroundContext)
+            clip.md5 = md5
+            clip.application = clipData.appBundleID
+            clip.firstCopiedAt = clip.firstCopiedAt ?? copiedAt
+            clip.lastCopiedAt = copiedAt
+            clip.numberOfCopies += 1
+            clip.url = clipData.url
+            if clipData.plainText != nil || clipData.ocrImage == nil {
+                clip.plainText = clipData.plainText
+            }
+
+            let existingItems = clip.getItems()
+            if !existingItems.elementsEqual(clipData.items, by: { $0.type == $1.type.rawValue && $0.data == $1.data }) {
+                for item in existingItems { backgroundContext.delete(item) }
+                for item in clipData.items {
+                    let storedItem = ClipHistoryItem(context: backgroundContext)
+                    storedItem.data = item.data
+                    storedItem.type = item.type.rawValue
+                    clip.addToItems(storedItem)
+                }
+            }
+
             try backgroundContext.save()
-            AppLogger.clipboard.debug("saved \(clipHistoryData.md5!)")
-            if let md5 = md5, let ocrImage = ocrImage, shouldScheduleOcr {
-                self.scheduleImageOcr(for: md5, image: ocrImage)
+            if clip.plainText == nil, let image = clipData.ocrImage {
+                scheduleImageOcr(for: md5, image: image)
             }
         } catch {
+            backgroundContext.rollback()
             AppLogger.clipboard.error("saved: \(error)")
         }
     }
@@ -98,35 +91,27 @@ class PersistenceController {
             let recognizedText = recognizeTextInImage(image)
             guard !recognizedText.isEmpty else { return }
 
-            let context = self.container.newBackgroundContext()
+            let context = self.historyWriter
             context.perform {
-                let fetchRequest = NSFetchRequest<ClipHistoryData>(entityName: "ClipHistoryData")
-                fetchRequest.predicate = NSPredicate(format: "md5 = %@", md5)
-                fetchRequest.fetchLimit = 1
                 do {
-                    if let clip = try context.fetch(fetchRequest).first {
-                        clip.plainText = recognizedText
-                        try context.save()
-                        AppLogger.clipboard.debug("saved ocr text for \(md5)")
-                    }
+                    guard let clip = try self.get(byMD5: md5, context: context), clip.plainText == nil else { return }
+                    clip.plainText = recognizedText
+                    try context.save()
+                    AppLogger.clipboard.debug("saved ocr text for \(md5)")
                 } catch {
+                    context.rollback()
                     AppLogger.clipboard.error("save ocr text: \(error)")
                 }
             }
         }
     }
 
-    private func get(byMD5 md5: String, context: NSManagedObjectContext) -> ClipHistoryData? {
+    private func get(byMD5 md5: String, context: NSManagedObjectContext) throws -> ClipHistoryData? {
         let fetchRequest = NSFetchRequest<ClipHistoryData>(entityName: "ClipHistoryData")
-        fetchRequest.predicate = NSPredicate(format: "md5 = %@",md5 )
+        fetchRequest.predicate = NSPredicate(format: "md5 = %@", md5)
         fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: true)]
-        do{
-            let res = try context.fetch(fetchRequest)
-            return res.first
-        } catch {
-            AppLogger.clipboard.error("\(error)")
-        }
-        return nil
+        fetchRequest.fetchLimit = 1
+        return try context.fetch(fetchRequest).first
     }
 
     func delete(item: ClipHistoryData) {

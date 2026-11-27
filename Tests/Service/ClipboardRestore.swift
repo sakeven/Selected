@@ -4,6 +4,16 @@ import XCTest
 
 @MainActor
 final class ClipboardRestoreTests: XCTestCase {
+    func testEmptyHistoryItemKeepsTheCurrentClipboard() throws {
+        let pasteboard = NSPasteboard.withUniqueName()
+        defer { pasteboard.releaseGlobally() }
+        pasteboard.setString("Current copy", forType: .string)
+        let item = try makeClipboardFixture()
+        ClipService(pasteboard: pasteboard).restore(item) { XCTFail("Nothing was restored") }
+        XCTAssertEqual(pasteboard.string(forType: .string), "Current copy")
+        XCTAssertEqual(item.numberOfCopies, 0)
+    }
+
     func testRestoresEveryRepresentationBeforeCompleting() throws {
         let pasteboard = NSPasteboard.withUniqueName()
         defer { pasteboard.releaseGlobally() }

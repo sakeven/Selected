@@ -31,7 +31,8 @@ class SpotlightHotKeyManager {
         if hotkey != nil {
             return
         }
-        hotkey = HotKey(key: .init(carbonKeyCode: Defaults[.spotlightShortcut].carbonKeyCode)!, modifiers:  Defaults[.spotlightShortcut].modifierFlags)
+        let shortcut = Defaults[.spotlightShortcut]
+        hotkey = HotKey(carbonKeyCode: shortcut.carbonKeyCode, carbonModifiers: shortcut.carbonModifierFlags)
         hotkey?.keyDownHandler = {
             Task { @MainActor in SpotlightWindowManager.shared.createWindow() }
         }

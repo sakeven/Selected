@@ -14,6 +14,7 @@ func colorToData(color: NSColor) -> Data? {
 }
 
 func swiftUIColor(from c1: NSColor) -> NSColor {
+    guard c1.type == .componentBased else { return c1 }
     let count = c1.numberOfComponents
     var rawComponents = Array<CGFloat>(repeating: 0, count: count)
 

@@ -12,7 +12,8 @@ class ClipboardHotKeyManager {
             return
         }
 
-        hotkey = HotKey(key: .init(carbonKeyCode: Defaults[.clipboardShortcut].carbonKeyCode)!, modifiers:  Defaults[.clipboardShortcut].modifierFlags)
+        let shortcut = Defaults[.clipboardShortcut]
+        hotkey = HotKey(carbonKeyCode: shortcut.carbonKeyCode, carbonModifiers: shortcut.carbonModifierFlags)
         hotkey?.keyDownHandler = {
             ClipWindowManager.shared.createWindow()
         }

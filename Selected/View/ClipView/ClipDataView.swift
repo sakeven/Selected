@@ -34,7 +34,7 @@ struct ClipDataView: View {
             .controlSize(.small)
 
             ClipPreviewStage(data: data)
-                .id(data.MD5())
+                .id(data.contentDigest)
                 .padding(24)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(AppTheme.surface, in: RoundedRectangle(cornerRadius: AppTheme.cardRadius))

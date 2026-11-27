@@ -67,7 +67,7 @@ func getSelectedTextByAppleScriptFromSafari(bundleID: String) -> String{
             logger.debug("error: \(String(describing: error))")
             return ""
         } else {
-            return output.stringValue!
+            return output.stringValue ?? ""
         }
     }
     return ""
