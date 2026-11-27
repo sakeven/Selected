@@ -8,7 +8,7 @@ struct ClipRowView: View {
         HStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 10)
                 .fill(clip.displayKind.tint.opacity(0.12))
-                .frame(width: 34, height: 36)
+                .frame(width: 38, height: 40)
                 .overlay {
                     if clip.displayKind == .image,
                        let imageData = clip.primaryItem?.data,
@@ -16,23 +16,23 @@ struct ClipRowView: View {
                         Image(nsImage: image)
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 34, height: 36)
+                            .frame(width: 38, height: 40)
                             .clipShape(.rect(cornerRadius: 10))
                     } else if clip.displayKind == .color, let color = clip.colorValue {
                         RoundedRectangle(cornerRadius: 7)
                             .fill(Color(nsColor: color))
-                            .padding(3)
+                            .padding(4)
                     } else {
                         Image(clip.displayKind.imageName)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 22, height: 22)
+                            .frame(width: 26, height: 26)
                             .foregroundStyle(clip.displayKind.tint)
                     }
                 }
                 .overlay {
                     RoundedRectangle(cornerRadius: 10)
-                        .strokeBorder(clip.displayKind.tint.opacity(0.12), lineWidth: 0.5)
+                        .strokeBorder(isSelected ? AppTheme.accent.opacity(0.25) : AppTheme.border, lineWidth: 0.5)
                 }
                 .accessibilityHidden(true)
 

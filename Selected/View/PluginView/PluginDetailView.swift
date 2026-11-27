@@ -38,7 +38,7 @@ struct PluginDetailView: View {
                         .buttonStyle(AppButtonStyle())
                         .disabled(plugin.compatibilityIssue(hostVersion: manager.hostVersion) != nil)
                     Menu {
-                        Button("Export Plugin…", systemImage: "square.and.arrow.up", action: exportPlugin)
+                        Button("Export Plugin", systemImage: "square.and.arrow.up", action: exportPlugin)
                         Button("Show in Finder", systemImage: "folder") {
                             NSWorkspace.shared.activateFileViewerSelecting([manager.directory(for: plugin).appendingPathComponent("config.yaml")])
                         }
@@ -46,17 +46,12 @@ struct PluginDetailView: View {
                         Button("Restore Previous Version", systemImage: "clock.arrow.circlepath") { confirmRestore = true }
                             .disabled(!manager.hasPreviousVersion(plugin))
                         Divider()
-                        Button("Delete Plugin…", systemImage: "trash", role: .destructive) { confirmDelete = true }
+                        Button("Delete Plugin", systemImage: "trash", role: .destructive) { confirmDelete = true }
                     } label: {
-                        HStack(spacing: 6) {
-                            Text("More")
-                            Image(systemName: "chevron.down").font(.caption)
-                        }
-                        .font(.subheadline)
-                        .padding(.horizontal, 13).padding(.vertical, 9)
-                        .background(.primary.opacity(0.045), in: .rect(cornerRadius: 9))
+                        AppMenuLabel(title: "More")
                     }
-                    .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
+                    .menuStyle(.button).menuIndicator(.hidden).fixedSize()
+                    .buttonStyle(AppButtonStyle())
                     Spacer()
                     Label(!plugin.info.missingOptions().isEmpty ? String(localized: "Needs Configuration") : (plugin.info.enabled ? String(localized: "Enabled") : String(localized: "Disabled")), systemImage: !plugin.info.missingOptions().isEmpty ? "slider.horizontal.3" : (plugin.info.enabled ? "checkmark.circle" : "pause.circle"))
                         .font(.caption).foregroundStyle(.secondary)

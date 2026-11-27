@@ -88,7 +88,7 @@ struct ApplicationView: View {
                                         save()
                                     }
                                 } label: {
-                                    Label("Actions", systemImage: "ellipsis")
+                                    AppMenuLabel(title: "Actions")
                                 }
                                 .menuStyle(.button)
                                 .menuIndicator(.hidden)
@@ -243,12 +243,10 @@ struct OnePicker: View {
                 Button(action.actionMeta.title) { onChange(action.actionMeta.identifier) }
             }
         } label: {
-            Label("Add Action", systemImage: "plus")
-                .font(.subheadline.weight(.medium)).foregroundStyle(AppTheme.accent)
-                .padding(.horizontal, 12).padding(.vertical, 9)
-                .background(AppTheme.accent.opacity(0.10), in: .rect(cornerRadius: 9))
+            AppMenuLabel(title: "Add Action", systemImage: "plus")
         }
-        .menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
+        .menuStyle(.button).menuIndicator(.hidden).fixedSize()
+        .buttonStyle(AppButtonStyle(emphasis: .primary))
     }
 }
 

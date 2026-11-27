@@ -1957,12 +1957,12 @@
         }
       }
     },
-    "Choose App…" : {
+    "Choose App" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择应用…"
+            "value" : "选择应用"
           }
         }
       }
@@ -2037,13 +2037,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ask AI…"
+            "value" : "Ask AI"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "向 AI 提问…"
+            "value" : "向 AI 提问"
           }
         }
       }
@@ -3347,16 +3347,6 @@
         }
       }
     },
-    "Delete Plugin…" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "删除插件…"
-          }
-        }
-      }
-    },
     "Description" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3684,12 +3674,12 @@
         }
       }
     },
-    "Export Plugin…" : {
+    "Export Plugin" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "导出插件…"
+            "value" : "导出插件"
           }
         }
       }
@@ -4026,12 +4016,12 @@
         }
       }
     },
-    "Import…" : {
+    "Import" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "导入…"
+            "value" : "导入"
           }
         }
       }
@@ -4361,6 +4351,16 @@
         }
       }
     },
+    "Manage" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "管理"
+          }
+        }
+      }
+    },
     "Make Sticky" : {
       "shouldTranslate" : false
     },
@@ -4454,12 +4454,12 @@
         }
       }
     },
-    "More Results…" : {
+    "More Results" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更多结果…"
+            "value" : "更多结果"
           }
         }
       }
@@ -5271,12 +5271,12 @@
         }
       }
     },
-    "Repair…" : {
+    "Repair" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "修复…"
+            "value" : "修复"
           }
         }
       }

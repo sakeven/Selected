@@ -57,7 +57,7 @@ struct PluginTrialView: View {
                                     SettingsField(title: String(localized: "App Bundle Identifier")) {
                                         TextField("com.apple.Safari", text: $bundleID).accessibilityLabel("App Bundle Identifier")
                                     }
-                                    Button("Choose App…", systemImage: "app") {
+                                    Button("Choose App", systemImage: "app") {
                                         applications = Application.available()
                                         chooseApp = true
                                     }.buttonStyle(AppButtonStyle())

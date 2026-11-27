@@ -3,12 +3,12 @@
   "images" : {
     "application-applications-dark" : {
       "height" : 1280,
-      "sha256" : "a3f6fd984ea4d0844b778810f11e5ee303590f0042520c5e6a39744fce23e15a",
+      "sha256" : "db1af74304cf7e53db0e987c13ce1ba1d17a2d3158ed0a1900e1be87269f4739",
       "width" : 1560
     },
     "application-applications-light" : {
       "height" : 1280,
-      "sha256" : "d3bc5ef43a804b748ea435cb1706f911d16a6873c9a426154254df4933f17832",
+      "sha256" : "9a7d6a5de79af564856aee57f6555657b436fffab4154ff9bb4d061598ab2092",
       "width" : 1560
     },
     "application-assistant-dark" : {
@@ -63,22 +63,22 @@
     },
     "application-plugin-editor-dark" : {
       "height" : 1520,
-      "sha256" : "85feed0a2e164da4518f7db558c518bbc8f406030cfcf25cd35ea15a742b1150",
+      "sha256" : "20670d709652173c581509810db37d5eb765f1bae118e76aa4ee4637d2222216",
       "width" : 1800
     },
     "application-plugin-editor-light" : {
       "height" : 1520,
-      "sha256" : "e9993edc5d316cd672f9e20c1c479f21bc089737f9967f7586d9a685a5780c7d",
+      "sha256" : "4368a68b78d9b0aa9fa38c6b8f684c8a5e4322ff13e024b8a42862430970190e",
       "width" : 1800
     },
     "application-plugins-dark" : {
       "height" : 1280,
-      "sha256" : "6baf1048aef1f373228af692e2c568a3faf0aa05b18065325338d9a28dff198f",
+      "sha256" : "203c92f45381d7f14d88a2ac4571a4563b44826a6fd80a6a9e1f8272c52076f9",
       "width" : 1560
     },
     "application-plugins-light" : {
       "height" : 1280,
-      "sha256" : "639c41b7e3f2ec8794007e538a6d7f55d85366a0dda390c795d6a19e9c5531dc",
+      "sha256" : "fc5574e78dd2de30c3cfa39e95ab73306645737caa722e9eee27dc235246b79d",
       "width" : 1560
     },
     "application-popbar-dark" : {
@@ -128,22 +128,22 @@
     },
     "application-spotlight-grouped-clipboard-dark" : {
       "height" : 538,
-      "sha256" : "d746bba81c115ac271231be61a3f12e6727a1929e13832db811036a4e2721dc6",
+      "sha256" : "b86bb9dc10ebfe1225afab4aa2bbd25182399f3bbc1c9789deeef1ae1c346f64",
       "width" : 1040
     },
     "application-spotlight-grouped-clipboard-light" : {
       "height" : 538,
-      "sha256" : "c9662be405b17ca76f905d1a202f48d45f870ac21d414c027e76fe2f4027426c",
+      "sha256" : "c87a0919ab0dbca9d83a91c9590d8b57e25014309d493c05f2ff45d16aed9bc0",
       "width" : 1040
     },
     "application-spotlight-grouped-files-collapsed-dark" : {
       "height" : 718,
-      "sha256" : "781eb85972f2f13423d4c4ca433912c30e039419e2382dbcf41b7b9c6041ac08",
+      "sha256" : "3e9005ac658f746bb1d07d4c0d268a969641d063c2ef65f113db664f3ba2f105",
       "width" : 1040
     },
     "application-spotlight-grouped-files-collapsed-light" : {
       "height" : 718,
-      "sha256" : "f1596aa2f1d394737fc6a44c78fc7272b949d687a53b277a2798b57483d5438a",
+      "sha256" : "c364c394d46ceb29b2c8cabdb887104a221b6df74a8f3635419d53a44153f8ec",
       "width" : 1040
     },
     "application-spotlight-light" : {
@@ -153,12 +153,12 @@
     },
     "application-user-dark" : {
       "height" : 360,
-      "sha256" : "18d2a9bc499373be76d957aa64322b9c44ad0b147fba9f5eda8a778662f0257f",
+      "sha256" : "c2f69572697a85832ebc4300c2b0b4714d0b9bd4bc627cce4b0459a063d7c3df",
       "width" : 1400
     },
     "application-user-light" : {
       "height" : 360,
-      "sha256" : "087d411469694e3c88794c5f3d0875b0da4635015e6b96622b73b45f3c8b5038",
+      "sha256" : "ccd3496b16e89cf97ded886cde260afdfaa6eea4b97857afd003a79907644767",
       "width" : 1400
     },
     "clipboard-empty-dark" : {
@@ -173,42 +173,42 @@
     },
     "clipboard-json-dark" : {
       "height" : 1200,
-      "sha256" : "203ff5478277a26da2b8ed9ec07e1d694342f6d3506e25d6200f978f1f896c02",
+      "sha256" : "07972fe94b5726bbd4b5aaad3822ca87c0d407d62a9cf586de2602267254583c",
       "width" : 1920
     },
     "clipboard-json-light" : {
       "height" : 1200,
-      "sha256" : "8960f10bf353f3722404a65658c2ff3f9a54ad1571e6057ab6257537c8e2eb82",
+      "sha256" : "fd1413b7b20dc271b670f5999bcc5236f05d09f20becf9323b627855f9ba67e6",
       "width" : 1920
     },
     "clipboard-link-dark" : {
       "height" : 1200,
-      "sha256" : "c880cf2bf2e5a7b67d1f0bda49db4df3d41ee5d5bc4c0711e2b27e2a3a635be6",
+      "sha256" : "ffe3f4eb5fd512a474cd5fde8e97b53d50a33adc5709c07294ffd246acb59add",
       "width" : 1920
     },
     "clipboard-link-light" : {
       "height" : 1200,
-      "sha256" : "9fb7ce91a35d066393129d947c318aeacc8fd1c7c2401d6471ad6b24e39313f8",
+      "sha256" : "96b274432adc30db0edbfe4ec2485522d605cea0954618accbaa2af50ec2550d",
       "width" : 1920
     },
     "clipboard-mixed-dark" : {
       "height" : 1200,
-      "sha256" : "535bde86524f0a500eb1e84974b1e7c18b1b05b233798c2a18f9e18479964c63",
+      "sha256" : "76c3e5ae7509c3345a0687162cc3e5af1a0195a14afa2eb8fb0551d66ad40461",
       "width" : 1920
     },
     "clipboard-mixed-light" : {
       "height" : 1200,
-      "sha256" : "21dd279bf1007201a39da5dbdda779421e170620667a157a9ff75f55204a0a4d",
+      "sha256" : "274f072594574fa43a92758f3377e07d15f5b0f39aeebc52adfe6295abad7988",
       "width" : 1920
     },
     "clipboard-text-dark" : {
       "height" : 1200,
-      "sha256" : "5c873d782982ab631e87c8bd9449c233acce3fc27aafd4fcbd379afb5448df2c",
+      "sha256" : "45f29d93cd6acab060ce06df3b9ca7b90ab2bf9b46ee1a61ad9f085b16c6eff6",
       "width" : 1920
     },
     "clipboard-text-light" : {
       "height" : 1200,
-      "sha256" : "f2e0cc9332f630661d29e9ba49a9b4f6ab282edf74c77cbe6a8431e87d8f84b4",
+      "sha256" : "89b193e2940f9a36474fb35bfcb2bfe4cd39306f10112310afb02ebaf74c8d46",
       "width" : 1920
     }
   }

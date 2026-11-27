@@ -19,11 +19,11 @@ struct ProgressWaveformView: View {
             let shape = WaveformShape(samples: samples, configuration: .init(scale: displayScale))
             ZStack(alignment: .leading) {
                 shape.fill(.primary.opacity(0.12))
-                shape.fill(AppTheme.accent).mask(alignment: .leading) {
+                shape.fill(AppTheme.primaryAction).mask(alignment: .leading) {
                     Rectangle().frame(width: geometry.size.width * progress)
                 }
                 Rectangle()
-                    .fill(AppTheme.accent.opacity(hovered || focused ? 0.9 : 0.45))
+                    .fill(AppTheme.primaryAction.opacity(hovered || focused ? 0.9 : 0.45))
                     .frame(width: 1, height: hovered || focused ? 30 : 22)
                     .offset(x: min(geometry.size.width - 1, geometry.size.width * progress))
             }

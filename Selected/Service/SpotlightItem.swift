@@ -62,7 +62,7 @@ struct SpotlightItem: Identifiable {
     }
 
     static func more(_ group: Group) -> Self {
-        Self(id: "more:" + group.rawValue, title: String(localized: "More Results…"),
+        Self(id: "more:" + group.rawValue, title: String(localized: "More Results"),
              subtitle: String(localized: "Search in this category"), content: .more(group))
     }
 

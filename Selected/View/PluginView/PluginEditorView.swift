@@ -171,11 +171,10 @@ struct PluginEditorView: View {
                         }
                     }
                 } label: {
-                    Label("Add Action", systemImage: "plus")
-                        .font(.subheadline.weight(.semibold)).foregroundStyle(AppTheme.accent)
-                        .padding(.horizontal, 12).padding(.vertical, 8)
-                        .background(AppTheme.accent.opacity(0.08), in: .rect(cornerRadius: 9))
-                }.menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
+                    AppMenuLabel(title: "Add Action", systemImage: "plus")
+                }
+                .menuStyle(.button).menuIndicator(.hidden).fixedSize()
+                .buttonStyle(AppButtonStyle(emphasis: .primary))
             }
             ForEach($draft.actions) { $action in
                 SettingsCard {

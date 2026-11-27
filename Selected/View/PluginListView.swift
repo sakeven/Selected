@@ -19,7 +19,7 @@ struct PluginListView: View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
                 SettingsPageHeader(title: "Plugins", subtitle: "\(pluginMgr.plugins.count) installed · Do more with selected text")
-                Button("Import…", systemImage: "square.and.arrow.down", action: importPlugin)
+                Button("Import", systemImage: "square.and.arrow.down", action: importPlugin)
                     .buttonStyle(AppButtonStyle())
                     .disabled(isImporting)
                 if isImporting { ProgressView().controlSize(.small) }
@@ -31,12 +31,11 @@ struct PluginListView: View {
                     Button("Reload", systemImage: "arrow.clockwise") { pluginMgr.loadPlugins() }
                     Button("Open Plugins Folder", systemImage: "folder") { NSWorkspace.shared.open(pluginMgr.extensionsDir) }
                 } label: {
-                    Label("More plugin management actions", systemImage: "ellipsis")
-                        .labelStyle(.iconOnly).frame(width: 30, height: 32)
-                        .contentShape(.rect)
+                    AppMenuLabel(title: "Manage")
                 }
-                .menuStyle(.borderlessButton)
+                .menuStyle(.button)
                 .menuIndicator(.hidden)
+                .buttonStyle(AppButtonStyle())
                 .fixedSize()
                 .help("More plugin management actions")
             }
@@ -113,7 +112,7 @@ struct PluginListView: View {
                                         Text(issue.directory.lastPathComponent).fontWeight(.medium)
                                         Text(issue.message).textSelection(.enabled)
                                     }.frame(maxWidth: .infinity, alignment: .leading)
-                                    Button("Repair…", systemImage: "wrench") { repairIssue = issue }
+                                    Button("Repair", systemImage: "wrench") { repairIssue = issue }
                                         .buttonStyle(AppButtonStyle())
                                 }
                             }

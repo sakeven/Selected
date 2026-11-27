@@ -61,7 +61,7 @@ final class InlineResultTests: XCTestCase {
             var result: NSWindow?
             for _ in 0..<100 {
                 result = NSApp.windows.first {
-                    $0.isVisible && !existingWindows.contains($0.windowNumber)
+                    $0 is FloatingPanel && $0.isVisible && !existingWindows.contains($0.windowNumber)
                         && !($0.windowController is ActionProgressWindowController)
                 }
                 if result != nil { break }

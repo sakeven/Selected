@@ -29,7 +29,7 @@ struct AppButtonStyle: ButtonStyle {
 
     private var foreground: Color {
         switch emphasis {
-        case .prominent: AppTheme.onPrimaryAction
+        case .prominent: AppTheme.onAccent
         case .primary: AppTheme.accent
         case .destructive: .red
         case .secondary, .quiet: .primary
@@ -38,7 +38,7 @@ struct AppButtonStyle: ButtonStyle {
 
     private var background: Color {
         switch emphasis {
-        case .prominent: AppTheme.primaryAction.opacity(isHovered ? 0.9 : 1)
+        case .prominent: AppTheme.accent.opacity(isHovered ? 0.9 : 1)
         case .primary: isHovered ? AppTheme.accent.opacity(0.18) : AppTheme.selection
         case .secondary: isHovered ? AppTheme.inset : AppTheme.surface
         case .quiet: isHovered ? AppTheme.inset : .clear

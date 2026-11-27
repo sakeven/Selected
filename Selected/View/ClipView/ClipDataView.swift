@@ -89,12 +89,7 @@ struct ClipDataView: View {
                                 onAIRequest(String(localized: "clip.ai.prompt.translateEnglish"), true)
                             }
                         } label: {
-                            HStack(spacing: 4) {
-                                Label("clip.ai.translate", systemImage: "character.bubble")
-                                Image(systemName: "chevron.down")
-                                    .font(.caption)
-                                    .accessibilityHidden(true)
-                            }
+                            AppMenuLabel(title: "clip.ai.translate", systemImage: "character.bubble")
                         }
                         .menuStyle(.button)
                         .menuIndicator(.hidden)
@@ -106,7 +101,9 @@ struct ClipDataView: View {
 
                 Spacer(minLength: 0)
 
-                Button("Plugins", systemImage: "puzzlepiece.extension") { showActions = true }
+                Button { showActions = true } label: {
+                    AppMenuLabel(title: "Plugins", systemImage: "puzzlepiece.extension")
+                }
                     .help("Process content")
                     .popover(isPresented: $showActions) {
                         ContentActionPicker(input: ActionInput(clip: data)) { request in

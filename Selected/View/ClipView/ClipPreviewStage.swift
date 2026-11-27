@@ -58,9 +58,12 @@ private struct ClipFilePreview: View {
             }
         } else {
             VStack(alignment: .leading, spacing: 12) {
-                Image(systemName: "doc.text.fill")
-                    .font(.largeTitle)
-                    .foregroundStyle(data.displayKind.tint)
+                Image("ClipboardFile")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 48, height: 48)
+                    .foregroundStyle(ClipDisplayKind.file.tint)
+                    .accessibilityHidden(true)
 
                 Text(data.detailTitle)
                     .font(.title2.weight(.semibold))
@@ -92,9 +95,12 @@ private struct ClipImagePreview: View {
                 .aspectRatio(contentMode: .fit)
         } else {
             VStack(spacing: 14) {
-                Image(systemName: "photo.on.rectangle.angled")
-                    .font(.largeTitle)
+                Image("ClipboardImage")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 48, height: 48)
                     .foregroundStyle(ClipDisplayKind.image.tint)
+                    .accessibilityHidden(true)
 
                 Text(data.detailTitle)
                     .font(.title3.weight(.semibold))
@@ -121,8 +127,10 @@ private struct ClipLinkPreview: View {
                let url = URL(string: urlString),
                isValidHttpUrl(urlString) {
                 HStack(spacing: 12) {
-                    Image(systemName: "globe")
-                        .font(.title2)
+                    Image("ClipboardLink")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 28, height: 28)
                         .foregroundStyle(AppTheme.accent)
                         .frame(width: 44, height: 44)
                         .background(AppTheme.selection, in: .rect(cornerRadius: 12))

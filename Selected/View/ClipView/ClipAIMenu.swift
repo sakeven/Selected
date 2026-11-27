@@ -6,7 +6,7 @@ struct ClipAIMenu: View {
 
     var body: some View {
         Menu {
-            Button("clip.ai.ask", systemImage: "bubble.left.and.text.bubble.right") {
+            Button("clip.ai.ask", systemImage: "sparkles") {
                 onRequest("", false)
             }
             Divider()

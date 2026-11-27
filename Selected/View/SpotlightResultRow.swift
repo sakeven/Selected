@@ -20,7 +20,7 @@ struct SpotlightResultRow: View {
                         Image(clip.displayKind.imageName).resizable().scaledToFit()
                             .foregroundStyle(clip.displayKind.tint)
                     } else if case .more = item.content {
-                        Image(systemName: "ellipsis").font(.title2).foregroundStyle(.secondary)
+                        Image(systemName: "chevron.right").font(.title3).foregroundStyle(.secondary)
                     } else {
                         Image(systemName: "text.cursor").font(.title2)
                     }

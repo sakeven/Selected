@@ -117,17 +117,26 @@ struct ActionResultView: View {
                 Button("Cancel", systemImage: "stop.circle") { session.cancel() }
                     .disabled(!session.canCancel)
             } else {
-                Button("Retry", systemImage: "arrow.clockwise") { showOriginal = false; session.run() }
+                if session.failed {
+                    Button("Retry", systemImage: "arrow.clockwise") { showOriginal = false; session.run() }
+                        .buttonStyle(AppButtonStyle(emphasis: .prominent))
+                } else {
+                    Button("Retry", systemImage: "arrow.clockwise") { showOriginal = false; session.run() }
+                        .buttonStyle(AppIconButtonStyle())
+                        .help("Retry")
+                }
                 if session.completed && !session.output.isEmpty {
-                    Button("Next action", systemImage: "wand.and.stars") { showActions = true }
-                        .popover(isPresented: $showActions) {
-                            ContentActionPicker(input: session.input.replacingText(session.output)) { request in
-                                showActions = false
-                                onClose()
-                                ActionCoordinator.perform(request, input: session.input.replacingText(session.output), target: session.target,
-                                                original: session.original, originalContent: session.originalContent)
-                            }
+                    Button { showActions = true } label: {
+                        AppMenuLabel(title: "Next action", systemImage: "wand.and.stars")
+                    }
+                    .popover(isPresented: $showActions) {
+                        ContentActionPicker(input: session.input.replacingText(session.output)) { request in
+                            showActions = false
+                            onClose()
+                            ActionCoordinator.perform(request, input: session.input.replacingText(session.output), target: session.target,
+                                            original: session.original, originalContent: session.originalContent)
                         }
+                    }
                     Menu {
                         Button("Continue in chat", systemImage: "bubble.left.and.text.bubble.right") { session.continueChat() }
                         if session.request.output == .xshow && session.target.canReplace {
@@ -136,18 +145,26 @@ struct ActionResultView: View {
                         if session.request.output == .xshow && session.canRestore {
                             Button("Restore original selection") { Task { await session.restore() } }
                         }
-                    } label: { Image(systemName: "ellipsis") }
-                    .menuStyle(.borderlessButton).fixedSize().accessibilityLabel("More actions")
+                    } label: {
+                        AppMenuLabel(title: "More")
+                    }
+                    .menuStyle(.button).menuIndicator(.hidden).fixedSize()
+                    .buttonStyle(AppButtonStyle(emphasis: .quiet))
+                    .accessibilityLabel("More actions")
                 }
             }
             Spacer(minLength: 0)
             if session.completed && !session.output.isEmpty && !session.isRunning {
-                Button("Copy", systemImage: "doc.on.doc") { session.copy() }.keyboardShortcut("c", modifiers: [.command, .shift])
+                Button("Copy", systemImage: "doc.on.doc") { session.copy() }
+                    .buttonStyle(AppIconButtonStyle())
+                    .help("Copy")
+                    .keyboardShortcut("c", modifiers: [.command, .shift])
                 if session.request.output == .xshow {
                     Button(session.target.canReplace ? String(localized: "Replace original selection") : String(localized: "Paste"), systemImage: "return") {
                         paste(replacing: session.target.canReplace)
                     }
                         .buttonStyle(AppButtonStyle(emphasis: .prominent))
+                        .fixedSize()
                         .keyboardShortcut(.return, modifiers: .command)
                         .disabled(!session.target.isAvailable || isPasting)
                         .help(String(localized: "Paste to \(session.target.name)"))
@@ -155,7 +172,7 @@ struct ActionResultView: View {
             }
         }
         .buttonStyle(AppButtonStyle())
-        .controlSize(.regular)
+        .controlSize(.small)
         .disabled(isPasting)
     }
 
