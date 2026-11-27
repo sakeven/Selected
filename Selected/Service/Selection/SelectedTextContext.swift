@@ -1,6 +1,6 @@
 import Foundation
 
-struct SelectedTextContext {
+struct SelectedTextContext: Equatable {
     var Text: String = ""
     var BundleID: String = ""
     var WebPageURL: String = "" // the url of webpage which contains text.

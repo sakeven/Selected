@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NumerberView: View {
     let value: String
+    var onCopy: (() -> Void)?
     @State private var isCopied = false
 
     var body: some View {
@@ -10,6 +11,7 @@ struct NumerberView: View {
             pasteboard.clearContents()
             pasteboard.setString(value, forType: .string)
             isCopied = true
+            onCopy?()
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: isCopied ? "checkmark" : "equal")

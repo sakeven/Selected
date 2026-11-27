@@ -10,9 +10,13 @@ import SettingsAccess
 import SwiftUI
 import Sparkle
 
-class PauseModel: ObservableObject {
+@MainActor class PauseModel: ObservableObject {
     static let shared = PauseModel()
-    @Published var pause: Bool = false
+    @Published var pause = false {
+        didSet {
+            if pause { WindowManager.shared.closeOnlyPopbarWindows(.force) }
+        }
+    }
 }
 
 struct MenuItemView: View {

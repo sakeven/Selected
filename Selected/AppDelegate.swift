@@ -2,8 +2,9 @@ import SwiftUI
 import Accessibility
 import Defaults
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+@MainActor class AppDelegate: NSObject, NSApplicationDelegate {
     private var previewWindow: NSWindow?
+    private let selectionMonitor = SelectionMonitor(windows: .shared)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         guard AppRuntimeMode.current != .tests else { return }
@@ -55,7 +56,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         PluginManager.shared.loadPlugins()
         ConfigurationManager.shared.loadConfiguration()
         DispatchQueue.main.async {
-            monitorMouseMove()
+            self.selectionMonitor.start()
         }
         DispatchQueue.main.async {
             let clipboard = ClipService.shared
@@ -74,6 +75,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                                                           selector: #selector(spaceDidChange),
                                                           name: NSWorkspace.activeSpaceDidChangeNotification,
                                                           object: nil)
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(frontmostApplicationDidChange),
+                                                          name: NSWorkspace.didActivateApplicationNotification, object: nil)
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -83,9 +86,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc func spaceDidChange() {
         // 当空间改变时触发
+        WindowManager.shared.closeOnlyPopbarWindows(.force)
         ClipWindowManager.shared.forceCloseWindow()
         ChatWindowManager.shared.closeAllWindows(.force)
         SpotlightWindowManager.shared.forceCloseWindow()
+    }
+
+    @objc private func frontmostApplicationDidChange(_ notification: Notification) {
+        let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication
+        WindowManager.shared.frontmostApplicationDidChange(to: app?.bundleIdentifier)
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {

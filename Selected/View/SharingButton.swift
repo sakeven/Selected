@@ -13,6 +13,7 @@ import SwiftUI
 struct SharingsPicker: NSViewRepresentable {
     @Binding var isPresented: Bool
     var sharingItems: [Any] = []
+    var onDismiss: (() -> Void)?
     
     func makeNSView(context: Context) -> NSView {
         let view = NSView()
@@ -46,6 +47,7 @@ struct SharingsPicker: NSViewRepresentable {
             sharingServicePicker.delegate = nil   // << cleanup
             DispatchQueue.main.async {
                 self.owner.isPresented = false        // << dismiss
+                self.owner.onDismiss?()
             }
         }
     }
@@ -56,12 +58,13 @@ struct SharingButton: View {
     @EnvironmentObject var model: ShowingSharingPickerModel
 
     var message: String
+    var onDismiss: (() -> Void)?
     var body: some View {
         BarButton(icon: "symbol:square.and.arrow.up", title: String(localized: "share"), clicked: {
             _ in
             model.showing = !model.showing
         })
-        .background(SharingsPicker(isPresented: $model.showing, sharingItems: [message]))
+        .background(SharingsPicker(isPresented: $model.showing, sharingItems: [message], onDismiss: onDismiss))
     }
 }
 

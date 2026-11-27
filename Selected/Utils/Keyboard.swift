@@ -1,7 +1,9 @@
 import AppKit
 
+let selectionCopyEventTag = Int64(getpid())
+
 func PressCopyKey() {
-    PressKey(keycode: Keycode.c, flags: .maskCommand)
+    PressKey(keycode: Keycode.c, flags: .maskCommand, userData: selectionCopyEventTag)
 }
 
 func PressPasteKey() {
@@ -17,16 +19,18 @@ func PressKey(keycode: CGKeyCode) {
 }
 
 
-func PressKey(keycode: CGKeyCode, flags: CGEventFlags, tap: CGEventTapLocation = .cghidEventTap) {
+func PressKey(keycode: CGKeyCode, flags: CGEventFlags, tap: CGEventTapLocation = .cghidEventTap, userData: Int64 = 0) {
     guard let keydownEvent = CGEvent(keyboardEventSource: nil, virtualKey: keycode, keyDown: true) else{return}
 
     keydownEvent.flags = flags
+    keydownEvent.setIntegerValueField(.eventSourceUserData, value: userData)
     keydownEvent.post(tap: tap)
 
 
     guard let keyupEvent = CGEvent(keyboardEventSource: nil, virtualKey: keycode, keyDown: false) else{return}
 
     keyupEvent.flags = flags
+    keyupEvent.setIntegerValueField(.eventSourceUserData, value: userData)
     keyupEvent.post(tap: tap)
 }
 

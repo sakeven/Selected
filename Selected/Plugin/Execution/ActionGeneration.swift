@@ -19,7 +19,7 @@ extension Action {
             generated.supported = { (try? self.prepareContext($0, options: options)) != nil }
             if let complete = generated.complete {
                 generated.complete = { context in
-                    let context = MainActor.assumeIsolated { self.captureContext(context) }
+                    let context = self.captureContext(context)
                     guard let prepared = try? self.prepareContext(context, options: options) else { return }
                     complete(prepared)
                 }

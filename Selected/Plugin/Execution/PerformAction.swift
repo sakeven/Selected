@@ -5,7 +5,7 @@ class PerformAction: Identifiable,Hashable {
     var id = UUID()
     var actionMeta: GenericAction
     var pluginInfo: PluginInfo?
-    var complete: ((_: SelectedTextContext) -> Void)?
+    var complete: (@MainActor (_: SelectedTextContext) -> Void)?
     var completeAsync: ((_: SelectedTextContext) async ->  Void)?
     var supported: ((_: SelectedTextContext) -> Bool)?
 
@@ -18,12 +18,12 @@ class PerformAction: Identifiable,Hashable {
         return lhs.actionMeta == rhs.actionMeta
     }
 
-    init(actionMeta: GenericAction, complete: @escaping (_: SelectedTextContext) -> Void) {
+    init(actionMeta: GenericAction, complete: @escaping @MainActor (_: SelectedTextContext) -> Void) {
         self.actionMeta = actionMeta
         self.complete = complete
     }
 
-    init(pluginInfo: PluginInfo, actionMeta: GenericAction, complete: @escaping (_: SelectedTextContext) -> Void) {
+    init(pluginInfo: PluginInfo, actionMeta: GenericAction, complete: @escaping @MainActor (_: SelectedTextContext) -> Void) {
         self.actionMeta = actionMeta
         self.complete = complete
         self.pluginInfo = pluginInfo

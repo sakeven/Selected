@@ -12,7 +12,7 @@ struct PopBarView: View {
     var actions:  [PerformAction]
     let ctx: SelectedTextContext
     let target: ActionTarget = ActionTarget()
-    private let resultPosition = NSEvent.mouseLocation
+    var resultPosition = NSEvent.mouseLocation
 
     var showSharingButton = true
     var onClick: (() -> Void)?
@@ -51,14 +51,14 @@ struct PopBarView: View {
                 if !actions.isEmpty {
                     Divider().frame(height: 16).padding(.horizontal, 3)
                 }
-                SharingButton(message: ctx.Text)
+                SharingButton(message: ctx.Text, onDismiss: onClick)
             }
             if let res = calculate(ctx.Text) {
                 if !actions.isEmpty || showSharingButton {
                     Divider().frame(height: 16).padding(.horizontal, 3)
                 }
                 let v = valueFormatter.string(from: NSNumber(value: res))!
-                NumerberView(value: v)
+                NumerberView(value: v, onCopy: onClick)
             }
         }
         .padding(6)

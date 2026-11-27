@@ -116,8 +116,14 @@ class BaseWindowController: NSWindowController, NSWindowDelegate, WindowCtr {
 
 // MARK: - 特化的窗口控制器
 class PopBarWindowController: BaseWindowController {
-    init(rootView: AnyView) {
-        super.init(rootView: rootView, windowType: .popBar, positionStrategy: .nearPoint(NSEvent.mouseLocation), size: .zero)
+    let context: SelectedTextContext
+    let selectionPoint: NSPoint
+
+    init(context: SelectedTextContext, at point: NSPoint, onClick: @escaping () -> Void) {
+        self.context = context
+        selectionPoint = point
+        let view = PopBarView(actions: GetActions(ctx: context), ctx: context, resultPosition: point, onClick: onClick)
+        super.init(rootView: AnyView(view), windowType: .popBar, positionStrategy: .nearPoint(point), size: .zero)
     }
 
     required init?(coder: NSCoder) {
@@ -179,21 +185,53 @@ class TextWindowController: BaseWindowController {
 }
 
 // MARK: - 窗口管理器
-class WindowManager {
+@MainActor class WindowManager {
     static let shared = WindowManager()
 
-    //
-    private var lock = NSLock()
+    let mouseLocation: () -> NSPoint
     private var windowCtrs = [WindowCtr]()
     private var speechWindowController: TTSWindowController?
+    private var pendingPopBar: (area: NSRect, bundleID: String, task: Task<Void, Never>)?
+    private var visiblePopBar: PopBarWindowController? {
+        windowCtrs.last { $0.isPopbar() && $0.window?.isVisible == true } as? PopBarWindowController
+    }
 
+    init(mouseLocation: @escaping () -> NSPoint = { NSEvent.mouseLocation }) {
+        self.mouseLocation = mouseLocation
+    }
 
     // MARK: - Public API
 
-    func createPopBarWindow(_ ctx: SelectedTextContext) {
-        let contentView = PopBarView(actions: GetActions(ctx: ctx), ctx: ctx)
-        let windowController = PopBarWindowController(rootView: AnyView(contentView))
-        createWindow(windowController)
+    func schedulePopBar(_ ctx: SelectedTextContext, at point: NSPoint) {
+        pendingPopBar?.task.cancel()
+        pendingPopBar = nil
+        if let visiblePopBar, visiblePopBar.context == ctx, visiblePopBar.selectionPoint == point { return }
+
+        let area = NSRect(origin: point, size: .zero).insetBy(dx: -kExpandedLength, dy: -kExpandedLength)
+        // Wait for a possible third click to finish selecting the line.
+        let task = Task { [weak self] in
+            do { try await Task.sleep(for: .milliseconds(200)) }
+            catch { return }
+            guard let self, !Task.isCancelled else { return }
+            pendingPopBar = nil
+            guard area.contains(mouseLocation()),
+                  visiblePopBar?.showingSharingPicker.showing != true else { return }
+            createPopBarWindow(ctx, at: point)
+        }
+        pendingPopBar = (area, ctx.BundleID, task)
+    }
+
+    func createPopBarWindow(_ ctx: SelectedTextContext, at point: NSPoint = NSEvent.mouseLocation) {
+        let controller = PopBarWindowController(context: ctx, at: point) { [weak self] in
+            self?.closeOnlyPopbarWindows(.force)
+        }
+        createWindow(controller)
+    }
+
+    func frontmostApplicationDidChange(to bundleID: String?) {
+        if let source = pendingPopBar?.bundleID ?? visiblePopBar?.context.BundleID, source != bundleID {
+            closeOnlyPopbarWindows(.force)
+        }
     }
 
     func createTranslationWindow(withText text: String, to: String) {
@@ -220,25 +258,27 @@ class WindowManager {
         createWindow(TextWindowController(text: text, editable: editable, at: point))
     }
 
-    func closeOnlyPopbarWindows(_ mode: CloseWindowMode) -> Bool {
+    @discardableResult func closeOnlyPopbarWindows(_ mode: CloseWindowMode) -> Bool {
         closeWindows(mode, onlyPopBars: true)
-        return false
     }
 
     func closeAllWindows(_ mode: CloseWindowMode) {
-        closeWindows(mode, onlyPopBars: false)
+        _ = closeWindows(mode, onlyPopBars: false)
     }
 
-    private func closeWindows(_ mode: CloseWindowMode, onlyPopBars: Bool) {
-        lock.lock()
-        defer { lock.unlock() }
-
+    private func closeWindows(_ mode: CloseWindowMode, onlyPopBars: Bool) -> Bool {
+        if let pendingPopBar, mode != .expanded || !pendingPopBar.area.contains(mouseLocation()) {
+            pendingPopBar.task.cancel()
+            self.pendingPopBar = nil
+        }
+        let previousCount = windowCtrs.count
         for index in windowCtrs.indices.reversed() {
             let controller = windowCtrs[index]
             if (!onlyPopBars || controller.isPopbar()) && closeWindow(mode, windowCtr: controller) {
                 windowCtrs.remove(at: index)
             }
         }
+        return windowCtrs.count < previousCount
     }
 
     // MARK: - Private methods
@@ -246,9 +286,7 @@ class WindowManager {
     private func createWindow(_ windowController: WindowCtr) {
         closeAllWindows(.force)
         windowController.showWindow(nil)
-        lock.lock()
         windowCtrs.append(windowController)
-        lock.unlock()
 
         // 添加窗口关闭通知观察者
         NotificationCenter.default.addObserver(
@@ -259,7 +297,7 @@ class WindowManager {
     }
 
     private func closeWindow(_ mode: CloseWindowMode, windowCtr: WindowCtr) -> Bool {
-        guard mode.shouldClose(frame: windowCtr.frame(), mouseLocation: NSEvent.mouseLocation),
+        guard mode.shouldClose(frame: windowCtr.frame(), mouseLocation: mouseLocation()),
               windowCtr.canClose() else { return false }
         windowCtr.close()
         return true

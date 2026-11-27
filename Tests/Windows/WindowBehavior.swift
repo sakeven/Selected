@@ -86,16 +86,17 @@ final class WindowBehaviorTests: XCTestCase {
             for controller in [text, pinnedBar, bar] { controller.close() }
         }
 
-        XCTAssertFalse(manager.closeOnlyPopbarWindows(.force))
+        XCTAssertTrue(manager.closeOnlyPopbarWindows(.force))
         XCTAssertFalse(try XCTUnwrap(bar.window).isVisible)
         XCTAssertTrue(try XCTUnwrap(pinnedBar.window).isVisible)
         XCTAssertTrue(try XCTUnwrap(text.window).isVisible)
 
         text.pinnedModel.pinned = false
         pinnedBar.pinnedModel.pinned = false
-        XCTAssertFalse(manager.closeOnlyPopbarWindows(.force))
+        XCTAssertTrue(manager.closeOnlyPopbarWindows(.force))
         XCTAssertFalse(try XCTUnwrap(pinnedBar.window).isVisible)
         XCTAssertTrue(try XCTUnwrap(text.window).isVisible)
+        XCTAssertFalse(manager.closeOnlyPopbarWindows(.force))
         manager.closeAllWindows(.force)
         XCTAssertFalse(try XCTUnwrap(text.window).isVisible)
     }
