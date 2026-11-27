@@ -28,8 +28,9 @@ struct SettingsView: View {
                         Button { selection = destination } label: {
                             HStack(spacing: 12) {
                                 Image(systemName: destination.icon)
-                                    .frame(width: 20)
-                                    .foregroundStyle(selection == destination ? AppTheme.accent : .secondary)
+                                    .frame(width: 28, height: 28)
+                                    .foregroundStyle(destination.tint)
+                                    .background(destination.tint.opacity(0.12), in: .rect(cornerRadius: 7))
                                     .accessibilityHidden(true)
                                 Text(destination.title)
                                     .font(.body.weight(selection == destination ? .semibold : .regular))

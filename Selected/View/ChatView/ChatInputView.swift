@@ -32,8 +32,12 @@ struct ChatInputView: View {
                     HStack(spacing: 8) {
                         ForEach(attachmentSelection.files) { file in
                             HStack(spacing: 8) {
-                                Image(systemName: "doc.text")
-                                    .foregroundStyle(.secondary)
+                                Image("ClipboardFile")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 18, height: 18)
+                                    .accessibilityHidden(true)
+                                    .foregroundStyle(ClipDisplayKind.file.tint)
                                 Text(file.attachment.filename)
                                     .font(.callout)
                                     .lineLimit(1)

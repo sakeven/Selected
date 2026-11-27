@@ -5,6 +5,15 @@ enum SettingsDestination: String, CaseIterable, Identifiable {
 
     var id: Self { self }
 
+    var tint: Color {
+        switch self {
+        case .general: AppTheme.accent
+        case .extensions: .purple
+        case .applications: .orange
+        case .clipboard: .teal
+        }
+    }
+
     var title: LocalizedStringKey {
         switch self {
         case .general: "General"

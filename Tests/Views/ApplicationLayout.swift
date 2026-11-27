@@ -42,8 +42,11 @@ final class ApplicationLayoutTests: XCTestCase {
                     .environment(\.locale, Locale(identifier: "en_US")))
                 let window = NSWindow(contentRect: NSRect(origin: .zero, size: size), styleMask: [.borderless], backing: .buffered, defer: false)
                 window.isReleasedWhenClosed = false
+                window.animationBehavior = .none
                 window.appearance = NSAppearance(named: scheme == .light ? .aqua : .darkAqua)
                 window.contentView = host
+                // Keep pointer hover styling out of the snapshots.
+                window.setFrameOrigin(NSPoint(x: -10_000, y: -10_000))
                 window.orderFront(nil)
                 try await Task.sleep(for: .milliseconds(300))
                 host.layoutSubtreeIfNeeded()

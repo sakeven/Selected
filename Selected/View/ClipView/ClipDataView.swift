@@ -11,10 +11,19 @@ struct ClipDataView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 10) {
-                Label(data.contentTypeLabel, systemImage: data.displayKind.symbolName)
-                    .labelStyle(.titleAndIcon)
-                    .font(.callout.weight(.medium))
-                    .foregroundStyle(.secondary)
+                Label {
+                    Text(data.contentTypeLabel)
+                } icon: {
+                    Image(data.displayKind.imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                        .foregroundStyle(data.displayKind.tint)
+                        .accessibilityHidden(true)
+                }
+                .labelStyle(.titleAndIcon)
+                .font(.callout.weight(.medium))
+                .foregroundStyle(.secondary)
 
                 Spacer()
 

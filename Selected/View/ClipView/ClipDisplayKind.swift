@@ -10,6 +10,19 @@ enum ClipDisplayKind {
     case html
     case unknown
 
+    var tint: Color {
+        switch self {
+        case .text: .teal
+        case .link: AppTheme.accent
+        case .file: .orange
+        case .image: .pink
+        case .richText: .purple
+        case .html: .indigo
+        case .color: .mint
+        case .unknown: .secondary
+        }
+    }
+
     var label: String {
         switch self {
         case .color: return String(localized: "Color")
@@ -20,32 +33,6 @@ enum ClipDisplayKind {
         case .richText: return String(localized: "Rich Text")
         case .html: return String(localized: "HTML")
         case .unknown: return String(localized: "Clipboard Item")
-        }
-    }
-
-    var tint: Color {
-        switch self {
-        case .color: return .green
-        case .file: return AppTheme.accent
-        case .image: return .orange
-        case .link: return .teal
-        case .text: return AppTheme.accent
-        case .richText: return .cyan
-        case .html: return .mint
-        case .unknown: return .gray
-        }
-    }
-
-    var symbolName: String {
-        switch self {
-        case .color: return "circle.fill"
-        case .file: return "doc.on.doc"
-        case .image: return "photo"
-        case .link: return "link"
-        case .text: return "doc.text"
-        case .richText: return "doc.richtext"
-        case .html: return "circle.dashed.rectangle"
-        case .unknown: return "doc"
         }
     }
 

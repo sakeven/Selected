@@ -82,6 +82,7 @@ final class SpotlightViewTests: XCTestCase {
                     .environment(\.colorScheme, scheme))
                 let window = NSWindow(contentRect: .zero, styleMask: [.borderless], backing: .buffered, defer: false)
                 window.isReleasedWhenClosed = false
+                window.animationBehavior = .none
                 window.appearance = NSAppearance(named: scheme == .light ? .aqua : .darkAqua)
                 window.contentView = host
                 window.setContentSize(host.fittingSize)

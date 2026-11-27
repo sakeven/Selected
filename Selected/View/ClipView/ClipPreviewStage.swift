@@ -94,7 +94,7 @@ private struct ClipImagePreview: View {
             VStack(spacing: 14) {
                 Image(systemName: "photo.on.rectangle.angled")
                     .font(.largeTitle)
-                    .foregroundStyle(Color.primary.opacity(0.84))
+                    .foregroundStyle(ClipDisplayKind.image.tint)
 
                 Text(data.detailTitle)
                     .font(.title3.weight(.semibold))
@@ -123,9 +123,9 @@ private struct ClipLinkPreview: View {
                 HStack(spacing: 12) {
                     Image(systemName: "globe")
                         .font(.title2)
-                        .foregroundStyle(.teal)
+                        .foregroundStyle(AppTheme.accent)
                         .frame(width: 44, height: 44)
-                        .background(.teal.opacity(0.1), in: .rect(cornerRadius: 12))
+                        .background(AppTheme.selection, in: .rect(cornerRadius: 12))
                         .accessibilityHidden(true)
 
                     Text(url.host() ?? data.detailTitle)

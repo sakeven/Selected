@@ -8,22 +8,38 @@ import XCTest
 final class ClipboardLayoutTests: XCTestCase {
     func testClipboardLayoutInLightAndDarkAppearance() async throws {
         let model = PersistenceController.shared.container.managedObjectModel
-        for (name, text) in [("empty", nil), ("text", "First line\n第二行"), ("json", "{\"count\":3,\"active\":true}"), ("link", "https://example.test/article")] as [(String, String?)] {
+        let scenarios: [(String, [(NSPasteboard.PasteboardType, String)])] = [
+            ("empty", []), ("text", [(.string, "First line\n第二行")]),
+            ("json", [(.string, "{\"count\":3,\"active\":true}")]), ("link", [(.string, "https://example.test/article")]),
+            ("mixed", [(.URL, "https://developer.apple.com/design/"), (.string, "Review the color palette"),
+                       (.fileURL, "file:///Users/Shared/Design%20review.pdf"), (.rtf, "Meeting notes"), (.html, "Release checklist")])
+        ]
+        for (name, entries) in scenarios {
             let coordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
             try coordinator.addPersistentStore(ofType: NSInMemoryStoreType, configurationName: nil, at: nil)
             let context = NSManagedObjectContext(.mainQueue)
             context.persistentStoreCoordinator = coordinator
-            if let text {
+            for (index, entry) in entries.enumerated() {
+                let (type, text) = entry
                 let clip = ClipHistoryData(entity: try XCTUnwrap(model.entitiesByName["ClipHistoryData"]), insertInto: context)
-                clip.application = "selected.tests.missing-application"
+                clip.application = name == "mixed" ? "com.apple.TextEdit" : "selected.tests.missing-application"
                 clip.plainText = text
-                clip.firstCopiedAt = Date(timeIntervalSince1970: 1_700_000_000)
+                if type == .URL || type == .fileURL { clip.url = text }
+                clip.firstCopiedAt = Date(timeIntervalSince1970: 1_700_000_000 - Double(index))
                 clip.lastCopiedAt = clip.firstCopiedAt
                 clip.numberOfCopies = 1
-                let item = ClipHistoryItem(entity: try XCTUnwrap(model.entitiesByName["ClipHistoryItem"]), insertInto: context)
-                item.type = NSPasteboard.PasteboardType.string.rawValue
-                item.data = Data(text.utf8)
-                clip.addToItems(item)
+                let representations: [(NSPasteboard.PasteboardType, String)]
+                switch type {
+                case .rtf: representations = [(.rtf, "{\\rtf1 \(text)}"), (.string, text)]
+                case .html: representations = [(.html, "<p>\(text)</p>"), (.string, text)]
+                default: representations = [(type, text)]
+                }
+                for (format, content) in representations {
+                    let item = ClipHistoryItem(context: context)
+                    item.type = format.rawValue
+                    item.data = Data(content.utf8)
+                    clip.addToItems(item)
+                }
             }
             try context.save()
 
@@ -34,8 +50,11 @@ final class ClipboardLayoutTests: XCTestCase {
                     .environment(\.locale, Locale(identifier: "en_US")))
                 let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 960, height: 600), styleMask: [.borderless], backing: .buffered, defer: false)
                 window.isReleasedWhenClosed = false
+                window.animationBehavior = .none
                 window.appearance = NSAppearance(named: scheme == .light ? .aqua : .darkAqua)
                 window.contentView = host
+                // Keep pointer hover styling out of the snapshots.
+                window.setFrameOrigin(NSPoint(x: -10_000, y: -10_000))
                 window.orderFront(nil)
                 try await Task.sleep(for: .milliseconds(200))
                 host.layoutSubtreeIfNeeded()

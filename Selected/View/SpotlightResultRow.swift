@@ -18,6 +18,7 @@ struct SpotlightResultRow: View {
                         Icon(action.actionMeta.icon)
                     } else if case .clipboard(let clip) = item.content {
                         Image(clip.displayKind.imageName).resizable().scaledToFit()
+                            .foregroundStyle(clip.displayKind.tint)
                     } else if case .more = item.content {
                         Image(systemName: "ellipsis").font(.title2).foregroundStyle(.secondary)
                     } else {

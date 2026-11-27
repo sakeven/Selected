@@ -1,14 +1,13 @@
 import SwiftUI
 
 struct ClipRowView: View {
-    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var clip: ClipHistoryData
     let isSelected: Bool
 
     var body: some View {
         HStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 10)
-                .fill(clip.displayKind.tint.opacity(colorScheme == .dark ? 0.18 : 0.08))
+                .fill(clip.displayKind.tint.opacity(0.12))
                 .frame(width: 34, height: 36)
                 .overlay {
                     if clip.displayKind == .image,
@@ -24,7 +23,11 @@ struct ClipRowView: View {
                             .fill(Color(nsColor: color))
                             .padding(3)
                     } else {
-                        ClipKindIcon(kind: clip.displayKind)
+                        Image(clip.displayKind.imageName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 22, height: 22)
+                            .foregroundStyle(clip.displayKind.tint)
                     }
                 }
                 .overlay {
@@ -63,19 +66,5 @@ struct ClipRowView: View {
         .frame(minHeight: 58)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
-    }
-}
-
-private struct ClipKindIcon: View {
-    @Environment(\.colorScheme) private var colorScheme
-    let kind: ClipDisplayKind
-
-    var body: some View {
-        Image(kind.imageName)
-            .resizable()
-            .scaledToFit()
-            .frame(width: 22, height: 22)
-            .foregroundStyle(kind.tint)
-            .brightness(colorScheme == .dark ? 0.16 : 0)
     }
 }

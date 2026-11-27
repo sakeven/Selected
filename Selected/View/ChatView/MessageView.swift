@@ -67,10 +67,19 @@ struct MessageView: View {
                 ScrollView(.horizontal) {
                     HStack(spacing: 8) {
                         ForEach(Array(message.files.enumerated()), id: \.offset) { _, file in
-                            Label(file.filename, systemImage: "doc.text")
-                                .font(.callout)
-                                .padding(10)
-                                .background(.primary.opacity(0.04), in: .rect(cornerRadius: 10))
+                            Label {
+                                Text(file.filename)
+                            } icon: {
+                                Image("ClipboardFile")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 18, height: 18)
+                                    .foregroundStyle(ClipDisplayKind.file.tint)
+                                    .accessibilityHidden(true)
+                            }
+                            .font(.callout)
+                            .padding(10)
+                            .background(.primary.opacity(0.04), in: .rect(cornerRadius: 10))
                         }
                     }
                 }

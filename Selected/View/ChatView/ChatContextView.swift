@@ -10,7 +10,17 @@ struct ChatContextView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Button { isExpanded.toggle() } label: {
                         HStack(spacing: 10) {
-                            Image(systemName: ctx.files.isEmpty ? "text.quote" : "doc")
+                            if ctx.files.isEmpty {
+                                Image(systemName: "text.quote")
+                                    .accessibilityHidden(true)
+                            } else {
+                                Image("ClipboardFile")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 18, height: 18)
+                                    .foregroundStyle(ClipDisplayKind.file.tint)
+                                    .accessibilityHidden(true)
+                            }
                             VStack(alignment: .leading, spacing: 3) {
                                 Text("chat.context")
                                     .font(.caption.weight(.medium))
@@ -46,10 +56,19 @@ struct ChatContextView: View {
                                             }
                                         }
                                         ForEach(Array(ctx.files.enumerated()), id: \.offset) { _, file in
-                                            Label(file.filename, systemImage: "doc.fill")
-                                                .font(.callout)
-                                                .padding(10)
-                                                .background(.primary.opacity(0.04), in: .rect(cornerRadius: 8))
+                                            Label {
+                                                Text(file.filename)
+                                            } icon: {
+                                                Image("ClipboardFile")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .frame(width: 18, height: 18)
+                                                    .foregroundStyle(ClipDisplayKind.file.tint)
+                                                    .accessibilityHidden(true)
+                                            }
+                                            .font(.callout)
+                                            .padding(10)
+                                            .background(.primary.opacity(0.04), in: .rect(cornerRadius: 8))
                                         }
                                     }
                                 }
