@@ -1,10 +1,11 @@
 import SwiftUI
 
 class ClipWindowController: NSWindowController, NSWindowDelegate {
-    private var hotkeyMgr = EnterHotKeyManager()
+    private let viewModel: ClipViewModel
     private var localKeyMonitor: Any?
 
-    init(rootView: AnyView) {
+    init(rootView: AnyView, viewModel: ClipViewModel) {
+        self.viewModel = viewModel
         let window = FloatingPanel(
             contentRect: .zero,
             backing: .buffered,
@@ -57,21 +58,37 @@ class ClipWindowController: NSWindowController, NSWindowDelegate {
 
     override func showWindow(_ sender: Any?) {
         super.showWindow(sender)
-        localKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            guard let self else { return event }
-            guard self.window?.isKeyWindow == true else { return event }
-            guard self.window?.attachedSheet == nil else { return event }
-            if event.keyCode == Keycode.escape {
-                guard event.modifierFlags.intersection([.command, .option, .control, .shift]).isEmpty else { return event }
-                if let textView = self.window?.firstResponder as? NSTextView, textView.hasMarkedText() {
-                    return event
-                }
-                self.close()
-                return nil
-            }
-            guard event.keyCode == Keycode.returnKey else { return event }
-            return self.hotkeyMgr.handleIfNeeded() ? nil : event
+        guard localKeyMonitor == nil else { return }
+        localKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .flagsChanged]) { [weak self] event in
+            guard let self, self.handleKeyEvent(event) else { return event }
+            return nil
         }
+    }
+
+    func handleKeyEvent(_ event: NSEvent) -> Bool {
+        guard let window, window.isKeyWindow, window.attachedSheet == nil,
+              event.window == nil || event.window === window else { return false }
+        let flags = event.modifierFlags.intersection(ClipShortcut.modifiers)
+        let isComposing = (window.firstResponder as? NSTextInputClient)?.hasMarkedText() == true
+        if event.type == .flagsChanged {
+            viewModel.showsQuickPasteKeys = flags == .command && !isComposing
+            return false
+        }
+        guard event.type == .keyDown, !isComposing else { return false }
+        if flags.isEmpty, event.keyCode == Keycode.escape {
+            close()
+            return true
+        }
+        guard let shortcut = ClipShortcut(event: event) else { return false }
+        return event.isARepeat || viewModel.performShortcut?(shortcut) == true
+    }
+
+    func windowDidBecomeKey(_ notification: Notification) {
+        viewModel.showsQuickPasteKeys = NSEvent.modifierFlags.intersection(ClipShortcut.modifiers) == .command
+    }
+
+    func windowDidResignKey(_ notification: Notification) {
+        viewModel.showsQuickPasteKeys = false
     }
 
     func windowWillClose(_ notification: Notification) {
@@ -79,35 +96,10 @@ class ClipWindowController: NSWindowController, NSWindowDelegate {
             NSEvent.removeMonitor(localKeyMonitor)
             self.localKeyMonitor = nil
         }
-        ClipViewModel.shared.selectedItem = nil
+        viewModel.selectedItem = nil
+        viewModel.showsQuickPasteKeys = false
+        viewModel.performShortcut = nil
     }
 }
 
 private let clipWindowPositionManager = WindowPositionManager(key: "ClipboardWindowPosition")
-
-private class EnterHotKeyManager {
-    func handleIfNeeded() -> Bool {
-        guard shouldHandleReturn() else {
-            return false
-        }
-
-        guard let item = ClipViewModel.shared.selectedItem else {
-            return false
-        }
-
-        ClipWindowManager.shared.restore(item, paste: true)
-        return true
-    }
-
-    private func shouldHandleReturn() -> Bool {
-        guard let firstResponder = NSApp.keyWindow?.firstResponder else {
-            return true
-        }
-
-        if let textView = firstResponder as? NSTextView {
-            return !textView.hasMarkedText()
-        }
-
-        return true
-    }
-}

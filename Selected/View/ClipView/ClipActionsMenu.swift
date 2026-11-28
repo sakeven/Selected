@@ -1,34 +1,35 @@
-import Defaults
 import SwiftUI
 
 struct ClipActionsMenu: View {
     @ObservedObject var data: ClipHistoryData
     let onTogglePin: () -> Void
     let onDelete: () -> Void
+    let onShowPlugins: () -> Void
     let onAIRequest: (String, Bool) -> Void
 
     var body: some View {
-        Button("clip.pasteOriginal", systemImage: "return") {
-            ClipWindowManager.shared.restore(data, paste: true)
+        if let text = data.plainText {
+            Button("Paste plain text", systemImage: "textformat") {
+                ClipWindowManager.shared.pastePlainText(text)
+            }
+            .keyboardShortcut(.return, modifiers: [.option, .shift])
         }
-        Button("clip.copy", systemImage: "doc.on.doc") {
-            ClipWindowManager.shared.restore(data, paste: false)
-        }
-
+        ClipActionBar(data: data)
         if let kind = data.aiContentKind() {
-            Divider()
             ClipAIMenu(kind: kind, onRequest: onAIRequest)
         }
 
-        ContentActionsMenu(input: ActionInput(clip: data), target: ClipWindowManager.shared.actionTarget ?? ActionTarget())
+        ContentActionsMenu(input: ActionInput(clip: data), target: ClipWindowManager.shared.actionTarget ?? ActionTarget(), onSearch: onShowPlugins)
 
         Divider()
 
         Button(action: onTogglePin) {
             Label(data.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"), systemImage: "pin")
         }
+        .keyboardShortcut("p", modifiers: .command)
         Button(role: .destructive, action: onDelete) {
             Label("Delete", systemImage: "trash")
         }
+        .keyboardShortcut(.delete, modifiers: [.command, .shift])
     }
 }

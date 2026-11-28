@@ -80,6 +80,11 @@ extension ClipHistoryData {
         displayKind.label
     }
 
+    var hasReadableText: Bool {
+        // Rich-text attachments can leave just an object replacement character in the text representation.
+        plainText?.contains { !$0.isWhitespace && $0 != "\u{FFFC}" } == true
+    }
+
     var cleanedPreviewText: String? {
         guard let plainText else { return nil }
         let trimmed = plainText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -89,17 +94,25 @@ extension ClipHistoryData {
     var rowTitle: String {
         switch displayKind {
         case .color:
-            return String(localized: "Color")
+            guard let color = colorValue?.usingColorSpace(.sRGB) else { return contentTypeLabel }
+            var components = [color.redComponent, color.greenComponent, color.blueComponent]
+            if color.alphaComponent < 1 { components.append(color.alphaComponent) }
+            return "#" + components.map { String(format: "%02X", Int((min(max($0, 0), 1) * 255).rounded())) }.joined()
         case .file:
             return fileURLValue?.lastPathComponent.removingPercentEncoding ?? "File"
         case .image:
             return imageSizeText.map { "\(String(localized: "Image")) \($0)" } ?? String(localized: "Image")
         case .link:
-            return displayURLString ?? cleanedPreviewText?.removingAllNewlines() ?? "Link"
-        case .text, .richText, .html:
-            return cleanedPreviewText?.removingAllNewlines() ?? contentTypeLabel
-        case .unknown:
-            return cleanedPreviewText?.removingAllNewlines() ?? displayURLString ?? "Clipboard Item"
+            guard let address = displayURLString ?? cleanedPreviewText else { return contentTypeLabel }
+            if isValidHttpUrl(address), let scheme = address.range(of: "://") {
+                return String(address[scheme.upperBound...])
+            }
+            return address
+        case .text, .richText, .html, .unknown:
+            if let text = cleanedPreviewText {
+                return String(text.prefix(160).prefix(while: { !$0.isNewline }))
+            }
+            return displayURLString ?? contentTypeLabel
         }
     }
 
@@ -160,7 +173,7 @@ extension ClipHistoryData {
     var appDisplayName: String {
         guard let bundleID = application,
               let bundleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else {
-            return "Unknown"
+            return String(localized: "Unknown")
         }
         return FileManager.default.displayName(atPath: bundleURL.path)
     }

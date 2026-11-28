@@ -71,7 +71,8 @@ struct CustomSearchField: NSViewRepresentable {
         textField.backgroundColor = .clear
         textField.focusRingType = .none
         textField.textColor = textColor
-        textField.font = .systemFont(ofSize: 14)
+        textField.font = .systemFont(ofSize: 17)
+        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         textField.cell?.isScrollable = true
         textField.setAccessibilityLabel(placeholder)
         return textField
@@ -99,30 +100,33 @@ struct CustomSearchField: NSViewRepresentable {
 
 // MARK: - 搜索框外层样式封装
 struct SearchBarView: View {
+    @Environment(\.locale) private var locale
     @Binding var searchText: String
     @Binding var isFocused: Bool
     var onArrowKey: (CustomSearchField.ArrowDirection) -> Void
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 12) {
             Image(systemName: "magnifyingglass")
-                .font(.body.weight(.semibold))
-                .foregroundStyle(isFocused ? AppTheme.accent : .secondary)
+                .font(.title3.weight(.medium))
+                .foregroundStyle(isFocused ? .primary : .secondary)
                 .accessibilityHidden(true)
 
             CustomSearchField(
                 text: $searchText,
                 isFocused: $isFocused,
-                placeholder: String(localized: "clip.search"),
+                placeholder: String(localized: "clip.search", locale: locale),
                 onArrowKey: onArrowKey,
                 textColor: .labelColor,
                 placeholderColor: .secondaryLabelColor
             )
-                .frame(height: 20)
+                .frame(maxWidth: .infinity)
+                .frame(height: 24)
 
             if !searchText.isEmpty {
                 Button {
                     searchText = ""
+                    isFocused = true
                 } label: {
                     Label("clip.search.clear", systemImage: "xmark.circle.fill")
                         .labelStyle(.iconOnly)
@@ -132,15 +136,5 @@ struct SearchBarView: View {
                 .help(Text("clip.search.clear"))
             }
         }
-        .padding(.horizontal, 10)
-        .frame(height: 40)
-        .background(
-            RoundedRectangle(cornerRadius: AppTheme.controlRadius)
-                .fill(AppTheme.surface)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.controlRadius)
-                .strokeBorder(isFocused ? AppTheme.accent : AppTheme.border, lineWidth: isFocused ? 1.5 : 1)
-        )
     }
 }

@@ -30,6 +30,11 @@ class ClipWindowManager {
         }
     }
 
+    func pastePlainText(_ text: String) {
+        forceCloseWindow()
+        pasteText(text)
+    }
+
     func createWindow() {
         lock.lock()
         defer{
@@ -37,8 +42,9 @@ class ClipWindowManager {
         }
         windowCtr?.close()
         actionTarget = MainActor.assumeIsolated { ActionTarget() }
-        let view = ClipView().environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
-        let window = ClipWindowController(rootView: AnyView(view))
+        let viewModel = ClipViewModel()
+        let view = ClipView(viewModel: viewModel).environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
+        let window = ClipWindowController(rootView: AnyView(view), viewModel: viewModel)
         windowCtr = window
         window.showWindow(nil)
 

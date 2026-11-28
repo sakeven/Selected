@@ -1,5 +1,5 @@
 {
-  "environment" : "Recorded on Version 27.0.1 (Build 26A434); English\/US test scheme",
+  "environment" : "Recorded on Version 27.0.1 (Build 26A434); English\/US and Simplified Chinese\/China clipboard snapshots",
   "images" : {
     "application-applications-dark" : {
       "height" : 1280,
@@ -163,52 +163,142 @@
     },
     "clipboard-empty-dark" : {
       "height" : 1200,
-      "sha256" : "2799490606116d4af2e663a5c9a7ffad6a3ed61cd44928bfe9045f3720050dff",
+      "sha256" : "d95498ef6f87628832d301e313c82c44ee2e48394d757370b543ae47a8422569",
       "width" : 1920
     },
     "clipboard-empty-light" : {
       "height" : 1200,
-      "sha256" : "b01e1aee06a619f5a415b76fe14bcdee01ae60c462dae2e623472c79996e20ec",
+      "sha256" : "596cf77a2cb899d657ea6118f829005f792d111e300dbcc7103acf82ad48def1",
+      "width" : 1920
+    },
+    "clipboard-empty-zh-dark" : {
+      "height" : 1200,
+      "sha256" : "9a75523affa47d3314e75dcb4d25452ee7502f574605e28060d9a54f77004353",
+      "width" : 1920
+    },
+    "clipboard-empty-zh-light" : {
+      "height" : 1200,
+      "sha256" : "f739785cfc2889b804959bee45d5fb92ed8d3c2ac9c5a3950001c26cbe6f72ae",
       "width" : 1920
     },
     "clipboard-json-dark" : {
       "height" : 1200,
-      "sha256" : "07972fe94b5726bbd4b5aaad3822ca87c0d407d62a9cf586de2602267254583c",
+      "sha256" : "33bab74ff1cf2a4764ec0574dd456a7d1fabc5edf153d9d3c7a32214de86d42c",
       "width" : 1920
     },
     "clipboard-json-light" : {
       "height" : 1200,
-      "sha256" : "fd1413b7b20dc271b670f5999bcc5236f05d09f20becf9323b627855f9ba67e6",
+      "sha256" : "b4f8253583012838c0c640c2aa743d6c31d7544c127132f0b8df06cf9bf89da0",
+      "width" : 1920
+    },
+    "clipboard-json-zh-dark" : {
+      "height" : 1200,
+      "sha256" : "c06c470db766ce7a2ba3e965be6e3e3ac3e29c6b197593243c3dbf5390e8ddb1",
+      "width" : 1920
+    },
+    "clipboard-json-zh-light" : {
+      "height" : 1200,
+      "sha256" : "9ad4279a3fe7a80e12fde786e6fefba18c1d9992ca975d0f87b66a43cc8eac51",
       "width" : 1920
     },
     "clipboard-link-dark" : {
       "height" : 1200,
-      "sha256" : "ffe3f4eb5fd512a474cd5fde8e97b53d50a33adc5709c07294ffd246acb59add",
+      "sha256" : "ed7e4064d6ad701fc5b3352062e1826d1535f13ce3def599cfc9b7681ccaa3e7",
       "width" : 1920
     },
     "clipboard-link-light" : {
       "height" : 1200,
-      "sha256" : "96b274432adc30db0edbfe4ec2485522d605cea0954618accbaa2af50ec2550d",
+      "sha256" : "534bdeb41eea90ae690f91f1060761dca033b60e60446b6a5e62f5edd8c857cc",
+      "width" : 1920
+    },
+    "clipboard-link-zh-dark" : {
+      "height" : 1200,
+      "sha256" : "2350307969437b3e800e0c74200bc81a8f301d4d5bc972b659948a9b029a204b",
+      "width" : 1920
+    },
+    "clipboard-link-zh-light" : {
+      "height" : 1200,
+      "sha256" : "10dfeec35f94ac53339c4fb18ab6ac7c77b37a7988828ccafc033555725a42a0",
       "width" : 1920
     },
     "clipboard-mixed-dark" : {
       "height" : 1200,
-      "sha256" : "76c3e5ae7509c3345a0687162cc3e5af1a0195a14afa2eb8fb0551d66ad40461",
+      "sha256" : "a8aa0c1050bf08127cbdea93aa0ec08c7b7cb4878108391629cd7b32f6b1ea5b",
       "width" : 1920
     },
     "clipboard-mixed-light" : {
       "height" : 1200,
-      "sha256" : "274f072594574fa43a92758f3377e07d15f5b0f39aeebc52adfe6295abad7988",
+      "sha256" : "b27dffad5e05aa70cbfc9816938c2158fa511b59f3898fec1468f440abba51f8",
+      "width" : 1920
+    },
+    "clipboard-mixed-zh-dark" : {
+      "height" : 1200,
+      "sha256" : "35d38e93d52932024ed8b86de52b3952de8dfaa7873bfbad85d48c535e501e77",
+      "width" : 1920
+    },
+    "clipboard-mixed-zh-light" : {
+      "height" : 1200,
+      "sha256" : "aeb4b02fa22ca4032c2855dde2b294958a4e14518d2e499e5da83f853c2e3465",
+      "width" : 1920
+    },
+    "clipboard-quick-paste-dark" : {
+      "height" : 1200,
+      "sha256" : "9c0b0fee68b10d2cb2582089cded4ff404fe4d2b1ec1cf7d17084ed72ad2cdb9",
+      "width" : 1920
+    },
+    "clipboard-quick-paste-light" : {
+      "height" : 1200,
+      "sha256" : "bd585e403b81c733129e13e3b6b4c6820a02af5431c02d197ac711efdefb2d8d",
+      "width" : 1920
+    },
+    "clipboard-quick-paste-zh-dark" : {
+      "height" : 1200,
+      "sha256" : "a28accf212f3c2615b2422abb375f92920f257fd5c245d9df7c9edd753efe931",
+      "width" : 1920
+    },
+    "clipboard-quick-paste-zh-light" : {
+      "height" : 1200,
+      "sha256" : "774c08bb248f6e9bc9403a3ac42b414d2bda42e8fc468b751c20b51a3adc7e7a",
       "width" : 1920
     },
     "clipboard-text-dark" : {
       "height" : 1200,
-      "sha256" : "45f29d93cd6acab060ce06df3b9ca7b90ab2bf9b46ee1a61ad9f085b16c6eff6",
+      "sha256" : "98fac5dcb428f0038534fb62743226b0ee8c2ed2bc8cede3a7cf5f6679814591",
       "width" : 1920
     },
     "clipboard-text-light" : {
       "height" : 1200,
-      "sha256" : "89b193e2940f9a36474fb35bfcb2bfe4cd39306f10112310afb02ebaf74c8d46",
+      "sha256" : "2a4d0d3542e2667f06d3491ffc8b1add0c6f9f9c349316aa703a4aeb5df04d4a",
+      "width" : 1920
+    },
+    "clipboard-text-zh-dark" : {
+      "height" : 1200,
+      "sha256" : "17514448581a6125b619272ec3090af4f3681fd8daea2e770958f643da52b060",
+      "width" : 1920
+    },
+    "clipboard-text-zh-light" : {
+      "height" : 1200,
+      "sha256" : "cdee1314b385ef62c01af6ff17f10ca6c6fc6599ab8d75e8add044d8904830a1",
+      "width" : 1920
+    },
+    "clipboard-web-dark" : {
+      "height" : 1200,
+      "sha256" : "ad8d873ce62eb433ff2b655156f8c69ed7d8ff4af5dc1ce4230d0761597a739b",
+      "width" : 1920
+    },
+    "clipboard-web-light" : {
+      "height" : 1200,
+      "sha256" : "657378592cb581a06cec75bfbd0719ea07c92aee7c1845bdc4d8ddb7d79fabaa",
+      "width" : 1920
+    },
+    "clipboard-web-zh-dark" : {
+      "height" : 1200,
+      "sha256" : "638d1312f778592cc3a0299862efbc4566e73e755846fb1f558f7f8408380c42",
+      "width" : 1920
+    },
+    "clipboard-web-zh-light" : {
+      "height" : 1200,
+      "sha256" : "05d6d84739eaef1e19135d901c986e6bf5bce26bb91d3e3cf4a680dc8b37918f",
       "width" : 1920
     }
   }

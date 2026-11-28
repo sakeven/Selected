@@ -56,11 +56,11 @@ final class ClipHistoryPresentationTests: XCTestCase {
         XCTAssertEqual(try makeClipboardFixture(text: "https://example.test").displayKind, .link)
     }
 
-    func testTitlesRemoveLineBreaksWithoutChangingStoredText() throws {
+    func testListUsesTheFirstNonemptyLineWithoutChangingStoredText() throws {
         let text = "  First\r\nsecond\nthird\rfourth  "
         let clip = try makeClipboardFixture(text: text)
         XCTAssertEqual(clip.cleanedPreviewText, "First\r\nsecond\nthird\rfourth")
-        XCTAssertEqual(clip.rowTitle, "Firstsecondthirdfourth")
+        XCTAssertEqual(clip.rowTitle, "First")
         XCTAssertEqual(clip.detailTitle, clip.rowTitle)
         XCTAssertEqual(clip.plainText, text)
     }
@@ -89,11 +89,19 @@ final class ClipHistoryPresentationTests: XCTestCase {
 
     func testLinkDisplayPrefersSourceURLAndKeepsOriginalText() throws {
         let clip = try makeClipboardFixture(text: "https://example.test/text", url: "https://example.test/source")
-        XCTAssertEqual(clip.rowTitle, "https://example.test/source")
+        XCTAssertEqual(clip.rowTitle, "example.test/source")
         XCTAssertEqual(clip.locationInfo?.title, "URL")
         XCTAssertEqual(clip.plainText, "https://example.test/text")
         for value in ["https://example.test/path", "http://localhost"] { XCTAssertTrue(isValidHttpUrl(value)) }
         for value in ["file:///tmp/a", "app://-/index.html", "https:", "plain text"] { XCTAssertFalse(isValidHttpUrl(value)) }
+    }
+
+    func testColorTitleIdentifiesTheSwatchAndItsOpacity() throws {
+        for (alpha, expected) in [(1.0, "#739B86"), (0.5, "#739B8680")] {
+            let color = NSColor(srgbRed: 115 / 255, green: 155 / 255, blue: 134 / 255, alpha: alpha)
+            let clip = try makeClipboardFixture(representations: [(.color, try XCTUnwrap(colorToData(color: color)))])
+            XCTAssertEqual(clip.rowTitle, expected)
+        }
     }
 
     func testMetadataAndJSONActionAvailabilityKeepTheirExistingRules() throws {

@@ -3,6 +3,7 @@ import PDFKit
 
 struct ClipPreviewStage: View {
     @ObservedObject var data: ClipHistoryData
+    let showsOriginalFormatting: Bool
 
     var body: some View {
         Group {
@@ -16,7 +17,7 @@ struct ClipPreviewStage: View {
             case .link:
                 ClipLinkPreview(data: data)
             case .text, .richText, .html, .unknown:
-                ClipTextPreview(data: data)
+                ClipTextPreview(data: data, showsOriginalFormatting: showsOriginalFormatting)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -27,22 +28,18 @@ private struct ClipColorPreview: View {
     @ObservedObject var data: ClipHistoryData
 
     var body: some View {
-        GeometryReader { geometry in
-            let diameter = min(geometry.size.width * 0.56, geometry.size.height * 0.9)
-
-            HStack {
-                Spacer()
-                Circle()
-                    .fill(data.colorValue.map(Color.init(nsColor:)) ?? .green)
-                    .frame(width: diameter, height: diameter)
-                    .overlay(
-                        Circle()
-                            .stroke(AppTheme.border, lineWidth: 1)
-                    )
-                Spacer()
+        VStack(alignment: .leading, spacing: 16) {
+            Text(data.rowTitle)
+                .font(.system(size: 28, weight: .semibold, design: .monospaced))
+                .textSelection(.enabled)
+            if let color = data.colorValue {
+                RoundedRectangle(cornerRadius: AppTheme.controlRadius)
+                    .fill(Color(nsColor: color))
+                    .overlay { RoundedRectangle(cornerRadius: AppTheme.controlRadius).strokeBorder(AppTheme.border) }
+                    .accessibilityHidden(true)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 }
 
@@ -122,54 +119,27 @@ private struct ClipLinkPreview: View {
     @ObservedObject var data: ClipHistoryData
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            if let urlString = data.displayURLString,
-               let url = URL(string: urlString),
-               isValidHttpUrl(urlString) {
-                HStack(spacing: 12) {
-                    Image("ClipboardLink")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 28, height: 28)
-                        .foregroundStyle(AppTheme.accent)
-                        .frame(width: 44, height: 44)
-                        .background(AppTheme.selection, in: .rect(cornerRadius: 12))
-                        .accessibilityHidden(true)
-
-                    Text(url.host() ?? data.detailTitle)
-                        .font(.title2.weight(.semibold))
-                        .foregroundStyle(.primary)
-                        .lineLimit(2)
-                        .textSelection(.enabled)
-                }
-
-                Text(urlString)
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(4)
+        let address = data.displayURLString ?? data.detailTitle
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text(verbatim: address)
                     .textSelection(.enabled)
+                if isValidHttpUrl(address), let url = URL(string: address) {
+                    if let previewText = data.cleanedPreviewText, previewText != address {
+                        Text(previewText)
+                            .textSelection(.enabled)
+                    }
 
-                if let previewText = data.cleanedPreviewText,
-                   previewText != urlString {
-                    Text(previewText)
-                        .font(.body)
-                        .foregroundStyle(.primary)
-                        .lineLimit(4)
-                }
-
-                Link(destination: url) {
-                    Label("clip.link.open", systemImage: "arrow.up.right")
-                }
-                .buttonStyle(AppButtonStyle(emphasis: .primary))
-                .help(urlString)
-            } else {
-                Text(data.displayURLString ?? data.detailTitle)
+                    Link(destination: url) {
+                        Label("clip.link.open", systemImage: "arrow.up.right")
+                    }
+                    .buttonStyle(.link)
                     .font(.body)
-                    .foregroundStyle(.primary)
-                    .textSelection(.enabled)
+                    .help(address)
+                }
             }
-
-            Spacer(minLength: 0)
+            .font(.system(size: 15))
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
@@ -177,6 +147,7 @@ private struct ClipLinkPreview: View {
 
 struct ClipTextPreview: View {
     @ObservedObject var data: ClipHistoryData
+    var showsOriginalFormatting = false
 
     private var rtfText: NSAttributedString? {
         guard let rtfData = data.rtfData else { return nil }
@@ -184,16 +155,17 @@ struct ClipTextPreview: View {
     }
 
     var body: some View {
-        if let htmlData = data.htmlData {
+        let useOriginal = showsOriginalFormatting || !data.hasReadableText
+        if useOriginal, let htmlData = data.htmlData {
             HTMLView(htmlData: htmlData, baseURL: data.url.flatMap(URL.init(string:)))
-        } else if let rtfText {
+        } else if useOriginal, let rtfText {
             RTFView(text: rtfText)
         } else if let plainText = data.plainText, !plainText.isEmpty {
-            TextView(text: plainText, font: data.isJSON ? .monospacedSystemFont(ofSize: 14, weight: .regular) : .systemFont(ofSize: 14))
+            TextView(text: plainText)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         } else {
             Text(data.detailTitle)
-                .font(.title3.weight(.semibold))
+                .font(.system(size: 15))
                 .foregroundStyle(Color.secondary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }

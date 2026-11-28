@@ -2180,6 +2180,7 @@
       }
     },
     "clip.ai.polish.short" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2389,6 +2390,7 @@
       }
     },
     "clip.ai.translate" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2592,7 +2594,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择记录"
+            "value" : "切换记录"
           }
         }
       }
@@ -2614,6 +2616,7 @@
       }
     },
     "clip.pasteOptions" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3085,6 +3088,7 @@
       }
     },
     "Copied:" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -3892,6 +3896,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "历史记录"
+          }
+        }
+      }
+    },
+    "Hold for shortcuts" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住显示快捷键"
           }
         }
       }
@@ -4800,6 +4814,16 @@
         }
       }
     },
+    "Original formatting" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原格式"
+          }
+        }
+      }
+    },
     "Original restored" : {
       "localizations" : {
         "zh-Hans" : {
@@ -5135,6 +5159,16 @@
         }
       }
     },
+    "Preview format" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预览格式"
+          }
+        }
+      }
+    },
     "Preview ready" : {
       "localizations" : {
         "zh-Hans" : {
@@ -5205,12 +5239,32 @@
         }
       }
     },
+    "Quick Paste" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快速粘贴"
+          }
+        }
+      }
+    },
     "Quit" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "退出"
+          }
+        }
+      }
+    },
+    "Reading view" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "阅读"
           }
         }
       }
@@ -5237,6 +5291,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "推理强度"
+          }
+        }
+      }
+    },
+    "Recently Copied" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近复制"
           }
         }
       }
@@ -6535,7 +6599,6 @@
       }
     },
     "Unknown" : {
-      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {

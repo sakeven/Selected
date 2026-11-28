@@ -17,19 +17,14 @@ struct ClipMetadataCard: View {
             Text(data.lastCopiedText ?? data.firstCopiedText)
                 .accessibilityLabel(Text(LocalizedStringKey(data.lastCopiedText == nil ? "Date:" : "Last copied:")) + Text(" ") + Text(data.lastCopiedText ?? data.firstCopiedText))
             Spacer(minLength: 0)
-            Label(data.copiesText, systemImage: "doc.on.doc")
-                .help("Copied:")
-                .accessibilityLabel(Text("Copied:") + Text(" ") + Text(data.copiesText))
             Button("clip.details", systemImage: "info.circle") { showDetails = true }
-                .labelStyle(.iconOnly)
-                .buttonStyle(AppButtonStyle(emphasis: .quiet))
-                .controlSize(.small)
+                .buttonStyle(AppIconButtonStyle())
                 .help("clip.details")
                 .popover(isPresented: $showDetails) {
                     details.padding(20).frame(width: 380)
                 }
         }
-        .font(.caption)
+        .font(.callout)
         .foregroundStyle(.secondary)
         .lineLimit(1)
     }

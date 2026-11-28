@@ -3,68 +3,68 @@ import SwiftUI
 struct ClipRowView: View {
     @ObservedObject var clip: ClipHistoryData
     let isSelected: Bool
+    let shortcutNumber: Int?
+    @State private var isHovered = false
+    @Environment(\.calendar) private var calendar
 
     var body: some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(clip.displayKind.tint.opacity(0.12))
-                .frame(width: 38, height: 40)
-                .overlay {
-                    if clip.displayKind == .image,
-                       let imageData = clip.primaryItem?.data,
-                       let image = NSImage(data: imageData) {
-                        Image(nsImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 38, height: 40)
-                            .clipShape(.rect(cornerRadius: 10))
-                    } else if clip.displayKind == .color, let color = clip.colorValue {
-                        RoundedRectangle(cornerRadius: 7)
-                            .fill(Color(nsColor: color))
-                            .padding(4)
-                    } else {
-                        Image(clip.displayKind.imageName)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 26, height: 26)
-                            .foregroundStyle(clip.displayKind.tint)
-                    }
-                }
-                .overlay {
-                    RoundedRectangle(cornerRadius: 10)
-                        .strokeBorder(isSelected ? AppTheme.accent.opacity(0.25) : AppTheme.border, lineWidth: 0.5)
-                }
+        HStack(spacing: 10) {
+            thumbnail
+                .frame(width: 26, height: 26)
                 .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 5) {
+            VStack(alignment: .leading, spacing: 3) {
                 Text(clip.rowTitle)
-                    .font(.body)
+                    .font(.system(size: 13, weight: isSelected ? .medium : .regular))
                     .foregroundStyle(.primary)
                     .lineLimit(1)
-                    .multilineTextAlignment(.leading)
-
-                HStack(spacing: 5) {
-                    Text(clip.contentTypeLabel)
-                    Text("·")
+                HStack(spacing: 6) {
                     Text(clip.appDisplayName)
                         .lineLimit(1)
+                    Spacer(minLength: 0)
+                    if let date = clip.lastCopiedAt ?? clip.firstCopiedAt {
+                        Text(date, format: calendar.isDateInToday(date) ? .dateTime.hour().minute() : .dateTime.month(.abbreviated).day())
+                            .monospacedDigit()
+                            .fixedSize()
+                    }
                 }
-                .font(.caption)
+                .font(.system(size: 11))
                 .foregroundStyle(.secondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            if clip.isPinned {
-                Image(systemName: "pin.fill")
-                    .font(.caption)
-                    .foregroundStyle(Color.accentColor)
-                    .accessibilityLabel(Text("clip.pinned"))
             }
         }
         .padding(.horizontal, 10)
-        .padding(.vertical, 9)
-        .frame(minHeight: 58)
+        .frame(minHeight: 45)
+        .background(isSelected ? AppTheme.selection : isHovered ? AppTheme.inset : .clear)
+        .overlay(alignment: .leading) {
+            if isSelected {
+                Rectangle().fill(AppTheme.accent).frame(width: 3)
+            }
+        }
+        .clipShape(.rect(cornerRadius: 6))
+        .contentShape(.rect)
+        .onHover { isHovered = $0 }
         .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : .isButton)
+        .accessibilityValue(clip.contentTypeLabel)
+    }
+
+    @ViewBuilder private var thumbnail: some View {
+        if let shortcutNumber {
+            ShortcutHint(keys: "⌘\(shortcutNumber)")
+        } else if clip.displayKind == .image, let bytes = clip.primaryItem?.data, let image = NSImage(data: bytes) {
+            Image(nsImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 24, height: 24)
+                .clipShape(.rect(cornerRadius: 4))
+        } else if clip.displayKind == .color, let color = clip.colorValue {
+            RoundedRectangle(cornerRadius: 4)
+                .fill(Color(nsColor: color))
+                .strokeBorder(AppTheme.border, lineWidth: 0.5)
+                .frame(width: 20, height: 20)
+        } else {
+            Image(systemName: clip.displayKind.symbolName)
+                .font(.system(size: 14))
+                .foregroundStyle(.secondary)
+        }
     }
 }

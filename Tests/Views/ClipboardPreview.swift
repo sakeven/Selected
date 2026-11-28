@@ -1,5 +1,4 @@
 import AppKit
-import CoreData
 import SwiftUI
 import WebKit
 import XCTest
@@ -7,6 +6,25 @@ import XCTest
 
 @MainActor
 final class ClipboardPreviewTests: XCTestCase {
+    func testReadingUsesRegularBodyTextThroughoutAndPreservesSelection() async throws {
+        for text in ["周会行动清单👩🏽‍💻\r\n\r\n周四和编辑一起过稿。", "{\n  \"count\": 3\n}"] {
+            let clip = try makeClipboardFixture(text: text, representations: [(.string, Data(text.utf8))])
+            let host = NSHostingView(rootView: ClipTextPreview(data: clip))
+            let window = show(host)
+            defer { window.close() }
+            try await Task.sleep(for: .milliseconds(100))
+
+            let view = try XCTUnwrap(descendant(NSTextView.self, in: host))
+            let storage = try XCTUnwrap(view.textStorage)
+            storage.enumerateAttribute(.font, in: NSRange(location: 0, length: storage.length)) { font, _, _ in
+                XCTAssertEqual(font as? NSFont, NSFont.systemFont(ofSize: 15))
+            }
+            view.selectAll(nil)
+            XCTAssertEqual((view.string as NSString).substring(with: view.selectedRange()), text)
+            XCTAssertEqual(clip.primaryItem?.data, Data(text.utf8))
+        }
+    }
+
     func testRTFPreviewPreservesFormattingWhenPlainTextComesFirst() async throws {
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
@@ -17,13 +35,24 @@ final class ClipboardPreviewTests: XCTestCase {
             .paragraphStyle: paragraph
         ])
         let rtf = try text.data(from: NSRange(location: 0, length: text.length), documentAttributes: [.documentType: NSAttributedString.DocumentType.rtf])
-        let clip = try makeClip(text: text.string, representations: [(.string, Data(text.string.utf8)), (.rtf, rtf)])
+        let clip = try makeClipboardFixture(text: text.string, representations: [(.string, Data(text.string.utf8)), (.rtf, rtf)])
         let originalData = clip.getItems().map(\.data)
-        let host = NSHostingView(rootView: ClipTextPreview(data: clip))
+        let host = NSHostingView(rootView: ClipDataView(data: clip, onTogglePin: {}))
         let window = show(host)
         defer { window.close() }
         try await Task.sleep(for: .milliseconds(100))
 
+        let readingView = try XCTUnwrap(descendant(NSTextView.self, in: host))
+        let readingAttributes = try XCTUnwrap(readingView.textStorage?.attributes(at: 0, effectiveRange: nil))
+        XCTAssertEqual(readingView.string, text.string)
+        XCTAssertEqual((readingAttributes[.font] as? NSFont)?.pointSize, 15)
+        XCTAssertNil(readingAttributes[.backgroundColor])
+
+        let picker = try XCTUnwrap(descendant(NSSegmentedControl.self, in: host))
+        XCTAssertEqual(picker.selectedSegment, 0)
+        picker.selectedSegment = 1
+        XCTAssertTrue(picker.sendAction(picker.action, to: picker.target))
+        try await Task.sleep(for: .milliseconds(100))
         let view = try XCTUnwrap(descendant(NSTextView.self, in: host))
         let attributes = try XCTUnwrap(view.textStorage?.attributes(at: 0, effectiveRange: nil))
         let font = try XCTUnwrap(attributes[.font] as? NSFont)
@@ -37,6 +66,16 @@ final class ClipboardPreviewTests: XCTestCase {
         XCTAssertTrue(view.isSelectable)
         XCTAssertGreaterThan(view.bounds.width, 300)
         XCTAssertEqual(clip.getItems().map(\.data), originalData)
+
+        picker.selectedSegment = 0
+        XCTAssertTrue(picker.sendAction(picker.action, to: picker.target))
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertNil(descendant(NSTextView.self, in: host)?.textStorage?.attribute(.backgroundColor, at: 0, effectiveRange: nil))
+        let pasteboard = NSPasteboard.withUniqueName()
+        defer { pasteboard.releaseGlobally() }
+        ClipService(pasteboard: pasteboard).restore(clip) {}
+        XCTAssertEqual(pasteboard.data(forType: .rtf), rtf)
+        XCTAssertEqual(pasteboard.string(forType: .string), text.string)
     }
 
     func testRTFPreviewUpdatesWhenOnlyFormattingChanges() async throws {
@@ -59,10 +98,18 @@ final class ClipboardPreviewTests: XCTestCase {
         <meta charset="utf-8"><table><tr><td style="color:rgb(255,0,0);font-size:24px;font-weight:700">网页表格</td></tr></table>
         <script>document.body.innerHTML = 'Script ran';</script>
         """
-        let clip = try makeClip(text: "网页表格", representations: [(.string, Data("网页表格".utf8)), (.html, Data(html.utf8))])
+        let plainText = "  网页表格\n"
+        let clip = try makeClipboardFixture(text: plainText, representations: [(.string, Data(plainText.utf8)), (.html, Data(html.utf8))])
         let host = NSHostingView(rootView: ClipTextPreview(data: clip))
         let window = show(host)
         defer { window.close() }
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertNil(descendant(WKWebView.self, in: host))
+        let readingView = try XCTUnwrap(descendant(NSTextView.self, in: host))
+        XCTAssertTrue(readingView.isSelectable)
+        XCTAssertEqual(readingView.string, plainText)
+
+        host.rootView = ClipTextPreview(data: clip, showsOriginalFormatting: true)
         try await Task.sleep(for: .milliseconds(100))
         let webView = try XCTUnwrap(descendant(WKWebView.self, in: host))
         try await waitForText("网页表格", in: webView)
@@ -71,15 +118,16 @@ final class ClipboardPreviewTests: XCTestCase {
         XCTAssertEqual(values?[1] as? String, "24px")
         XCTAssertEqual(values?[2] as? String, "rgb(255, 0, 0)")
         XCTAssertFalse(webView.configuration.defaultWebpagePreferences.allowsContentJavaScript)
+        XCTAssertEqual(clip.htmlData, Data(html.utf8))
 
-        let next = try makeClip(text: "下一条", representations: [(.html, Data("<p>下一条</p>".utf8))])
-        host.rootView = ClipTextPreview(data: next)
+        let next = try makeClipboardFixture(text: "下一条", representations: [(.html, Data("<p>下一条</p>".utf8))])
+        host.rootView = ClipTextPreview(data: next, showsOriginalFormatting: true)
         try await waitForText("下一条", in: webView)
     }
 
     func testUnreadableRTFFallsBackToPlainText() async throws {
-        let clip = try makeClip(text: "可读的原文", representations: [(.rtf, Data("invalid rtf".utf8))])
-        let host = NSHostingView(rootView: ClipTextPreview(data: clip))
+        let clip = try makeClipboardFixture(text: "可读的原文", representations: [(.rtf, Data("invalid rtf".utf8))])
+        let host = NSHostingView(rootView: ClipTextPreview(data: clip, showsOriginalFormatting: true))
         let window = show(host)
         defer { window.close() }
         try await Task.sleep(for: .milliseconds(100))
@@ -88,9 +136,9 @@ final class ClipboardPreviewTests: XCTestCase {
 
     func testHTMLWithAppSourceRendersWithoutOpeningSourceURL() async throws {
         let html = "<p style='font-weight:700'>应用内复制的内容</p>"
-        let clip = try makeClip(text: "应用内复制的内容", representations: [(.html, Data(html.utf8))])
+        let clip = try makeClipboardFixture(text: "应用内复制的内容", representations: [(.html, Data(html.utf8))])
         clip.url = "app://-/index.html"
-        let host = NSHostingView(rootView: ClipTextPreview(data: clip))
+        let host = NSHostingView(rootView: ClipTextPreview(data: clip, showsOriginalFormatting: true))
         let window = show(host)
         defer { window.close() }
         try await Task.sleep(for: .milliseconds(100))
@@ -100,6 +148,24 @@ final class ClipboardPreviewTests: XCTestCase {
         XCTAssertEqual(clip.url, "app://-/index.html")
         let weight = try await webView.evaluateJavaScript("getComputedStyle(document.querySelector('p')).fontWeight") as? String
         XCTAssertEqual(weight, "700")
+    }
+
+    func testFormattedClipsWithoutReadableTextShowTheirOriginalRepresentation() async throws {
+        let html = Data("<table><tr><td>原表格</td></tr></table>".utf8)
+        let clip = try makeClipboardFixture(text: nil, representations: [(.html, html)])
+        let host = NSHostingView(rootView: ClipTextPreview(data: clip))
+        let window = show(host)
+        defer { window.close() }
+        try await Task.sleep(for: .milliseconds(100))
+        let webView = try XCTUnwrap(descendant(WKWebView.self, in: host))
+        try await waitForText("原表格", in: webView)
+
+        let text = NSAttributedString(string: "RTF")
+        let rtf = try text.data(from: NSRange(location: 0, length: text.length), documentAttributes: [.documentType: NSAttributedString.DocumentType.rtf])
+        let next = try makeClipboardFixture(text: " \u{FFFC}\n", representations: [(.rtf, rtf)])
+        host.rootView = ClipTextPreview(data: next)
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(descendant(NSTextView.self, in: host)?.string, text.string)
     }
 
     func testHTMLCancelsExternalSchemeRedirectsAndFrames() async throws {
@@ -156,19 +222,6 @@ final class ClipboardPreviewTests: XCTestCase {
             }
             return policy
         }
-    }
-
-    private func makeClip(text: String, representations: [(NSPasteboard.PasteboardType, Data)]) throws -> ClipHistoryData {
-        let model = try XCTUnwrap(NSManagedObjectModel.mergedModel(from: [Bundle.main]))
-        let clip = ClipHistoryData(entity: try XCTUnwrap(model.entitiesByName["ClipHistoryData"]), insertInto: nil)
-        clip.plainText = text
-        for (type, data) in representations {
-            let item = ClipHistoryItem(entity: try XCTUnwrap(model.entitiesByName["ClipHistoryItem"]), insertInto: nil)
-            item.type = type.rawValue
-            item.data = data
-            clip.addToItems(item)
-        }
-        return clip
     }
 
     private func show(_ view: NSView) -> NSWindow {

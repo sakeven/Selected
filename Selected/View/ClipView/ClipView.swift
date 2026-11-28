@@ -7,9 +7,6 @@
 
 import AppKit
 import CoreData
-import Defaults
-import Foundation
-import PDFKit
 import SwiftUI
 
 struct ClipView: View {
@@ -17,235 +14,255 @@ struct ClipView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @FetchRequest(
-        sortDescriptors: [
-            NSSortDescriptor(keyPath: \ClipHistoryData.isPinned, ascending: false),
-            NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: false)
-        ],
+        sortDescriptors: [NSSortDescriptor(keyPath: \ClipHistoryData.lastCopiedAt, ascending: false)],
         animation: .default
     )
     private var clips: FetchedResults<ClipHistoryData>
 
-    @ObservedObject var viewModel = ClipViewModel.shared
+    @ObservedObject var viewModel: ClipViewModel
+    var restore: (ClipHistoryData, Bool) -> Void = ClipWindowManager.shared.restore(_:paste:)
     @State private var isFocused = true
 
     @State private var searchText = ""
-    @State private var localSelection: ClipHistoryData?
     @State private var aiRequest: ClipAIPromptView.Request?
+    @State private var pluginClip: ClipHistoryData?
 
     private var filteredClips: [ClipHistoryData] {
-        if searchText.isEmpty {
-            return Array(clips)
+        var pinned: [ClipHistoryData] = []
+        var recent: [ClipHistoryData] = []
+        // Older records can store nil for an unpinned item. Keep them in the same date order as false.
+        for clip in clips where clip.matchesSearch(searchText) {
+            if clip.isPinned {
+                pinned.append(clip)
+            } else {
+                recent.append(clip)
+            }
         }
-
-        return clips.filter { $0.matchesSearch(searchText) }
+        return pinned + recent
     }
 
     var body: some View {
+        let results = filteredClips
         VStack(spacing: 0) {
-            HStack(spacing: 12) {
-                Image(systemName: "clipboard")
-                    .font(.title2)
-                    .foregroundStyle(AppTheme.accent)
-                    .frame(width: 40, height: 40)
-                    .background(AppTheme.selection, in: .rect(cornerRadius: 11))
-                    .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Clipboard").font(.title2.weight(.semibold))
-                    Text("clip.workspace.subtitle").font(.callout).foregroundStyle(.secondary)
-                }
-                Spacer()
-                Button("Close", systemImage: "xmark") {
-                    ClipWindowManager.shared.forceCloseWindow()
-                }
-                .buttonStyle(AppIconButtonStyle())
-                .help("clip.dismiss.shortcut")
-            }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 18)
-            .background(AppTheme.surface)
-            .overlay(alignment: .bottom) {
-                Rectangle().fill(AppTheme.border).frame(height: 1)
-            }
-
-            HStack(spacing: 0) {
-                sidebar
-                    .frame(width: 300)
-
-                Rectangle()
-                    .fill(AppTheme.border)
-                    .frame(width: 1)
-
-                detailPane
-                    .frame(minWidth: 500)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-
             HStack(spacing: 16) {
-                ShortcutHint(keys: "↑ ↓", title: "clip.navigate")
+                SearchBarView(searchText: $searchText, isFocused: $isFocused, onArrowKey: handleArrowKey)
+                    .help(Text("clip.search") + Text(verbatim: "  ⌘F"))
                 Button {
                     ClipWindowManager.shared.forceCloseWindow()
                 } label: {
-                    ShortcutHint(keys: "esc", title: "clip.dismiss")
+                    ShortcutHint(keys: "esc")
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("clip.dismiss")
                 .help("clip.dismiss.shortcut")
-                Spacer()
-
-                if let selected = localSelection {
-                    Button("clip.copy.short", systemImage: "doc.on.doc") {
-                        ClipWindowManager.shared.restore(selected, paste: false)
-                    }
-                    .buttonStyle(AppButtonStyle())
-                    .help("clip.copy")
-
-                    HStack(spacing: 4) {
-                        Button {
-                            ClipWindowManager.shared.restore(selected, paste: true)
-                        } label: {
-                            HStack(spacing: 16) {
-                                Text("clip.paste")
-                                Image(systemName: "return").accessibilityHidden(true)
-                            }
-                        }
-                        if let text = selected.plainText {
-                            Menu {
-                                Button("Paste plain text") {
-                                    ClipWindowManager.shared.forceCloseWindow()
-                                    pasteText(text)
-                                }
-                            } label: {
-                                Label("clip.pasteOptions", systemImage: "chevron.down")
-                            }
-                            .labelStyle(.iconOnly)
-                            .menuStyle(.button)
-                            .menuIndicator(.hidden)
-                            .help("clip.pasteOptions")
-                        }
-                    }
-                    .buttonStyle(AppButtonStyle(emphasis: .prominent))
-                }
             }
-            .controlSize(.small)
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 12)
-            .background(AppTheme.surface)
-            .overlay(alignment: .top) {
-                Rectangle().fill(AppTheme.border).frame(height: 1)
+            .padding(.horizontal, 22)
+            .frame(height: 54)
+            Divider()
+
+            if results.isEmpty {
+                Group {
+                    if searchText.isEmpty {
+                        ContentUnavailableView("clip.empty.title", systemImage: "clipboard", description: Text("clip.empty.description"))
+                    } else {
+                        ContentUnavailableView.search(text: searchText)
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                HStack(spacing: 0) {
+                    sidebar(results)
+                        .frame(width: 316)
+                        .background(AppTheme.canvas)
+                    Divider()
+                    detailPane
+                }
+                Divider()
+                actionBar
             }
         }
         .frame(width: 960, height: 600)
         .sheet(item: $aiRequest) { request in
             ClipAIPromptView(data: request.data, instruction: request.instruction, translation: request.translation)
         }
-        .background(AppTheme.canvas)
-        .modifier(AppPanel())
+        .modifier(AppPanel(cornerRadius: 16))
         .onAppear {
-            localSelection = clips.first
-            viewModel.selectedItem = localSelection
             isFocused = true
         }
-        .onChange(of: localSelection) { _, newValue in
-            viewModel.selectedItem = newValue
+        .onDisappear { viewModel.performShortcut = nil }
+        .onChange(of: searchText) {
+            viewModel.selectedItem = filteredClips.first
+        }
+        .onChange(of: results, initial: true) {
+            viewModel.performShortcut = { handleShortcut($0, results: results) }
+            if viewModel.selectedItem == nil { viewModel.selectedItem = results.first }
         }
     }
 
-    private var sidebar: some View {
-        VStack(spacing: 14) {
-            SearchBarView(searchText: $searchText, isFocused: $isFocused, onArrowKey: handleArrowKey)
-            HStack {
-                Text("Clipboard History")
-                Spacer()
-                Text(filteredClips.count, format: .number)
-                    .monospacedDigit()
+    private func sidebar(_ results: [ClipHistoryData]) -> some View {
+        let pinned = results.prefix(while: \.isPinned)
+        let shortcutIDs = viewModel.showsQuickPasteKeys ? results.prefix(9).map(\.objectID) : []
+        return ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 2) {
+                    historySection("clip.pinned", items: pinned, shortcutIDs: shortcutIDs)
+                    historySection("Recently Copied", items: results.dropFirst(pinned.count), shortcutIDs: shortcutIDs)
+                }
+                .padding(.horizontal, 10)
+                .padding(.bottom, 12)
             }
-            .font(.caption.weight(.medium))
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 12)
+            .onChange(of: viewModel.selectedItem?.objectID) {
+                guard let selected = viewModel.selectedItem else { return }
+                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.14)) {
+                    proxy.scrollTo(selected.objectID)
+                }
+            }
+        }
+    }
 
-            if filteredClips.isEmpty {
-                if searchText.isEmpty {
-                    ContentUnavailableView("clip.empty.title", systemImage: "clipboard", description: Text("clip.empty.description"))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    ContentUnavailableView.search(text: searchText)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    @ViewBuilder
+    private func historySection(_ title: LocalizedStringKey, items: ArraySlice<ClipHistoryData>, shortcutIDs: [NSManagedObjectID]) -> some View {
+        if !items.isEmpty {
+            HStack {
+                Text(title)
+                Spacer()
+                Text(items.count, format: .number).monospacedDigit()
+            }
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 10)
+            .padding(.top, 12)
+            .padding(.bottom, 4)
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
+
+            ForEach(items, id: \.objectID) { clip in
+                Button {
+                    viewModel.selectedItem = clip
+                } label: {
+                    ClipRowView(clip: clip, isSelected: viewModel.selectedItem == clip,
+                                shortcutNumber: shortcutIDs.firstIndex(of: clip.objectID).map { $0 + 1 })
                 }
-            } else {
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(spacing: 4) {
-                            ForEach(filteredClips, id: \.objectID) { clipData in
-                                Button {
-                                    localSelection = clipData
-                                } label: {
-                                    ClipRowView(
-                                        clip: clipData,
-                                        isSelected: localSelection?.objectID == clipData.objectID
-                                    )
-                                }
-                                .buttonStyle(AppSelectionStyle(isSelected: localSelection?.objectID == clipData.objectID))
-                                .id(clipData.objectID)
-                                .contextMenu {
-                                    ClipActionsMenu(data: clipData, onTogglePin: { togglePin(clipData) }, onDelete: { delete(clipData) }) { instruction, translation in
-                                        requestAI(clipData, instruction: instruction, translation: translation)
-                                    }
-                                }
-                            }
-                        }
-                        .padding(2)
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(viewModel.selectedItem == clip ? .isSelected : [])
+                .contextMenu {
+                    Button("clip.pasteOriginal", systemImage: "return") {
+                        restore(clip, true)
                     }
-                    .scrollIndicators(.hidden)
-                    .onChange(of: localSelection?.objectID.uriRepresentation()) {
-                        guard let selected = localSelection else { return }
-                        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.14)) {
-                            proxy.scrollTo(selected.objectID, anchor: .center)
-                        }
+                    Button("clip.copy", systemImage: "doc.on.doc") {
+                        restore(clip, false)
                     }
+                    Divider()
+                    itemActions(clip)
                 }
             }
         }
-        .onChange(of: searchText) {
-            localSelection = filteredClips.first
-        }
-        .padding(.vertical, 8)
-        .padding(.trailing, 10)
-        .frame(maxHeight: .infinity, alignment: .top)
     }
 
     @ViewBuilder
     private var detailPane: some View {
-        if let selected = localSelection {
-            ClipDataView(data: selected, onTogglePin: { togglePin(selected) }, onDelete: { delete(selected) }) { instruction, translation in
-                requestAI(selected, instruction: instruction, translation: translation)
-            }
+        if let selected = viewModel.selectedItem {
+            ClipDataView(data: selected) { togglePin(selected) }
+                .id(selected.objectID)
         } else {
             ContentUnavailableView("clip.preview.empty", systemImage: "doc.text.magnifyingglass", description: Text("clip.preview.description"))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 
+    private var actionBar: some View {
+        HStack(spacing: 8) {
+            ShortcutHint(keys: "↑")
+            ShortcutHint(keys: "↓", title: "clip.navigate")
+            if viewModel.showsQuickPasteKeys {
+                ShortcutHint(keys: "⌘1–9", title: "Quick Paste")
+                    .padding(.leading, 8)
+            } else {
+                ShortcutHint(keys: "⌘", title: "Hold for shortcuts")
+                    .padding(.leading, 8)
+            }
+            Spacer()
+            if let selected = viewModel.selectedItem {
+                Menu("More actions") {
+                    itemActions(selected)
+                }
+                .menuStyle(.button)
+                .menuIndicator(.hidden)
+                .buttonStyle(AppButtonStyle(emphasis: .quiet))
+                .popover(item: $pluginClip) { clip in
+                    ContentActionPicker(input: ActionInput(clip: clip)) { request in
+                        pluginClip = nil
+                        ActionCoordinator.perform(request, input: ActionInput(clip: clip), target: ClipWindowManager.shared.actionTarget ?? ActionTarget())
+                    }
+                }
+                Button {
+                    restore(selected, false)
+                } label: {
+                    HStack(spacing: 6) {
+                        Text("clip.copy.short")
+                        if viewModel.showsQuickPasteKeys { Text(verbatim: "⌘↩").foregroundStyle(.secondary) }
+                    }
+                }
+                .buttonStyle(AppButtonStyle(emphasis: .quiet))
+                .help(Text("clip.copy") + Text(verbatim: "  ⌘↩"))
+                Button {
+                    restore(selected, true)
+                } label: {
+                    HStack(spacing: 12) {
+                        Text("clip.paste")
+                        Image(systemName: "return").accessibilityHidden(true)
+                    }
+                }
+                .buttonStyle(AppButtonStyle(emphasis: .prominent))
+            }
+        }
+        .padding(.horizontal, 22)
+        .frame(height: 58)
+    }
+
+    private func itemActions(_ clip: ClipHistoryData) -> some View {
+        ClipActionsMenu(data: clip, onTogglePin: { togglePin(clip) }, onDelete: { delete(clip) }, onShowPlugins: { pluginClip = clip }) { instruction, translation in
+            requestAI(clip, instruction: instruction, translation: translation)
+        }
+    }
+
     private func handleArrowKey(_ direction: CustomSearchField.ArrowDirection) {
-        localSelection = ClipSelection(clips: filteredClips, selected: localSelection).moving(direction)
+        viewModel.selectedItem = ClipSelection(clips: filteredClips, selected: viewModel.selectedItem).moving(direction)
+    }
+
+    private func handleShortcut(_ shortcut: ClipShortcut, results: [ClipHistoryData]) -> Bool {
+        guard aiRequest == nil, pluginClip == nil else { return false }
+        switch shortcut {
+        case .focusSearch:
+            isFocused = true
+        case .quickPaste(let number):
+            guard results.indices.contains(number - 1) else { return false }
+            restore(results[number - 1], true)
+        case .copy, .paste:
+            guard let selected = viewModel.selectedItem else { return false }
+            restore(selected, shortcut == .paste)
+        case .pastePlainText:
+            guard let text = viewModel.selectedItem?.plainText else { return false }
+            ClipWindowManager.shared.pastePlainText(text)
+        case .togglePin:
+            guard let selected = viewModel.selectedItem else { return false }
+            togglePin(selected)
+        case .delete:
+            guard let selected = viewModel.selectedItem else { return false }
+            delete(selected)
+        }
+        return true
     }
 
     private func delete(_ clipData: ClipHistoryData) {
-        let newIndexAfterDeletion = ClipSelection(clips: filteredClips, selected: localSelection).indexAfterDeleting(clipData)
-
+        let selection = ClipSelection(clips: filteredClips, selected: viewModel.selectedItem)
+        let index = selection.indexAfterDeleting(clipData)
+        let remaining = selection.clips.filter { $0 != clipData }
         PersistenceController.shared.delete(item: clipData)
-
-        DispatchQueue.main.async {
-            let newFiltered = filteredClips
-            if let newIndex = newIndexAfterDeletion,
-               newFiltered.indices.contains(newIndex) {
-                localSelection = newFiltered[newIndex]
-            } else if let first = newFiltered.first {
-                localSelection = first
-            } else {
-                localSelection = nil
-            }
+        if let index, remaining.indices.contains(index) {
+            viewModel.selectedItem = remaining[index]
+        } else {
+            viewModel.selectedItem = remaining.first
         }
     }
 
@@ -266,11 +283,10 @@ struct ClipView: View {
             print("Failed to toggle pin: \(error)")
         }
 
-        localSelection = clipData
         viewModel.selectedItem = clipData
     }
 }
 
 #Preview {
-    ClipView()
+    ClipView(viewModel: ClipViewModel())
 }

@@ -1,128 +1,44 @@
 import SwiftUI
-import Defaults
 
 struct ClipDataView: View {
     @ObservedObject var data: ClipHistoryData
-    @State private var showActions = false
     let onTogglePin: () -> Void
-    let onDelete: () -> Void
-    let onAIRequest: (String, Bool) -> Void
+    @State private var showsOriginalFormatting = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 10) {
-                Label {
-                    Text(data.contentTypeLabel)
-                } icon: {
-                    Image(data.displayKind.imageName)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 18, height: 18)
-                        .foregroundStyle(data.displayKind.tint)
-                        .accessibilityHidden(true)
-                }
-                .labelStyle(.titleAndIcon)
-                .font(.callout.weight(.medium))
-                .foregroundStyle(.secondary)
-
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Label(data.contentTypeLabel, systemImage: data.displayKind.symbolName)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
                 Spacer()
-
+                if [.html, .richText].contains(data.displayKind), data.hasReadableText {
+                    Picker("Preview format", selection: $showsOriginalFormatting) {
+                        Text("Reading view").tag(false)
+                        Text("Original formatting").tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                    .labelsHidden()
+                    .controlSize(.small)
+                    .fixedSize()
+                }
                 Button(action: onTogglePin) {
-                    Label(data.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"), systemImage: data.isPinned ? "pin.fill" : "pin")
+                    Label(data.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"),
+                          systemImage: data.isPinned ? "pin.fill" : "pin")
                 }
-                .buttonStyle(AppIconButtonStyle(isSelected: data.isPinned))
-                .help(data.isPinned ? String(localized: "clip.unpin") : String(localized: "clip.pin"))
-
-                Button(role: .destructive, action: onDelete) {
-                    Label("Delete", systemImage: "trash")
-                }
-                .help("Delete")
+                .buttonStyle(AppIconButtonStyle())
+                .help(Text(data.isPinned ? "clip.unpin" : "clip.pin") + Text(verbatim: "  ⌘P"))
             }
-            .labelStyle(.iconOnly)
-            .buttonStyle(AppIconButtonStyle())
-            .controlSize(.small)
 
-            ClipPreviewStage(data: data)
+            ClipPreviewStage(data: data, showsOriginalFormatting: showsOriginalFormatting)
                 .id(data.contentDigest)
-                .padding(24)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(AppTheme.surface, in: RoundedRectangle(cornerRadius: AppTheme.cardRadius))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 14)
-                        .strokeBorder(AppTheme.border, lineWidth: 1)
-                }
-                .clipped()
-
-            HStack(spacing: 2) {
-                if let kind = data.aiContentKind() {
-                    Button("clip.ai.ask", systemImage: "sparkles") {
-                        onAIRequest("", false)
-                    }
-                    .buttonStyle(AppButtonStyle(emphasis: .primary))
-
-                    if kind == .text || kind == .document {
-                        Button("clip.ai.summarize", systemImage: "list.bullet.rectangle") {
-                            onAIRequest(String(localized: "clip.ai.prompt.summarize"), false)
-                        }
-                    } else {
-                        Button("clip.ai.explain", systemImage: "text.magnifyingglass") {
-                            onAIRequest(String(localized: "clip.ai.prompt.explain"), false)
-                        }
-                    }
-
-                    if kind == .image || kind == .document {
-                        Button("clip.ai.extract", systemImage: "text.viewfinder") {
-                            onAIRequest(String(localized: "clip.ai.prompt.extract"), false)
-                        }
-                    } else if kind == .text {
-                        Button("clip.ai.polish.short", systemImage: "pencil.line") {
-                            onAIRequest(String(localized: "clip.ai.prompt.polish"), false)
-                        }
-                    }
-
-                    if kind != .code && kind != .link {
-                        Menu {
-                            Button("clip.ai.translateChinese") {
-                                onAIRequest(String(localized: "clip.ai.prompt.translateChinese"), true)
-                            }
-                            Button("clip.ai.translateEnglish") {
-                                onAIRequest(String(localized: "clip.ai.prompt.translateEnglish"), true)
-                            }
-                        } label: {
-                            AppMenuLabel(title: "clip.ai.translate", systemImage: "character.bubble")
-                        }
-                        .menuStyle(.button)
-                        .menuIndicator(.hidden)
-                        .fixedSize()
-                    }
-                }
-
-                ClipActionBar(data: data)
-
-                Spacer(minLength: 0)
-
-                Button { showActions = true } label: {
-                    AppMenuLabel(title: "Plugins", systemImage: "puzzlepiece.extension")
-                }
-                    .help("Process content")
-                    .popover(isPresented: $showActions) {
-                        ContentActionPicker(input: ActionInput(clip: data)) { request in
-                            showActions = false
-                            ActionCoordinator.perform(request, input: ActionInput(clip: data), target: ClipWindowManager.shared.actionTarget ?? ActionTarget())
-                        }
-                    }
-            }
-            .buttonStyle(AppButtonStyle(emphasis: .quiet))
-            .controlSize(.small)
-            .fixedSize(horizontal: false, vertical: true)
-            .padding(4)
-            .background(AppTheme.inset.opacity(0.6), in: .rect(cornerRadius: 10))
+                .padding(.top, 18)
+                .padding(.bottom, 16)
 
             ClipMetadataCard(data: data)
-
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding(.leading, 4)
+        .padding(.horizontal, 26)
+        .padding(.vertical, 14)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

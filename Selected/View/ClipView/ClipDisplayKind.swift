@@ -36,6 +36,19 @@ enum ClipDisplayKind {
         }
     }
 
+    var symbolName: String {
+        switch self {
+        case .text: "text.alignleft"
+        case .richText: "doc.richtext"
+        case .html: "chevron.left.forwardslash.chevron.right"
+        case .link: "link"
+        case .file: "doc"
+        case .image: "photo"
+        case .color: "paintpalette"
+        case .unknown: "doc.on.clipboard"
+        }
+    }
+
     var imageName: String {
         switch self {
         case .color: return "ClipboardColor"

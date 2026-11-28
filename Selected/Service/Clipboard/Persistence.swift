@@ -115,7 +115,7 @@ class PersistenceController {
     }
 
     func delete(item: ClipHistoryData) {
-        let ctx = container.viewContext
+        guard let ctx = item.managedObjectContext else { return }
         ctx.performAndWait {
             do{
                 ctx.delete(item)

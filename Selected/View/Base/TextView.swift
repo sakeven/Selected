@@ -9,38 +9,35 @@ import SwiftUI
 import AppKit
 
 struct TextView: NSViewRepresentable {
-    var text: String
-    var font: NSFont? = NSFont(name: "UbuntuMonoNFM", size: 14)
+    let text: String
     
     func makeNSView(context: Context) -> NSScrollView {
         let scrollView = NSScrollView()
         let textView = NSTextView()
 
-        // 配置滚动视图
         scrollView.hasVerticalScroller = true
-        scrollView.documentView = textView
-        scrollView.backgroundColor = .clear
-        scrollView.drawsBackground = false // 确保不会绘制默认的背景
-        
-        // 配置文本视图
+        scrollView.autohidesScrollers = true
+        scrollView.drawsBackground = false
+
         textView.isEditable = false
+        textView.isSelectable = true
+        textView.isVerticallyResizable = true
+        textView.isHorizontallyResizable = false
         textView.autoresizingMask = [.width]
-        textView.backgroundColor = .clear
+        textView.textContainer?.widthTracksTextView = true
+        textView.textContainer?.lineFragmentPadding = 0
         textView.drawsBackground = false
-        textView.translatesAutoresizingMaskIntoConstraints = true
-        textView.string = text
-        textView.font = font
-        textView.textColor = .labelColor
-        
+        scrollView.documentView = textView
         return scrollView
     }
 
     func updateNSView(_ nsView: NSScrollView, context: Context) {
-        guard let textView = nsView.documentView as? NSTextView else { return }
-        if textView.string != text {
-            textView.string = text
-        }
-        textView.font = font
-        textView.textColor = .labelColor
+        guard let textView = nsView.documentView as? NSTextView, textView.string != text else { return }
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineSpacing = 3
+        let display = NSAttributedString(string: text, attributes: [
+            .font: NSFont.systemFont(ofSize: 15), .foregroundColor: NSColor.labelColor, .paragraphStyle: paragraph
+        ])
+        textView.textStorage?.setAttributedString(display)
     }
 }
